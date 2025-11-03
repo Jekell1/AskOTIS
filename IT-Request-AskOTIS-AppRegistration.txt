@@ -1,0 +1,36 @@
+Subject: Request: Azure AD App Registration for AskOTIS Static Web App
+
+Hi IT Team,
+
+I need assistance creating an Azure AD App Registration to enable authentication for our new internal application called "AskOTIS" hosted on Azure Static Web Apps.
+
+**App Registration Details:**
+
+**Name:** AskOTIS-Auth
+
+**Supported Account Types:** Accounts in this organizational directory only (World Acceptance Corporation only - Single tenant)
+
+**Redirect URIs (Web platform):**
+- https://ambitious-ground-022e4a70f.3.azurestaticapps.net/.auth/login/aad/callback
+- https://ambitious-ground-022e4a70f-preview.eastus2.3.azurestaticapps.net/.auth/login/aad/callback
+
+**After creating the app registration, please provide me with:**
+1. Application (client) ID
+2. A client secret (with appropriate expiration period)
+3. The secret value (note: this can only be viewed once upon creation)
+
+**Additional Configuration:**
+- No special API permissions are required beyond the default User.Read
+- This will be used to restrict access to the AskOTIS application to only World Acceptance Corporation employees
+
+**Background:**
+This app registration is needed to implement Azure AD authentication for our internal AskOTIS application, ensuring that only authenticated users from our organization can access it.
+
+**Azure Subscription:** World Azure Prod (00de2929-ebe2-437d-bae3-f66a78372346)
+**Resource Group:** azure_ai_rg
+**Static Web App Name:** AskOTIS
+
+Please let me know if you need any additional information.
+
+Thank you,
+Jeff Childers
