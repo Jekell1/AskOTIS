@@ -18,7 +18,7 @@ except Exception as e:
 
 # Function details from our deployment
 function_app_name = "cobol-parser-func-1474"
-function_key = "X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA=="
+function_key = os.environ.get("AZURE_FUNCTION_KEY")
 function_uri = f"https://{function_app_name}.azurewebsites.net/api/cobol-parse?code={function_key}"
 
 # Azure AI Search REST API endpoint for skillsets

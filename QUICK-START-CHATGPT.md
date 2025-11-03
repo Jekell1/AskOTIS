@@ -10,7 +10,7 @@ Use: `chatgpt-action-openapi.yaml` (complete schema ready for ChatGPT)
 ```
 Base URL: https://az-use1-ai-search.search.windows.net
 Authentication: API Key (Header: api-key)
-Secret: AZURE_SEARCH_API_KEY = ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef
+Secret: AZURE_SEARCH_API_KEY = <AZURE_SEARCH_ADMIN_KEY>
 ```
 
 **3. Test Query**

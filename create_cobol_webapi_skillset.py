@@ -28,7 +28,7 @@ params = {
 
 # NOTE: Update these placeholders with your actual Azure Function details  
 FUNCTION_APP_NAME = "cobol-parser-func-1474"        # Your Function App name
-FUNCTION_KEY = "X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA=="  # Your Function key
+FUNCTION_KEY = os.environ.get("AZURE_FUNCTION_KEY")  # Your Function key
 
 # Complete skillset definition based on your specification
 skillset_data = {

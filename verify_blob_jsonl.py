@@ -10,7 +10,9 @@ from azure.storage.blob import BlobServiceClient
 
 def verify_blob_jsonl():
     """Verify the JSONL files were written to blob storage"""
-    connection_string = "DefaultEndpointsProtocol=https;AccountName=waazuse1aistorage;AccountKey=CC+qIlIhGidHQycBZ/MZ19KN2kmKSiMkLgU8kXr16//yE3aGbWK85kEfTpE7K4In7vKi0xn5MzZI+AStxHZ/sw==;EndpointSuffix=core.windows.net"
+    connection_string = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+    if not connection_string:
+        raise ValueError("AZURE_STORAGE_CONNECTION_STRING environment variable not set")
     
     print("🔍 VERIFYING JSONL FILES IN BLOB STORAGE")
     print("=" * 60)

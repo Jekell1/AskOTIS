@@ -7,7 +7,7 @@ import json
 import re
 
 search_endpoint = 'https://az-use1-ai-search.search.windows.net'
-search_key = 'ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef'
+search_key = os.environ.get("AZURE_SEARCH_ADMIN_KEY")
 headers = {'api-key': search_key, 'Content-Type': 'application/json'}
 
 print('=== FINDING ACTUAL CALL STATEMENTS IN LONPF2 ===')

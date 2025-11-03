@@ -64,7 +64,7 @@ def check_api_connectivity():
         url = "https://az-use1-ai-search.search.windows.net/indexes/cobol-index/docs/search"
         headers = {
             'Content-Type': 'application/json',
-            'api-key': 'ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef'
+            'api-key': os.environ.get("AZURE_SEARCH_ADMIN_KEY")
         }
         params = {"api-version": "2024-07-01"}
         

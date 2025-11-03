@@ -9,7 +9,7 @@ import re
 
 # Configuration
 SEARCH_ENDPOINT = "https://az-use1-ai-search.search.windows.net"
-SEARCH_KEY = "ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef"
+SEARCH_KEY = os.environ.get("AZURE_SEARCH_ADMIN_KEY")
 SEARCH_INDEX = "cobol-index"
 
 headers = {

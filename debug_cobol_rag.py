@@ -28,7 +28,7 @@ LOCAL_SETTINGS = load_local_settings()
 
 # Configuration  
 AZURE_SEARCH_ENDPOINT = LOCAL_SETTINGS.get("SEARCH_ENDPOINT", "https://az-use1-ai-search.search.windows.net")
-AZURE_SEARCH_KEY = LOCAL_SETTINGS.get("SEARCH_KEY", "ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef")
+AZURE_SEARCH_KEY = LOCAL_SETTINGS.get("SEARCH_KEY", os.environ.get("AZURE_SEARCH_ADMIN_KEY"))
 AZURE_SEARCH_INDEX = "cobol-index"
 
 class SimpleCOBOLRAG:

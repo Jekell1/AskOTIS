@@ -5,10 +5,13 @@ Trigger reindexing of the COBOL search index to fix duplicate line number issues
 import requests
 import json
 import time
+import os
 
 def trigger_reindex():
     search_endpoint = 'https://az-use1-ai-search.search.windows.net'
-    search_key = 'ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef'
+    search_key = os.environ.get("AZURE_SEARCH_ADMIN_KEY")
+    if not search_key:
+        raise ValueError("AZURE_SEARCH_ADMIN_KEY environment variable not set")
     headers = {'api-key': search_key, 'Content-Type': 'application/json'}
     
     print('=== COBOL INDEX REINDEXING ===')

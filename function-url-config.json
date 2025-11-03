@@ -1,10 +1,10 @@
 ﻿{
     "functionAppName":  "cobol-parser-func-1474",
-    "defaultKey":  "X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA==",
+    "defaultKey":  "<AZURE_FUNCTION_KEY>",
     "urlTemplate":  "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse",
     "resourceGroup":  "Azure_AI_RG",
     "functionName":  "cobol-parse",
-    "completeUrl":  "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse?code=X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA==",
+    "completeUrl":  "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse?code=<AZURE_FUNCTION_KEY>",
     "retrievedAt":  "9/4/2025 11:02:20 AM",
     "subscriptionId":  "00de2929-ebe2-437d-bae3-f66a78372346"
 }

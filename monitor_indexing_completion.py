@@ -17,7 +17,7 @@ try:
     connection_string = config['Values']['AzureWebJobsStorage']
     # Extract account name and key from connection string
     storage_account_name = 'waazuse1aistorage'
-    storage_account_key = 'CC+qIlIhGidHQycBZ/MZ19KN2kmKSiMkLgU8kXr16//yE3aGbWK85kEfTpE7K4In7vKi0xn5MzZI+AStxHZ/sw=='
+    storage_account_key = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
     container_name = 'aisearch'
     
 except Exception as e:

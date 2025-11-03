@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Azure Search configuration
-API_KEY = 'ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef'
+API_KEY = os.environ.get("AZURE_SEARCH_ADMIN_KEY")
 API_BASE_URL = 'https://az-use1-ai-search.search.windows.net'
 API_VERSION = '2024-07-01'
 

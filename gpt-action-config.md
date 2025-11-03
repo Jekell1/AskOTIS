@@ -15,7 +15,7 @@ Header Name: api-key
 Secret Name: AZURE_SEARCH_API_KEY
 
 ### Secret Value:
-AZURE_SEARCH_API_KEY = ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef
+AZURE_SEARCH_API_KEY = <AZURE_SEARCH_ADMIN_KEY>
 
 ## 3. Default Headers (Optional)
 # The API key will be automatically added via the authentication setup above

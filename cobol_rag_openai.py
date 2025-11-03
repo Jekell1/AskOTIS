@@ -17,7 +17,7 @@ from dataclasses import dataclass
 @dataclass 
 class Config:
     azure_search_endpoint: str = "https://az-use1-ai-search.search.windows.net"
-    azure_search_key: str = "ytClysW2tFUN8FxpSCRZMw8vU5sgpHbskgNjuGOdLgAzSeB2V0Ef"
+    azure_search_key: str = os.environ.get("AZURE_SEARCH_ADMIN_KEY")
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
     max_search_results: int = 15
     max_context_length: int = 4000

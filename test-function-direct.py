@@ -1,9 +1,12 @@
 import json
 import requests
+import os
 
 # Direct function configuration
 function_url = "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse"
-function_key = "X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA=="
+function_key = os.environ.get("AZURE_FUNCTION_KEY")
+if not function_key:
+    raise ValueError("AZURE_FUNCTION_KEY environment variable not set")
 full_url = f"{function_url}?code={function_key}"
 
 print("Testing COBOL Azure Function")
