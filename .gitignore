@@ -10,6 +10,9 @@ cobol_src/
 A15_Help/
 index_backups/
 
+# Git repository backups (large pack files)
+_git/
+
 # Python
 __pycache__/
 *.py[cod]
