@@ -1,0 +1,78 @@
+flowchart TD
+    A[Input Dates] --> B[Component Calculation]
+    B --> C[Years = DATE2-CCYY - DATE1-CCYY]
+    C --> D[Months = DATE2-MM - DATE1-MM]
+    D --> E[Days = DATE2-DD - DATE1-DD]
+    
+    E --> F[Decision Point]
+    F --> G{Days ≥ 0?}
+    
+    G -->|Yes| H[Simple Path]
+    G -->|No| I[Complex Path]
+    
+    H --> J[30-Day Month Arithmetic]
+    J --> K[Total Days = Years×12+Months×30 + Days]
+    K --> L[Simple Result]
+    
+    I --> M[Hybrid Julian Method]
+    M --> N[Month Adjustment]
+    N --> O[Adjusted Months = Original Months - 1]
+    O --> P[Date Manipulation]
+    
+    P --> Q[Subtract 1 month from End Date]
+    Q --> R[via C-INCR-MONTHS]
+    R --> S[Replace day with Start day]
+    
+    S --> T[End-of-Month Check]
+    T --> U{Start day > 28?}
+    U -->|Yes| V[Month Length Validation]
+    U -->|No| W[Julian Conversion]
+    
+    V --> X[Calculate actual month length]
+    X --> Y[Check leap year for February]
+    Y --> Z{Start day > Month length?}
+    
+    Z -->|Yes| AA[Reset to end month first day]
+    Z -->|No| W
+    
+    AA --> BB[Set to first day of end month]
+    BB --> W
+    
+    W --> CC[Convert both dates to Julian]
+    CC --> DD[Julian1 = End date]
+    DD --> EE[Julian2 = Manipulated date]
+    EE --> FF[Precise Days = Julian1 - Julian2]
+    
+    FF --> GG[Final Adjustment]
+    GG --> HH{Precise Days > 30?}
+    HH -->|Yes| II[Total = Precise + Adjusted-1×30]
+    HH -->|No| JJ[Total = Precise + Adjusted×30]
+    
+    II --> KK[Hybrid Result]
+    JJ --> KK
+    
+    L --> LL[Final Output]
+    KK --> LL
+    
+    subgraph "Simple Method"
+        MM[Standard 30-day months]
+        NN[Direct arithmetic]
+        OO[Fast calculation]
+    end
+    
+    subgraph "Hybrid Method"
+        PP[Month manipulation]
+        QQ[Julian precision]
+        RR[Complex adjustment]
+        SS[Accurate for edge cases]
+    end
+    
+    style A fill:#e3f2fd
+    style LL fill:#e8f5e8
+    style G fill:#fff8e1
+    style U fill:#fff8e1
+    style Z fill:#fff8e1
+    style HH fill:#fff8e1
+    style H fill:#e8f5e8
+    style I fill:#fff3e0
+    style R fill:#f3e5f5

@@ -1,0 +1,83 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-INCR-HALF-MONTHS Module]
+    B --> C[Input Processing]
+    C --> D[Component Separation]
+    D --> E[Full Month Processing]
+    E --> F[Half-Month Logic]
+    F --> G[Output Assembly]
+    G --> H[Return to Caller]
+    
+    subgraph "Division Logic"
+        I[Divide by 2]
+        J[Extract Full Months]
+        K[Extract Half-Month Remainder]
+    end
+    
+    subgraph "Month Processing"
+        L[C-INCR-MONTHS Module]
+        M[Month Arithmetic]
+        N[Date Validation]
+        O[Boundary Handling]
+    end
+    
+    subgraph "Half-Month Engine"
+        P[Day Boundary Check Day 15]
+        Q[Forward Half Logic]
+        R[Backward Half Logic]
+        S[15-Day Arithmetic]
+    end
+    
+    subgraph "Working Storage"
+        T[WS-UP-WORK]
+        U[WS-HOLD-DD]
+        V[WS-DIV-RESULT]
+        W[WS-MOD-2]
+        X[Date Components]
+    end
+    
+    subgraph "Output Structure"
+        Y[WS-NDTE-CCYY-S]
+        Z[WS-NDTE-MM-S]
+        AA[WS-NDTE-DD-S]
+        BB[Half-Month Position]
+    end
+    
+    subgraph "Constants"
+        CC[HALF-MONTH-BOUNDARY = 15]
+        DD[HALF-MONTH-DIVISOR = 2]
+        EE[DAY-ADJUSTMENT = 15]
+    end
+    
+    D --> I
+    D --> J
+    D --> K
+    
+    E --> L
+    L --> M
+    L --> N
+    L --> O
+    
+    F --> P
+    F --> Q
+    F --> R
+    F --> S
+    
+    B --> T
+    B --> U
+    B --> V
+    B --> W
+    B --> X
+    
+    G --> Y
+    G --> Z
+    G --> AA
+    G --> BB
+    
+    F --> CC
+    D --> DD
+    F --> EE
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style B fill:#f3e5f5
+    style L fill:#e8f5e8

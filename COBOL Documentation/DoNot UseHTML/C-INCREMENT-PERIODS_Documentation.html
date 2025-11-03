@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCREMENT-PERIODS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCREMENT-PERIODS Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-INCREMENT-PERIODS Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-INCREMENT-PERIODS.cpy</code><br />
+<strong>Program ID:</strong> C-INCREMENT-PERIODS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-INCREMENT-PERIODS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Date Increment by Unit Periods<br />
+<strong>Source File:</strong> <code>C-INCREMENT-PERIODS.cpy</code><br />
+<strong>Usage:</strong> Increment dates by specified unit periods with automatic day/month correction  </p>
+<h2>Purpose and Description</h2>
+<p>C-INCREMENT-PERIODS is a comprehensive date arithmetic utility that adds or subtracts specified unit periods from dates. The program supports multiple unit period types including months, days, years, weeks, bi-weeks, and half-months, with automatic adjustment for invalid dates (e.g., February 30 → February 28/29).</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Multi-Unit Period Support</strong> - Handle various time units (M, D, Y, S, W, B)</li>
+<li><strong>Frequency Multiplication</strong> - Apply frequency multipliers to unit periods</li>
+<li><strong>Date Arithmetic</strong> - Perform accurate date calculations with boundary handling</li>
+<li><strong>Date Validation</strong> - Ensure resulting dates are valid through NEWDATE processing</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>DATER-UNITPER-CD</strong> - Unit period code (M, D, Y, S, W, B)</li>
+<li><strong>DATER-UNITPER-FREQ</strong> - Frequency multiplier for unit periods</li>
+<li><strong>NDTE-DATE</strong> - Date to increment (MMDDYY format)</li>
+<li><strong>NDTE-HOLD</strong> - Number of unit periods to add/subtract (+ or -)</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>NDTE-DATE</strong> - Incremented and validated date</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-INCREMENT-PERIODS Main Flow" src="Diagrams/C-INCREMENT-PERIODS_Main_Flow.mmd" /></p>
+<h4>Unit Period Processing</h4>
+<ol>
+<li>
+<p><strong>Date Component Setup</strong>
+   <code>cobol
+   MOVE NDTE-MM TO WS-NDTE-MM-S
+   MOVE NDTE-DD TO WS-NDTE-DD-S
+   MOVE NDTE-CCYY TO WS-NDTE-CCYY-S</code></p>
+</li>
+<li>
+<p><strong>Frequency Calculation</strong>
+   <code>cobol
+   COMPUTE WS-UP-WORK = NDTE-HOLD * DATER-UNITPER-FREQ</code></p>
+</li>
+<li>
+<p><strong>Unit Period Evaluation</strong>
+   <code>cobol
+   EVALUATE DATER-UNITPER-CD
+   WHEN "M" PERFORM C-INCR-MONTHS
+   WHEN "S" PERFORM C-INCR-HALF-MONTHS
+   WHEN "W" COMPUTE WS-UP-WORK = WS-UP-WORK * 7
+            PERFORM C-INCR-DAYS
+   WHEN "B" COMPUTE WS-UP-WORK = WS-UP-WORK * 14
+            PERFORM C-INCR-DAYS
+   WHEN "D" PERFORM C-INCR-DAYS
+   WHEN "Y" COMPUTE WS-UP-WORK = WS-UP-WORK * 12
+            PERFORM C-INCR-MONTHS</code></p>
+</li>
+<li>
+<p><strong>Date Validation and Correction</strong>
+   <code>cobol
+   MOVE "N" TO DATER-ACTION-CODE
+   PERFORM C-CALL-NEWDATE</code></p>
+</li>
+</ol>
+<h3>Unit Period Types</h3>
+<p><img alt="C-INCREMENT-PERIODS Unit Types" src="Diagrams/C-INCREMENT-PERIODS_Unit_Types.mmd" /></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Unit Type</th>
+<th>Conversion Factor</th>
+<th>Target Routine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M</strong></td>
+<td>Months</td>
+<td>1:1</td>
+<td>C-INCR-MONTHS</td>
+</tr>
+<tr>
+<td><strong>S</strong></td>
+<td>Semi-months (Half)</td>
+<td>1:1</td>
+<td>C-INCR-HALF-MONTHS</td>
+</tr>
+<tr>
+<td><strong>W</strong></td>
+<td>Weeks</td>
+<td>× 7 days</td>
+<td>C-INCR-DAYS</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>Bi-weeks</td>
+<td>× 14 days</td>
+<td>C-INCR-DAYS</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Days</td>
+<td>1:1</td>
+<td>C-INCR-DAYS</td>
+</tr>
+<tr>
+<td><strong>Y</strong></td>
+<td>Years</td>
+<td>× 12 months</td>
+<td>C-INCR-MONTHS</td>
+</tr>
+</tbody>
+</table>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>Payment scheduling routines</strong> - Calculate due dates</li>
+<li><strong>Loan processing systems</strong> - Determine maturity dates</li>
+<li><strong>Interest calculation programs</strong> - Compute period boundaries</li>
+<li><strong>Report generation utilities</strong> - Create date ranges</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS</a></strong> - Month increment processing</li>
+<li><strong><a href="C-INCR-HALF-MONTHS_Documentation.html">C-INCR-HALF-MONTHS</a></strong> - Half-month increment processing</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day increment processing</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Date validation and correction</li>
+</ul>
+<p><img alt="C-INCREMENT-PERIODS Call Graph" src="Diagrams/C-INCREMENT-PERIODS_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Input Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Format</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DATER-UNITPER-CD</td>
+<td>CHAR(1)</td>
+<td>M/D/Y/S/W/B</td>
+<td>Unit period type code</td>
+</tr>
+<tr>
+<td>DATER-UNITPER-FREQ</td>
+<td>NUMERIC</td>
+<td>N(3)</td>
+<td>Frequency multiplier</td>
+</tr>
+<tr>
+<td>NDTE-DATE</td>
+<td>DATE</td>
+<td>MMDDYY</td>
+<td>Date to increment</td>
+</tr>
+<tr>
+<td>NDTE-HOLD</td>
+<td>NUMERIC</td>
+<td>S9(5)</td>
+<td>Signed unit period count</td>
+</tr>
+</tbody>
+</table>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-NDTE-MM-S</td>
+<td>NUMERIC</td>
+<td>Working month storage</td>
+</tr>
+<tr>
+<td>WS-NDTE-DD-S</td>
+<td>NUMERIC</td>
+<td>Working day storage</td>
+</tr>
+<tr>
+<td>WS-NDTE-CCYY-S</td>
+<td>NUMERIC</td>
+<td>Working year storage</td>
+</tr>
+<tr>
+<td>WS-UP-WORK</td>
+<td>NUMERIC</td>
+<td>Calculated increment value</td>
+</tr>
+</tbody>
+</table>
+<h3>Unit Period Code Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Example Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M</td>
+<td>Monthly</td>
+<td>Loan payment schedules</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Semi-monthly</td>
+<td>Bi-weekly payroll dates</td>
+</tr>
+<tr>
+<td>W</td>
+<td>Weekly</td>
+<td>Weekly reporting periods</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Bi-weekly</td>
+<td>Bi-weekly payment schedules</td>
+</tr>
+<tr>
+<td>D</td>
+<td>Daily</td>
+<td>Daily interest calculations</td>
+</tr>
+<tr>
+<td>Y</td>
+<td>Yearly</td>
+<td>Annual renewal dates</td>
+</tr>
+</tbody>
+</table>
+<h2>Usage Examples</h2>
+<h3>Monthly Payment Schedule</h3>
+<pre><code class="language-cobol">MOVE &quot;M&quot; TO DATER-UNITPER-CD
+MOVE 1 TO DATER-UNITPER-FREQ
+MOVE 20240315 TO NDTE-DATE
+MOVE 1 TO NDTE-HOLD
+PERFORM C-INCREMENT-PERIODS
+* Result: NDTE-DATE = 20240415 (one month later)
+</code></pre>
+<h3>Quarterly Period Calculation</h3>
+<pre><code class="language-cobol">MOVE &quot;M&quot; TO DATER-UNITPER-CD
+MOVE 3 TO DATER-UNITPER-FREQ    
+MOVE 20240131 TO NDTE-DATE
+MOVE 1 TO NDTE-HOLD
+PERFORM C-INCREMENT-PERIODS
+* Result: NDTE-DATE = 20240430 (3 months later, adjusted for April)
+</code></pre>
+<h3>Weekly Period Processing</h3>
+<pre><code class="language-cobol">MOVE &quot;W&quot; TO DATER-UNITPER-CD
+MOVE 2 TO DATER-UNITPER-FREQ
+MOVE 20240315 TO NDTE-DATE
+MOVE 3 TO NDTE-HOLD
+PERFORM C-INCREMENT-PERIODS
+* Result: NDTE-DATE = 20240404 (6 weeks = 42 days later)
+</code></pre>
+<h3>Backward Date Calculation</h3>
+<pre><code class="language-cobol">MOVE &quot;M&quot; TO DATER-UNITPER-CD
+MOVE 1 TO DATER-UNITPER-FREQ
+MOVE 20240331 TO NDTE-DATE
+MOVE -2 TO NDTE-HOLD
+PERFORM C-INCREMENT-PERIODS
+* Result: NDTE-DATE = 20240131 (2 months earlier)
+</code></pre>
+<h2>Error Handling and Date Correction</h2>
+<h3>Invalid Date Adjustment</h3>
+<p>The utility automatically handles invalid dates through C-CALL-NEWDATE:</p>
+<table>
+<thead>
+<tr>
+<th>Original Date</th>
+<th>Increment</th>
+<th>Raw Result</th>
+<th>Corrected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>January 31</td>
+<td>+1 month</td>
+<td>February 31</td>
+<td>February 28/29</td>
+</tr>
+<tr>
+<td>February 29</td>
+<td>+1 year (non-leap)</td>
+<td>February 29</td>
+<td>February 28</td>
+</tr>
+<tr>
+<td>May 31</td>
+<td>+1 month</td>
+<td>June 31</td>
+<td>June 30</td>
+</tr>
+</tbody>
+</table>
+<h3>Edge Case Handling</h3>
+<ul>
+<li><strong>Month overflow</strong> - December + 1 month = January next year</li>
+<li><strong>Day overflow</strong> - Adjusted to last valid day of target month</li>
+<li><strong>Leap year transitions</strong> - February 29 handling in non-leap years</li>
+<li><strong>Negative increments</strong> - Proper backward date calculation</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Direct routing</strong> - Immediate dispatch to appropriate increment routine</li>
+<li><strong>Multiplication optimization</strong> - Pre-calculate conversion factors</li>
+<li><strong>Single validation</strong> - One NEWDATE call for final validation</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Direct calculation and single validation</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Test Scenarios</h3>
+<table>
+<thead>
+<tr>
+<th>Test Category</th>
+<th>Example</th>
+<th>Expected Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Month boundaries</td>
+<td>Jan 31 + 1M</td>
+<td>Feb 28/29 (adjusted)</td>
+</tr>
+<tr>
+<td>Year boundaries</td>
+<td>Dec 15 + 2M</td>
+<td>Feb 15 next year</td>
+</tr>
+<tr>
+<td>Leap years</td>
+<td>Feb 29 + 1Y</td>
+<td>Feb 28 (non-leap year)</td>
+</tr>
+<tr>
+<td>Negative periods</td>
+<td>May 15 - 3M</td>
+<td>Feb 15</td>
+</tr>
+<tr>
+<td>Week calculations</td>
+<td>Mon + 2W</td>
+<td>Monday 14 days later</td>
+</tr>
+<tr>
+<td>Frequency multipliers</td>
+<td>Start + 3×2M</td>
+<td>6 months later</td>
+</tr>
+</tbody>
+</table>
+<h3>Validation Points</h3>
+<ul>
+<li>Unit period code validation</li>
+<li>Frequency range checking</li>
+<li>Date boundary handling</li>
+<li>Leap year compliance</li>
+</ul>
+<h2>Dependencies</h2>
+<h3>Required Utilities</h3>
+<ul>
+<li><strong><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS</a></strong> - Month-based increment processing</li>
+<li><strong><a href="C-INCR-HALF-MONTHS_Documentation.html">C-INCR-HALF-MONTHS</a></strong> - Half-month increment processing</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day-based increment processing</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Date validation and correction</li>
+</ul>
+<h3>Data Requirements</h3>
+<ul>
+<li>Valid unit period codes (M, D, Y, S, W, B)</li>
+<li>Numeric frequency values</li>
+<li>Valid input date format (MMDDYY)</li>
+<li>Initialized working storage</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Strategy Pattern</strong> - Different processing strategies for each unit type</li>
+<li><strong>Validation Pattern</strong> - Final validation ensures data integrity</li>
+<li><strong>Conversion Pattern</strong> - Standardized conversion factors for time units</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li><strong>Add new unit types</strong> - Extend EVALUATE statement with new codes</li>
+<li><strong>Modify conversion factors</strong> - Update multiplication constants carefully</li>
+<li><strong>Preserve validation</strong> - Always call C-CALL-NEWDATE for final validation</li>
+<li><strong>Test boundary conditions</strong> - Verify month-end and year-end handling</li>
+</ul>
+<h3>Performance Monitoring</h3>
+<ul>
+<li>Monitor frequency distribution of unit period types</li>
+<li>Track date correction frequency for invalid dates</li>
+<li>Validate calculation accuracy across date ranges</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS</a></strong> - Month increment utility</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day increment utility</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Date validation utility</li>
+<li><strong><a href="C-DATER-MAIN_Documentation.html">C-DATER-MAIN</a></strong> - Main date processing router</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

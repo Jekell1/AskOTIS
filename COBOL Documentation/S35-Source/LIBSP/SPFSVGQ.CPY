@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSVGQ
+           SELECT VGQ-FILE ASSIGN TO VGQ-PATH  
+                  ORGANIZATION INDEXED 
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VGQ1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSSE
+           SELECT SE-FILE ASSIGN TO SE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY SE1-KEY
+                  FILE STATUS FILE-STAT.

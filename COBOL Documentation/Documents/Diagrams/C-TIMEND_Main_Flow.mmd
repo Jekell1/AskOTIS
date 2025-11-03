@@ -1,0 +1,36 @@
+flowchart TD
+    A[Start C-TIMEND] --> B[Apply Sign to Days]
+    B --> C[COMPUTE WS-XDAYS = WS-XSIGN * WS-XDAYS]
+    C --> D{TA-YRTYPE = 998?}
+    D -->|Yes| E[Unit Period Processing]
+    D -->|No| F[Standard Processing]
+    
+    E --> G[COMPUTE WS-XMONTHS = WS-XMONTHS * WS-XSIGN]
+    G --> H[COMPUTE WS-XREM = WS-XDAYS - MONTHS * 30]
+    H --> I{TA-YRTYPE = 365?}
+    
+    F --> J[DIVIDE WS-XDAYS BY 30]
+    J --> K[GIVING WS-XMONTHS REMAINDER WS-XREM]
+    K --> I
+    
+    I -->|Yes| L[365-Day Processing]
+    I -->|No| M{WS-XSIGN < 0?}
+    
+    L --> N[COMPUTE WS-XDAYS = WS-XSIGN * JULIAN-DIFF]
+    N --> M
+    
+    M -->|Yes| O[Restore Date Order]
+    M -->|No| P[End C-TIMEND]
+    
+    O --> Q[Swap WS-DATE1 and WS-DATE2]
+    Q --> R[Swap WS-JUL-1 and WS-JUL-2]
+    R --> P
+    
+    style A fill:#e1f5fe
+    style P fill:#c8e6c9
+    style D fill:#fff3e0
+    style I fill:#fff3e0
+    style M fill:#fff3e0
+    style E fill:#e8f5e8
+    style F fill:#f3e5f5
+    style L fill:#fff9c4

@@ -1,0 +1,65 @@
+graph TD
+    A[Transaction Input] --> B[VERIFY-REBATE-CANCEL]
+    B --> C{Account Valid?}
+    C -->|No| D[Account Error]
+    C -->|Yes| E[INITIALIZE-ROUTINE]
+    E --> F[REBATE-CANCEL-ROUTINE]
+    F --> G{Transaction Type}
+    
+    G -->|RC/RA/RP/R1/R2/R3| H[Insurance Rebate Processing]
+    G -->|RI| I[Interest Rebate Processing]
+    G -->|RS| J[Service Charge Rebate]
+    G -->|RM| K[Maintenance Fee Rebate]
+    G -->|RD| L[Deferment Rebate]
+    G -->|CC/CA/CP/C1/C2/C3| M[Insurance Cancellation]
+    G -->|CD| N[Deferment Cancellation]
+    
+    H --> O[REBATE-GET-INS-AMT]
+    O --> P[Calculate Insurance Rebate]
+    P --> Q[Update REB-AMOUNT Array]
+    
+    I --> R[REBATE-INTEREST-ADJ]
+    R --> S[Load Interest Parameters]
+    S --> T[Apply Interest Formula]
+    T --> U[Update LP-INTPAID]
+    
+    J --> V[REBATE-SERCHG-ADJ]
+    V --> W[Calculate Service Charge Rebate]
+    W --> X[Update Service Charge Balance]
+    
+    K --> Y[REBATE-MAINTFEE-ADJ]
+    Y --> Z[Calculate Maintenance Fee Rebate]
+    Z --> AA[Update Maintenance Fee Balance]
+    
+    L --> BB[REBATE-DEFERMENT]
+    BB --> CC[Calculate Deferment Rebate]
+    CC --> DD[Update Deferment Balance]
+    
+    M --> EE[Cancel Insurance Charges]
+    EE --> FF[Reverse Insurance Premiums]
+    
+    N --> GG[Cancel Deferment Charges]
+    GG --> HH[Reverse Deferment Fees]
+    
+    Q --> II[TRANS-AMOUNT-ENTRY]
+    U --> II
+    X --> II
+    AA --> II
+    DD --> II
+    FF --> II
+    HH --> II
+    
+    II --> JJ[Update Account Balance]
+    JJ --> KK[Create Transaction Record]
+    KK --> LL[Update Files]
+    LL --> MM[Transaction Complete]
+    
+    D --> NN[Error Exit]
+    
+    style H fill:#e8f5e8
+    style I fill:#fff3e0
+    style J fill:#e3f2fd
+    style K fill:#fce4ec
+    style L fill:#f1f8e9
+    style M fill:#ffebee
+    style N fill:#ffebee

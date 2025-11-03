@@ -1,0 +1,12 @@
+{
+  "indexes": {
+    "code-chunks": {
+      "processed": 143500,
+      "ts": 1757738068
+    },
+    "cobol-symbols": {
+      "processed": 75500,
+      "ts": 1757733946
+    }
+  }
+}

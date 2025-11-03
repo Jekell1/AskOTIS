@@ -1,0 +1,35 @@
+flowchart LR
+    A[Calling Programs] --> B[C-CALL-JUL]
+    C[C-TIMBEG] --> B
+    D[C-DATE-TEST] --> B
+    E[C-WEEKDAY] --> B
+    F[Date Comparison Routines] --> B
+    G[Date Arithmetic Operations] --> B
+    
+    B --> H[C-LEAP-YEAR-TEST]
+    H --> I[Leap Year Determination]
+    
+    J[Input] --> B
+    K[P-DATE-IN CCYYMMDD] --> B
+    
+    B --> L[Mathematical Operations]
+    B --> M[DYTOM Table Lookup]
+    
+    B --> N[Output]
+    N --> O[P-JULIAN-DATE Days since 12/31/1899]
+    
+    P[Usage Context] --> B
+    Q[Date Arithmetic] --> B
+    R[Date Comparisons] --> B
+    S[Elapsed Time Calculations] --> B
+    T[Date Validation] --> B
+    
+    style B fill:#4fc3f7
+    style A fill:#ffb74d
+    style C fill:#ffb74d
+    style D fill:#ffb74d
+    style E fill:#ffb74d
+    style F fill:#ffb74d
+    style G fill:#ffb74d
+    style H fill:#81c784
+    style O fill:#c8e6c9

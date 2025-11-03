@@ -1,0 +1,58 @@
+flowchart TD
+    A[Month Increment WS-UP-WORK] --> B[Division Operation]
+    B --> C[DIVIDE BY 12]
+    C --> D[Years Component = DIV-RESULT]
+    C --> E[Months Component = MOD-12]
+    
+    D --> F[Year Calculation]
+    E --> G[Month Calculation]
+    F --> H[New Year = Current Year + Years]
+    G --> I[New Month = Current Month + Months]
+    
+    H --> J[Boundary Check]
+    I --> J
+    J --> K{New Month < 1?}
+    K -->|Yes| L[Underflow Adjustment]
+    K -->|No| M{New Month > 12?}
+    
+    L --> N[Month = Month + 12]
+    N --> O[Year = Year - 1]
+    O --> P[Result Assembly]
+    
+    M -->|Yes| Q[Overflow Adjustment]
+    M -->|No| P
+    
+    Q --> R[Month = Month - 12]
+    R --> S[Year = Year + 1]
+    S --> P
+    
+    P --> T[Date Validation]
+    T --> U{Day Valid for New Month?}
+    U -->|No| V[Day Adjustment Logic]
+    U -->|Yes| W[Final Result]
+    
+    V --> X[C-CALL-NEWDATE Validation]
+    X --> Y[Automatic Day Adjustment]
+    Y --> Z[Feb 31 → Feb 28/29]
+    Z --> AA[Apr 31 → Apr 30]
+    AA --> W
+    
+    W --> BB[Valid Date Output]
+    
+    subgraph "Examples"
+        CC[Jan 31 + 1 month]
+        DD[→ Feb 28/29]
+        EE[Dec 15 + 2 months]
+        FF[→ Feb 15 next year]
+        GG[Mar 31 + 1 month]
+        HH[→ Apr 30]
+    end
+    
+    style A fill:#e3f2fd
+    style BB fill:#e8f5e8
+    style K fill:#fff8e1
+    style M fill:#fff8e1
+    style U fill:#fff8e1
+    style L fill:#fff3e0
+    style Q fill:#fff3e0
+    style V fill:#fff3e0

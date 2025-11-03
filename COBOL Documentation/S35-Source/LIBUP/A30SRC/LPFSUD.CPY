@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSUD
+           SELECT UD-FILE ASSIGN TO UD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY UD1-KEY
+                  FILE STATUS FILE-STAT.

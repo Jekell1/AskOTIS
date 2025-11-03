@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJUL - Julian to Calendar Date Conversion</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">CJUL - Julian to Calendar Date Conversion</span>
+        </nav>
+        <main class="content">
+<h1>CJUL - Julian to Calendar Date Conversion</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Program ID:</strong> CJUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#program-flow">Program Flow</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> CJUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Julian to Calendar Date Conversion<br />
+<strong>Source Location:</strong> APIPAY_Inlined.CBL lines 16547-16550<br />
+<strong>Usage:</strong> Convert Julian date numbers to standard calendar dates (YYYYMMDD format)  </p>
+<h2>Purpose and Description</h2>
+<p>CJUL is a fundamental date conversion utility that transforms Julian date numbers into standard Gregorian calendar dates. It serves as the reverse operation to the JUL utility, converting numeric day counts back to human-readable date formats.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Julian Date Conversion</strong> - Convert Julian day numbers to YYYYMMDD format</li>
+<li><strong>Error Adjustment</strong> - Handle erroneous Julian day values</li>
+<li><strong>Date Normalization</strong> - Ensure output dates are in proper format</li>
+<li><strong>Day Increment Support</strong> - Used in conjunction with JUL for day arithmetic</li>
+</ol>
+<h3>Julian Date System</h3>
+<p>The CJUL utility uses a Julian day numbering system where:
+- <strong>Reference Date</strong>: December 31, 1899 (Day 0)
+- <strong>Day Count</strong>: Number of days elapsed since the reference date
+- <strong>Input Range</strong>: Positive integers representing valid date ranges
+- <strong>Output Format</strong>: Standard YYYYMMDD calendar dates</p>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>JULIAN-DATE</strong> - Numeric value representing days since 12/31/1899</li>
+<li><strong>DATER-ACTION-CODE</strong> - Set to "C" to specify conversion type</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - Resulting date in YYYYMMDD format</li>
+<li><strong>Error indicators</strong> - Set to 0 if conversion successful</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="CJUL Main Flow" src="Diagrams/CJUL_Main_Flow.mmd" /></p>
+<h4>Core Implementation</h4>
+<pre><code class="language-cobol">CJUL SECTION.
+    MOVE &quot;C&quot; TO DATER-ACTION-CODE.
+    PERFORM DATER-ROUTINE.
+</code></pre>
+<h3>Algorithm Steps</h3>
+<ol>
+<li><strong>Set Action Code</strong></li>
+<li>
+<p>Assigns "C" to DATER-ACTION-CODE to specify Julian-to-Calendar conversion</p>
+</li>
+<li>
+<p><strong>Delegate Processing</strong></p>
+</li>
+<li>Calls DATER-ROUTINE which contains the actual conversion logic</li>
+<li>
+<p>DATER-ROUTINE handles the complex Julian date mathematics</p>
+</li>
+<li>
+<p><strong>Result Processing</strong></p>
+</li>
+<li>DATER-ROUTINE updates NUM-DATE with converted calendar date</li>
+<li>Error flags set if Julian date is invalid or out of range</li>
+</ol>
+<h2>Input/Output Specifications</h2>
+<h3>Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JULIAN-DATE</td>
+<td>Numeric</td>
+<td>Integer</td>
+<td>Days since 12/31/1899, must not be 0</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NUM-DATE</td>
+<td>Numeric</td>
+<td>YYYYMMDD</td>
+<td>Standard calendar date format</td>
+</tr>
+<tr>
+<td>Error Flag</td>
+<td>Numeric</td>
+<td>Integer</td>
+<td>0 = Success, non-zero = Error</td>
+</tr>
+</tbody>
+</table>
+<h3>Data Validation</h3>
+<ul>
+<li><strong>JULIAN-DATE Requirements</strong>: Must be a positive integer greater than 0</li>
+<li><strong>Date Range</strong>: Limited by DATER-ROUTINE's supported date range</li>
+<li><strong>Error Handling</strong>: Invalid Julian dates return error code and NUM-DATE = 0</li>
+</ul>
+<h2>Program Flow</h2>
+<p><img alt="CJUL Call Graph" src="Diagrams/CJUL_Call_Graph.mmd" /></p>
+<h3>Execution Flow</h3>
+<ol>
+<li><strong>Entry Point</strong>: CJUL SECTION called by external routines</li>
+<li><strong>Setup Phase</strong>: DATER-ACTION-CODE set to "C"</li>
+<li><strong>Processing Phase</strong>: DATER-ROUTINE performs conversion</li>
+<li><strong>Completion</strong>: Control returns to caller with results</li>
+</ol>
+<h3>Call Chain</h3>
+<pre><code>Calling Program → CJUL → DATER-ROUTINE → [Internal Date Logic] → Return
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>Day arithmetic routines</strong> - For incrementing/decrementing dates</li>
+<li><strong>Date validation utilities</strong> - For round-trip date testing</li>
+<li><strong>Calendar calculation modules</strong> - For converting computed Julian values</li>
+<li><strong>Batch processing routines</strong> - For date normalization operations</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong>DATER-ROUTINE</strong> - Centralized date processing engine</li>
+<li><strong>Internal date calculation logic</strong> - Through DATER-ROUTINE</li>
+</ul>
+<h3>Usage Pattern</h3>
+<p>CJUL is typically used in combination with JUL for date arithmetic:</p>
+<pre><code>Original Date → JUL → Julian Number → [Add/Subtract Days] → CJUL → New Date
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Common Error Conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Cause</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid Julian Date</td>
+<td>JULIAN-DATE = 0 or negative</td>
+<td>Error flag set, NUM-DATE = 0</td>
+</tr>
+<tr>
+<td>Out of Range</td>
+<td>Julian date beyond supported range</td>
+<td>Error flag set, NUM-DATE = 0</td>
+</tr>
+<tr>
+<td>Conversion Error</td>
+<td>Internal calculation failure</td>
+<td>Error flag set, NUM-DATE = 0</td>
+</tr>
+</tbody>
+</table>
+<h3>Error Detection</h3>
+<ul>
+<li>Error status returned through DATER-ROUTINE error handling</li>
+<li>NUM-DATE set to 0 when conversion fails</li>
+<li>Original JULIAN-DATE value preserved for debugging</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Basic Julian to Date Conversion</h3>
+<pre><code class="language-cobol">MOVE 36525 TO JULIAN-DATE    * ~100 years from 1899
+PERFORM CJUL
+* Result: NUM-DATE = 19991231 (December 31, 1999)
+</code></pre>
+<h3>Date Arithmetic Usage</h3>
+<pre><code class="language-cobol">* Start with a date
+MOVE 20240315 TO NUM-DATE
+PERFORM JUL                  * Convert to Julian
+* JULIAN-DATE now contains days since 1899
+
+* Add 30 days
+ADD 30 TO JULIAN-DATE
+PERFORM CJUL                 * Convert back to date
+* NUM-DATE now contains date 30 days later
+</code></pre>
+<h3>Error Handling Example</h3>
+<pre><code class="language-cobol">MOVE 0 TO JULIAN-DATE       * Invalid Julian date
+PERFORM CJUL
+IF NUM-DATE = 0
+   DISPLAY &quot;CJUL CONVERSION ERROR&quot;
+   PERFORM ERROR-HANDLING
+END-IF
+</code></pre>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) operation - constant time conversion</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Delegation</strong>: Actual work done by optimized DATER-ROUTINE</li>
+<li><strong>Error Cost</strong>: No additional overhead for error checking</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Validation Requirements</h3>
+<ul>
+<li>Julian date must be positive and non-zero</li>
+<li>Output date must be valid calendar date</li>
+<li>Error conditions properly flagged</li>
+</ul>
+<h3>Test Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Julian Input</th>
+<th>Expected Output</th>
+<th>Result Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Date</td>
+<td>1</td>
+<td>19000101</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Leap Year</td>
+<td>365</td>
+<td>19001231</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Zero Input</td>
+<td>0</td>
+<td>0</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Negative</td>
+<td>-1</td>
+<td>0</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Large Valid</td>
+<td>45000</td>
+<td>Future date</td>
+<td>Success</td>
+</tr>
+</tbody>
+</table>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="JUL_Documentation.html">JUL Documentation</a></strong> - Reverse conversion (Calendar to Julian)</li>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE Documentation</a></strong> - Core date processing engine</li>
+<li><strong><a href="C-CALL-CJUL_Documentation.html">C-CALL-CJUL Documentation</a></strong> - Enhanced CJUL wrapper</li>
+<li><strong><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a></strong> - Complete utilities listing</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Delegation Pattern</strong> - Core logic delegated to DATER-ROUTINE</li>
+<li><strong>Action Code Pattern</strong> - Uses action codes to specify operation type</li>
+<li><strong>Simple Interface</strong> - Minimal parameters for ease of use</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Avoid changing the action code assignment</li>
+<li>Ensure JULIAN-DATE validation remains consistent</li>
+<li>Maintain compatibility with JUL utility for round-trip operations</li>
+<li>Preserve error handling behavior for dependent utilities</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

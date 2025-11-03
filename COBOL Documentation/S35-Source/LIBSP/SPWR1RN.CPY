@@ -1,0 +1,630 @@
+      * COPYMEMBER: LIBSP/SPWR1RN
+       LOAD-WR1-FILE.
+      *- - - -{ SET OVERRIDE TO A "Y" TO NOT TOUCH THE PATH AT ALL  }- -
+           IF ( WR-PATH-OVERRIDE = "Y" ) 
+              NEXT SENTENCE
+           ELSE
+      *- - - -{ SPACES IS THE DEFAULT, NO CROSSING BRANCHES }- - - - - -
+           IF ( WR-PATH-OVERRIDE = SPACES ) 
+              MOVE EXT-FILPATH-BASE        TO WR-PATH-BASE
+              MOVE EXT-FILPATH-MACHINE     TO WR-PATH-MACHINE
+              MOVE WR-PATH-FORMAT          TO WR-PATH
+           ELSE
+      *- - - -{ USE BRANCH VALUES }- - - - - - - - - - - - - - - - - - -
+           IF ( WR-PATH-OVERRIDE = "B" ) 
+              MOVE FILPATH-BASE            TO WR-PATH-BASE
+              MOVE FILPATH-MACHINE         TO WR-PATH-MACHINE
+              MOVE WR-PATH-FORMAT          TO WR-PATH.
+
+      *-----------------------------------------------------------------
+       OPEN-WR1-FILE.
+           PERFORM LOAD-WR1-FILE.
+           PERFORM OPEN-IT.
+           MOVE WR-PATH-SQL TO E-FILE.
+
+      *    IF ( SQL-CONNECT-STAT-BAD )
+      *       PERFORM SQL-CONNECT.
+
+      *-----------------------------------------------------------------
+       START-WR1-FILE.
+           PERFORM START-IT.
+           MOVE WR-PATH-SQL TO E-FILE.
+           MOVE WR1-KEY TO E-KEYX.
+
+           IF ( WR1-CURSOR-STAT-GOOD )
+              PERFORM CLOSE-WR1-FILE.
+
+           IF ( QWR1-WEND-YYYYMM = ZEROES    ) OR
+              ( QWR1-WEND-YYYYMM NOT NUMERIC )
+              MOVE WR-YYYYMM            TO QWR1-WBEG-YYYYMM
+              MOVE ALL "9"              TO QWR1-WEND-YYYYMM
+              MOVE WR-BRNO              TO QWR1-WBEG-BRNO
+              MOVE ALL "9"              TO QWR1-WEND-BRNO.
+
+           EXEC SQL
+            DECLARE WR1_CURSOR CURSOR FOR
+            SELECT WRFILE.WR_YYYYMM,
+                   WRFILE.WR_BRNO,
+                   CAST(WRFILE.WR_LTOUCH_DATE AS VARCHAR(10)),
+                   WRFILE.WR_CUR_NO_CUST,
+                   WRFILE.WR_ELM_NO_CUST,
+                   WRFILE.WR_ELY_NO_CUST,
+                   WRFILE.WR_OUTS_BALANCE,
+                   WRFILE.WR_ELM_OUTS_BALANCE,
+                   WRFILE.WR_ELY_OUTS_BALANCE,
+                   WRFILE.WR_NO_NB_1,
+                   WRFILE.WR_NO_FB_1,
+                   WRFILE.WR_NO_PB_1,
+                   WRFILE.WR_GROSS_VOLUME_1,
+                   WRFILE.WR_BSR_BONUS_1,
+                   WRFILE.WR_INTEREST_ALLOCATION_1,
+                   WRFILE.WR_OLD_SUPERVISION_1,
+                   WRFILE.WR_GEN_RESERVE_ADJ_1,
+                   WRFILE.WR_INTANGIBLE_AMORT_1,
+                   WRFILE.WR_ROBBERIES_1,
+                   WRFILE.WR_RATING_SHEET_INCOME_1,
+                   WRFILE.WR_INT_FEE_INCOME_1,
+                   WRFILE.WR_INSURANCE_INCOME_1,
+                   WRFILE.WR_RATING_SHEET_EXPENSES_1,
+                   WRFILE.WR_PERSONNEL_EXPENSE_1,
+                   WRFILE.WR_CHARGEOFF_EXPENSE_1,
+                   WRFILE.WR_NO_CHARGEOFFS_1,
+                   WRFILE.WR_RECOVERY_INCOME_1,
+                   WRFILE.WR_BAD_DEBT_INCREASE_1,
+                   WRFILE.WR_NO_NB_2,
+                   WRFILE.WR_NO_FB_2,
+                   WRFILE.WR_NO_PB_2,
+                   WRFILE.WR_GROSS_VOLUME_2,
+                   WRFILE.WR_BSR_BONUS_2,
+                   WRFILE.WR_INTEREST_ALLOCATION_2,
+                   WRFILE.WR_OLD_SUPERVISION_2,
+                   WRFILE.WR_GEN_RESERVE_ADJ_2,
+                   WRFILE.WR_INTANGIBLE_AMORT_2,
+                   WRFILE.WR_ROBBERIES_2,
+                   WRFILE.WR_RATING_SHEET_INCOME_2,
+                   WRFILE.WR_INT_FEE_INCOME_2,
+                   WRFILE.WR_INSURANCE_INCOME_2,
+                   WRFILE.WR_RATING_SHEET_EXPENSES_2,
+                   WRFILE.WR_PERSONNEL_EXPENSE_2,
+                   WRFILE.WR_CHARGEOFF_EXPENSE_2,
+                   WRFILE.WR_NO_CHARGEOFFS_2,
+                   WRFILE.WR_RECOVERY_INCOME_2,
+                   WRFILE.WR_BAD_DEBT_INCREASE_2,
+                   WRFILE.WR_NO_30_DAY_ACCTS,
+                   WRFILE.WR_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_NO_60_DAY_ACCTS,
+                   WRFILE.WR_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_NO_90_DAY_ACCTS,
+                   WRFILE.WR_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_ELM_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_ELY_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_YTD_PCT_TURNOVER,
+                   WRFILE.WR_YTD_PCT_RATE_SHT_PROFIT,
+                   WRFILE.WR_YTD_PCT_RS_INC_LEDGER,
+                   WRFILE.WR_YTD_PCT_INT_FEE_LEDGER,
+                   WRFILE.WR_YTD_PCT_INS_INC_LEDGER,
+                   WRFILE.WR_YTD_PCT_EXPENSE_LEDGER,
+                   WRFILE.WR_YTD_PCT_BAD_DEBT_LEDGER,
+                   WRFILE.WR_YTD_PCT_NF_BNK_LEDGER,
+                   WRFILE.WR_YTD_PCT_PRETAX_LEDGER,
+                   WRFILE.WR_YTD_PCT_DEBT_NF_LEDGER,
+                   WRFILE.WR_WCBC_CUR_NO_CUST,
+                   WRFILE.WR_WCBC_ELM_NO_CUST,
+                   WRFILE.WR_WCBC_ELY_NO_CUST,
+                   WRFILE.WR_WCBC_OUTS_BALANCE,
+                   WRFILE.WR_WCBC_ELM_OUTS_BAL,
+                   WRFILE.WR_WCBC_ELY_OUTS_BAL,
+                   WRFILE.WR_WCBC_NO_NB_1,
+                   WRFILE.WR_WCBC_NO_FB_1,
+                   WRFILE.WR_WCBC_NO_PB_1,
+                   WRFILE.WR_WCBC_GROSS_VOLUME_1,
+                   WRFILE.WR_WCBC_LATE_CHGS_1,
+                   WRFILE.WR_WCBC_NET_FIN_CHGS_1,
+                   WRFILE.WR_WCBC_SALES_1,
+                   WRFILE.WR_WCBC_COST_OF_SALES_1,
+                   WRFILE.WR_WCBC_EXPENSES_1,
+                   WRFILE.WR_WCBC_RECOVERY_INCOME_1,
+                   WRFILE.WR_WCBC_CHARGEOFF_EXPENSE_1,
+                   WRFILE.WR_WCBC_BAD_DEBT_BNKRPCY_1,
+                   WRFILE.WR_WCBC_NO_NB_2,
+                   WRFILE.WR_WCBC_NO_FB_2,
+                   WRFILE.WR_WCBC_NO_PB_2,
+                   WRFILE.WR_WCBC_GROSS_VOLUME_2,
+                   WRFILE.WR_WCBC_LATE_CHGS_2,
+                   WRFILE.WR_WCBC_NET_FIN_CHGS_2,
+                   WRFILE.WR_WCBC_SALES_2,
+                   WRFILE.WR_WCBC_COST_OF_SALES_2,
+                   WRFILE.WR_WCBC_EXPENSES_2,
+                   WRFILE.WR_WCBC_RECOVERY_INCOME_2,
+                   WRFILE.WR_WCBC_CHARGEOFF_EXPENSE_2,
+                   WRFILE.WR_WCBC_BAD_DEBT_BNKRPCY_2,
+                   WRFILE.WR_WCBC_NO_30_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_WCBC_NO_60_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_WCBC_NO_90_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_WCBC_ELM_AMT_90_DAYS,
+                   WRFILE.WR_WCBC_ELY_AMT_90_DAYS,
+                   WRFILE.WR_WCBC_PCT_VOLUME,
+                   WRFILE.WR_WCBC_GROSS_PROF_PCT,
+                   WRFILE.WR_LARGE_CUR_NO_CUST,
+                   WRFILE.WR_LARGE_ELM_NO_CUST,
+                   WRFILE.WR_LARGE_ELY_NO_CUST,
+                   WRFILE.WR_LARGE_OUTS_BALANCE,
+                   WRFILE.WR_LARGE_ELM_OUTS_BAL,
+                   WRFILE.WR_LARGE_ELY_OUTS_BAL,
+                   WRFILE.WR_LARGE_NO_NB_1,
+                   WRFILE.WR_LARGE_NO_FB_1,
+                   WRFILE.WR_LARGE_NO_PB_1,
+                   WRFILE.WR_LARGE_GROSS_VOLUME_1,
+                   WRFILE.WR_LARGE_NO_NB_2,
+                   WRFILE.WR_LARGE_NO_FB_2,
+                   WRFILE.WR_LARGE_NO_PB_2,
+                   WRFILE.WR_LARGE_GROSS_VOLUME_2,
+                   WRFILE.WR_LARGE_NO_30_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_LARGE_NO_60_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_LARGE_NO_90_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_LARGE_ELM_AMT_90_DAYS,
+                   WRFILE.WR_LARGE_ELY_AMT_90_DAYS,
+                   WRFILE.WR_LIFE_CLAIMS_1,
+                   WRFILE.WR_AH_CLAIMS_1,
+                   WRFILE.WR_FIRE_CLAIMS_1,
+                   WRFILE.WR_AUTO_CLAIMS_1,
+                   WRFILE.WR_UNEMP_CLAIMS_1,
+                   WRFILE.WR_AD_D_CLAIMS_1,
+                   WRFILE.WR_L_PROT_CLAIMS_1,
+                   WRFILE.WR_NF_NON_BK_CLAIMS_1,
+                   WRFILE.WR_NF_BK_CLAIMS_1,
+                   WRFILE.WR_ROAD_GARD_CLAIMS_1,
+                   WRFILE.WR_NO_LIFE_CLAIMS_1,
+                   WRFILE.WR_NO_AH_CLAIMS_1,
+                   WRFILE.WR_NO_FIRE_CLAIMS_1,
+                   WRFILE.WR_NO_AUTO_CLAIMS_1,
+                   WRFILE.WR_NO_UNEMP_CLAIMS_1,
+                   WRFILE.WR_NO_AD_D_CLAIMS_1,
+                   WRFILE.WR_NO_L_PROT_CLAIMS_1,
+                   WRFILE.WR_NO_NF_NON_BK_CLAIMS_1,
+                   WRFILE.WR_NO_NF_BK_CLAIMS_1,
+                   WRFILE.WR_NO_ROAD_GARD_CLAIMS_1,
+                   WRFILE.WR_LIFE_PREMS_1,
+                   WRFILE.WR_AH_PREMS_1,
+                   WRFILE.WR_FIRE_PREMS_1,
+                   WRFILE.WR_AUTO_PREMS_1,
+                   WRFILE.WR_UNEMP_PREMS_1,
+                   WRFILE.WR_AD_D_PREMS_1,
+                   WRFILE.WR_L_PROT_PREMS_1,
+                   WRFILE.WR_NON_FILE_PREMS_1,
+                   WRFILE.WR_ROAD_GARD_PREMS_1,
+                   WRFILE.WR_NO_LIFE_PREMS_1,
+                   WRFILE.WR_NO_AH_PREMS_1,
+                   WRFILE.WR_NO_FIRE_PREMS_1,
+                   WRFILE.WR_NO_AUTO_PREMS_1,
+                   WRFILE.WR_NO_UNEMP_PREMS_1,
+                   WRFILE.WR_NO_AD_D_PREMS_1,
+                   WRFILE.WR_NO_L_PROT_PREMS_1,
+                   WRFILE.WR_NO_NON_FILE_PREMS_1,
+                   WRFILE.WR_NO_ROAD_GARD_PREMS_1,
+                   WRFILE.WR_LIFE_REFS_1,
+                   WRFILE.WR_AH_REFS_1,
+                   WRFILE.WR_FIRE_REFS_1,
+                   WRFILE.WR_AUTO_REFS_1,
+                   WRFILE.WR_UNEMP_REFS_1,
+                   WRFILE.WR_AD_D_REFS_1,
+                   WRFILE.WR_L_PROT_REFS_1,
+                   WRFILE.WR_NON_FILE_REFS_1,
+                   WRFILE.WR_ROAD_GARD_REFS_1,
+                   WRFILE.WR_NF_RECOVERIES_1,
+                   WRFILE.WR_LIFE_CLAIMS_2,
+                   WRFILE.WR_AH_CLAIMS_2,
+                   WRFILE.WR_FIRE_CLAIMS_2,
+                   WRFILE.WR_AUTO_CLAIMS_2,
+                   WRFILE.WR_UNEMP_CLAIMS_2,
+                   WRFILE.WR_AD_D_CLAIMS_2,
+                   WRFILE.WR_L_PROT_CLAIMS_2,
+                   WRFILE.WR_NF_NON_BK_CLAIMS_2,
+                   WRFILE.WR_NF_BK_CLAIMS_2,
+                   WRFILE.WR_ROAD_GARD_CLAIMS_2,
+                   WRFILE.WR_NO_LIFE_CLAIMS_2,
+                   WRFILE.WR_NO_AH_CLAIMS_2,
+                   WRFILE.WR_NO_FIRE_CLAIMS_2,
+                   WRFILE.WR_NO_AUTO_CLAIMS_2,
+                   WRFILE.WR_NO_UNEMP_CLAIMS_2,
+                   WRFILE.WR_NO_AD_D_CLAIMS_2,
+                   WRFILE.WR_NO_L_PROT_CLAIMS_2,
+                   WRFILE.WR_NO_NF_NON_BK_CLAIMS_2,
+                   WRFILE.WR_NO_NF_BK_CLAIMS_2,
+                   WRFILE.WR_NO_ROAD_GARD_CLAIMS_2,
+                   WRFILE.WR_LIFE_PREMS_2,
+                   WRFILE.WR_AH_PREMS_2,
+                   WRFILE.WR_FIRE_PREMS_2,
+                   WRFILE.WR_AUTO_PREMS_2,
+                   WRFILE.WR_UNEMP_PREMS_2,
+                   WRFILE.WR_AD_D_PREMS_2,
+                   WRFILE.WR_L_PROT_PREMS_2,
+                   WRFILE.WR_NON_FILE_PREMS_2,
+                   WRFILE.WR_ROAD_GARD_PREMS_2,
+                   WRFILE.WR_NO_LIFE_PREMS_2,
+                   WRFILE.WR_NO_AH_PREMS_2,
+                   WRFILE.WR_NO_FIRE_PREMS_2,
+                   WRFILE.WR_NO_AUTO_PREMS_2,
+                   WRFILE.WR_NO_UNEMP_PREMS_2,
+                   WRFILE.WR_NO_AD_D_PREMS_2,
+                   WRFILE.WR_NO_L_PROT_PREMS_2,
+                   WRFILE.WR_NO_NON_FILE_PREMS_2,
+                   WRFILE.WR_NO_ROAD_GARD_PREMS_2,
+                   WRFILE.WR_LIFE_REFS_2,
+                   WRFILE.WR_AH_REFS_2,
+                   WRFILE.WR_FIRE_REFS_2,
+                   WRFILE.WR_AUTO_REFS_2,
+                   WRFILE.WR_UNEMP_REFS_2,
+                   WRFILE.WR_AD_D_REFS_2,
+                   WRFILE.WR_L_PROT_REFS_2,
+                   WRFILE.WR_NON_FILE_REFS_2,
+                   WRFILE.WR_ROAD_GARD_REFS_2,
+                   WRFILE.WR_NF_RECOVERIES_2,
+                   WRFILE.WR_NONFILE_ENDING_BALANCE,
+                   WRFILE.WR_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_WCBC_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_WCBC_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_LARGE_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_LARGE_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_WCBC_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_LARGE_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_CASHIER_BONUS,
+                   WRFILE.WR_ASST_MGR_BONUS,
+                   WRFILE.WR_MGR_BONUS,
+                   WRFILE.WR_LOTS_NF_CLAIMS_1,
+                   WRFILE.WR_LOTS_NO_NF_CLAIMS_1,
+                   WRFILE.WR_LOTS_NON_FILE_PREMS_1,
+                   WRFILE.WR_LOTS_NO_NON_FILE_PREMS_1,
+                   WRFILE.WR_LOTS_NF_RECOVERIES_1,
+                   WRFILE.WR_LOTS_NF_CLAIMS_2,
+                   WRFILE.WR_LOTS_NO_NF_CLAIMS_2,
+                   WRFILE.WR_LOTS_NON_FILE_PREMS_2,
+                   WRFILE.WR_LOTS_NO_NON_FILE_PREMS_2,
+                   WRFILE.WR_LOTS_NF_RECOVERIES_2,
+                   WRFILE.WR_PRETAX_PROFIT_1,
+                   WRFILE.WR_SUPERVISION_1,
+                   WRFILE.WR_PRETAX_PROFIT_2,
+                   WRFILE.WR_SUPERVISION_2,
+                   WRFILE.WR_MGR_PENALTY_FG,
+                   WRFILE.WR_NO_TAX_RETURNS_1,
+                   WRFILE.WR_NO_TAX_RETURNS_2
+            FROM DBO.WRFILE
+            WHERE WRFILE.WR_YYYYMM >= :QWR1-WBEG-YYYYMM
+              AND WRFILE.WR_BRNO >= :QWR1-WBEG-BRNO
+              AND WRFILE.WR_YYYYMM <= :QWR1-WEND-YYYYMM
+              AND WRFILE.WR_BRNO <= :QWR1-WEND-BRNO
+            ORDER BY WRFILE.WR_YYYYMM,
+                     WRFILE.WR_BRNO
+           END-EXEC.
+
+           EXEC SQL
+               OPEN WR1_CURSOR
+           END-EXEC.
+
+           PERFORM SQL-IO-VALIDATION.
+
+           MOVE ZEROES TO QWR1-WBEG-YYYYMM
+                          QWR1-WEND-YYYYMM
+                          QWR1-WEND-BRNO
+                          QWR1-WEND-BRNO.
+
+           MOVE STAT---GOOD TO WR1-CURSOR-STAT.
+
+      *-----------------------------------------------------------------
+       READ-WR1-FILE.
+           PERFORM READ-IT.
+           MOVE WR-PATH-SQL TO E-FILE.
+           MOVE WR1-KEY TO E-KEYX.
+           INITIALIZE QWR-REC.
+
+           MOVE WR-YYYYMM   TO QWR-YYYYMM.
+           MOVE WR-BRNO     TO QWR-BRNO.
+
+           EXEC SQL
+            SELECT WRFILE.WR_YYYYMM,
+                   WRFILE.WR_BRNO,
+                   CAST(WRFILE.WR_LTOUCH_DATE AS VARCHAR(10)),
+                   WRFILE.WR_CUR_NO_CUST,
+                   WRFILE.WR_ELM_NO_CUST,
+                   WRFILE.WR_ELY_NO_CUST,
+                   WRFILE.WR_OUTS_BALANCE,
+                   WRFILE.WR_ELM_OUTS_BALANCE,
+                   WRFILE.WR_ELY_OUTS_BALANCE,
+                   WRFILE.WR_NO_NB_1,
+                   WRFILE.WR_NO_FB_1,
+                   WRFILE.WR_NO_PB_1,
+                   WRFILE.WR_GROSS_VOLUME_1,
+                   WRFILE.WR_BSR_BONUS_1,
+                   WRFILE.WR_INTEREST_ALLOCATION_1,
+                   WRFILE.WR_OLD_SUPERVISION_1,
+                   WRFILE.WR_GEN_RESERVE_ADJ_1,
+                   WRFILE.WR_INTANGIBLE_AMORT_1,
+                   WRFILE.WR_ROBBERIES_1,
+                   WRFILE.WR_RATING_SHEET_INCOME_1,
+                   WRFILE.WR_INT_FEE_INCOME_1,
+                   WRFILE.WR_INSURANCE_INCOME_1,
+                   WRFILE.WR_RATING_SHEET_EXPENSES_1,
+                   WRFILE.WR_PERSONNEL_EXPENSE_1,
+                   WRFILE.WR_CHARGEOFF_EXPENSE_1,
+                   WRFILE.WR_NO_CHARGEOFFS_1,
+                   WRFILE.WR_RECOVERY_INCOME_1,
+                   WRFILE.WR_BAD_DEBT_INCREASE_1,
+                   WRFILE.WR_NO_NB_2,
+                   WRFILE.WR_NO_FB_2,
+                   WRFILE.WR_NO_PB_2,
+                   WRFILE.WR_GROSS_VOLUME_2,
+                   WRFILE.WR_BSR_BONUS_2,
+                   WRFILE.WR_INTEREST_ALLOCATION_2,
+                   WRFILE.WR_OLD_SUPERVISION_2,
+                   WRFILE.WR_GEN_RESERVE_ADJ_2,
+                   WRFILE.WR_INTANGIBLE_AMORT_2,
+                   WRFILE.WR_ROBBERIES_2,
+                   WRFILE.WR_RATING_SHEET_INCOME_2,
+                   WRFILE.WR_INT_FEE_INCOME_2,
+                   WRFILE.WR_INSURANCE_INCOME_2,
+                   WRFILE.WR_RATING_SHEET_EXPENSES_2,
+                   WRFILE.WR_PERSONNEL_EXPENSE_2,
+                   WRFILE.WR_CHARGEOFF_EXPENSE_2,
+                   WRFILE.WR_NO_CHARGEOFFS_2,
+                   WRFILE.WR_RECOVERY_INCOME_2,
+                   WRFILE.WR_BAD_DEBT_INCREASE_2,
+                   WRFILE.WR_NO_30_DAY_ACCTS,
+                   WRFILE.WR_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_NO_60_DAY_ACCTS,
+                   WRFILE.WR_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_NO_90_DAY_ACCTS,
+                   WRFILE.WR_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_ELM_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_ELY_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_YTD_PCT_TURNOVER,
+                   WRFILE.WR_YTD_PCT_RATE_SHT_PROFIT,
+                   WRFILE.WR_YTD_PCT_RS_INC_LEDGER,
+                   WRFILE.WR_YTD_PCT_INT_FEE_LEDGER,
+                   WRFILE.WR_YTD_PCT_INS_INC_LEDGER,
+                   WRFILE.WR_YTD_PCT_EXPENSE_LEDGER,
+                   WRFILE.WR_YTD_PCT_BAD_DEBT_LEDGER,
+                   WRFILE.WR_YTD_PCT_NF_BNK_LEDGER,
+                   WRFILE.WR_YTD_PCT_PRETAX_LEDGER,
+                   WRFILE.WR_YTD_PCT_DEBT_NF_LEDGER,
+                   WRFILE.WR_WCBC_CUR_NO_CUST,
+                   WRFILE.WR_WCBC_ELM_NO_CUST,
+                   WRFILE.WR_WCBC_ELY_NO_CUST,
+                   WRFILE.WR_WCBC_OUTS_BALANCE,
+                   WRFILE.WR_WCBC_ELM_OUTS_BAL,
+                   WRFILE.WR_WCBC_ELY_OUTS_BAL,
+                   WRFILE.WR_WCBC_NO_NB_1,
+                   WRFILE.WR_WCBC_NO_FB_1,
+                   WRFILE.WR_WCBC_NO_PB_1,
+                   WRFILE.WR_WCBC_GROSS_VOLUME_1,
+                   WRFILE.WR_WCBC_LATE_CHGS_1,
+                   WRFILE.WR_WCBC_NET_FIN_CHGS_1,
+                   WRFILE.WR_WCBC_SALES_1,
+                   WRFILE.WR_WCBC_COST_OF_SALES_1,
+                   WRFILE.WR_WCBC_EXPENSES_1,
+                   WRFILE.WR_WCBC_RECOVERY_INCOME_1,
+                   WRFILE.WR_WCBC_CHARGEOFF_EXPENSE_1,
+                   WRFILE.WR_WCBC_BAD_DEBT_BNKRPCY_1,
+                   WRFILE.WR_WCBC_NO_NB_2,
+                   WRFILE.WR_WCBC_NO_FB_2,
+                   WRFILE.WR_WCBC_NO_PB_2,
+                   WRFILE.WR_WCBC_GROSS_VOLUME_2,
+                   WRFILE.WR_WCBC_LATE_CHGS_2,
+                   WRFILE.WR_WCBC_NET_FIN_CHGS_2,
+                   WRFILE.WR_WCBC_SALES_2,
+                   WRFILE.WR_WCBC_COST_OF_SALES_2,
+                   WRFILE.WR_WCBC_EXPENSES_2,
+                   WRFILE.WR_WCBC_RECOVERY_INCOME_2,
+                   WRFILE.WR_WCBC_CHARGEOFF_EXPENSE_2,
+                   WRFILE.WR_WCBC_BAD_DEBT_BNKRPCY_2,
+                   WRFILE.WR_WCBC_NO_30_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_WCBC_NO_60_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_WCBC_NO_90_DAY_ACCTS,
+                   WRFILE.WR_WCBC_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_WCBC_ELM_AMT_90_DAYS,
+                   WRFILE.WR_WCBC_ELY_AMT_90_DAYS,
+                   WRFILE.WR_WCBC_PCT_VOLUME,
+                   WRFILE.WR_WCBC_GROSS_PROF_PCT,
+                   WRFILE.WR_LARGE_CUR_NO_CUST,
+                   WRFILE.WR_LARGE_ELM_NO_CUST,
+                   WRFILE.WR_LARGE_ELY_NO_CUST,
+                   WRFILE.WR_LARGE_OUTS_BALANCE,
+                   WRFILE.WR_LARGE_ELM_OUTS_BAL,
+                   WRFILE.WR_LARGE_ELY_OUTS_BAL,
+                   WRFILE.WR_LARGE_NO_NB_1,
+                   WRFILE.WR_LARGE_NO_FB_1,
+                   WRFILE.WR_LARGE_NO_PB_1,
+                   WRFILE.WR_LARGE_GROSS_VOLUME_1,
+                   WRFILE.WR_LARGE_NO_NB_2,
+                   WRFILE.WR_LARGE_NO_FB_2,
+                   WRFILE.WR_LARGE_NO_PB_2,
+                   WRFILE.WR_LARGE_GROSS_VOLUME_2,
+                   WRFILE.WR_LARGE_NO_30_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_30_DAY_ACCTS,
+                   WRFILE.WR_LARGE_NO_60_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_60_DAY_ACCTS,
+                   WRFILE.WR_LARGE_NO_90_DAY_ACCTS,
+                   WRFILE.WR_LARGE_AMT_90_DAY_ACCTS,
+                   WRFILE.WR_LARGE_ELM_AMT_90_DAYS,
+                   WRFILE.WR_LARGE_ELY_AMT_90_DAYS,
+                   WRFILE.WR_LIFE_CLAIMS_1,
+                   WRFILE.WR_AH_CLAIMS_1,
+                   WRFILE.WR_FIRE_CLAIMS_1,
+                   WRFILE.WR_AUTO_CLAIMS_1,
+                   WRFILE.WR_UNEMP_CLAIMS_1,
+                   WRFILE.WR_AD_D_CLAIMS_1,
+                   WRFILE.WR_L_PROT_CLAIMS_1,
+                   WRFILE.WR_NF_NON_BK_CLAIMS_1,
+                   WRFILE.WR_NF_BK_CLAIMS_1,
+                   WRFILE.WR_ROAD_GARD_CLAIMS_1,
+                   WRFILE.WR_NO_LIFE_CLAIMS_1,
+                   WRFILE.WR_NO_AH_CLAIMS_1,
+                   WRFILE.WR_NO_FIRE_CLAIMS_1,
+                   WRFILE.WR_NO_AUTO_CLAIMS_1,
+                   WRFILE.WR_NO_UNEMP_CLAIMS_1,
+                   WRFILE.WR_NO_AD_D_CLAIMS_1,
+                   WRFILE.WR_NO_L_PROT_CLAIMS_1,
+                   WRFILE.WR_NO_NF_NON_BK_CLAIMS_1,
+                   WRFILE.WR_NO_NF_BK_CLAIMS_1,
+                   WRFILE.WR_NO_ROAD_GARD_CLAIMS_1,
+                   WRFILE.WR_LIFE_PREMS_1,
+                   WRFILE.WR_AH_PREMS_1,
+                   WRFILE.WR_FIRE_PREMS_1,
+                   WRFILE.WR_AUTO_PREMS_1,
+                   WRFILE.WR_UNEMP_PREMS_1,
+                   WRFILE.WR_AD_D_PREMS_1,
+                   WRFILE.WR_L_PROT_PREMS_1,
+                   WRFILE.WR_NON_FILE_PREMS_1,
+                   WRFILE.WR_ROAD_GARD_PREMS_1,
+                   WRFILE.WR_NO_LIFE_PREMS_1,
+                   WRFILE.WR_NO_AH_PREMS_1,
+                   WRFILE.WR_NO_FIRE_PREMS_1,
+                   WRFILE.WR_NO_AUTO_PREMS_1,
+                   WRFILE.WR_NO_UNEMP_PREMS_1,
+                   WRFILE.WR_NO_AD_D_PREMS_1,
+                   WRFILE.WR_NO_L_PROT_PREMS_1,
+                   WRFILE.WR_NO_NON_FILE_PREMS_1,
+                   WRFILE.WR_NO_ROAD_GARD_PREMS_1,
+                   WRFILE.WR_LIFE_REFS_1,
+                   WRFILE.WR_AH_REFS_1,
+                   WRFILE.WR_FIRE_REFS_1,
+                   WRFILE.WR_AUTO_REFS_1,
+                   WRFILE.WR_UNEMP_REFS_1,
+                   WRFILE.WR_AD_D_REFS_1,
+                   WRFILE.WR_L_PROT_REFS_1,
+                   WRFILE.WR_NON_FILE_REFS_1,
+                   WRFILE.WR_ROAD_GARD_REFS_1,
+                   WRFILE.WR_NF_RECOVERIES_1,
+                   WRFILE.WR_LIFE_CLAIMS_2,
+                   WRFILE.WR_AH_CLAIMS_2,
+                   WRFILE.WR_FIRE_CLAIMS_2,
+                   WRFILE.WR_AUTO_CLAIMS_2,
+                   WRFILE.WR_UNEMP_CLAIMS_2,
+                   WRFILE.WR_AD_D_CLAIMS_2,
+                   WRFILE.WR_L_PROT_CLAIMS_2,
+                   WRFILE.WR_NF_NON_BK_CLAIMS_2,
+                   WRFILE.WR_NF_BK_CLAIMS_2,
+                   WRFILE.WR_ROAD_GARD_CLAIMS_2,
+                   WRFILE.WR_NO_LIFE_CLAIMS_2,
+                   WRFILE.WR_NO_AH_CLAIMS_2,
+                   WRFILE.WR_NO_FIRE_CLAIMS_2,
+                   WRFILE.WR_NO_AUTO_CLAIMS_2,
+                   WRFILE.WR_NO_UNEMP_CLAIMS_2,
+                   WRFILE.WR_NO_AD_D_CLAIMS_2,
+                   WRFILE.WR_NO_L_PROT_CLAIMS_2,
+                   WRFILE.WR_NO_NF_NON_BK_CLAIMS_2,
+                   WRFILE.WR_NO_NF_BK_CLAIMS_2,
+                   WRFILE.WR_NO_ROAD_GARD_CLAIMS_2,
+                   WRFILE.WR_LIFE_PREMS_2,
+                   WRFILE.WR_AH_PREMS_2,
+                   WRFILE.WR_FIRE_PREMS_2,
+                   WRFILE.WR_AUTO_PREMS_2,
+                   WRFILE.WR_UNEMP_PREMS_2,
+                   WRFILE.WR_AD_D_PREMS_2,
+                   WRFILE.WR_L_PROT_PREMS_2,
+                   WRFILE.WR_NON_FILE_PREMS_2,
+                   WRFILE.WR_ROAD_GARD_PREMS_2,
+                   WRFILE.WR_NO_LIFE_PREMS_2,
+                   WRFILE.WR_NO_AH_PREMS_2,
+                   WRFILE.WR_NO_FIRE_PREMS_2,
+                   WRFILE.WR_NO_AUTO_PREMS_2,
+                   WRFILE.WR_NO_UNEMP_PREMS_2,
+                   WRFILE.WR_NO_AD_D_PREMS_2,
+                   WRFILE.WR_NO_L_PROT_PREMS_2,
+                   WRFILE.WR_NO_NON_FILE_PREMS_2,
+                   WRFILE.WR_NO_ROAD_GARD_PREMS_2,
+                   WRFILE.WR_LIFE_REFS_2,
+                   WRFILE.WR_AH_REFS_2,
+                   WRFILE.WR_FIRE_REFS_2,
+                   WRFILE.WR_AUTO_REFS_2,
+                   WRFILE.WR_UNEMP_REFS_2,
+                   WRFILE.WR_AD_D_REFS_2,
+                   WRFILE.WR_L_PROT_REFS_2,
+                   WRFILE.WR_NON_FILE_REFS_2,
+                   WRFILE.WR_ROAD_GARD_REFS_2,
+                   WRFILE.WR_NF_RECOVERIES_2,
+                   WRFILE.WR_NONFILE_ENDING_BALANCE,
+                   WRFILE.WR_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_WCBC_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_WCBC_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_LARGE_NO_CUST_1_YR_AGO,
+                   WRFILE.WR_LARGE_OUTS_BAL_1_YR_AGO,
+                   WRFILE.WR_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_WCBC_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_LARGE_CUR_NO_CONT_SLOW,
+                   WRFILE.WR_CASHIER_BONUS,
+                   WRFILE.WR_ASST_MGR_BONUS,
+                   WRFILE.WR_MGR_BONUS,
+                   WRFILE.WR_LOTS_NF_CLAIMS_1,
+                   WRFILE.WR_LOTS_NO_NF_CLAIMS_1,
+                   WRFILE.WR_LOTS_NON_FILE_PREMS_1,
+                   WRFILE.WR_LOTS_NO_NON_FILE_PREMS_1,
+                   WRFILE.WR_LOTS_NF_RECOVERIES_1,
+                   WRFILE.WR_LOTS_NF_CLAIMS_2,
+                   WRFILE.WR_LOTS_NO_NF_CLAIMS_2,
+                   WRFILE.WR_LOTS_NON_FILE_PREMS_2,
+                   WRFILE.WR_LOTS_NO_NON_FILE_PREMS_2,
+                   WRFILE.WR_LOTS_NF_RECOVERIES_2,
+                   WRFILE.WR_PRETAX_PROFIT_1,
+                   WRFILE.WR_SUPERVISION_1,
+                   WRFILE.WR_PRETAX_PROFIT_2,
+                   WRFILE.WR_SUPERVISION_2,
+                   WRFILE.WR_MGR_PENALTY_FG,
+                   WRFILE.WR_NO_TAX_RETURNS_1,
+                   WRFILE.WR_NO_TAX_RETURNS_2
+            INTO :QWR-REC
+            FROM DBO.WRFILE
+            WHERE WRFILE.WR_YYYYMM = :QWR-YYYYMM
+              AND WRFILE.WR_BRNO = :QWR-BRNO
+           END-EXEC.
+
+           PERFORM SQL-IO-VALIDATION.
+
+           IF ( IO-FG = 8 )     *>LOCKED
+              GO TO READ-WR1-FILE.
+
+           IF ( IO-FG = 0 )
+              PERFORM GET-WR-FIELDS.
+
+      *-----------------------------------------------------------------
+       READ-WR1-FILE-NEXT.
+           PERFORM READ-IT.
+           MOVE WR-PATH-SQL TO E-FILE.
+           MOVE WR1-KEY TO E-KEYX.
+           INITIALIZE QWR-REC.
+
+           IF ( WR1-CURSOR-STAT-GOOD )
+              EXEC SQL
+                   FETCH WR1_CURSOR INTO :QWR-REC
+              END-EXEC
+           ELSE
+              MOVE 9        TO SQLCODE
+              MOVE "RDNXCR" TO SQLSTATE.
+
+           PERFORM SQL-IO-VALIDATION.
+
+           IF ( IO-FG = 8 )     *>LOCKED
+              GO TO READ-WR1-FILE-NEXT.
+
+           IF ( IO-FG = 0 )
+              PERFORM GET-WR-FIELDS.
+
+      *-----------------------------------------------------------------
+       CLOSE-WR1-FILE.
+           PERFORM CLOSE-IT.
+           IF ( WR1-CURSOR-STAT-GOOD )
+              EXEC SQL
+                   CLOSE WR1_CURSOR
+              END-EXEC
+              MOVE STAT---BAD TO WR1-CURSOR-STAT.
+

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSEA
+           SELECT EA-FILE ASSIGN TO EA-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY EA1-KEY
+                  FILE STATUS FILE-STAT.

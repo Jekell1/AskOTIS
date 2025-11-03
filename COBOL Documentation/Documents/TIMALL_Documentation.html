@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMALL COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIMALL COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="timall-cobol-utility-documentation">TIMALL COBOL Utility Documentation</h1>
+<hr />
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2025-07-28<br />
+<strong>Program ID:</strong> TIMALL<br />
+<strong>Date Written:</strong> See Revision History</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagram">Program Flow Diagram</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+<li><a href="#revision-history">Revision History</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p><strong>TIMALL</strong> is a COBOL routine in <code>APIPAY_Inlined.CBL</code> that calculates the elapsed time between two dates, returning the result in days, months, and remaining days. It is a foundational date-difference utility used by other routines (such as TIMUPER, TIM999, TIM360, etc.) to provide consistent date calculations for business logic, including loan processing, payment schedules, and interest calculations. TIMALL is designed to be robust, handling invalid or zero dates gracefully and preserving input data integrity.</p>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><strong>NUM-DATE</strong>: Start date (YYYYMMDD)</li>
+<li><strong>SYS-DATE</strong>: End date (YYYYMMDD)</li>
+<li><strong>DATER-UNITPER-INFO</strong>: Unit period calculation context (saved/restored)</li>
+<li><strong>NDTE-DATE</strong>: Internal date field (saved/restored)</li>
+</ul>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><strong>ELAPSED-DAYS</strong>: Total elapsed days</li>
+<li><strong>ELAPSED-MONTHS</strong>: Total elapsed months</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days after full months</li>
+<li><strong>ELAPSED-RESULTS</strong>: Comparison result (e.g., LT, GT, EQ, LE, GE, GR)</li>
+</ul>
+<hr />
+<h2 id="program-flow-diagram">Program Flow Diagram</h2>
+<div class="mermaid">graph TD
+    A[Input NUM-DATE, SYS-DATE] --> B{Are dates zero?}
+    B -- Yes --> C[Set outputs to zero/spaces]
+    B -- No --> D[Save NDTE-DATE and DATER-UNITPER-INFO]
+    D --> E[Set DATER-UNITPER-CD = 'M', DATER-UNITPER-FREQ = 1, DATER-ACTION-CODE = 'E']
+    E --> F[PERFORM DATER-ROUTINE]
+    F --> G[Restore DATER-UNITPER-INFO and NDTE-DATE]
+    G --> H[Output ELAPSED-DAYS, ELAPSED-MONTHS, ELAPSED-REM, ELAPSED-RESULTS]
+</div>
+<hr />
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<p>TIMALL is called as a subroutine within batch or sequential processes. Its execution is atomic and does not span multiple steps, so a Gantt chart is not required. For batch context, see the parent program (e.g., APIPAY).</p>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>TIMALL SECTION</strong>: Main entry point. Checks for zero dates, sets outputs to zero if so. Otherwise, saves NDTE-DATE and DATER-UNITPER-INFO, sets up calculation context, calls DATER-ROUTINE, restores saved values.</li>
+<li><strong>DATER-ROUTINE</strong>: Shared date calculation logic (not detailed here; see referenced programs).</li>
+</ul>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">flowchart LR
+    NUM_DATE[NUM-DATE] --> TIMALL
+    SYS_DATE[SYS-DATE] --> TIMALL
+    TIMALL -->|calls| DATER_ROUTINE
+    DATER_ROUTINE -->|returns| ELAPSED_DAYS
+    DATER_ROUTINE -->|returns| ELAPSED_MONTHS
+    DATER_ROUTINE -->|returns| ELAPSED_REM
+    TIMALL -->|restores| NDTE_DATE
+    TIMALL -->|restores| DATER_UNITPER_INFO
+</div>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><strong>DATER-ROUTINE</strong>: Shared date calculation logic (internal to APIPAY_Inlined.CBL)</li>
+<li><strong>TIMUPER, TIM999, TIM360, TIM365, etc.</strong>: Other date calculation routines in the same file that use TIMALL</li>
+</ul>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>If either NUM-DATE or SYS-DATE is zero, all outputs are set to zero or spaces.</li>
+<li>The routine is designed to avoid side effects by saving and restoring NDTE-DATE and DATER-UNITPER-INFO.</li>
+<li>Any errors in DATER-ROUTINE propagate to the outputs.</li>
+</ul>
+<hr />
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid or zero dates: Outputs set to zero/spaces.</li>
+<li>Unexpected changes to NDTE-DATE or DATER-UNITPER-INFO: Prevented by save/restore logic.</li>
+</ul>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures</strong>: Uses working-storage fields for dates, unit period codes, and results.</li>
+<li><strong>File Handling</strong>: None (pure calculation routine).</li>
+<li><strong>Key Algorithms</strong>: Date difference calculation via DATER-ROUTINE, with context setup for month-based calculations.</li>
+</ul>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by TIMUPER, TIM999, TIM360, TIM365, and other routines for date calculations.</li>
+<li>Can be called wherever elapsed days/months are needed.</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files. Relies on internal data structures and DATER-ROUTINE.</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    TIMALL --> DATER-ROUTINE
+</div>
+<hr />
+<h2 id="revision-history">Revision History</h2>
+<ul>
+<li>1987-03-24: Initial logic for TIM999</li>
+<li>1995-10-17: Added TIM362 (Alabama), TIM361 (NJ)</li>
+<li>2013-02-13: Added logic to preserve NDTE-DATE and DATER-UNITPER-INFO</li>
+<li>2013-02-18: Added test for zero dates to mimic legacy behavior</li>
+</ul>
+<hr />
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="TIMUPER_Documentation.html">TIMUPER_Documentation.md</a>: Unit period calculation routine</li>
+<li><a href="APIPAY_Documentation.html">APIPAY_Documentation.md</a>: Main program using TIMALL</li>
+</ul>
+<hr />
+<p><em>This documentation was generated for wiki use and non-COBOL readers. For questions, see the APIPAY documentation or contact the system maintainer.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

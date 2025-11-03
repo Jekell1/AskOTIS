@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Calculation Utilities - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > Date Calculation Utilities
+    </div>
+
+    <div class="header">
+        <h1>Date Calculation Utilities</h1>
+        <div class="meta">
+            <strong>Utilities:</strong> C-CALL-NEWDATE, C-INCREMENT-PERIODS, GETENV<br>
+            <strong>Purpose:</strong> Date Calculation and Environment Utilities<br>
+            <strong>Type:</strong> Copy Member Utilities<br>
+            <strong>Used By:</strong> Multiple loan processing programs<br>
+            <strong>File Locations:</strong> APIPAY/*.cpy, LIBGB/*.cpy<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#c-call-newdate">C-CALL-NEWDATE</a></li>
+                <li><a href="#c-increment-periods">C-INCREMENT-PERIODS</a></li>
+                <li><a href="#getenv">GETENV</a></li>
+                <li><a href="#usage-examples">Usage Examples</a></li>
+                <li><a href="#technical-details">Technical Details</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>This documentation covers the key utility programs and copy members used by LONPFC and other loan processing programs for date calculations and environment management.</p>
+            
+            <h3>Utility Categories</h3>
+            <ul>
+                <li><strong>Date Validation:</strong> Ensures dates are valid and properly formatted</li>
+                <li><strong>Date Arithmetic:</strong> Performs date calculations and period increments</li>
+                <li><strong>Environment Access:</strong> Retrieves system environment variables</li>
+                <li><strong>Leap Year Handling:</strong> Manages leap year calculations and validations</li>
+            </ul>
+        </section>
+
+        <section id="c-call-newdate">
+            <h2>C-CALL-NEWDATE</h2>
+            <p><strong>C-CALL-NEWDATE</strong> is a date validation utility that returns a valid date by adjusting the day back to the last valid day of the month if necessary.</p>
+            
+            <h3>Functionality</h3>
+            <table>
+                <tr>
+                    <th>Input</th>
+                    <th>Output</th>
+                    <th>Process</th>
+                </tr>
+                <tr>
+                    <td>NDTE-DATE-WORK (CCYYMMDD)</td>
+                    <td>NDTE-DATE (CCYYMMDD)</td>
+                    <td>Validates and adjusts date to last valid day of month</td>
+                </tr>
+            </table>
+
+            <h3>Processing Logic</h3>
+            <ol>
+                <li><strong>Input Validation:</strong> Receives date in CCYYMMDD format</li>
+                <li><strong>Leap Year Check:</strong> Determines if the year is a leap year</li>
+                <li><strong>Month Validation:</strong> Ensures month is between 1 and 12</li>
+                <li><strong>Day Adjustment:</strong> Adjusts day to last valid day of month if necessary</li>
+                <li><strong>February Handling:</strong> Special handling for February (28/29 days)</li>
+                <li><strong>Output Generation:</strong> Returns validated date</li>
+            </ol>
+
+            <h3>Special Features</h3>
+            <ul>
+                <li><strong>Leap Year Support:</strong> Properly handles February 29th in leap years</li>
+                <li><strong>Month-End Adjustment:</strong> Automatically adjusts invalid days to month end</li>
+                <li><strong>4-Digit Year:</strong> Updated to handle 4-digit year format (CCYY)</li>
+                <li><strong>Day Table Lookup:</strong> Uses DYTOM table for days per month</li>
+            </ul>
+
+            <h3>Usage Example</h3>
+            <pre><code>MOVE 20240231 TO NDTE-DATE-WORK    * Invalid date (Feb 31)
+PERFORM C-CALL-NEWDATE
+DISPLAY NDTE-DATE                  * Returns 20240229 (leap year)</code></pre>
+
+            <div class="note">
+                <p><strong>Update Note:</strong> The routine was updated by MJD to support 4-digit years and removed obsolete 2-digit year conversion logic.</p>
+            </div>
+        </section>
+
+        <section id="c-increment-periods">
+            <h2>C-INCREMENT-PERIODS</h2>
+            <p><strong>C-INCREMENT-PERIODS</strong> performs date arithmetic by adding specified periods (months, days, etc.) to a given date.</p>
+            
+            <h3>Functionality</h3>
+            <table>
+                <tr>
+                    <th>Operation</th>
+                    <th>Description</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td>Month Increment</td>
+                    <td>Adds specified number of months to a date</td>
+                    <td>Payment due date calculations</td>
+                </tr>
+                <tr>
+                    <td>Day Increment</td>
+                    <td>Adds specified number of days to a date</td>
+                    <td>Aging and grace period calculations</td>
+                </tr>
+                <tr>
+                    <td>Period Calculations</td>
+                    <td>Handles complex period arithmetic</td>
+                    <td>Loan term and maturity calculations</td>
+                </tr>
+            </table>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>Month-End Handling:</strong> Properly handles month-end date arithmetic</li>
+                <li><strong>Leap Year Awareness:</strong> Accounts for leap years in calculations</li>
+                <li><strong>Business Day Logic:</strong> Can incorporate business day considerations</li>
+                <li><strong>Multiple Period Types:</strong> Supports various period increments</li>
+            </ul>
+
+            <h3>Common Usage Patterns</h3>
+            <ul>
+                <li><strong>Payment Scheduling:</strong> Calculate next payment due dates</li>
+                <li><strong>Maturity Calculations:</strong> Determine loan maturity dates</li>
+                <li><strong>Aging Analysis:</strong> Calculate account aging periods</li>
+                <li><strong>Deferment Processing:</strong> Calculate deferred payment dates</li>
+            </ul>
+        </section>
+
+        <section id="getenv">
+            <h2>GETENV</h2>
+            <p><strong>GETENV</strong> is a utility that retrieves system environment variables for use within COBOL programs.</p>
+            
+            <h3>Functionality</h3>
+            <table>
+                <tr>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Typical Usage</th>
+                </tr>
+                <tr>
+                    <td>Environment Variable Retrieval</td>
+                    <td>Gets system environment variable values</td>
+                    <td>Path configuration, system settings</td>
+                </tr>
+                <tr>
+                    <td>System Configuration</td>
+                    <td>Accesses system-level configuration data</td>
+                    <td>Database connections, file paths</td>
+                </tr>
+                <tr>
+                    <td>Runtime Parameters</td>
+                    <td>Retrieves runtime configuration parameters</td>
+                    <td>Processing options, feature flags</td>
+                </tr>
+            </table>
+
+            <h3>Common Environment Variables</h3>
+            <ul>
+                <li><strong>File Paths:</strong> Directory paths for data files and configurations</li>
+                <li><strong>Database Settings:</strong> Connection strings and database parameters</li>
+                <li><strong>System Options:</strong> Runtime processing options and flags</li>
+                <li><strong>User Settings:</strong> User-specific configuration parameters</li>
+            </ul>
+
+            <h3>Usage in Loan Processing</h3>
+            <ul>
+                <li><strong>File Location Setup:</strong> Retrieve paths for loan data files</li>
+                <li><strong>Configuration Access:</strong> Get system configuration parameters</li>
+                <li><strong>Environment-Specific Settings:</strong> Handle different deployment environments</li>
+                <li><strong>User Preferences:</strong> Access user-specific processing options</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Integration:</strong> GETENV is commonly used in program initialization to set up file paths and system parameters based on the runtime environment.</p>
+            </div>
+        </section>
+
+        <section id="usage-examples">
+            <h2>Usage Examples</h2>
+            
+            <h3>Date Validation Example</h3>
+            <pre><code>* Validate and correct an input date
+MOVE CUSTOMER-INPUT-DATE TO NDTE-DATE-WORK
+PERFORM C-CALL-NEWDATE
+IF NDTE-DATE NOT = CUSTOMER-INPUT-DATE
+   DISPLAY "Date corrected from " CUSTOMER-INPUT-DATE 
+           " to " NDTE-DATE
+END-IF</code></pre>
+
+            <h3>Payment Date Calculation</h3>
+            <pre><code>* Calculate next payment due date
+MOVE CURRENT-PAYMENT-DATE TO INCREMENT-BASE-DATE
+MOVE 1 TO INCREMENT-MONTHS
+PERFORM C-INCREMENT-PERIODS
+MOVE RESULT-DATE TO NEXT-PAYMENT-DUE</code></pre>
+
+            <h3>Environment Setup</h3>
+            <pre><code>* Get loan file path from environment
+MOVE "LOAN_FILE_PATH" TO ENV-VARIABLE-NAME
+PERFORM GETENV
+MOVE ENV-VARIABLE-VALUE TO LN-FILE-PATH</code></pre>
+
+            <h3>Complex Date Processing</h3>
+            <pre><code>* Calculate loan maturity with proper month-end handling
+MOVE LOAN-ORIGINATION-DATE TO INCREMENT-BASE-DATE
+MOVE LOAN-TERM-MONTHS TO INCREMENT-MONTHS
+PERFORM C-INCREMENT-PERIODS
+MOVE RESULT-DATE TO NDTE-DATE-WORK
+PERFORM C-CALL-NEWDATE
+MOVE NDTE-DATE TO LOAN-MATURITY-DATE</code></pre>
+        </section>
+
+        <section id="technical-details">
+            <h2>Technical Details</h2>
+            
+            <h3>Date Format Standards</h3>
+            <table>
+                <tr>
+                    <th>Format</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td>CCYYMMDD</td>
+                    <td>8-digit date with century</td>
+                    <td>Standard internal date format</td>
+                </tr>
+                <tr>
+                    <td>YYMMDD</td>
+                    <td>6-digit date (legacy, deprecated)</td>
+                    <td>Older systems, being phased out</td>
+                </tr>
+                <tr>
+                    <td>Julian</td>
+                    <td>Julian date format</td>
+                    <td>Specific calculation routines</td>
+                </tr>
+            </table>
+
+            <h3>Leap Year Logic</h3>
+            <ul>
+                <li><strong>Rule 1:</strong> Years divisible by 4 are leap years</li>
+                <li><strong>Rule 2:</strong> Years divisible by 100 are not leap years</li>
+                <li><strong>Rule 3:</strong> Years divisible by 400 are leap years</li>
+                <li><strong>February Handling:</strong> 29 days in leap years, 28 in normal years</li>
+            </ul>
+
+            <h3>Month Length Table (DYTOM)</h3>
+            <table>
+                <tr>
+                    <th>Month</th>
+                    <th>Days</th>
+                    <th>Special Handling</th>
+                </tr>
+                <tr>
+                    <td>January</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>February</td>
+                    <td>28/29</td>
+                    <td>Leap year dependent</td>
+                </tr>
+                <tr>
+                    <td>March</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>April</td>
+                    <td>30</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>May</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>June</td>
+                    <td>30</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>July</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>August</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>September</td>
+                    <td>30</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>October</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>November</td>
+                    <td>30</td>
+                    <td>None</td>
+                </tr>
+                <tr>
+                    <td>December</td>
+                    <td>31</td>
+                    <td>None</td>
+                </tr>
+            </table>
+
+            <h3>Performance Considerations</h3>
+            <ul>
+                <li><strong>Efficient Algorithms:</strong> Optimized date arithmetic routines</li>
+                <li><strong>Table Lookups:</strong> Fast month length lookups using DYTOM table</li>
+                <li><strong>Minimal Processing:</strong> Streamlined validation logic</li>
+                <li><strong>Memory Usage:</strong> Efficient working storage utilization</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Date Format Validation:</strong> Ensure all programs use consistent 8-digit date format</li>
+                <li><strong>Leap Year Testing:</strong> Test leap year logic every 4 years</li>
+                <li><strong>Environment Variable Review:</strong> Verify environment variable configurations</li>
+                <li><strong>Performance Monitoring:</strong> Monitor date calculation performance</li>
+            </ul>
+
+            <h3>Special Considerations</h3>
+            <ul>
+                <li><strong>Year 2100 Issue:</strong> Year 2100 is not a leap year (divisible by 100 but not 400)</li>
+                <li><strong>Date Range Limits:</strong> Ensure calculations stay within valid date ranges</li>
+                <li><strong>Time Zone Handling:</strong> Consider time zone implications for date calculations</li>
+                <li><strong>Legacy Compatibility:</strong> Maintain compatibility with existing date formats</li>
+            </ul>
+
+            <h3>Testing Requirements</h3>
+            <ul>
+                <li><strong>Boundary Testing:</strong> Test month-end, year-end, and leap year boundaries</li>
+                <li><strong>Invalid Date Handling:</strong> Test with invalid dates (e.g., Feb 30, April 31)</li>
+                <li><strong>Leap Year Scenarios:</strong> Test February 29th in leap years and non-leap years</li>
+                <li><strong>Period Arithmetic:</strong> Test various period increment scenarios</li>
+                <li><strong>Environment Variables:</strong> Test with different environment configurations</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Critical:</strong> Date calculation utilities are fundamental to loan processing accuracy. Any changes must be thoroughly tested across all scenarios, including edge cases and boundary conditions.</p>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

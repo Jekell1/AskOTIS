@@ -1,0 +1,119 @@
+{
+  "test_summary": {
+    "files_processed": 5,
+    "total_xrefs": 74,
+    "total_data_items": 74,
+    "total_paragraphs": 95,
+    "total_flow_edges": 11,
+    "total_copybooks": 0,
+    "enrichment_success": 5
+  },
+  "file_results": [
+    {
+      "file_path": "S35-Source/CL/ACUMEM.CBL",
+      "file_id": "test001",
+      "program_id": "ACUMEM",
+      "format": "free",
+      "lines": 315,
+      "paragraphs": 16,
+      "data_items": 31,
+      "xrefs": 10,
+      "flow_edges": 3,
+      "copybooks": 0,
+      "validation": {
+        "total_xrefs": 10,
+        "with_path": 10,
+        "with_program_id": 10,
+        "with_columns": 10,
+        "with_direction": 10,
+        "column_accuracy": 10,
+        "issues": []
+      }
+    },
+    {
+      "file_path": "S35-Source/CL/AUDITW.CBL",
+      "file_id": "test002",
+      "program_id": "AUDITW",
+      "format": "free",
+      "lines": 424,
+      "paragraphs": 23,
+      "data_items": 8,
+      "xrefs": 6,
+      "flow_edges": 0,
+      "copybooks": 0,
+      "validation": {
+        "total_xrefs": 6,
+        "with_path": 6,
+        "with_program_id": 6,
+        "with_columns": 6,
+        "with_direction": 6,
+        "column_accuracy": 6,
+        "issues": []
+      }
+    },
+    {
+      "file_path": "S35-Source/CL/BICLAS.CBL",
+      "file_id": "test003",
+      "program_id": "BICLAS",
+      "format": "free",
+      "lines": 155,
+      "paragraphs": 9,
+      "data_items": 2,
+      "xrefs": 0,
+      "flow_edges": 0,
+      "copybooks": 0,
+      "validation": {
+        "total_xrefs": 0,
+        "with_path": 0,
+        "with_program_id": 0,
+        "with_columns": 0,
+        "with_direction": 0,
+        "column_accuracy": 0,
+        "issues": []
+      }
+    },
+    {
+      "file_path": "S35-Source/CL/BICREA.CBL",
+      "file_id": "test004",
+      "program_id": "BICREA",
+      "format": "free",
+      "lines": 543,
+      "paragraphs": 25,
+      "data_items": 22,
+      "xrefs": 56,
+      "flow_edges": 8,
+      "copybooks": 0,
+      "validation": {
+        "total_xrefs": 56,
+        "with_path": 56,
+        "with_program_id": 56,
+        "with_columns": 56,
+        "with_direction": 56,
+        "column_accuracy": 56,
+        "issues": []
+      }
+    },
+    {
+      "file_path": "S35-Source/CL/BISCAN.CBL",
+      "file_id": "test005",
+      "program_id": "BISCAN",
+      "format": "free",
+      "lines": 539,
+      "paragraphs": 22,
+      "data_items": 11,
+      "xrefs": 2,
+      "flow_edges": 0,
+      "copybooks": 0,
+      "validation": {
+        "total_xrefs": 2,
+        "with_path": 2,
+        "with_program_id": 2,
+        "with_columns": 2,
+        "with_direction": 2,
+        "column_accuracy": 2,
+        "issues": []
+      }
+    }
+  ],
+  "timestamp": "2025-09-09"
+}

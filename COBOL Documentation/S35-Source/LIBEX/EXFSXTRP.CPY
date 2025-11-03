@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXTRP
+           SELECT XTRP-FILE ASSIGN TO XTRP-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XTRP-KEY
+                  FILE STATUS FILE-STAT.

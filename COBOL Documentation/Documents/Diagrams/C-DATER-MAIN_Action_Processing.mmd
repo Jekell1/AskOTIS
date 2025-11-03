@@ -1,0 +1,56 @@
+graph TD
+    A[Action Code Input] --> B{Action Code Value}
+    
+    B -->|E| C[Elapsed Time Processing]
+    B -->|N| D[New Date Processing]
+    B -->|I| E[Increment Processing]
+    B -->|C| F[Julian to Calendar]
+    B -->|J| G[Calendar to Julian]
+    B -->|W| H[Weekday Processing]
+    B -->|D| I[Date Compare Processing]
+    B -->|T| J[Date Test Processing]
+    
+    C --> C1[Calculate time difference between dates]
+    C1 --> C2[Set ELAPSED-DAYS, ELAPSED-MONTHS, ELAPSED-REM]
+    
+    D --> D1[Adjust inconsistent date to valid format]
+    D1 --> D2[Normalize day when > month maximum]
+    
+    E --> E1[Add/subtract periods to date]
+    E1 --> E2[Support M/D/Y/S/W/B unit types]
+    
+    F --> F1[Convert Julian date to YYYYMMDD]
+    F1 --> F2[Handle date validation and adjustment]
+    
+    G --> G1[Convert YYYYMMDD to Julian]
+    G1 --> G2[Calculate days since 12/31/1899]
+    
+    H --> H1[Determine day of week]
+    H1 --> H2[Set DAY--OF-WEEK 1-7]
+    
+    I --> I1[Compare NUM-DATE with SYS-DATE]
+    I1 --> I2[Set ELAPSED-RESULTS L/E/G]
+    
+    J --> J1[Validate date format and values]
+    J1 --> J2[Set error flag if invalid]
+    
+    C2 --> K[Processing Complete]
+    D2 --> K
+    E2 --> K
+    F2 --> K
+    G2 --> K
+    H2 --> K
+    I2 --> K
+    J2 --> K
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style K fill:#c8e6c9
+    style C1 fill:#f8bbd9
+    style D1 fill:#f8bbd9
+    style E1 fill:#f8bbd9
+    style F1 fill:#f8bbd9
+    style G1 fill:#f8bbd9
+    style H1 fill:#f8bbd9
+    style I1 fill:#f8bbd9
+    style J1 fill:#f8bbd9

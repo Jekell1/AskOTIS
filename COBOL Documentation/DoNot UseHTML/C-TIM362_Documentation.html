@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM362 Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM362 Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-TIM362 Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-TIM362.cpy</code><br />
+<strong>Program ID:</strong> C-TIM362<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#algorithm-details">Algorithm Details</a></li>
+<li><a href="#example-usage">Example Usage</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#maintenance-notes">Maintenance Notes</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-TIM362</strong> module is a sophisticated date arithmetic utility within the APIPAY system that computes elapsed time between two dates using a hybrid 362-day year calculation method. This method combines 30-day month calculations with precise Julian date arithmetic for complex scenarios, making it suitable for specialized financial calculations requiring both standardization and precision.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-TIM362</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Elapsed time calculation using 362-day hybrid method</li>
+<li><strong>Location</strong>: APIPAY/C-TIM362.cpy</li>
+<li><strong>Dependencies</strong>: C-TIMBEG, C-TIMEND, C-INCR-MONTHS, C-CALL-JUL, C-LEAP-YEAR-TEST</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-TIM362 provides advanced elapsed time calculations using a hybrid approach that:
+- <strong>Simple Cases</strong>: Uses standard 30-day month arithmetic (like 360-day methods)
+- <strong>Complex Cases</strong>: Falls back to precise Julian date calculations when day arithmetic becomes negative
+- <strong>Month Boundary Handling</strong>: Sophisticated logic for end-of-month date scenarios
+- <strong>Leap Year Awareness</strong>: Comprehensive February handling with leap year adjustments</p>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Hybrid Calculation Method</strong>: Combines 30-day standardization with Julian precision</li>
+<li><strong>Intelligent Fallback Logic</strong>: Switches to Julian arithmetic for complex scenarios</li>
+<li><strong>End-of-Month Intelligence</strong>: Handles month-end dates with varying month lengths</li>
+<li><strong>Leap Year Processing</strong>: Advanced February 29 handling</li>
+<li><strong>DYTOM Integration</strong>: Uses day-of-year table for month length calculations</li>
+</ol>
+<h3>Calculation Strategy</h3>
+<p>The module uses a two-phase approach:
+1. <strong>Phase 1</strong>: Attempt simple 30-day month arithmetic
+2. <strong>Phase 2</strong>: If day arithmetic is negative, use Julian date precision with month adjustments</p>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-DATE1-CCYY/MM/DD</strong>: Start date components</li>
+<li><strong>WS-DATE2-CCYY/MM/DD</strong>: End date components</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-XDAYS</strong>: Total elapsed days using 362 method</li>
+<li><strong>ELAPSED-MONTHS</strong>: Elapsed months (via C-TIMEND)</li>
+<li><strong>ELAPSED-DAYS</strong>: Elapsed days (via C-TIMEND)</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days (via C-TIMEND)</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Initial Calculation Setup</h4>
+<pre><code class="language-cobol">MOVE WS-DATE2 TO WS-DATEX
+PERFORM C-TIMBEG
+COMPUTE WS-XREM = WS-DATE2-CCYY - WS-DATE1-CCYY
+COMPUTE WS-XMONTHS = WS-DATE2-MM - WS-DATE1-MM
+COMPUTE WS-XDAYS = WS-DATE2-DD - WS-DATE1-DD
+</code></pre>
+<h4>Phase 2: Simple Arithmetic (Non-negative Days)</h4>
+<pre><code class="language-cobol">IF (WS-XDAYS NOT &lt; 0)
+   COMPUTE WS-XDAYS = (((WS-XREM * 12) + WS-XMONTHS) * 30) + WS-XDAYS
+</code></pre>
+<h4>Phase 3: Complex Arithmetic (Negative Days)</h4>
+<p>When day arithmetic becomes negative, the module:</p>
+<ol>
+<li><strong>Month Adjustment</strong>:</li>
+</ol>
+<pre><code class="language-cobol">ADD -1 TO WS-XMONTHS
+COMPUTE WS-HOLD-MOS = (WS-XREM * 12) + WS-XMONTHS
+</code></pre>
+<ol>
+<li><strong>Date Manipulation</strong>:</li>
+</ol>
+<pre><code class="language-cobol">MOVE -1 TO WS-UP-WORK
+PERFORM C-INCR-MONTHS  (subtract 1 month from DATE2)
+</code></pre>
+<ol>
+<li><strong>End-of-Month Logic</strong>:</li>
+</ol>
+<pre><code class="language-cobol">IF WS-DATE1-DD &gt; 28
+   COMPUTE WS-TMP-WORK = DYTOM(WS-DATEX-MM + 1) - DYTOM(WS-DATEX-MM)
+   (Check if start day exceeds month length)
+</code></pre>
+<ol>
+<li><strong>Julian Date Calculation</strong>:</li>
+</ol>
+<pre><code class="language-cobol">MOVE WS-DATE2 TO P-DATE-IN
+PERFORM C-CALL-JUL
+MOVE P-JULIAN-DATE TO WS-TMP-JUL-1
+
+MOVE WS-DATEX TO P-DATE-IN
+PERFORM C-CALL-JUL
+MOVE P-JULIAN-DATE TO WS-TMP-JUL-2
+
+COMPUTE WS-XDAYS = WS-TMP-JUL-1 - WS-TMP-JUL-2
+</code></pre>
+<ol>
+<li><strong>Final Adjustment</strong>:</li>
+</ol>
+<pre><code class="language-cobol">IF WS-XDAYS &gt; 30
+   COMPUTE WS-XDAYS = WS-XDAYS + ((WS-HOLD-MOS - 1) * 30)
+ELSE
+   COMPUTE WS-XDAYS = WS-XDAYS + (WS-HOLD-MOS * 30)
+</code></pre>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-TIM362-WORK-AREA
+├── WS-DATEX                (Working date copy)
+├── WS-XREM                 (Year difference)
+├── WS-XMONTHS              (Month difference)
+├── WS-XDAYS                (Day difference/result)
+├── WS-HOLD-MOS             (Adjusted months)
+├── WS-TMP-WORK             (Month length work area)
+├── WS-TMP-JUL-1            (Julian date 1)
+├── WS-TMP-JUL-2            (Julian date 2)
+├── P-DATE-IN               (Julian conversion input)
+├── P-JULIAN-DATE           (Julian conversion output)
+└── LEAP-YEAR-CCYY          (Leap year test input)
+</code></pre>
+<h3>DYTOM Table Usage</h3>
+<p>The module uses the DYTOM (Day of Year Table of Months) array:
+- <strong>DYTOM(1)</strong> = 0 (January starts at day 0)
+- <strong>DYTOM(2)</strong> = 31 (February starts at day 31)
+- <strong>DYTOM(3)</strong> = 59/60 (March starts at day 59/60 depending on leap year)
+- etc.</p>
+<h2>Calculation Examples</h2>
+<h3>Simple Case (Non-negative Days)</h3>
+<pre><code>From: January 15, 2024
+To: March 20, 2024
+
+Step 1: Component differences
+  Years = 0, Months = 2, Days = 5
+
+Step 2: Simple calculation
+  Days = ((0 × 12) + 2) × 30 + 5 = 65 days
+</code></pre>
+<h3>Complex Case (Negative Days)</h3>
+<pre><code>From: January 31, 2024
+To: February 28, 2024
+
+Step 1: Component differences
+  Years = 0, Months = 1, Days = -3 (negative!)
+
+Step 2: Month adjustment
+  Adjusted months = 0, Hold months = 0
+
+Step 3: Date manipulation
+  Subtract 1 month from Feb 28 → Jan 28
+
+Step 4: Julian calculation
+  Feb 28, 2024 → Julian day X
+  Jan 28, 2024 → Julian day Y
+  Difference = X - Y = 31 days
+
+Step 5: Final result
+  Since 31 &gt; 30: Result = 31 + ((0-1) × 30) = 1 day
+</code></pre>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Initialize] → [Component Calculation] → [Sign Check] → 
+[Simple Arithmetic OR Complex Julian Logic] → [Final Result]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>Complex financial instruments</strong>: Sophisticated timing calculations</li>
+<li><strong>Hybrid calculation requirements</strong>: Both standardized and precise timing</li>
+<li><strong>Advanced loan products</strong>: Variable calculation methods</li>
+<li><strong>Specialized reporting</strong>: Hybrid timing requirements</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li><strong>C-TIMBEG</strong>: Initialize time calculation workspace</li>
+<li><strong>C-TIMEND</strong>: Finalize and format elapsed time results</li>
+<li><strong>C-INCR-MONTHS</strong>: Month increment/decrement operations</li>
+<li><strong>C-CALL-JUL</strong>: Julian date conversion for precision</li>
+<li><strong>C-LEAP-YEAR-TEST</strong>: Leap year determination</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Validation Points</h3>
+<ol>
+<li><strong>Date Component Validation</strong>: Handled by calling modules</li>
+<li><strong>Julian Conversion</strong>: Validated through C-CALL-JUL</li>
+<li><strong>Month Length Logic</strong>: DYTOM table bounds checking</li>
+<li><strong>Leap Year Processing</strong>: Comprehensive leap year validation</li>
+</ol>
+<h3>Boundary Conditions</h3>
+<ul>
+<li><strong>Month-End Scenarios</strong>: Extensive end-of-month handling</li>
+<li><strong>February Edge Cases</strong>: Leap year February 29 processing</li>
+<li><strong>Year Boundaries</strong>: Cross-year calculation accuracy</li>
+<li><strong>Negative Arithmetic</strong>: Automatic fallback to Julian precision</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) for simple cases, O(1) for complex cases with additional module calls</li>
+<li><strong>Memory Usage</strong>: Moderate working storage for multiple calculation methods</li>
+<li><strong>Calculation Accuracy</strong>: High precision through Julian date fallback</li>
+<li><strong>Complexity</strong>: Most sophisticated of the TIM series utilities</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Calculation</h3>
+<pre><code class="language-cobol">MOVE 2024 TO WS-DATE1-CCYY
+MOVE 03 TO WS-DATE1-MM
+MOVE 15 TO WS-DATE1-DD
+MOVE 2024 TO WS-DATE2-CCYY
+MOVE 06 TO WS-DATE2-MM
+MOVE 20 TO WS-DATE2-DD
+PERFORM C-TIM362
+* Result: Uses simple 30-day arithmetic
+</code></pre>
+<h3>Complex End-of-Month</h3>
+<pre><code class="language-cobol">MOVE 2024 TO WS-DATE1-CCYY
+MOVE 01 TO WS-DATE1-MM
+MOVE 31 TO WS-DATE1-DD
+MOVE 2024 TO WS-DATE2-CCYY
+MOVE 02 TO WS-DATE2-MM
+MOVE 29 TO WS-DATE2-DD
+PERFORM C-TIM362
+* Result: Uses Julian date precision due to negative day arithmetic
+</code></pre>
+<h2>Maintenance Notes</h2>
+<h3>Design Philosophy</h3>
+<ul>
+<li><strong>Hybrid Approach</strong>: Best of both standardized and precise calculations</li>
+<li><strong>Intelligent Switching</strong>: Automatic selection of appropriate method</li>
+<li><strong>Comprehensive Coverage</strong>: Handles all calendar edge cases</li>
+<li><strong>Maximum Accuracy</strong>: Julian fallback ensures precision</li>
+</ul>
+<h3>Code Quality</h3>
+<ul>
+<li><strong>Complex Logic</strong>: Most sophisticated time calculation utility</li>
+<li><strong>Modular Design</strong>: Effective use of multiple supporting utilities</li>
+<li><strong>Robust Handling</strong>: Comprehensive edge case coverage</li>
+<li><strong>Performance Optimized</strong>: Simple path for common cases</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-TIM360-358_Documentation.html">C-TIM360-358 Documentation</a> - Standard 360/358-day calculations</li>
+<li><a href="C-TIM361_Documentation.html">C-TIM361 Documentation</a> - 361-day note calculations</li>
+<li><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL Documentation</a> - Julian date conversion</li>
+<li><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS Documentation</a> - Month arithmetic</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-TIM362_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-TIM362_Hybrid_Logic.mmd">Hybrid Logic Decision</a></li>
+<li><a href="../Diagrams/C-TIM362_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

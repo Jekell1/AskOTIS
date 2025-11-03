@@ -1,0 +1,19 @@
+graph TD
+    A[APIPAY Program] -->|Calls| B[C-TIM365-367]
+    B -->|Initializes| C[C-TIMBEG]
+    B -->|Tests Leap Year| D[C-LEAP-YEAR-TEST]
+    B -->|Finalizes| E[C-TIMEND]
+    
+    F[Other Date Processing] -->|May Call| B
+    
+    subgraph "Function Calls"
+    B -->|Uses| G[DYTOM Function]
+    end
+    
+    subgraph "Data Flow"
+    H[Input: WS-DATE1] --> B
+    I[Input: WS-DATE2] --> B
+    B --> J[Output: ELAPSED_MONTHS]
+    B --> K[Output: ELAPSED_DAYS]
+    B --> L[Output: ELAPSED_REM]
+    end

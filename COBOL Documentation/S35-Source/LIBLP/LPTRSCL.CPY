@@ -1,0 +1,63 @@
+      * COPYMEMBER: LIBLP/LPTRSCL
+      ***********************************************************************
+      *    LPTRSCL    SALESFIN TRANSACTION FILE CLEAR ROUTINE
+      *
+      * REV:
+      *  MJD 062895 ADDED TS-POSTTIME, TS-POSTDATE.
+      *  JTG 071295 REMOVED TS-PR,FIELDS AND ADDED TS-INSPREM-DLADJ
+      *  JTG 071598 ADDED TS-PRDLDISC-UNEARN TO HOLD CARRY OVER DISCOUNT
+      *             ON RENEWALS
+      *  JTG 020916 ADDED LN-DLCOMM-03-CMSI LN-DLCOMM-PP-CMSI      REGACC #1846
+      *             MAKE TS-INSPREM LEVELS 8 LIKE LOAN RECORD
+      *             AND CREATED FILLER OF 40
+      *             ADDED TS-DLCOMM-PP-CMSI TS-DLCOMM-O3-CMSI
+      *   CS 160923 CHANGED CLEAR TRS-FILE-TABLE TO 10 EARNED/ANTIC, INSURANCE
+      *             20 FEE CODES
+      *             MOVE 0 TO TS-TAX-AMT, TS-APPROVED-BY-DATE,
+      *                 TS-APPROVED-BY-TIME.
+      *   CS 161117 MOVE 0 TO TS-SUBCLASS
+      * BAH 20210426 REMOVED FUTURE FIELDS
+      ***********************************************************************
+       CLEAR-TRS-FILE SECTION.
+           MOVE SPACES TO TRS-REC.
+
+           MOVE 0 TO
+              TS-DATE TS-BRNO TS-CLASS TS-ACCTNO 
+              TS-LAWCODE TS-LINE TS-LOANDATE TS-INTDATE
+              TS-PROCEEDS TS-LNAMT TS-FINCHG TS-INTCHG TS-SERCHG
+              TS-EXTCHG TS-MAINTFEE TS-ORGTERM TS-1STPYAMT
+              TS-NOREGPY TS-REGPYAMT TS-LASTPYAMT
+              TS-DLCOMM-PP-CMSI TS-DLCOMM-O3-CMSI TS-TILLNO
+              TS-DLNO TS-DLPARTRCAMT TS-PURBAL 
+              TS-DLPARVHELD  TS-DLPARVPAID TS-DLDISC
+              TS-ANTICTERM TS-PRLNNO TS-INSPREM-DLADJ
+              TS-PRDLDISC-UNEARN TS-SPRCLASS TS-O3INS-DLPROC
+              TS-POSTTIME TS-POSTDATE.
+
+              MOVE 0 TO TS-SUBCLASS.
+              MOVE 0 TO TS-TAX-AMT TS-APPROVED-BY-DATE,
+                        TS-APPROVED-BY-TIME TS-LTOUCH-DATE.
+
+              MOVE 0 TO TS-DLRVPRIN(1) TS-DLRVPRIN(2)
+                        TS-DLRVPRIN(3) TS-DLRVCHGS(1)
+                        TS-DLRVCHGS(2) TS-DLRVCHGS(3).
+
+              PERFORM CLEAR-TRS-FILE-TABLES
+                   VARYING TRSSUB FROM 1 BY 1 UNTIL TRSSUB > 20.
+
+              GO TO CLEAR-TRS-FILE-EXIT.
+
+       CLEAR-TRS-FILE-TABLES.
+              IF TRSSUB < 5
+                 MOVE 0 TO TS-SSNO(TRSSUB).
+              IF TRSSUB < 11
+                 MOVE 0 TO TS-EARNINGS(TRSSUB) TS-ANTICERN(TRSSUB)
+                 MOVE 0 TO TS-INSCOMP(TRSSUB) TS-INSEFF-DATE(TRSSUB)
+                           TS-INSEXP-DATE(TRSSUB)  TS-INSPREM(TRSSUB)
+                           TS-INSCOMM(TRSSUB) 
+                           TS-INSANTICERN(TRSSUB) TS-INSEARNINGS(TRSSUB).
+
+              MOVE 0 TO TS-FEEAMT(TRSSUB).
+
+       CLEAR-TRS-FILE-EXIT.
+           EXIT.

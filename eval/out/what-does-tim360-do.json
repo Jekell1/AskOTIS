@@ -1,0 +1,67 @@
+{
+  "question": "What does TIM360 do?",
+  "scope": "mixed",
+  "expanded_query": "TIM360 What do does",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "ENCRYP",
+      "path": "ENCRYP",
+      "line": null,
+      "snippet": "Paragraphs=13; edges=20; depth=5; cycles=N; entries=4; exits=5; fanout_max=6; risk=0.315. Entry: WORKING-STORAGE.... High fanout: DO-PASSWD (6)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "e15e6585856a6cb55f28c2e502f98eb965da39a6",
+      "path": "cobol_src\\LP\\CPCORP.CBL",
+      "line": 46,
+      "snippet": "*             DO NOT WANT TO CALL SUMMBY.C, YOU WANT TO PRINT"
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "DO-STATE-CT-EXIST-FG",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BWCREA",
+      "path": "BWCREA",
+      "line": null,
+      "snippet": "Paragraphs=185; edges=351; depth=8; cycles=Y; entries=106; exits=73; fanout_max=27; risk=0.82. Entry: EXIT-PROG.... High fanout: EXIT (27)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "656e40ed75595940f5fec2527ef42ba3a776f8ac",
+      "path": "cobol_src\\UT\\RZCORA.CBL",
+      "line": 47,
+      "snippet": "*             DO NOT WANT TO CALL SUMMBY.C, YOU WANT TO PRINT"
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "DO-STATE-CY-EXIST-FG",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759097686.173881,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

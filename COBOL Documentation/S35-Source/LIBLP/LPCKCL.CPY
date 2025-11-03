@@ -1,0 +1,22 @@
+      * COPYMEMBER: LIBLP/LPCKCL
+      ******************************************************************
+      * CLEAR CK FILE
+      *
+      * REV:
+      *  MJD 990119 REMOVED "MOVE HOLD-KEY TO CK1-KEY."
+      *             CONFIRMED THAT ALL NUMERIC FIELDS ARE PRESENT.
+      *  GLB 000920 ADD CLEAR CK-BATCHID.
+      *  BAH 020822 ADD CLEAR CK-CLEARED-DATE, FORGOT FROM REMGMG, PR# 1726
+      *  BLF 060713 ADD CLEAR OF CK-PAYEE-NO, DEVELOPMENT PR# 2633
+      *   CS 190517 CLEAR FUTURE FIELDS
+      *  BAH 20210427 REMOVED FUTURE FIELDS
+      ******************************************************************
+       CLEAR-CK-FILE SECTION.
+           MOVE SPACES TO CK-REC.
+
+           MOVE 0 TO CK-BRNO CK-NO CK-DATE CK-AMT CK-REF CK-LTOUCH-DATE
+            CK-GLNO(1)  CK-GLNO(2)  CK-GLNO(3)  CK-GLNO(4)  CK-GLNO(5)
+            CK-GLAMT(1) CK-GLAMT(2) CK-GLAMT(3) CK-GLAMT(4) CK-GLAMT(5)
+            CK-CLASS CK-DLNO CK-VOID-DATE CK-ACCTNO CK-DLRVNO CK-SSNO
+            CK-BATCHID CK-CLEARED-DATE CK-PAYEE-NO CK-NC-SEQNO
+            CK-TILLNO.

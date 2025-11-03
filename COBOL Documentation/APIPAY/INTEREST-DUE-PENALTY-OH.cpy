@@ -1,0 +1,21 @@
+      * OHIO PRE-PAYOFF PENALTY, REGENCY:
+      *    IF PREPAID WITHIN 5 YEARS AND NOT RENEWED
+      *       CHARGE PENALTY OF 1% OF AMOUNT FINANCED
+       INTEREST-DUE-PENALTY-OH.
+           IF SP-RBSPOPT1(7) NOT = 16
+              GO TO INTEREST-DUE-PENALTY-GA.
+
+           IF INDU-LPTRCD = "PO"
+              IF INDU-ASSESS-PENALTY = "N"
+                MOVE SPACES TO INDU-ASSESS-PENALTY
+                GO TO NO-PENALTY-OH.
+
+           IF INDU-LPTRCD = "PO"
+                MOVE LN-LOANDATE TO NUM-DATE
+                MOVE INDU-DATE-2 TO SYS-DATE
+                PERFORM TIM360
+                IF ELAPSED-DAYS NOT > 1800
+                  PERFORM LOAN-CALCULATIONS
+                  COMPUTE INDU-INTEREST ROUNDED =
+                      INDU-INTEREST + ( FINANCED-AMOUNT * 0.01 )
+                MOVE "N"   TO INDU-ASSESS-PENALTY.

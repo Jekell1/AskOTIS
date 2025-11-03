@@ -1,0 +1,49 @@
+graph TD
+    A[C-ELAPSED-TIME Entry] --> B[Save Unit Period Parameters]
+    B --> B1[MOVE DATER-UNITPER-FREQ TO WS-XUNITPER-FREQ]
+    B1 --> B2[MOVE DATER-UNITPER-CD TO WS-XUNITPER-CODE]
+    B2 --> C[Set Working Date Fields]
+    
+    C --> C1[MOVE NUM-DATE TO WS-DATE1, WS-DATE1W]
+    C1 --> C2[MOVE SYS-DATE TO WS-DATE2, WS-DATE2W]
+    C2 --> D{Check for Zero Dates}
+    
+    D -->|WS-DATE1 = 0 OR WS-DATE2 = 0| E[Set Safe Default Dates]
+    D -->|Valid Dates| F[Phase 1: Standard Calculation]
+    
+    E --> E1[MOVE 19000101 TO WS-DATE1 WS-DATE2 WS-DATE1W WS-DATE2W]
+    E1 --> F
+    
+    F --> F1[MOVE ELAPSED-YRTYPE TO TA-YRTYPE]
+    F1 --> F2[PERFORM C-TIMALL]
+    F2 --> F3[PERFORM C-TIM-RESULTS]
+    F3 --> F4[Move Results to Output Fields]
+    
+    F4 --> F5[MOVE WS-TIM-RESULTS TO ELAPSED_RESULTS]
+    F5 --> F6[MOVE WS-XMONTHS TO ELAPSED-MONTHS]
+    F6 --> F7[MOVE WS-XDAYS TO ELAPSED-DAYS]
+    F7 --> F8[MOVE WS-XREM TO ELAPSED-REM]
+    
+    F8 --> G[Phase 2: Unit Period Calculation]
+    G --> G1[MOVE WS-DATE1W TO WS-DATE1]
+    G1 --> G2[MOVE WS-DATE2W TO WS-DATE2]
+    G2 --> H{Select Year Type by Unit Code}
+    
+    H -->|"Y" OR "M"| I[MOVE 998 TO TA-YRTYPE]
+    H -->|"S"| J[MOVE 360 TO TA-YRTYPE]
+    H -->|"D", "W", "B"| K[MOVE 365 TO TA-YRTYPE]
+    
+    I --> L[PERFORM C-TIMALL]
+    J --> L
+    K --> L
+    
+    L --> M[Unit Period Result Processing]
+    M --> N[Return to Caller]
+    
+    style A fill:#e1f5fe
+    style D fill:#fff3e0
+    style E fill:#ffcdd2
+    style F fill:#f3e5f5
+    style G fill:#e8f5e8
+    style H fill:#fff3e0
+    style N fill:#c8e6c9

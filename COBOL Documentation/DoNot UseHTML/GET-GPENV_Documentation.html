@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GET-GPENV - Global Parameter Environment Retrieval</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">GET-GPENV - Global Parameter Environment Retrieval</span>
+        </nav>
+        <main class="content">
+<h1>GET-GPENV - Global Parameter Environment Retrieval</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> GET-GPENV<br />
+<strong>Program Type:</strong> Environment Configuration Utility</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>GET-GPENV</strong> is a critical environment configuration utility within the APIPAY payment processing system. This program is responsible for retrieving global parameter settings from the system environment, which are essential for proper system operation and configuration management.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Called as a subroutine via PERFORM statement</li>
+<li><strong>Input Method:</strong> Retrieves data from system environment variable "GPENV"</li>
+<li><strong>Processing Type:</strong> Environment variable retrieval and configuration setup</li>
+<li><strong>Output:</strong> Populates the GP-REC (Global Parameter Record) structure</li>
+<li><strong>Error Handling:</strong> Relies on system environment variable availability</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>GET-GPENV serves as a foundational utility by:</p>
+<ol>
+<li><strong>Environment Configuration:</strong> Retrieves critical system parameters from the operating system environment</li>
+<li><strong>Global Parameter Setup:</strong> Populates the global parameter record (GP-REC) used throughout the APIPAY system</li>
+<li><strong>System Initialization:</strong> Provides essential configuration data required for payment processing operations</li>
+<li><strong>Centralized Configuration:</strong> Ensures all system components use consistent parameter values</li>
+<li><strong>Environment Abstraction:</strong> Provides a standardized interface for accessing environment-specific settings</li>
+</ol>
+<h3>Historical Context</h3>
+<p>This utility is part of the broader Global Parameter (GP) system that manages configuration settings across the entire loan servicing platform. The GP-REC structure contains numerous configuration flags and parameters that control system behavior.</p>
+<hr />
+<h2>Input Parameters</h2>
+<h3>Environment Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPENV</td>
+<td>System Environment</td>
+<td>Global parameter environment string containing all system configuration data</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3>System Dependencies</h3>
+<ul>
+<li><strong>Operating System Environment:</strong> The program relies on the system's ability to provide environment variables</li>
+<li><strong>Environment Variable "GPENV":</strong> Must be properly set before program execution</li>
+<li><strong>GP-REC Structure:</strong> Working storage must include the global parameter record definition</li>
+</ul>
+<hr />
+<h2>Output Fields</h2>
+<h3>GP-REC Structure Fields</h3>
+<p>The GET-GPENV program populates the GP-REC (Global Parameter Record) structure with configuration data. Key categories include:</p>
+<h4>Configuration Flags</h4>
+<ul>
+<li><strong>GP-ALLOW-SET-FOR-NONCASH:</strong> Controls non-cash payment processing options</li>
+<li><strong>GP-TRUE-NEXT-BATCH:</strong> Batch processing configuration settings</li>
+<li><strong>GP-REPO-CODE:</strong> Repository and repossession processing controls</li>
+</ul>
+<h4>System Parameters</h4>
+<ul>
+<li>Various system-wide configuration flags and parameters</li>
+<li>Processing option controls</li>
+<li>File path and system environment settings</li>
+</ul>
+<h4>Note on GP-REC Structure</h4>
+<p>The actual GP-REC structure is defined in the LIBGB/GB01GP.CPY copybook and contains numerous fields for system configuration. The documentation notes specifically state: "DO <em>NOT</em> ADD ANY TYPE OF COMP FIELDS TO GP-REC (KEY 1)" indicating the importance of maintaining data format compatibility.</p>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3><a href="Diagrams/GET-GPENV_Main_Flow.mmd">Main Program Flow</a></h3>
+<h3><a href="Diagrams/GET-GPENV_Environment_Retrieval.mmd">Environment Retrieval Process</a></h3>
+<h3><a href="Diagrams/GET-GPENV_Data_Population.mmd">Data Population Flow</a></h3>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>GET-GPENV SECTION</h3>
+<p><strong>Location:</strong> Line 16237 in APIPAY_Inlined.CBL</p>
+<p><strong>Purpose:</strong> This is the main and only section of the GET-GPENV program.</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Environment Variable Retrieval:</strong> Executes <code>ACCEPT GP-REC FROM ENVIRONMENT "GPENV"</code>
+2. <strong>Data Population:</strong> The ACCEPT statement automatically populates the entire GP-REC structure
+3. <strong>Immediate Return:</strong> No additional processing - the program immediately returns control</p>
+<p><strong>Control Flow:</strong>
+- Entry point from PERFORM GET-GPENV in MAIN-PROGRAM
+- Single ACCEPT statement execution
+- Implicit return to calling program</p>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Input Data Flow</h3>
+<pre><code>System Environment &quot;GPENV&quot; 
+    ↓
+ACCEPT Statement
+    ↓
+GP-REC Structure (All Fields)
+</code></pre>
+<h3>Data Transformation</h3>
+<ul>
+<li><strong>Raw Environment Data:</strong> String data from system environment</li>
+<li><strong>Structured Data:</strong> Parsed into GP-REC field structure</li>
+<li><strong>System Configuration:</strong> Available for use by all program components</li>
+</ul>
+<h3>Output Data Usage</h3>
+<p>The populated GP-REC is used throughout APIPAY for:
+- Payment processing configuration
+- System behavior control
+- Feature enablement/disablement
+- Path and file configuration</p>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Error Scenarios</h3>
+<h4>1. Environment Variable Missing</h4>
+<p><strong>Condition:</strong> GPENV environment variable not set
+<strong>Handling:</strong> COBOL runtime handles missing environment variables
+<strong>Result:</strong> GP-REC may contain spaces or default values</p>
+<h4>2. Invalid Environment Data</h4>
+<p><strong>Condition:</strong> GPENV contains invalid or corrupted data
+<strong>Handling:</strong> No explicit validation in GET-GPENV
+<strong>Result:</strong> Invalid data propagated to GP-REC structure</p>
+<h4>3. System Environment Issues</h4>
+<p><strong>Condition:</strong> Operating system environment problems
+<strong>Handling:</strong> Relies on COBOL runtime environment handling
+<strong>Result:</strong> May result in incomplete or default data</p>
+<h3>Validation Notes</h3>
+<ul>
+<li>No explicit error checking within GET-GPENV</li>
+<li>Validation occurs in consuming programs that use GP-REC data</li>
+<li>System relies on proper environment setup during installation</li>
+</ul>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4>GP-REC (Global Parameter Record)</h4>
+<pre><code class="language-cobol">* Defined in LIBGB/GB01GP.CPY copybook
+* Contains system-wide configuration parameters
+* Used throughout APIPAY system
+* Must not contain COMP fields (compatibility requirement)
+</code></pre>
+<h4>Working Storage Variables</h4>
+<ul>
+<li><strong>GP-REC:</strong> Main structure populated by this program</li>
+<li>No local working storage variables required</li>
+</ul>
+<h3>Key Algorithms</h3>
+<h4>Environment Variable Retrieval</h4>
+<pre><code class="language-cobol">ACCEPT GP-REC FROM ENVIRONMENT &quot;GPENV&quot;
+</code></pre>
+<p>This single statement:
+1. Accesses the system environment
+2. Retrieves the "GPENV" variable content
+3. Populates the GP-REC structure fields
+4. Handles data type conversion automatically</p>
+<h3>Performance Characteristics</h3>
+<ul>
+<li><strong>Execution Time:</strong> Minimal - single environment variable access</li>
+<li><strong>Memory Usage:</strong> Only the GP-REC structure</li>
+<li><strong>System Calls:</strong> One environment variable retrieval</li>
+<li><strong>I/O Operations:</strong> None (environment access only)</li>
+</ul>
+<hr />
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>MAIN-PROGRAM:</strong> Primary caller during system initialization</li>
+<li><strong>Other Payment Processing Modules:</strong> May call for configuration refresh</li>
+</ul>
+<h3>Called Programs</h3>
+<ul>
+<li>None (leaf utility - no external calls)</li>
+</ul>
+<h3>Shared Data Structures</h3>
+<ul>
+<li><strong>GP-REC:</strong> Shared with all APIPAY components</li>
+<li><strong>GPENVW Copybook:</strong> Working storage definition</li>
+<li><strong>GB01GP Copybook:</strong> Record structure definition</li>
+</ul>
+<h3>System Dependencies</h3>
+<ul>
+<li><strong>Operating System Environment:</strong> Must support environment variables</li>
+<li><strong>COBOL Runtime:</strong> Environment variable access capabilities</li>
+<li><strong>System Installation:</strong> Proper GPENV variable setup</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Copybooks Used</h3>
+<table>
+<thead>
+<tr>
+<th>Copybook</th>
+<th>Library</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIBGB/GPENVW.CPY</td>
+<td>LIBGB</td>
+<td>Working storage definitions for GP environment</td>
+</tr>
+<tr>
+<td>LIBGB/GB01GP.CPY</td>
+<td>LIBGB</td>
+<td>GP-REC structure definition</td>
+</tr>
+</tbody>
+</table>
+<h3>Input Files</h3>
+<ul>
+<li>None (environment variable access only)</li>
+</ul>
+<h3>Output Files</h3>
+<ul>
+<li>None (memory structure population only)</li>
+</ul>
+<h3>External Dependencies</h3>
+<ul>
+<li><strong>System Environment:</strong> GPENV variable must be properly configured</li>
+<li><strong>Installation Scripts:</strong> Must set GPENV during system setup</li>
+<li><strong>Configuration Management:</strong> GPENV content must be maintained</li>
+</ul>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<h3><a href="Diagrams/GET-GPENV_Call_Graph.mmd">GET-GPENV Call Graph</a></h3>
+<h3>Calling Sequence</h3>
+<pre><code>MAIN-PROGRAM
+    ↓
+PERFORM GET-GPENV
+    ↓
+GET-GPENV SECTION
+    ↓
+ACCEPT GP-REC FROM ENVIRONMENT &quot;GPENV&quot;
+    ↓
+RETURN (Implicit)
+</code></pre>
+<h3>No Internal PERFORM Statements</h3>
+<p>GET-GPENV is a simple utility with no internal paragraph calls or complex control flow.</p>
+<hr />
+<h2>Notes for System Administrators</h2>
+<h3>Environment Setup Requirements</h3>
+<ol>
+<li><strong>GPENV Variable:</strong> Must be set before APIPAY execution</li>
+<li><strong>Content Format:</strong> Must match GP-REC structure expectations</li>
+<li><strong>Accessibility:</strong> Must be available to APIPAY process user</li>
+<li><strong>Persistence:</strong> Should be set in system startup scripts</li>
+</ol>
+<h3>Troubleshooting</h3>
+<ul>
+<li><strong>Missing Configuration:</strong> Check GPENV environment variable</li>
+<li><strong>Invalid Behavior:</strong> Verify GPENV content matches expected format</li>
+<li><strong>System Errors:</strong> Check operating system environment variable support</li>
+</ul>
+<h3>Maintenance</h3>
+<ul>
+<li><strong>Configuration Changes:</strong> Update GPENV variable and restart processes</li>
+<li><strong>Testing:</strong> Verify GP-REC content after changes</li>
+<li><strong>Documentation:</strong> Maintain GPENV format documentation</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

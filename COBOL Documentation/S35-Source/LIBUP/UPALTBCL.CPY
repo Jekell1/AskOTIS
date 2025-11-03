@@ -1,0 +1,26 @@
+       CLEAR-ALTB-FILE SECTION.
+           MOVE ALL X"09" TO ALTB-REC.
+
+           MOVE 0 TO ALTB-LTOUCH-DATE.
+
+           MOVE 0 TO ALTB-FILEDATE      ALTB-CHAPTER       ALTB-BDDATE 
+                     ALTB-CLAIM-AMT     ALTB-INT-LC-DUE    ALTB-OTH-DUE 
+                     ALTB-TDUEAMT.
+          
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 3
+              MOVE 0 TO ALTB-PHONE(SUB)
+              MOVE SPACES TO ALTB-NAME(SUB) ALTB-ADR1(SUB)
+                             ALTB-ADR2(SUB) ALTB-CITY(SUB)
+                             ALTB-STATE(SUB) ALTB-ZIP(SUB)
+           END-PERFORM.
+
+           MOVE 0 TO ALTB-REAFF-DATE ALTB-REAFF-SYSDATE
+                     ALTB-REAFF-BALANCE ALTB-REAFF-PAYAMT
+                     ALTB-REAFF-NO-PAYS ALTB-INTRATE
+                     ALTB-RESCIND-DATE ALTB-DISCHARGE-DATE
+                     ALTB-DISCHARGE-SYSDATE ALTB-GROSS-BAL.
+
+           MOVE SPACES TO ALTB-CASE-NO ALTB-MISC1 ALTB-MISC2 ALTB-MISC3 
+                          ALTB-WHO-FILED ALTB-ENDORSER-FILED     
+                          ALTB-ACTIVE-INACTIVE ALTB-PARTIAL-FULL.
+

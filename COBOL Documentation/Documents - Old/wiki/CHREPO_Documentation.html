@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHREPO Repossession Window - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > CHREPO Repossession Window
+    </div>
+
+    <div class="header">
+        <h1>CHREPO Repossession Window</h1>
+        <div class="meta">
+            <strong>Program ID:</strong> CHREPO<br>
+            <strong>Purpose:</strong> Change Repossession Status<br>
+            <strong>Type:</strong> Window Interface Program<br>
+            <strong>Date Written:</strong> 10/10/95<br>
+            <strong>Called From:</strong> F9 Interrupt, LONPFC (SS), LONPFE, LONPFG<br>
+            <strong>File Location:</strong> c:\Users\jeff.childers\Documents\COBOL Documentation\S35-Source\WI\CHREPO.CBL<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#user-interface">User Interface</a></li>
+                <li><a href="#data-entry">Data Entry Pages</a></li>
+                <li><a href="#security-features">Security Features</a></li>
+                <li><a href="#technical-implementation">Technical Implementation</a></li>
+                <li><a href="#revision-history">Revision History</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Program Overview</h2>
+            <p><strong>CHREPO</strong> is a window interface program that handles repossession status changes and related data entry. This program is called through F9 interrupt from various loan processing programs to manage repossession information, expenses, and status tracking.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>Repossession Status Management:</strong> Change and track repossession status</li>
+                <li><strong>Multi-Page Interface:</strong> Provides 4 pages of repossession data entry</li>
+                <li><strong>Expense Tracking:</strong> Manages auction expenses, costs, and recoveries</li>
+                <li><strong>Security Controls:</strong> Password protection for sensitive fields</li>
+                <li><strong>Real-Time Updates:</strong> Direct record updates between pages</li>
+                <li><strong>Validation:</strong> Comprehensive field validation and business rules</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Important:</strong> CHREPO was rewritten in 1995 using DSMAIN as a shell. Fields are entered directly into records and written between pages, including new records.</p>
+            </div>
+        </section>
+
+        <section id="user-interface">
+            <h2>User Interface</h2>
+            
+            <h3>Access Methods</h3>
+            <table>
+                <tr>
+                    <th>Access Method</th>
+                    <th>Context</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>F9 Interrupt</td>
+                    <td>From loan processing programs</td>
+                    <td>Quick access to repossession functions</td>
+                </tr>
+                <tr>
+                    <td>LONPFC (SS Transaction)</td>
+                    <td>Repossession transaction processing</td>
+                    <td>Integrated repossession handling</td>
+                </tr>
+                <tr>
+                    <td>LONPFE, LONPFG</td>
+                    <td>Extended loan processing</td>
+                    <td>Comprehensive repossession management</td>
+                </tr>
+            </table>
+
+            <h3>Navigation Features</h3>
+            <ul>
+                <li><strong>F1-RESET:</strong> Works from any screen field to reset data</li>
+                <li><strong>Page Navigation:</strong> Move between 4 data entry pages</li>
+                <li><strong>Field Validation:</strong> Real-time validation during data entry</li>
+                <li><strong>Direct Updates:</strong> Records written between page transitions</li>
+                <li><strong>Auto-Navigation:</strong> Conditional page access based on repo code</li>
+            </ul>
+        </section>
+
+        <section id="data-entry">
+            <h2>Data Entry Pages</h2>
+            
+            <h3>Page 1 - Basic Repossession Information</h3>
+            <ul>
+                <li><strong>Repossession Status:</strong> Current repo status and codes</li>
+                <li><strong>Title Mileage:</strong> Vehicle mileage information (password protected)</li>
+                <li><strong>Reason Code/Description:</strong> Reason for repossession</li>
+                <li><strong>Date Information:</strong> Key repossession dates</li>
+                <li><strong>Basic Details:</strong> Primary repossession data</li>
+            </ul>
+
+            <h3>Page 2 - Financial Information</h3>
+            <ul>
+                <li><strong>Sold Amount:</strong> Amount vehicle sold for (password protected for GP-REPO-CD = "A")</li>
+                <li><strong>Auction Expenses:</strong> Auction-related costs (password protected for GP-REPO-CD = "A")</li>
+                <li><strong>10-Day Costs:</strong> Post-repo costs (password protected for GP-REPO-CD = "A")</li>
+                <li><strong>Other Expenses:</strong> Additional repo-related expenses (password protected for GP-REPO-CD = "A")</li>
+                <li><strong>Title Information:</strong> Title sent date and location</li>
+            </ul>
+
+            <h3>Page 3 - Recovery and Rebate Information</h3>
+            <ul>
+                <li><strong>Recovery Amounts:</strong> Amounts recovered from repossession</li>
+                <li><strong>Rebate Amounts:</strong> Insurance and other rebates (password protected for GP-REPO-CD = "A")</li>
+                <li><strong>Adjustment Information:</strong> Financial adjustments and corrections</li>
+            </ul>
+
+            <h3>Page 4 - Extended Details (Primary for REGACC)</h3>
+            <ul>
+                <li><strong>Vehicle Details:</strong> Color, trim, and equipment information</li>
+                <li><strong>Other Equipment:</strong> 40 bytes of additional equipment description</li>
+                <li><strong>Extracted Information:</strong> Extraction status and details</li>
+                <li><strong>Cross-Reference Fields:</strong> Fields from other pages for convenience</li>
+                <li><strong>Collateral Information:</strong> Extended collateral details</li>
+                <li><strong>Title Processing:</strong> Title sent date and location tracking</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Special Logic:</strong> If GP-REPO-CD = "A", the system automatically navigates to Page 4 and requires password verification for many financial fields.</p>
+            </div>
+        </section>
+
+        <section id="security-features">
+            <h2>Security Features</h2>
+            
+            <h3>Password Protection</h3>
+            <table>
+                <tr>
+                    <th>Field/Area</th>
+                    <th>Condition</th>
+                    <th>Requirement</th>
+                </tr>
+                <tr>
+                    <td>Any Field Modification</td>
+                    <td>General access</td>
+                    <td>Password required to modify any field</td>
+                </tr>
+                <tr>
+                    <td>Financial Fields</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Password required for new record entry</td>
+                </tr>
+                <tr>
+                    <td>LS-X-SOLD-TO-AMT</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Skip entry for new records, password for changes</td>
+                </tr>
+                <tr>
+                    <td>LS-X-AUCTION-EXPENSE</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Skip entry for new records, password for changes</td>
+                </tr>
+                <tr>
+                    <td>LS-X-10DAY-COST</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Skip entry for new records, password for changes</td>
+                </tr>
+                <tr>
+                    <td>LS-X-OTH-EXP-CKAMT</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Password required when altering RE amounts</td>
+                </tr>
+                <tr>
+                    <td>LS-X-RB-AMT</td>
+                    <td>GP-REPO-CD = "A"</td>
+                    <td>Password required when altering</td>
+                </tr>
+                <tr>
+                    <td>Title Mileage</td>
+                    <td>All cases</td>
+                    <td>Password protection for Page 1 Field 2</td>
+                </tr>
+            </table>
+
+            <h3>Access Control Features</h3>
+            <ul>
+                <li><strong>Field-Level Security:</strong> Individual field password protection</li>
+                <li><strong>Conditional Access:</strong> Different security based on repo codes</li>
+                <li><strong>Modification Tracking:</strong> Security logging for sensitive changes</li>
+                <li><strong>Business Rule Enforcement:</strong> Automatic security based on account type</li>
+            </ul>
+        </section>
+
+        <section id="technical-implementation">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Program Architecture</h3>
+            <ul>
+                <li><strong>DSMAIN Shell:</strong> Built using DSMAIN as the foundation</li>
+                <li><strong>Direct Record Access:</strong> Fields entered directly into records, not buffers</li>
+                <li><strong>Real-Time Updates:</strong> Records written between pages, including new records</li>
+                <li><strong>Multi-File Integration:</strong> Accesses LN, LT, BW, BR files for comprehensive data</li>
+            </ul>
+
+            <h3>Key Technical Features</h3>
+            <ul>
+                <li><strong>Page Management:</strong> Four distinct data entry pages with navigation</li>
+                <li><strong>Field Validation:</strong> Comprehensive validation on all input fields</li>
+                <li><strong>Record Management:</strong> Handles both existing and new record creation</li>
+                <li><strong>Conditional Logic:</strong> Behavior changes based on global parameters</li>
+            </ul>
+
+            <h3>File Dependencies</h3>
+            <table>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+                <tr>
+                    <td>LS-FILE</td>
+                    <td>Loan status/repossession records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td>LN-FILE</td>
+                    <td>Loan account records</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>LT-FILE</td>
+                    <td>Loan transaction records</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>BW-FILE</td>
+                    <td>Borrower information</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>BR-FILE</td>
+                    <td>Branch parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>GP-FILE</td>
+                    <td>Global parameters</td>
+                    <td>Read</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="revision-history">
+            <h2>Revision History</h2>
+            
+            <h3>Major Revisions</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+                <tr>
+                    <td>10/10/95</td>
+                    <td>Initial program creation</td>
+                    <td>Original development</td>
+                </tr>
+                <tr>
+                    <td>100995</td>
+                    <td>Complete rewrite using DSMAIN shell with direct record entry</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td>033098</td>
+                    <td>Added password protection to modify any field</td>
+                    <td>BAH - FEDERATED PR# 650</td>
+                </tr>
+                <tr>
+                    <td>010615</td>
+                    <td>Added LS-X-AUCTION-EXPENSE field</td>
+                    <td>CS - REGACC PR# 1478</td>
+                </tr>
+                <tr>
+                    <td>010618</td>
+                    <td>Enhanced password protection for GP-REPO-CD = "A" accounts</td>
+                    <td>CS - REGACC PR# 1478</td>
+                </tr>
+                <tr>
+                    <td>020626</td>
+                    <td>Added LS-X-REASON-CODE with conditional entry logic</td>
+                    <td>BAH - REGACC PR# 1755</td>
+                </tr>
+                <tr>
+                    <td>020701</td>
+                    <td>Fixed problems on Pages 2 & 3, corrected GP-PL-REASON logic</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td>020718</td>
+                    <td>Added Page 4 with new fields and cross-references</td>
+                    <td>BLV - REGACC PR# 1840</td>
+                </tr>
+                <tr>
+                    <td>020820</td>
+                    <td>Added LS-X-EXTRACTED to Page 4</td>
+                    <td>BLV - REGACC PR# 1872</td>
+                </tr>
+                <tr>
+                    <td>020830</td>
+                    <td>Enhanced password protection for LS-X-RB-AMT</td>
+                    <td>BAH - REGACC PR# 1896</td>
+                </tr>
+                <tr>
+                    <td>020924</td>
+                    <td>Auto-navigation to Page 4 for GP-REPO-CD = "A"</td>
+                    <td>BAH - REGACC PR# 2</td>
+                </tr>
+                <tr>
+                    <td>020924</td>
+                    <td>Added title sent date and location fields to Page 4</td>
+                    <td>BAH - REGACC PR# 2</td>
+                </tr>
+                <tr>
+                    <td>060718</td>
+                    <td>Password protection for Page 1 Field 2 (Title Mileage)</td>
+                    <td>BAH</td>
+                </tr>
+            </table>
+
+            <h3>Key Enhancements</h3>
+            <ul>
+                <li><strong>Multi-Page Interface:</strong> Expanded from single page to 4-page comprehensive interface</li>
+                <li><strong>Enhanced Security:</strong> Progressive enhancement of password protection</li>
+                <li><strong>REGACC Specialization:</strong> Page 4 designed specifically for REGACC requirements</li>
+                <li><strong>Conditional Logic:</strong> Behavior adapts based on global parameters</li>
+                <li><strong>Cross-Reference Display:</strong> Fields from multiple pages shown for convenience</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Password Policy Review:</strong> Verify password protection settings</li>
+                <li><strong>Page Layout Validation:</strong> Ensure all pages display correctly</li>
+                <li><strong>Field Validation Testing:</strong> Test all validation rules</li>
+                <li><strong>Security Testing:</strong> Verify password controls function properly</li>
+            </ul>
+
+            <h3>Special Considerations</h3>
+            <ul>
+                <li><strong>DSMAIN Dependency:</strong> Changes to DSMAIN shell affect this program</li>
+                <li><strong>Multi-Page Complexity:</strong> Ensure consistent behavior across all pages</li>
+                <li><strong>Direct Record Updates:</strong> Verify record integrity during page transitions</li>
+                <li><strong>Conditional Logic:</strong> Test all GP-REPO-CD scenarios</li>
+            </ul>
+
+            <h3>Testing Requirements</h3>
+            <ul>
+                <li><strong>Page Navigation:</strong> Test all page transitions and F1-RESET functionality</li>
+                <li><strong>Password Protection:</strong> Verify all password-protected fields</li>
+                <li><strong>Record Updates:</strong> Test both new record creation and existing record updates</li>
+                <li><strong>Field Validation:</strong> Test all input validation rules</li>
+                <li><strong>Conditional Behavior:</strong> Test different repo code scenarios</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Critical:</strong> CHREPO handles sensitive financial data related to repossessions. All password protection and validation logic must be thoroughly tested to ensure data integrity and security compliance.</p>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

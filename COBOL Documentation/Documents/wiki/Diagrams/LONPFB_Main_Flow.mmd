@@ -1,0 +1,23 @@
+flowchart TD
+    A[LONPFB Start] --> B[Validate Input Parameters]
+    B --> C{Input Valid?}
+    C -->|No| D[Return Error]
+    C -->|Yes| E[Read Account Information]
+    E --> F{Account Found?}
+    F -->|No| G[Return Account Not Found]
+    F -->|Yes| H[Validate Account Status]
+    H --> I{Account Active?}
+    I -->|No| J[Return Account Inactive]
+    I -->|Yes| K[Check Interest Balance]
+    K --> L{Sufficient Interest?}
+    L -->|No| M[Adjust Rebate Amount]
+    L -->|Yes| N[Calculate Rebate Impact]
+    M --> N
+    N --> O[Update Account Balances]
+    O --> P[Create GL Entries]
+    P --> Q[Write Audit Trail]
+    Q --> R[Return Success]
+    D --> S[End]
+    G --> S
+    J --> S
+    R --> S

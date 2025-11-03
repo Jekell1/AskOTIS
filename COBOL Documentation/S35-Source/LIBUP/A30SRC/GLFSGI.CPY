@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGL/GLFSGI
+           SELECT OGI-FILE ASSIGN TO OGI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OGI1-KEY
+                  FILE STATUS FILE-STAT.

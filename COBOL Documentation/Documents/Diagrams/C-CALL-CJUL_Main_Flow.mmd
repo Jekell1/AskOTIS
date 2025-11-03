@@ -1,0 +1,55 @@
+flowchart TD
+    A[Start C-CALL-CJUL] --> B[Input Processing]
+    B --> C[MOVE P-CJUL-JULIAN-DATE TO CJUL-IN]
+    C --> D[Scale by 4-Year Cycle]
+    D --> E[COMPUTE CJWS-JUL-BY4 = CJUL-IN × 4]
+    E --> F[Find 4-Year Periods]
+    F --> G[DIVIDE BY 1461 GIVING RESULT REMAINDER MOD]
+    G --> H[Adjust Modulo]
+    
+    H --> I{MOD ≠ 0?}
+    I -->|Yes| J[MOVE 1 TO CJWS-MOD-JUL]
+    I -->|No| K[Keep MOD = 0]
+    
+    J --> L[Calculate Year]
+    K --> L
+    L --> M[WS-CJUL-OUT-CCYY = CJUL-IN × 4 ÷ 1461 + MOD]
+    M --> N[Calculate Day-of-Year]
+    N --> O[WS-CJUL-OUT-DD = JULIAN - Year_Contribution]
+    O --> P[Leap Year Check]
+    
+    P --> Q{Year ÷ 4 = 0 AND Day ≥ 60?}
+    Q -->|Yes| R[CJWS-WORK = 1 Leap Adjustment]
+    Q -->|No| S[CJWS-WORK = 0 No Adjustment]
+    
+    R --> T[Apply Leap Adjustment]
+    S --> T
+    T --> U[WS-CJUL-OUT-DD = Day - Leap_Work]
+    U --> V[Find Month via DYTOM]
+    
+    V --> W[MOVE 13 TO CJWS-MM]
+    W --> X[Loop Through Months]
+    X --> Y{DYTOM[MM] < Day OR MM = 1?}
+    Y -->|No| Z[SUBTRACT 1 FROM CJWS-MM]
+    Z --> X
+    Y -->|Yes| AA[Month Found]
+    
+    AA --> BB[Special February Handling]
+    BB --> CC{Day = 59?}
+    CC -->|Yes| DD[ADD CJWS-WORK TO Day]
+    CC -->|No| EE[Continue]
+    
+    DD --> FF[Final Day Calculation]
+    EE --> FF
+    FF --> GG[SUBTRACT DYTOM[MM] FROM Day]
+    GG --> HH[Assemble Output]
+    HH --> II[ADD 1900 TO CCYY]
+    II --> JJ[MOVE Components to Output]
+    JJ --> KK[End C-CALL-CJUL]
+    
+    style A fill:#e1f5fe
+    style KK fill:#c8e6c9
+    style I fill:#fff3e0
+    style Q fill:#fff3e0
+    style Y fill:#fff3e0
+    style CC fill:#fff3e0

@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF7 - Loan Processing Transaction Posting System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">LONPF7 - Loan Processing Transaction Posting System</span>
+        </nav>
+        <main class="content">
+<h1>LONPF7 - Loan Processing Transaction Posting System</h1>
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> LONPF7<br />
+<strong>Date Written:</strong> February 17, 1984</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>LONPF7</strong> is a comprehensive COBOL loan processing program specifically designed for <strong>Transaction Posting</strong> in a loan servicing system. It serves as <strong>Program 7</strong> in the loan processing suite and handles multiple transaction types including late charges, interest adjustments, waivers, write-offs, and other loan-related transactions.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Interactive screen-based processing with batch capabilities</li>
+<li><strong>Primary Function:</strong> Advanced transaction posting with complex balance calculations</li>
+<li><strong>Transaction Focus:</strong> Handles AL, AI, AP, WL, WI, WO, OT, O2, W2, OP, and RE transaction codes</li>
+<li><strong>Integration:</strong> Part of the larger LONPF family of loan processing programs</li>
+<li><strong>Screen Interface:</strong> Uses VDU (Video Display Unit) forms for user interaction</li>
+<li><strong>Security:</strong> Implements password protection for sensitive transaction types</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>LONPF7 serves critical functions in loan servicing by:</p>
+<ol>
+<li><strong>Late Charge Management:</strong> Calculates and applies late charges using configurable formulas</li>
+<li><strong>Interest Processing:</strong> Handles additional interest calculations and adjustments</li>
+<li><strong>Waiver Processing:</strong> Allows authorized waivers of late charges and interest</li>
+<li><strong>Write-off Management:</strong> Processes write-offs for uncollectible amounts</li>
+<li><strong>Other Transaction Processing:</strong> Handles miscellaneous charges and adjustments</li>
+<li><strong>Balance Distribution:</strong> Sophisticated payment application logic across multiple balance types</li>
+<li><strong>Audit Trail:</strong> Maintains comprehensive transaction logs for compliance</li>
+<li><strong>GL Integration:</strong> Provides general ledger distribution capabilities</li>
+</ol>
+<h3>Historical Context</h3>
+<p>The program has evolved significantly since 1984 with major enhancements including:
+- Password security implementation for sensitive transactions (1995)
+- Separate password requirements for different transaction types (1996)
+- Weekly payment processing support (1996)
+- Cash drawer password integration (1999)
+- Revolving credit support (1999-2001)
+- Interbranch payment processing (1999-2002)
+- Enhanced late charge logic for judgments (2004)
+- Batch posting capabilities for RE and O2 transactions (2016-2017)
+- Global file integration and modernization (2018-2024)</p>
+<hr />
+<h2>Transaction Types Supported</h2>
+<p>LONPF7 supports eleven primary transaction types with sophisticated business logic:</p>
+<h3>Late Charge and Interest Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AL</strong></td>
+<td>Assess Late Charge</td>
+<td>Calculates and applies late charges using configured formulas</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>AI</strong></td>
+<td>Additional Interest</td>
+<td>Adds additional interest to interest-bearing loans</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3>Waiver Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WL</strong></td>
+<td>Waive Late Charge</td>
+<td>Reduces or eliminates late charge balances</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>WI</strong></td>
+<td>Waive Interest</td>
+<td>Reduces or eliminates interest balances</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3>Write-off Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WO</strong></td>
+<td>Write-off Other</td>
+<td>Writes off uncollectible other charges</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>W2</strong></td>
+<td>Write-off Type 2</td>
+<td>Writes off uncollectible type 2 other charges</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3>Applied Payment Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AP</strong></td>
+<td>Applied Payment</td>
+<td>Distributes payments across late charges, interest, and other</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3>Other Charge Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OT</strong></td>
+<td>Other Transaction</td>
+<td>Processes miscellaneous charges and adjustments</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>O2</strong></td>
+<td>Other Type 2</td>
+<td>Processes type 2 other charges</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3>Special Combination Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+<th>Password Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OP</strong></td>
+<td>Other Payment</td>
+<td>Automatic combination of OT and AP logic</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>RE</strong></td>
+<td>Repossession Expense</td>
+<td>Adds repossession-related expenses</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3>Transaction Processing Rules</h3>
+<ol>
+<li><strong>Password Protection:</strong> WL, WI, WO, W2, OT, and AP transactions require password verification</li>
+<li><strong>Interbranch Support:</strong> Special password handling for interbranch postings</li>
+<li><strong>Balance Validation:</strong> All transactions validate against available balances</li>
+<li><strong>Revolving Credit:</strong> Special handling for revolving credit accounts</li>
+<li><strong>Zero Amount Restrictions:</strong> Most transactions do not allow zero amounts</li>
+<li><strong>GL Distribution:</strong> Automatic general ledger entry creation</li>
+</ol>
+<hr />
+<h2>Input Parameters</h2>
+<h3>Primary Input Structure</h3>
+<p>The program receives input through the standard LONPF parameter structure:</p>
+<pre><code class="language-cobol">FORM-PATHNAME     - VDU form path for screen display
+EXIT-PATHNAME     - Return path after processing
+PROG-BUF          - Program control buffer
+UPDATE-BUF        - Transaction update buffer
+</code></pre>
+<h3>Transaction Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-TRCD</strong></td>
+<td>PIC XX</td>
+<td>Transaction code (AL, AI, AP, etc.)</td>
+</tr>
+<tr>
+<td><strong>LP-TRAMT</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Transaction amount</td>
+</tr>
+<tr>
+<td><strong>LP-PAYDATE</strong></td>
+<td>PIC 9(8)</td>
+<td>Payment/transaction date</td>
+</tr>
+<tr>
+<td><strong>LP-APLC</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied late charge amount</td>
+</tr>
+<tr>
+<td><strong>LP-APINT</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied interest amount</td>
+</tr>
+<tr>
+<td><strong>LP-APOTH</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied other charge amount</td>
+</tr>
+<tr>
+<td><strong>LP-APOT2</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied other type 2 amount</td>
+</tr>
+<tr>
+<td><strong>LP-APCUR</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied current balance amount</td>
+</tr>
+</tbody>
+</table>
+<h3>Batch Payment Input</h3>
+<p>For batch processing integration:</p>
+<pre><code class="language-cobol">HOLD-BP-TRCD      - Batch payment transaction code
+PATH-MACHINE      - Interbranch posting indicator
+</code></pre>
+<h3>Screen Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Number</strong></td>
+<td>9(6)</td>
+<td>Target loan account</td>
+</tr>
+<tr>
+<td><strong>Transaction Code</strong></td>
+<td>XX</td>
+<td>Transaction type code</td>
+</tr>
+<tr>
+<td><strong>Amount</strong></td>
+<td>Z(5).99-</td>
+<td>Transaction amount</td>
+</tr>
+<tr>
+<td><strong>Applied Amounts</strong></td>
+<td>Z(4).99-</td>
+<td>Distribution amounts</td>
+</tr>
+<tr>
+<td><strong>GL Numbers</strong></td>
+<td>9(11)</td>
+<td>General ledger account numbers</td>
+</tr>
+<tr>
+<td><strong>Payment Date</strong></td>
+<td>MM/DD/YY</td>
+<td>Transaction date</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Output Fields</h2>
+<h3>Balance Update Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-CURBAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated current balance</td>
+</tr>
+<tr>
+<td><strong>LP-LCBAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated late charge balance</td>
+</tr>
+<tr>
+<td><strong>LP-INTBAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated interest balance</td>
+</tr>
+<tr>
+<td><strong>LP-OTHBAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated other charge balance</td>
+</tr>
+<tr>
+<td><strong>LP-OT2BAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated other type 2 balance</td>
+</tr>
+<tr>
+<td><strong>LP-PDTH-DATE</strong></td>
+<td>PIC 9(8)</td>
+<td>Updated paid through date</td>
+</tr>
+<tr>
+<td><strong>LP-LCPDTH-DATE</strong></td>
+<td>PIC 9(8)</td>
+<td>Late charge paid through date</td>
+</tr>
+</tbody>
+</table>
+<h3>Transaction Results</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-NOLCHG</strong></td>
+<td>PIC X</td>
+<td>No late charge flag</td>
+</tr>
+<tr>
+<td><strong>LP-IBPC</strong></td>
+<td>PIC X</td>
+<td>Interest bearing/principal card indicator</td>
+</tr>
+<tr>
+<td><strong>LCAP-PARTIALS</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Partial payment amounts</td>
+</tr>
+<tr>
+<td><strong>LCAP-LCPAID</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Late charge paid amount</td>
+</tr>
+</tbody>
+</table>
+<h3>Screen Display Output</h3>
+<p>The program displays formatted transaction screens showing:
+- Current balance information
+- Applied amount distributions
+- Transaction details and confirmations
+- Error messages and validation results
+- GL distribution windows</p>
+<h3>File Updates</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Primary loan record updates</td>
+</tr>
+<tr>
+<td><strong>LX-FILE</strong></td>
+<td>Transaction history updates</td>
+</tr>
+<tr>
+<td><strong>LXE-FILE</strong></td>
+<td>Earnings record updates</td>
+</tr>
+<tr>
+<td><strong>LTI-FILE</strong></td>
+<td>Transaction index updates</td>
+</tr>
+<tr>
+<td><strong>LTP-FILE</strong></td>
+<td>Transaction posting file</td>
+</tr>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Work file for temporary calculations</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3>High-Level Processing Flow</h3>
+<p><img alt="High-Level Processing Flow" src="Diagrams/LONPF7_Main_Flow.mmd" /></p>
+<h3>Transaction Processing Flow</h3>
+<p><img alt="Transaction Processing Flow" src="Diagrams/LONPF7_Transaction_Processing.mmd" /></p>
+<h3>Balance Calculation Flow</h3>
+<p><img alt="Balance Calculation Flow" src="Diagrams/LONPF7_Balance_Calculation.mmd" /></p>
+<h3>Error Handling Flow</h3>
+<p><img alt="Error Handling Flow" src="Diagrams/LONPF7_Error_Handling.mmd" /></p>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<h3>Processing Timeline</h3>
+<p><img alt="Processing Timeline" src="Diagrams/LONPF7_Batch_Timeline.mmd" /></p>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>Main Program Control Flow</h3>
+<p><strong>MAIN-PROGRAM SECTION</strong>
+- <strong>Purpose:</strong> Primary program controller and initialization
+- <strong>Flow:</strong> SQL connection → environment setup → batch/interactive processing → cleanup
+- <strong>Key Actions:</strong> File opening, parameter validation, branch record loading</p>
+<p><strong>BATCH-PAYMENT-ROUTINE SECTION</strong>
+- <strong>Purpose:</strong> Handles automated batch payments from external systems
+- <strong>Flow:</strong> Balance setup → paid through calculation → transaction type processing
+- <strong>Key Actions:</strong> 
+  - Sets LP-OTHBAL for OT transactions
+  - Adds amounts to LP-INTDUE and LP-OTHBAL for RE transactions
+  - Handles O2 transactions with LP-APINTOWE and LP-OT2BAL updates</p>
+<p><strong>SELECTION-MODULE SECTION</strong>
+- <strong>Purpose:</strong> Interactive user interface and transaction routing
+- <strong>Flow:</strong> Initialize → amount entry → display → accept input → process
+- <strong>Key Actions:</strong> Route control, screen management, user interaction validation</p>
+<h3>Transaction Processing Flow</h3>
+<p><strong>INITIALIZE-ROUTINE SECTION</strong>
+- <strong>Purpose:</strong> Validates transaction types and handles password verification
+- <strong>Flow:</strong> Balance setup → transaction validation → password checking
+- <strong>Key Actions:</strong>
+  - Validates AI transactions for interest-bearing loans only
+  - Checks late charge formula for AL transactions
+  - Performs password verification for WL, WI, WO, W2, OT, and AP transactions</p>
+<p><strong>ENTRY-LINE-CALCULATIONS SECTION</strong>
+- <strong>Purpose:</strong> Core business logic for balance calculations
+- <strong>Flow:</strong> Transaction type analysis → formula application → balance updates
+- <strong>Key Actions:</strong>
+  - AL: Late charge calculation using LATE-CHARGE-APPLY routine
+  - AI: Interest balance updates for interest-bearing loans
+  - Computes LP-APCUR = LP-TRAMT - LP-APINT - LP-APOTH - LP-APOT2 - LP-APLC</p>
+<p><strong>AMOUNT-ENTRY-ROUTINES SECTION</strong>
+- <strong>Purpose:</strong> Interactive amount entry with validation
+- <strong>Flow:</strong> Transaction amount → applied other → applied interest/LC → verification
+- <strong>Key Actions:</strong>
+  - Validates transaction amounts against business rules
+  - Handles negative amounts for write-offs and waivers
+  - Distributes payments across multiple balance types</p>
+<h3>Display and Interface Management</h3>
+<p><strong>DISPLAY-ENTRY-LINE SECTION</strong>
+- <strong>Purpose:</strong> Formats and displays transaction entry screens
+- <strong>Flow:</strong> Setup display buffers → format amounts → display screen
+- <strong>Key Actions:</strong> Screen formatting, balance display, field positioning</p>
+<p><strong>ACCEPT-ENTRY SECTION</strong>
+- <strong>Purpose:</strong> Handles user input and function key processing
+- <strong>Flow:</strong> Accept input → process function keys → validate entries
+- <strong>Key Actions:</strong> F-key processing, data validation, navigation control</p>
+<h3>Password and Security Management</h3>
+<p><strong>VERIFY-PASSWORD SECTION</strong>
+- <strong>Purpose:</strong> Validates user passwords for restricted transactions
+- <strong>Flow:</strong> Password prompt → validation → authorization check
+- <strong>Key Actions:</strong> Password verification, security enforcement</p>
+<p><strong>PASSWORD-MUST-EXIST SECTION</strong>
+- <strong>Purpose:</strong> Ensures required passwords exist for transaction types
+- <strong>Flow:</strong> Check password configuration → validate existence
+- <strong>Key Actions:</strong> Password configuration validation</p>
+<h3>Balance Calculation Sections</h3>
+<p><strong>SET-BAL-IBPC-LPREC SECTION</strong>
+- <strong>Purpose:</strong> Initializes balance fields from loan record
+- <strong>Flow:</strong> Copy balances → set IBPC test → validate loan type
+- <strong>Key Actions:</strong>
+  - LP-OTHBAL = LN-OTHBAL
+  - LP-OT2BAL = LN-OT2BAL
+  - LP-INTBAL = LN-INTBAL
+  - LP-LCBAL = LN-LCBAL
+  - LP-CURBAL = LN-CURBAL</p>
+<h3>Utility and Support Sections</h3>
+<p><strong>CODE-SCAN SECTION</strong>
+- <strong>Purpose:</strong> Handles payoff code scanning and validation
+- <strong>Flow:</strong> Code entry → validation → processing
+- <strong>Key Actions:</strong> Payoff code processing, validation checks</p>
+<p><strong>MISCELLANEOUS-ROUTINES SECTION</strong>
+- <strong>Purpose:</strong> Various utility functions and calculations
+- <strong>Flow:</strong> Multiple utility functions for common operations
+- <strong>Key Actions:</strong> Date calculations, amount formatting, field conversions</p>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Input Data Sources</h3>
+<pre><code class="language-mermaid">graph LR
+    A[APIPAY Batch Input] --&gt; B[LONPF7 PROG-BUF]
+    C[Interactive User Input] --&gt; B
+    D[LP-FILE Loan Data] --&gt; E[Balance Processing]
+    B --&gt; E
+    F[SP-FILE State Parameters] --&gt; E
+    G[BR-FILE Branch Data] --&gt; E
+    H[GB-FILE Global Data] --&gt; E
+</code></pre>
+<h3>Key Data Transformations</h3>
+<table>
+<thead>
+<tr>
+<th>Source Field</th>
+<th>Transformation</th>
+<th>Target Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LN-OTHBAL</td>
+<td>Direct copy</td>
+<td>LP-OTHBAL</td>
+<td>Initialize other balance</td>
+</tr>
+<tr>
+<td>LN-INTBAL</td>
+<td>Direct copy</td>
+<td>LP-INTBAL</td>
+<td>Initialize interest balance</td>
+</tr>
+<tr>
+<td>LN-LCBAL</td>
+<td>Direct copy</td>
+<td>LP-LCBAL</td>
+<td>Initialize late charge balance</td>
+</tr>
+<tr>
+<td>LP-TRAMT</td>
+<td>Formula calculation</td>
+<td>LP-APCUR</td>
+<td>Calculate applied current amount</td>
+</tr>
+<tr>
+<td>LCAP-APP</td>
+<td>Add to LP-APLC</td>
+<td>LP-APLC</td>
+<td>Apply calculated late charges</td>
+</tr>
+<tr>
+<td>INDU-INTEREST</td>
+<td>Add to LP-INTBAL</td>
+<td>LP-INTBAL</td>
+<td>Add additional interest</td>
+</tr>
+</tbody>
+</table>
+<h3>Data Flow Through Processing Steps</h3>
+<p><strong>Step 1: Initialization</strong>
+- PROG-BUF → Field validation → Working storage
+- Loan record → Balance initialization → LP-record fields
+- State parameters → Business rule setup</p>
+<p><strong>Step 2: Transaction Setup</strong>
+- Transaction code → Transaction type determination
+- Amount validation → LP-TRAMT field setup
+- Password verification → Security authorization</p>
+<p><strong>Step 3: Balance Calculations</strong>
+- Late charge formulas → LCAP calculations → LP-APLC updates
+- Interest calculations → INDU-INTEREST → LP-INTBAL updates
+- Applied amounts → Distribution logic → Multiple balance updates</p>
+<p><strong>Step 4: Final Processing</strong>
+- Current balance calculations → LP-CURBAL updates
+- Paid through calculations → LP-PDTH-DATE updates
+- GL distribution → General ledger entries</p>
+<p><strong>Step 5: File Updates</strong>
+- LP-record updates → LP-FILE write
+- Transaction history → LX-FILE write
+- Earnings updates → LXE-FILE write</p>
+<hr />
+<h2>Referenced Programs</h2>
+<h3>Called Programs</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Integration Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LIBGB/GLENT</strong></td>
+<td>General ledger entry</td>
+<td>Called for GL distribution</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LCAS</strong></td>
+<td>Late charge assessment</td>
+<td>Called for late charge calculations</td>
+</tr>
+<tr>
+<td><strong>LIBGB/GBWK</strong></td>
+<td>Global work routines</td>
+<td>Utility functions</td>
+</tr>
+</tbody>
+</table>
+<h3>Calling Programs</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>APIPAY</strong></td>
+<td>Batch payment processing</td>
+<td>Calls LONPF7 for "OT", "RE", "O2" transactions</td>
+</tr>
+<tr>
+<td><strong>LONPF Menu</strong></td>
+<td>Interactive menu system</td>
+<td>Direct user access to LONPF7</td>
+</tr>
+<tr>
+<td><strong>LONPF2</strong></td>
+<td>Payment update processor</td>
+<td>Coordination for complex transactions</td>
+</tr>
+</tbody>
+</table>
+<h3>Copybooks and Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Copybook</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LIBLP/LP01LN.CPY</strong></td>
+<td>Loan record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01LP.CPY</strong></td>
+<td>Loan processing record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01LX.CPY</strong></td>
+<td>Transaction history layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01LXE.CPY</strong></td>
+<td>Earnings record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01SP.CPY</strong></td>
+<td>State parameter layout</td>
+</tr>
+<tr>
+<td><strong>LIBGB/GB01BR.CPY</strong></td>
+<td>Branch record layout</td>
+</tr>
+<tr>
+<td><strong>LIBGB/GB01GB.CPY</strong></td>
+<td>Global record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01CA.CPY</strong></td>
+<td>Cash advance record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01CD.CPY</strong></td>
+<td>Cash drawer record layout</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Input Validation</h3>
+<table>
+<thead>
+<tr>
+<th>Validation Type</th>
+<th>Error Condition</th>
+<th>Error Message</th>
+<th>Recovery Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>State Parameter</strong></td>
+<td>SP record not found</td>
+<td>"INVALID STATE PARAMETER RECORD"</td>
+<td>Exit program</td>
+</tr>
+<tr>
+<td><strong>Branch Record</strong></td>
+<td>BR record not found</td>
+<td>"INVALID BRANCH RECORD"</td>
+<td>Exit program</td>
+</tr>
+<tr>
+<td><strong>Global Record</strong></td>
+<td>GB record not found</td>
+<td>"INVALID GLOBAL RECORD"</td>
+<td>Exit program</td>
+</tr>
+<tr>
+<td><strong>Transaction Code</strong></td>
+<td>Invalid/unsupported code</td>
+<td>Transaction-specific message</td>
+<td>Return to input</td>
+</tr>
+</tbody>
+</table>
+<h3>Business Rule Validation</h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Condition</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Interest Bearing Only</strong></td>
+<td>AI on principal card loan</td>
+<td>Display error, reject transaction</td>
+</tr>
+<tr>
+<td><strong>Late Charge Formula</strong></td>
+<td>AL with no LC formula</td>
+<td>Display error, reject transaction</td>
+</tr>
+<tr>
+<td><strong>Password Required</strong></td>
+<td>Restricted transaction without password</td>
+<td>Prompt for password or reject</td>
+</tr>
+<tr>
+<td><strong>Zero Amount</strong></td>
+<td>Zero transaction amount</td>
+<td>Display error, request valid amount</td>
+</tr>
+<tr>
+<td><strong>Balance Limits</strong></td>
+<td>Amount exceeds available balance</td>
+<td>Display balance exceeded message</td>
+</tr>
+</tbody>
+</table>
+<h3>Error Recovery Mechanisms</h3>
+<ol>
+<li><strong>Screen Redisplay:</strong> Invalid inputs redisplay entry screen with error message</li>
+<li><strong>Transaction Rollback:</strong> Failed transactions maintain original balances</li>
+<li><strong>Password Retry:</strong> Failed password attempts allow retry with limit</li>
+<li><strong>Route Control:</strong> Error conditions set route codes for proper navigation</li>
+</ol>
+<h3>Common Error Conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Balance Exceeded</strong></td>
+<td>Transaction amount &gt; available balance</td>
+<td>Reduce amount or verify balance</td>
+</tr>
+<tr>
+<td><strong>Password Failure</strong></td>
+<td>Incorrect or missing password</td>
+<td>Verify credentials or contact supervisor</td>
+</tr>
+<tr>
+<td><strong>Formula Missing</strong></td>
+<td>Late charge formula not configured</td>
+<td>Contact system administrator</td>
+</tr>
+<tr>
+<td><strong>File Lock</strong></td>
+<td>Concurrent access to loan record</td>
+<td>Retry or abort transaction</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<p><strong>Primary Working Storage Fields</strong></p>
+<pre><code class="language-cobol">01  ELE                    PIC 99             VALUE 0.
+01  TOTEARN                PIC S9(6)V99 COMP  VALUE 0.
+01  UNEARNED               PIC S9(6)V99 COMP  VALUE 0.
+01  LN-WK                  PIC 9(6)     COMP  VALUE 0.
+01  PRIN-WORKER            PIC S9(5)V99 COMP  VALUE 0.
+01  GL-WORK                PIC S9(7)V99 COMP  VALUE 0.
+01  TEST-AMT               PIC S9(7)V99 COMP  VALUE 0.
+01  DISP-REV-BAL           PIC X              VALUE &quot;Y&quot;.
+01  IB-RE-TRCD             PIC XX.
+</code></pre>
+<p><strong>Transaction Buffer Structure</strong></p>
+<pre><code class="language-cobol">01  LN-BUF              VALUE SPACES.
+    03  L-010           PIC 9(6).          /* Account Number */
+    03  L-020           PIC XX.            /* Transaction Code */
+    03  L-030           PIC X(5).          /* Date Field */
+    03  L-040           PIC Z(5).99-.      /* Amount Field */
+    03  L-050           PIC Z(4).99-.      /* Applied LC */
+    03  L-060           PIC Z(4).99-.      /* Applied Interest */
+    03  L-070           PIC Z(5).99-.      /* Balance Field */
+    03  L-080           PIC 9(4).          /* Term/Date Field */
+    03  L-090           PIC Z(5).99-.      /* Other Balance */
+    03  L-100           PIC Z(4).99-.      /* Applied Other */
+    03  L-110           PIC Z(5)9.99.      /* Total Field */
+    03  L-120           PIC X.             /* Status Flag */
+</code></pre>
+<h3>File Handling</h3>
+<p><strong>File Access Patterns</strong>
+- <strong>LP-FILE:</strong> Random access by account number for loan records
+- <strong>LX-FILE:</strong> Sequential append for transaction history
+- <strong>LXE-FILE:</strong> Direct access for earnings updates
+- <strong>SP-FILE:</strong> Read-only access for state parameters
+- <strong>BR-FILE:</strong> Read-only access for branch configuration
+- <strong>GB-FILE:</strong> Read-only access for global parameters
+- <strong>WK-FILE:</strong> Temporary work file for complex calculations</p>
+<p><strong>Database Operations</strong></p>
+<pre><code class="language-cobol">PERFORM SQL-CONNECT.              /* Database connection */
+PERFORM OPEN-LP1-FILE.           /* Open loan file */
+PERFORM READ-LP1-FILE.           /* Read loan record */
+PERFORM UPDATE-LP1-FILE.         /* Update loan record */
+PERFORM CLOSE-LP1-FILE.          /* Close loan file */
+</code></pre>
+<h3>Key Algorithms</h3>
+<p><strong>Late Charge Calculation Algorithm</strong>
+1. Validate late charge formula exists
+2. Load payment date and first payment date
+3. Calculate late charge assessment period
+4. Apply configured late charge formula
+5. Update late charge balance and paid through date</p>
+<p><strong>Balance Distribution Algorithm</strong>
+1. Apply payments to late charges first (LP-APLC)
+2. Apply remainder to interest (LP-APINT)
+3. Apply remainder to other charges (LP-APOTH/LP-APOT2)
+4. Calculate applied current balance (LP-APCUR)
+5. Update total current balance</p>
+<p><strong>Password Verification Algorithm</strong>
+1. Determine transaction type and interbranch status
+2. Select appropriate password sequence
+3. Prompt user for password
+4. Validate against stored password
+5. Set authorization flag or reject transaction</p>
+<hr />
+<h2>Integration Points</h2>
+<h3>APIPAY Integration</h3>
+<ul>
+<li><strong>Trigger:</strong> APIPAY calls LONPF7 for "OT", "RE", and "O2" transaction codes</li>
+<li><strong>Data Exchange:</strong> Transaction data passed via HOLD-BP-TRCD variables</li>
+<li><strong>Processing Mode:</strong> Batch mode with no user interaction</li>
+<li><strong>Return Values:</strong> Success/failure status in ERRCD field</li>
+</ul>
+<h3>LONPF2 Integration</h3>
+<ul>
+<li><strong>Purpose:</strong> Final update processing and GL distribution</li>
+<li><strong>Trigger:</strong> All successful LONPF7 transactions</li>
+<li><strong>Data Flow:</strong> Updated balance information and transaction details</li>
+<li><strong>Coordination:</strong> Ensures transactional integrity across systems</li>
+</ul>
+<h3>Screen Interface Integration</h3>
+<ul>
+<li><strong>VDU Forms:</strong> Uses "LONPF" form family for user interface</li>
+<li><strong>Menu System:</strong> Integrated with loan processing menu structure</li>
+<li><strong>Help System:</strong> Context-sensitive help via F1 key</li>
+<li><strong>Navigation:</strong> Standard function key navigation (F1-F12)</li>
+</ul>
+<h3>General Ledger Integration</h3>
+<ul>
+<li><strong>GL Distribution:</strong> Automatic GL entry creation for transactions</li>
+<li><strong>Branch-specific:</strong> Uses owning branch for interbranch transactions</li>
+<li><strong>Account Types:</strong> Supports multiple GL account configurations</li>
+<li><strong>Audit Trail:</strong> Maintains GL reference numbers for reconciliation</li>
+</ul>
+<h3>Security Integration</h3>
+<ul>
+<li><strong>Password System:</strong> Integrated with branch security system</li>
+<li><strong>Cash Drawer:</strong> Password protection for cash drawer access</li>
+<li><strong>Interbranch:</strong> Special security handling for interbranch transactions</li>
+<li><strong>Audit:</strong> All security events logged for compliance</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Key Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Loan master records</td>
+<td>Random</td>
+<td>LN-ACNO</td>
+</tr>
+<tr>
+<td><strong>SP-FILE</strong></td>
+<td>State parameters</td>
+<td>Random</td>
+<td>SP-STATE</td>
+</tr>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch configuration</td>
+<td>Random</td>
+<td>BR-NO</td>
+</tr>
+<tr>
+<td><strong>GB-FILE</strong></td>
+<td>Global parameters</td>
+<td>Random</td>
+<td>GB-BRNO</td>
+</tr>
+<tr>
+<td><strong>CA-FILE</strong></td>
+<td>Cash advance records</td>
+<td>Random</td>
+<td>CA-ACNO</td>
+</tr>
+<tr>
+<td><strong>CD-FILE</strong></td>
+<td>Cash drawer records</td>
+<td>Random</td>
+<td>CD-BRNO</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Update Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Updated loan records</td>
+<td>Random</td>
+<td>In-place update</td>
+</tr>
+<tr>
+<td><strong>LX-FILE</strong></td>
+<td>Transaction history</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+<tr>
+<td><strong>LXE-FILE</strong></td>
+<td>Earnings records</td>
+<td>Random</td>
+<td>Update/Add</td>
+</tr>
+<tr>
+<td><strong>LTI-FILE</strong></td>
+<td>Transaction index</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+<tr>
+<td><strong>LTP-FILE</strong></td>
+<td>Transaction posting</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+</tbody>
+</table>
+<h3>Temporary Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Working calculations</td>
+<td>Program execution</td>
+</tr>
+<tr>
+<td><strong>Screen buffers</strong></td>
+<td>VDU screen management</td>
+<td>Session</td>
+</tr>
+</tbody>
+</table>
+<h3>External Datasets</h3>
+<ul>
+<li><strong>GL Interface:</strong> General ledger posting files</li>
+<li><strong>Security Files:</strong> Password and authorization files</li>
+<li><strong>Audit Files:</strong> Transaction audit trails</li>
+<li><strong>Configuration:</strong> System parameter files</li>
+</ul>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<pre><code class="language-mermaid">graph TD
+    A[MAIN-PROGRAM] --&gt; B[SQL-CONNECT]
+    A --&gt; C[GET-GPENV]
+    A --&gt; D[OPEN-SP1-FILE]
+    A --&gt; E[READ-SP1-FILE]
+    A --&gt; F[OPEN-BR-FILE]
+    A --&gt; G[READ-BR-FILE]
+    A --&gt; H[OPEN-GB-FILE]
+    A --&gt; I[READ-GB-FILE]
+    A --&gt; J{Batch Payment?}
+
+    J --&gt;|Yes| K[BATCH-PAYMENT-ROUTINE]
+    J --&gt;|No| L[SELECTION-MODULE]
+
+    K --&gt; K1[SET-BAL-IBPC-LPREC]
+    K --&gt; K2[PAID-THRU-CALCULATION]
+
+    L --&gt; L1[INITIALIZE-ROUTINE]
+    L --&gt; L2[AMOUNT-ENTRY-ROUTINES]
+    L --&gt; L3[ENTRY-LINE-CALCULATIONS]
+    L --&gt; L4[DISPLAY-ENTRY-LINE]
+    L --&gt; L5[ACCEPT-ENTRY]
+
+    L1 --&gt; M[VERIFY-PASSWORD]
+    L1 --&gt; N[SET-BAL-IBPC-LPREC]
+
+    L2 --&gt; O[TRANS-AMT-ENTRY]
+    L2 --&gt; P[APPLIED-OTH-ENTRY]
+    L2 --&gt; Q[APPLIED-INT-LC-ENTRY]
+
+    L3 --&gt; R[LATE-CHARGE-APPLY]
+
+    L5 --&gt; S[DISPLAY-ENTRY-DOWN]
+    L5 --&gt; T[DISPLAY-ENTRY-UP]
+    L5 --&gt; U[CODE-SCAN]
+
+    M --&gt; V[PASSWORD-MUST-EXIST]
+
+    subgraph &quot;File Operations&quot;
+        W[OPEN-LP1-FILE]
+        X[READ-LP1-FILE]
+        Y[UPDATE-LP1-FILE]
+        Z[CLOSE-LP1-FILE]
+    end
+
+    subgraph &quot;Screen Operations&quot;
+        AA[SAVE-SCREEN]
+        BB[RESTORE-SCREEN]
+        CC[VDU-CONVERT-FIELD]
+        DD[SETUP-LINE]
+    end
+
+    R --&gt; W
+    R --&gt; X
+    L4 --&gt; AA
+    L5 --&gt; BB
+    L --&gt; CC
+    L --&gt; DD
+</code></pre>
+<hr />
+<p>This comprehensive documentation provides a complete technical reference for the LONPF7 program, suitable for developers, analysts, and system administrators who need to understand, maintain, or integrate with this sophisticated loan processing system. The documentation covers all aspects from high-level business purpose to detailed technical implementation, making it accessible to readers with varying levels of COBOL and loan processing system knowledge.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "file_info": {
+    "file_id": "test001",
+    "path": "S35-Source/CL/ACUMEM.CBL",
+    "program_id": "ACUMEM",
+    "format": "free",
+    "procedure_using": null
+  },
+  "linkage_items": [
+    {
+      "name": "FORM-PATHNAME",
+      "qualified_name": "FORM-PATHNAME",
+      "level": "01",
+      "section": "LINKAGE",
+      "pic": "X(22)"
+    }
+  ],
+  "parameter_xrefs": [
+    {
+      "simple_name": "FORM-PATHNAME",
+      "qualified_name": "FORM-PATHNAME",
+      "kind": "read",
+      "direction": "param_in",
+      "line": 231
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSPE
+           SELECT PE-FILE ASSIGN TO PE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY PE1-KEY
+                  FILE STATUS FILE-STAT.

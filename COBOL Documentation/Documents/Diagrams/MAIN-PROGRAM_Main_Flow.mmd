@@ -1,0 +1,34 @@
+graph TD
+    A[MAIN-PROGRAM SECTION] --> B[Environment Setup]
+    B --> C[Input Processing]
+    C --> D[System Initialization]
+    D --> E[Branch Validation]
+    E --> F[Reference Code Processing]
+    F --> G[Machine Validation]
+    G --> H[File System Setup]
+    H --> I[Business Day Validation]
+    I --> J[Account Validation]
+    J --> K[Transaction Validation]
+    K --> L[Payment Amount Validation]
+    L --> M[G/L Interface Check]
+    M --> N{Transaction Type}
+    
+    N -->|Bankruptcy| O[BANKRUPT-POSTING]
+    N -->|Reversal| P[REVERSAL-POSTING]
+    N -->|Other Charges| Q[OTHER-CHG-POSTING]
+    N -->|Payoff| R[PAYOFF-POSTING]
+    N -->|Regular Payment| S[PAYMENT-POSTING]
+    
+    O --> T[Success Verification]
+    P --> T
+    Q --> T
+    R --> T
+    S --> T
+    
+    T --> U[Logging and Cleanup]
+    U --> V[END-ROUTINE]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style N fill:#fff3e0
+    style T fill:#e8f5e8

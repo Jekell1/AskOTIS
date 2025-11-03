@@ -1,0 +1,11 @@
+flowchart LR
+    A[Input Parameters] --> B[Validation Module]
+    B --> C[Account Data Access]
+    C --> D[Calculation Module]
+    D --> E[Posting Module]
+    E --> F[Audit Module]
+    F --> G[Output Results]
+    
+    C --> H[(Loan Files)]
+    E --> I[(GL Files)]
+    F --> J[(Audit Files)]

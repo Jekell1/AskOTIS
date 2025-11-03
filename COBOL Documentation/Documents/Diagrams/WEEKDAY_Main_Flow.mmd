@@ -1,0 +1,35 @@
+graph TD
+    A[Start: WEEKDAY SECTION] --> B[Set DATER-ACTION-CODE to 'W']
+    B --> C[Call DATER-ROUTINE]
+    C --> D{Weekday Calculation}
+    D --> E[Convert Date to Julian]
+    E --> F[Calculate Days from Reference]
+    F --> G[Apply MOD 7 Operation]
+    G --> H[Map to Weekday Number]
+    H --> I[Set DAY--OF-WEEK Value]
+    I --> J[Clear All Day Flags]
+    J --> K{Which Day?}
+    K -->|1| L[Set DAY-IS-SUN]
+    K -->|2| M[Set DAY-IS-MON]
+    K -->|3| N[Set DAY-IS-TUE]
+    K -->|4| O[Set DAY-IS-WED]
+    K -->|5| P[Set DAY-IS-THU]
+    K -->|6| Q[Set DAY-IS-FRI]
+    K -->|7| R[Set DAY-IS-SAT]
+    L --> S[Return to Caller]
+    M --> S
+    N --> S
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+    
+    style A fill:#e1f5fe
+    style S fill:#e8f5e8
+    style L fill:#fff3e0
+    style M fill:#fff3e0
+    style N fill:#fff3e0
+    style O fill:#fff3e0
+    style P fill:#fff3e0
+    style Q fill:#fff3e0
+    style R fill:#fff3e0

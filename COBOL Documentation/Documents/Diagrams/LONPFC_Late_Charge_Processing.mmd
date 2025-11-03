@@ -1,0 +1,70 @@
+graph TD
+    A[Late Charge Processing Entry] --> B[Check SP-LCFRMLA Setting]
+    B --> C{Late Charge Formula Type?}
+    
+    C -->|B,G,J,K| D[Principal-Only Formula]
+    C -->|P| E[Percentage-Based Formula]
+    C -->|F,I,L,M| F[Fixed Amount Formula]
+    C -->|Other| G[Standard Formula Processing]
+    
+    D --> H[Set LN-LC-CODE to Zero]
+    H --> I[Prevent LPLCAP Override]
+    I --> J[Calculate Principal-Based LC]
+    
+    E --> K[Calculate Percentage of Balance]
+    K --> L[Apply Percentage Rate]
+    L --> M[Validate Against Limits]
+    
+    F --> N[Apply Fixed Late Charge Amount]
+    N --> O[Validate Against Payment Capacity]
+    
+    G --> P[Call LPLCAP Routine]
+    P --> Q[Calculate Standard Late Charge]
+    
+    J --> R[Validate Late Charge Amount]
+    M --> R
+    O --> R
+    Q --> R
+    
+    R --> S{LC Amount > 0?}
+    S -->|No| T[No Late Charge Applied]
+    S -->|Yes| U[Apply Late Charge]
+    
+    U --> V{Payment Covers LC?}
+    V -->|No| W[Partial LC Application]
+    V -->|Yes| X[Full LC Application]
+    
+    W --> Y[Apply Partial Amount]
+    Y --> Z[Update LC Owed Balance]
+    Z --> AA[Set LCAP-APP Amount]
+    
+    X --> BB[Apply Full LC Amount]
+    BB --> CC[Clear LC Due Balance]
+    CC --> DD[Update LCAP-APP]
+    
+    AA --> EE[Update LN-TOTLCHG]
+    DD --> EE
+    EE --> FF[Update LC Paid-Through Date]
+    FF --> GG{Re-apply LC Required?}
+    
+    GG -->|Yes| HH[Check Re-apply Conditions]
+    GG -->|No| II[Late Charge Complete]
+    
+    HH --> JJ{Formula Allows Re-apply?}
+    JJ -->|Yes| KK[Re-apply Late Charges]
+    JJ -->|No| II
+    
+    KK --> LL[Calculate Re-apply Amount]
+    LL --> MM[Update LP-APINTOWE]
+    MM --> NN[Apply to Payment Distribution]
+    NN --> II
+    
+    T --> OO[Continue Without LC]
+    II --> PP[Update Late Charge History]
+    OO --> PP
+    PP --> QQ[Return LC Processing Status]
+    
+    style A fill:#e1f5fe
+    style U fill:#fff3e0
+    style II fill:#c8e6c9
+    style T fill:#e8f5e8

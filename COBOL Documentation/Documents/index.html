@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Documentation System - COBOL Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .nav-breadcrumb {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+            color: #5a6fd8;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .content h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .content h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem 0;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .content h3 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+
+        .content h4 {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin: 1.2rem 0 0.6rem 0;
+        }
+
+        .content p {
+            margin-bottom: 1.2rem;
+            text-align: justify;
+        }
+
+        .content ul, .content ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .content th, .content td {
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .content th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .content tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .content tr:hover {
+            background-color: #e8f4f8;
+            transition: background-color 0.2s ease;
+        }
+
+        .content code {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        .content pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content pre code {
+            background: none;
+            border: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .content blockquote {
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .mermaid {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .toc {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toc h2 {
+            color: #495057;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            border: none;
+            padding: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc li {
+            margin: 5px 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            padding: 5px 10px;
+            display: block;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+
+        .toc a:hover {
+            background-color: #e9ecef;
+            text-decoration: underline;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+            display: none;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .content h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 COBOL Documentation System</h1>
+            <div class="meta">COBOL Payment Processing Documentation</div>
+        </div>
+
+        
+
+        <div class="content">
+            
+    <div class="welcome">
+        <h1>Welcome to the COBOL Documentation System</h1>
+        <p>Comprehensive static HTML documentation for COBOL payment processing systems. Browse detailed program documentation and interactive system diagrams.</p>
+        
+        <h2>📋 Program Documentation</h2>
+        <div class="program-grid">
+            
+        <div class="nav-card" onclick="window.location.href='APIPAY_Documentation.html'">
+            <h3>💳 APIPAY - Payment Processor</h3>
+            <p>Main payment processing system handling various transaction types</p>
+            <span class="tag">Core System</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-CALL-CJUL_Documentation.html'">
+            <h3>📄 C-CALL-CJUL - Documentation</h3>
+            <p>Documentation for C-CALL-CJUL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-CALL-JUL_Documentation.html'">
+            <h3>📄 C-CALL-JUL - Documentation</h3>
+            <p>Documentation for C-CALL-JUL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-CALL-NEWDATE_Documentation.html'">
+            <h3>📄 C-CALL-NEWDATE - Documentation</h3>
+            <p>Documentation for C-CALL-NEWDATE program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-DATE-COMPARE_Documentation.html'">
+            <h3>📄 C-DATE-COMPARE - Documentation</h3>
+            <p>Documentation for C-DATE-COMPARE program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-DATE-TEST_Documentation.html'">
+            <h3>📄 C-DATE-TEST - Documentation</h3>
+            <p>Documentation for C-DATE-TEST program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-DATER-MAIN_Documentation.html'">
+            <h3>📄 C-DATER-MAIN - Documentation</h3>
+            <p>Documentation for C-DATER-MAIN program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-ELAPSED-TIME_Documentation.html'">
+            <h3>📄 C-ELAPSED-TIME - Documentation</h3>
+            <p>Documentation for C-ELAPSED-TIME program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-INCR-DAYS_Documentation.html'">
+            <h3>📄 C-INCR-DAYS - Documentation</h3>
+            <p>Documentation for C-INCR-DAYS program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-INCR-HALF-MONTHS_Documentation.html'">
+            <h3>📄 C-INCR-HALF-MONTHS - Documentation</h3>
+            <p>Documentation for C-INCR-HALF-MONTHS program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-INCR-MONTHS_Documentation.html'">
+            <h3>📄 C-INCR-MONTHS - Documentation</h3>
+            <p>Documentation for C-INCR-MONTHS program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-INCREMENT-PERIODS_Documentation.html'">
+            <h3>📄 C-INCREMENT-PERIODS - Documentation</h3>
+            <p>Documentation for C-INCREMENT-PERIODS program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-LEAP-YEAR-TEST_Documentation.html'">
+            <h3>📄 C-LEAP-YEAR-TEST - Documentation</h3>
+            <p>Documentation for C-LEAP-YEAR-TEST program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM-RESULTS_Documentation.html'">
+            <h3>📄 C-TIM-RESULTS - Documentation</h3>
+            <p>Documentation for C-TIM-RESULTS program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM360-358_Documentation.html'">
+            <h3>📄 C-TIM360-358 - Documentation</h3>
+            <p>Documentation for C-TIM360-358 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM361_Documentation.html'">
+            <h3>📄 C-TIM361 - Documentation</h3>
+            <p>Documentation for C-TIM361 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM362_Documentation.html'">
+            <h3>📄 C-TIM362 - Documentation</h3>
+            <p>Documentation for C-TIM362 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM365-367_Documentation.html'">
+            <h3>📄 C-TIM365-367 - Documentation</h3>
+            <p>Documentation for C-TIM365-367 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIM999-998_Documentation.html'">
+            <h3>📄 C-TIM999-998 - Documentation</h3>
+            <p>Documentation for C-TIM999-998 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIMALL_Documentation.html'">
+            <h3>📄 C-TIMALL - Documentation</h3>
+            <p>Documentation for C-TIMALL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIMBEG-TIMEND_Documentation.html'">
+            <h3>📄 C-TIMBEG-TIMEND - Documentation</h3>
+            <p>Documentation for C-TIMBEG-TIMEND program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIMBEG_Documentation.html'">
+            <h3>📄 C-TIMBEG - Documentation</h3>
+            <p>Documentation for C-TIMBEG program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-TIMEND_Documentation.html'">
+            <h3>📄 C-TIMEND - Documentation</h3>
+            <p>Documentation for C-TIMEND program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='C-WEEKDAY_Documentation.html'">
+            <h3>📄 C-WEEKDAY - Documentation</h3>
+            <p>Documentation for C-WEEKDAY program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='CJUL_Documentation.html'">
+            <h3>📄 CJUL - Documentation</h3>
+            <p>Documentation for CJUL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='GET-GPENV_Documentation.html'">
+            <h3>📄 GET-GPENV - Documentation</h3>
+            <p>Documentation for GET-GPENV program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='GET-TIME_Documentation.html'">
+            <h3>📄 GET-TIME - Documentation</h3>
+            <p>Documentation for GET-TIME program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='JUL_Documentation.html'">
+            <h3>📄 JUL - Documentation</h3>
+            <p>Documentation for JUL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPF2_Documentation.html'">
+            <h3>🌐 LONPF2 - Wire Transfer Processor</h3>
+            <p>Wire transfer and electronic payment processing</p>
+            <span class="tag">Electronic Transfer</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPF7_Documentation.html'">
+            <h3>🚗 LONPF7 - Repossession Processor</h3>
+            <p>Asset repossession and recovery transaction processing</p>
+            <span class="tag">Asset Recovery</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPF7_Documentation_NEW.html'">
+            <h3>📄 LONPF7_Documentation_NEW - Documentation</h3>
+            <p>Documentation for LONPF7_Documentation_NEW program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPF9_Documentation.html'">
+            <h3>🛡️ LONPF9 - Insurance Processor</h3>
+            <p>Insurance payment and disbursement processing</p>
+            <span class="tag">Insurance</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPFA_Documentation.html'">
+            <h3>📄 LONPFA - Documentation</h3>
+            <p>Documentation for LONPFA program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPFB_Documentation.html'">
+            <h3>🏦 LONPFB - Bill Pay System</h3>
+            <p>Bill payment processing and transaction handling</p>
+            <span class="tag">Bill Processing</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPFB_Documentation_NEW.html'">
+            <h3>📄 LONPFB_Documentation_NEW - Documentation</h3>
+            <p>Documentation for LONPFB_Documentation_NEW program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='LONPFC_Documentation.html'">
+            <h3>💰 LONPFC - Check Processor</h3>
+            <p>Check transaction processing and validation</p>
+            <span class="tag">Check Processing</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='MAIN-PROGRAM_Documentation.html'">
+            <h3>📄 MAIN-PROGRAM - Documentation</h3>
+            <p>Documentation for MAIN-PROGRAM program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='TIM360_Documentation.html'">
+            <h3>📄 TIM360 - Documentation</h3>
+            <p>Documentation for TIM360 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='TIM365_Documentation.html'">
+            <h3>📄 TIM365 - Documentation</h3>
+            <p>Documentation for TIM365 program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='TIMALL_Documentation.html'">
+            <h3>📄 TIMALL - Documentation</h3>
+            <p>Documentation for TIMALL program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='TIMUPER_Documentation.html'">
+            <h3>📄 TIMUPER - Documentation</h3>
+            <p>Documentation for TIMUPER program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='TIM_Documentation.html'">
+            <h3>📄 TIM - Documentation</h3>
+            <p>Documentation for TIM program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='WEEKDAY_Documentation.html'">
+            <h3>📄 WEEKDAY - Documentation</h3>
+            <p>Documentation for WEEKDAY program</p>
+            <span class="tag">Documentation</span>
+        </div>
+        </div>
+        
+        <h2>📊 System Diagrams</h2>
+        <div class="program-grid">
+            
+        <div class="nav-card" onclick="window.location.href='diagrams.html#APIPAY_Complete_Call_Graph.mmd'">
+            <h3>📊 APIPAY Complete Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#APIPAY_Database_Updates.mmd'">
+            <h3>📊 APIPAY Database Updates</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#APIPAY_Error_Handling.mmd'">
+            <h3>📊 APIPAY Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#APIPAY_Transaction_Processing.mmd'">
+            <h3>📊 APIPAY Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-CJUL_Call_Graph.mmd'">
+            <h3>📊 C-CALL-CJUL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-CJUL_Conversion_Process.mmd'">
+            <h3>📊 C-CALL-CJUL Conversion Process</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-CJUL_Main_Flow.mmd'">
+            <h3>📊 C-CALL-CJUL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-JUL_Calculation_Components.mmd'">
+            <h3>📊 C-CALL-JUL Calculation Components</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-JUL_Call_Graph.mmd'">
+            <h3>📊 C-CALL-JUL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-JUL_Main_Flow.mmd'">
+            <h3>📊 C-CALL-JUL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-NEWDATE_Call_Graph.mmd'">
+            <h3>📊 C-CALL-NEWDATE Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-NEWDATE_Input_Processing.mmd'">
+            <h3>📊 C-CALL-NEWDATE Input Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-CALL-NEWDATE_Main_Flow.mmd'">
+            <h3>📊 C-CALL-NEWDATE Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATE-TEST_Call_Graph.mmd'">
+            <h3>📊 C-DATE-TEST Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATE-TEST_Main_Flow.mmd'">
+            <h3>📊 C-DATE-TEST Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATE-TEST_Validation_Process.mmd'">
+            <h3>📊 C-DATE-TEST Validation Process</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATER-MAIN_Action_Processing.mmd'">
+            <h3>📊 C-DATER-MAIN Action Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATER-MAIN_Call_Graph.mmd'">
+            <h3>📊 C-DATER-MAIN Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATER-MAIN_Flow.mmd'">
+            <h3>📊 C-DATER-MAIN Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-DATER-MAIN_Main_Flow.mmd'">
+            <h3>📊 C-DATER-MAIN Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-ELAPSED-TIME_Call_Graph.mmd'">
+            <h3>📊 C-ELAPSED-TIME Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-ELAPSED-TIME_Main_Flow.mmd'">
+            <h3>📊 C-ELAPSED-TIME Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-ELAPSED-TIME_Unit_Period_Processing.mmd'">
+            <h3>📊 C-ELAPSED-TIME Unit Period Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-DAYS_Call_Graph.mmd'">
+            <h3>📊 C-INCR-DAYS Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-DAYS_Increment_Loop.mmd'">
+            <h3>📊 C-INCR-DAYS Increment Loop</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-DAYS_Main_Flow.mmd'">
+            <h3>📊 C-INCR-DAYS Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-HALF-MONTHS_Call_Graph.mmd'">
+            <h3>📊 C-INCR-HALF-MONTHS Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-HALF-MONTHS_Logic.mmd'">
+            <h3>📊 C-INCR-HALF-MONTHS Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-HALF-MONTHS_Main_Flow.mmd'">
+            <h3>📊 C-INCR-HALF-MONTHS Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-MONTHS_Arithmetic_Logic.mmd'">
+            <h3>📊 C-INCR-MONTHS Arithmetic Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-MONTHS_Call_Graph.mmd'">
+            <h3>📊 C-INCR-MONTHS Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCR-MONTHS_Main_Flow.mmd'">
+            <h3>📊 C-INCR-MONTHS Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCREMENT-PERIODS_Call_Graph.mmd'">
+            <h3>📊 C-INCREMENT-PERIODS Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCREMENT-PERIODS_Main_Flow.mmd'">
+            <h3>📊 C-INCREMENT-PERIODS Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-INCREMENT-PERIODS_Unit_Types.mmd'">
+            <h3>📊 C-INCREMENT-PERIODS Unit Types</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-LEAP-YEAR-TEST_Call_Graph.mmd'">
+            <h3>📊 C-LEAP-YEAR-TEST Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-LEAP-YEAR-TEST_Decision_Process.mmd'">
+            <h3>📊 C-LEAP-YEAR-TEST Decision Process</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-LEAP-YEAR-TEST_Main_Flow.mmd'">
+            <h3>📊 C-LEAP-YEAR-TEST Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM-RESULTS_Call_Graph.mmd'">
+            <h3>📊 C-TIM-RESULTS Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM-RESULTS_Main_Flow.mmd'">
+            <h3>📊 C-TIM-RESULTS Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM360-358_Call_Graph.mmd'">
+            <h3>📊 C-TIM360-358 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM360-358_February_Logic.mmd'">
+            <h3>📊 C-TIM360-358 February Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM360-358_Main_Flow.mmd'">
+            <h3>📊 C-TIM360-358 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM361_Call_Graph.mmd'">
+            <h3>📊 C-TIM361 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM361_Complex_Logic.mmd'">
+            <h3>📊 C-TIM361 Complex Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM361_Main_Flow.mmd'">
+            <h3>📊 C-TIM361 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM362_Call_Graph.mmd'">
+            <h3>📊 C-TIM362 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM362_Hybrid_Logic.mmd'">
+            <h3>📊 C-TIM362 Hybrid Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM362_Main_Flow.mmd'">
+            <h3>📊 C-TIM362 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM365-367_Call_Graph.mmd'">
+            <h3>📊 C-TIM365-367 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM365-367_Leap_Year_Logic.mmd'">
+            <h3>📊 C-TIM365-367 Leap Year Logic</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM365-367_Main_Flow.mmd'">
+            <h3>📊 C-TIM365-367 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM999-998_Call_Graph.mmd'">
+            <h3>📊 C-TIM999-998 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM999-998_Main_Flow.mmd'">
+            <h3>📊 C-TIM999-998 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIM999-998_Method_Comparison.mmd'">
+            <h3>📊 C-TIM999-998 Method Comparison</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMALL_Call_Graph.mmd'">
+            <h3>📊 C-TIMALL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMALL_Main_Flow.mmd'">
+            <h3>📊 C-TIMALL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMALL_Router.mmd'">
+            <h3>📊 C-TIMALL Router</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMALL_Year_Type_Processing.mmd'">
+            <h3>📊 C-TIMALL Year Type Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMBEG-TIMEND_Integration.mmd'">
+            <h3>📊 C-TIMBEG-TIMEND Integration</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMBEG_Call_Graph.mmd'">
+            <h3>📊 C-TIMBEG Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMBEG_Flow.mmd'">
+            <h3>📊 C-TIMBEG Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMBEG_Main_Flow.mmd'">
+            <h3>📊 C-TIMBEG Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMEND_Call_Graph.mmd'">
+            <h3>📊 C-TIMEND Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMEND_Flow.mmd'">
+            <h3>📊 C-TIMEND Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMEND_Main_Flow.mmd'">
+            <h3>📊 C-TIMEND Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#C-TIMEND_Year_Type_Processing.mmd'">
+            <h3>📊 C-TIMEND Year Type Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#CJUL_Call_Graph.mmd'">
+            <h3>📊 CJUL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#CJUL_Main_Flow.mmd'">
+            <h3>📊 CJUL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-GPENV_Call_Graph.mmd'">
+            <h3>📊 GET-GPENV Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-GPENV_Data_Population.mmd'">
+            <h3>📊 GET-GPENV Data Population</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-GPENV_Environment_Retrieval.mmd'">
+            <h3>📊 GET-GPENV Environment Retrieval</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-GPENV_Main_Flow.mmd'">
+            <h3>📊 GET-GPENV Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-TIME_Call_Graph.mmd'">
+            <h3>📊 GET-TIME Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#GET-TIME_Main_Flow.mmd'">
+            <h3>📊 GET-TIME Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#JUL_Call_Graph.mmd'">
+            <h3>📊 JUL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#JUL_Main_Flow.mmd'">
+            <h3>📊 JUL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_Batch_Timeline.mmd'">
+            <h3>📊 LONPF2 Batch Timeline</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_Call_Graph.mmd'">
+            <h3>📊 LONPF2 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_Error_Handling.mmd'">
+            <h3>📊 LONPF2 Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_File_Update_Sequence.mmd'">
+            <h3>📊 LONPF2 File Update Sequence</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_Main_Flow.mmd'">
+            <h3>📊 LONPF2 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF2_Transaction_Processing.mmd'">
+            <h3>📊 LONPF2 Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF7_Balance_Calculation.mmd'">
+            <h3>📊 LONPF7 Balance Calculation</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF7_Batch_Timeline.mmd'">
+            <h3>📊 LONPF7 Batch Timeline</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF7_Error_Handling.mmd'">
+            <h3>📊 LONPF7 Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF7_Main_Flow.mmd'">
+            <h3>📊 LONPF7 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF7_Transaction_Processing.mmd'">
+            <h3>📊 LONPF7 Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Auto_PL_Processing.mmd'">
+            <h3>📊 LONPF9 Auto PL Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Batch_Timeline.mmd'">
+            <h3>📊 LONPF9 Batch Timeline</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Call_Graph.mmd'">
+            <h3>📊 LONPF9 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Error_Handling.mmd'">
+            <h3>📊 LONPF9 Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Main_Flow.mmd'">
+            <h3>📊 LONPF9 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPF9_Transaction_Processing.mmd'">
+            <h3>📊 LONPF9 Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFB_Error_Handling.mmd'">
+            <h3>📊 LONPFB Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFB_Main_Flow.mmd'">
+            <h3>📊 LONPFB Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFB_Rebate_Calculation.mmd'">
+            <h3>📊 LONPFB Rebate Calculation</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFB_Transaction_Processing.mmd'">
+            <h3>📊 LONPFB Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Batch_Timeline.mmd'">
+            <h3>📊 LONPFC Batch Timeline</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Call_Graph.mmd'">
+            <h3>📊 LONPFC Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Deferment_Processing.mmd'">
+            <h3>📊 LONPFC Deferment Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Error_Handling.mmd'">
+            <h3>📊 LONPFC Error Handling</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Late_Charge_Processing.mmd'">
+            <h3>📊 LONPFC Late Charge Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Main_Flow.mmd'">
+            <h3>📊 LONPFC Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Payment_Distribution.mmd'">
+            <h3>📊 LONPFC Payment Distribution</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Payment_Processing.mmd'">
+            <h3>📊 LONPFC Payment Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#LONPFC_Transaction_Processing.mmd'">
+            <h3>📊 LONPFC Transaction Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Batch_Timeline.mmd'">
+            <h3>📊 MAIN-PROGRAM Batch Timeline</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Call_Graph.mmd'">
+            <h3>📊 MAIN-PROGRAM Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Environment_Setup.mmd'">
+            <h3>📊 MAIN-PROGRAM Environment Setup</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Main_Flow.mmd'">
+            <h3>📊 MAIN-PROGRAM Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Transaction_Routing.mmd'">
+            <h3>📊 MAIN-PROGRAM Transaction Routing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#MAIN-PROGRAM_Validation_Processing.mmd'">
+            <h3>📊 MAIN-PROGRAM Validation Processing</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM360_Call_Graph.mmd'">
+            <h3>📊 TIM360 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM360_Main_Flow.mmd'">
+            <h3>📊 TIM360 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM365_Call_Graph.mmd'">
+            <h3>📊 TIM365 Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM365_Main_Flow.mmd'">
+            <h3>📊 TIM365 Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIMALL_Call_Graph.mmd'">
+            <h3>📊 TIMALL Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIMALL_Main_Flow.mmd'">
+            <h3>📊 TIMALL Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIMUPER_Call_Graph.mmd'">
+            <h3>📊 TIMUPER Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIMUPER_Main_Flow.mmd'">
+            <h3>📊 TIMUPER Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM_Call_Graph.mmd'">
+            <h3>📊 TIM Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#TIM_Main_Flow.mmd'">
+            <h3>📊 TIM Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#WEEKDAY_Call_Graph.mmd'">
+            <h3>📊 WEEKDAY Call Graph</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        <div class="nav-card" onclick="window.location.href='diagrams.html#WEEKDAY_Main_Flow.mmd'">
+            <h3>📊 WEEKDAY Main Flow</h3>
+            <p>Interactive system flow diagram</p>
+            <span class="tag">Mermaid</span>
+        </div>
+        </div>
+    </div>
+    
+    <style>
+        .welcome {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .welcome h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .welcome h2 {
+            color: #34495e;
+            margin: 3rem 0 2rem 0;
+            font-size: 2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .welcome p {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 3rem auto;
+        }
+        
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .nav-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .nav-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .nav-card p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .nav-card .tag {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1d4ed8;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .program-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome h1 {
+                font-size: 2rem;
+            }
+            
+            .welcome h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+        </div>
+
+        <div class="footer">
+            <p>Generated: July 22, 2025 | COBOL Documentation System</p>
+            <p>Static HTML version - No server required</p>
+        </div>
+    </div>
+
+    <button class="back-to-top" onclick="scrollToTop()" id="backToTop">↑</button>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#2c3e50',
+                primaryBorderColor: '#e0e0e0',
+                lineColor: '#7f8c8d',
+                background: '#ffffff'
+            }
+        });
+
+        // Back to top functionality
+        window.onscroll = function() {
+            const button = document.getElementById('backToTop');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                button.style.display = 'block';
+            } else {
+                button.style.display = 'none';
+            }
+        };
+
+        function scrollToTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobolInliner", "S35-Source\CobolInliner.csproj", "{2E9DB851-ED41-FE85-D4A5-92058D1C198E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobolParser", "S35-Source\CobolParser.csproj", "{403BB74A-0808-62BA-68D3-0F2E95AA063D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobolToCSharpGenerator", "S35-Source\CobolToCSharpGenerator.csproj", "{04D2E8D6-5CB2-20DC-67CA-99C8DBCCB5AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S35-Source", "S35-Source", "{C21F5CC8-BF50-C73B-CF5C-1615C91F2032}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobolCopybookAnalyzer", "S35-Source\SP\CobolCopybookAnalyzer.csproj", "{74E2AE19-E269-3EEE-179F-31FD1398C97D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E9DB851-ED41-FE85-D4A5-92058D1C198E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E9DB851-ED41-FE85-D4A5-92058D1C198E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E9DB851-ED41-FE85-D4A5-92058D1C198E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E9DB851-ED41-FE85-D4A5-92058D1C198E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{403BB74A-0808-62BA-68D3-0F2E95AA063D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{403BB74A-0808-62BA-68D3-0F2E95AA063D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{403BB74A-0808-62BA-68D3-0F2E95AA063D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{403BB74A-0808-62BA-68D3-0F2E95AA063D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04D2E8D6-5CB2-20DC-67CA-99C8DBCCB5AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04D2E8D6-5CB2-20DC-67CA-99C8DBCCB5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04D2E8D6-5CB2-20DC-67CA-99C8DBCCB5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04D2E8D6-5CB2-20DC-67CA-99C8DBCCB5AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74E2AE19-E269-3EEE-179F-31FD1398C97D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74E2AE19-E269-3EEE-179F-31FD1398C97D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74E2AE19-E269-3EEE-179F-31FD1398C97D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74E2AE19-E269-3EEE-179F-31FD1398C97D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{74E2AE19-E269-3EEE-179F-31FD1398C97D} = {C21F5CC8-BF50-C73B-CF5C-1615C91F2032}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {99A09B16-5D6E-41C3-AFAC-AA9EDD455691}
+	EndGlobalSection
+EndGlobal

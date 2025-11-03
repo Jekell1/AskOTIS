@@ -1,0 +1,12 @@
+graph TD
+    A[MAIN-PROGRAM] --> B[PERFORM GET-GPENV]
+    B --> C[GET-GPENV SECTION]
+    C --> D[ACCEPT GP-REC FROM ENVIRONMENT 'GPENV']
+    D --> E[Environment Variable Retrieved]
+    E --> F[GP-REC Structure Populated]
+    F --> G[Return to Caller]
+    
+    style A fill:#e1f5fe
+    style C fill:#f3e5f5
+    style D fill:#fff3e0
+    style F fill:#e8f5e8

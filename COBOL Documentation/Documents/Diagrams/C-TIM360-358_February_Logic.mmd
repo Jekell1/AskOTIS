@@ -1,0 +1,87 @@
+flowchart TD
+    A[February Processing Start] --> B[Check Date2 February Forward]
+    B --> C{DATE2-MM = 2 AND DATE2-DD > DATE1-DD?}
+    C -->|Yes| D[Forward February Adjustment]
+    C -->|No| E[Check Date2 February Backward]
+    
+    D --> F[Check Leap Year Status]
+    F --> G{DATE2-DD = 29?}
+    G -->|Yes| H{LEAP-YEAR-TRUE?}
+    G -->|No| I{DATE2-DD = 28?}
+    
+    H -->|Yes| J[Feb 29 in Leap Year]
+    H -->|No| K[Feb 29 in Non-Leap Error]
+    I -->|Yes| L{LEAP-YEAR-FALSE?}
+    I -->|No| M[Other February Day]
+    
+    J --> N[MOVE 30 TO WS-DATE2-DD]
+    L -->|Yes| O[Feb 28 in Non-Leap Year]
+    L -->|No| M
+    
+    O --> N
+    N --> P[Forward Adjustment Complete]
+    
+    E --> Q{DATE2-MM = 2 AND DATE2-DD < DATE1-DD?}
+    Q -->|Yes| R[Backward February Adjustment]
+    Q -->|No| S[No February Adjustment Needed]
+    
+    R --> T{DATE2-DD = 29?}
+    T -->|Yes| U{LEAP-YEAR-TRUE?}
+    T -->|No| V{DATE2-DD = 28?}
+    
+    U -->|Yes| W[MOVE 29 TO WS-DATE1-DD]
+    U -->|No| X[Invalid Feb 29 in Non-Leap]
+    V -->|Yes| Y{LEAP-YEAR-FALSE?}
+    V -->|No| Z[Other February Day]
+    
+    Y -->|Yes| AA[MOVE 28 TO WS-DATE1-DD]
+    Y -->|No| Z
+    
+    W --> BB[Backward Adjustment Complete]
+    AA --> BB
+    
+    P --> CC[358-Day Type Check]
+    BB --> CC
+    S --> CC
+    M --> CC
+    Z --> CC
+    
+    CC --> DD{TA-YRTYPE = 358?}
+    DD -->|Yes| EE[358 Special February Processing]
+    DD -->|No| FF[February Processing Complete]
+    
+    EE --> GG{DATE1-MM = 2 AND DATE1-DD > DATE2-DD?}
+    GG -->|Yes| HH[358 February Adjustment]
+    GG -->|No| FF
+    
+    HH --> II{LEAP-YEAR-FALSE for DATE1?}
+    II -->|Yes| JJ[ADD 2 TO WS-DATE1-DD]
+    II -->|No| KK[ADD 1 TO WS-DATE1-DD]
+    
+    JJ --> LL[358 February Complete]
+    KK --> LL
+    LL --> FF
+    
+    subgraph "February Rules"
+        MM[Feb 28 non-leap → Day 30]
+        NN[Feb 29 leap → Day 30]
+        OO[Backward: Adjust DATE1]
+        PP[Forward: Adjust DATE2]
+        QQ[358: Extra adjustment]
+    end
+    
+    style A fill:#e3f2fd
+    style FF fill:#e8f5e8
+    style C fill:#fff8e1
+    style G fill:#fff8e1
+    style H fill:#fff8e1
+    style I fill:#fff8e1
+    style L fill:#fff8e1
+    style Q fill:#fff8e1
+    style T fill:#fff8e1
+    style U fill:#fff8e1
+    style V fill:#fff8e1
+    style Y fill:#fff8e1
+    style DD fill:#fff8e1
+    style GG fill:#fff8e1
+    style II fill:#fff8e1

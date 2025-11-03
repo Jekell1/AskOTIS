@@ -1,0 +1,67 @@
+graph TD
+    A[Payment Input] --> B[Validate Payment Amount]
+    B --> C{Amount Valid?}
+    C -->|No| D[Display Error Message]
+    D --> E[Return to Input]
+    E --> A
+    
+    C -->|Yes| F[Calculate Total Obligations]
+    F --> G[INT + LC + OTH + OT2 + ESC]
+    G --> H{Payment >= Obligations?}
+    
+    H -->|No| I[Partial Payment Processing]
+    H -->|Yes| J[Full Payment Processing]
+    
+    I --> K[Calculate Distribution Priority]
+    K --> L[Apply to Late Charges First]
+    L --> M[Apply to Interest Due]
+    M --> N[Apply to Other Charges]
+    N --> O[Apply to Other 2 Charges]
+    O --> P[Apply Remainder to Principal]
+    
+    J --> Q[Apply to All Obligations]
+    Q --> R[Calculate Principal Payment]
+    R --> S{Excess Payment?}
+    S -->|Yes| T[Handle Overpayment]
+    S -->|No| U[Standard Distribution]
+    
+    T --> V{Revolving Account?}
+    V -->|Yes| W[Allow Negative Balance]
+    V -->|No| X[Prevent Overpayment]
+    X --> Y[Adjust Payment Amount]
+    Y --> U
+    W --> U
+    
+    P --> Z[Validate Balance Consistency]
+    U --> Z
+    Z --> AA{Math Consistent?}
+    AA -->|No| BB[Recalculate Distribution]
+    BB --> K
+    
+    AA -->|Yes| CC[Apply Late Charges]
+    CC --> DD[Call LPLCAP Routine]
+    DD --> EE[Update Late Charge Balances]
+    EE --> FF[Calculate Escrow Amount]
+    FF --> GG{Escrow Required?}
+    
+    GG -->|Yes| HH[Validate Escrow Amount]
+    GG -->|No| II[Skip Escrow Processing]
+    
+    HH --> JJ{Escrow <= Available?}
+    JJ -->|No| KK[Reduce Escrow to Maximum]
+    JJ -->|Yes| LL[Apply Full Escrow]
+    KK --> LL
+    
+    LL --> MM[Update All Balances]
+    II --> MM
+    MM --> NN[Calculate New Current Balance]
+    NN --> OO[Update Accumulation Fields]
+    OO --> PP[Write Payment History Record]
+    PP --> QQ[Update Cash Drawer]
+    QQ --> RR[Return Success Status]
+    
+    style A fill:#e1f5fe
+    style CC fill:#fff3e0
+    style MM fill:#e8f5e8
+    style RR fill:#c8e6c9
+    style D fill:#ffcdd2

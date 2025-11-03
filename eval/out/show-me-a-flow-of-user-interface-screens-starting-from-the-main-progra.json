@@ -1,0 +1,70 @@
+{
+  "question": "Show me a flow of user interface screens starting from the main program.",
+  "scope": "flow",
+  "expanded_query": "MAIN Show a flow from interface main me of program screens starting the user",
+  "aliases": {
+    "MAIN": [
+      "main",
+      "MAIN"
+    ]
+  },
+  "answer_outline": "- Identify primary entry program and key perform chain.\n- Summarize major branches / loops (if any).\n- Highlight high risk segments (risk_score).\n- Cite evidence snippets with program + line references.",
+  "diagram": "flowchart TD\n  END-EVALUATE--> CALL-WRFORM\n  END-EVALUATE--> TYPE-01\n  DISPLAY-PAGE--> CALL-WRFORM\n  END-EVALUATE--> SEND-LEGEND\n  BUILD-PAGENO--> DISPLAY-PAGE\n  I-O-CONTROL--> SQL-CONNECT\n  USER-01--> XFER\n  CONT-BUILD-PAGENO--> START-BB2-FILE\n  SELECT-FIELD-FROM-DISPLAY--> END-ROUTINE\n  TYPE-01--> CALL-WRFORM\n  USER-01--> CALL-WRFORM\n  END-EVALUATE--> ALL-USERS\n  SELECT-FIELD-FROM-DISPLAY--> SEND-LEGEND\n  SELECT-FIELD-FROM-DISPLAY--> MORE-INFO\n  EXIT--> FORM-PROGX\n  END-EVALUATE--> USER-01\n  END-EVALUATE--> C\n  SEND-LEGEND--> CLOSE-BR-FILE\n  TYPE-01--> SCREENIO\n  END-EVALUATE--> SEND-PHONE\n  SELECT-FIELD-FROM-DISPLAY--> CALL-FLDSEL\n  SELECT-FIELD-FROM-DISPLAY--> START-BUILD-PAGENO\n  SELECT-FIELD-FROM-DISPLAY--> VERIFY-PASSWORD\n  END-EVALUATE--> MORE-INFO\n  EXIT--> OPEN-BB1-FILE\n  END-EVALUATE--> GET-GR\n  DISPLAY-PAGE--> END-INQUIRY-MODULE\n  EXIT--> OPEN-BR-FILE\n  SEND-LEGEND--> CALL-WRFORM\n  MAIN-CONT--> USER-01\n  END-EVALUATE--> XFER\n  SELECT-FIELD-FROM-DISPLAY--> ALARM\n  EXIT--> CLOSE-BR-FILE\n  SEND-LEGEND--> CLOSE-FILES\n  MAIN-CONT--> REC-INQ-RANGES\n  TYPE-01--> END-REC-RANGES\n  END-EVALUATE--> SCREENIO\n  DISPLAY-PAGE--> SEND-MESS\n  EXIT--> READ-BR-FILE\n  EXIT--> CLOSE-GR1-FILE\n  I-O-CONTROL--> FORM-RESET\n  END-EVALUATE--> VERIFY-PASSWORD\n  END-EVALUATE--> END-REC-RANGES\n  END-EVALUATE--> BUILD-PAGENO\n  DISPLAY-PAGE--> SEND-LEGEND\n  EXIT--> CALL-WRFORM\n  SEND-LEGEND--> CLOSE-BB2-FILE\n  SEND-LEGEND--> CLOSE-BB1-FILE\n  MAIN-CONT--> END-ROUTINE\n  MAIN-CONT--> INQUIRY-DISPLAY\n  TYPE-01--> USER-01\n  ALL-USERS--> SCREENIO\n  EXIT--> OPEN-BB2-FILE\n  BUILD-PAGENO--> READ-BB1-FILE-NEXT\n  SELECT-FIELD-FROM-DISPLAY--> END-INQUIRY-MODULE\n  EXIT--> READ-GR1-FILE\n  TYPE-01--> SEND-LEGEND\n  CONT-BUILD-PAGENO--> START-BB1-FILE\n  BUILD-PAGENO--> READ-BB2-FILE-NEXT\n  END-EVALUATE--> GET-BR\n  EXIT--> OPEN-GR1-FILE\n  SEND-LEGEND--> CLOSE-GR1-FILE",
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BBINQ",
+      "path": "BBINQ",
+      "line": null,
+      "snippet": "Paragraphs=44; edges=62; depth=5; cycles=N; entries=27; exits=26; fanout_max=15; risk=0.475. Entry: MAIN-PROGRAM.... High fanout: END-EVALUATE (15)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "THE",
+      "path": "THE",
+      "line": null,
+      "snippet": "THE ; ROLE:UNKNOWN ; OUT: ; IN:CPINQ0,LONPFC ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "10199e36ef25d8fe1e21a937c1dfa89485394240",
+      "path": "cobol_src\\CL\\PGMENU.CBL",
+      "line": 572,
+      "snippet": "* IF WE CALL A MENU FROM THE F10 AND THE MENU DISPLAY ON THE"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "PWSCAN",
+      "path": "PWSCAN",
+      "line": null,
+      "snippet": "Paragraphs=27; edges=26; depth=5; cycles=N; entries=20; exits=18; fanout_max=7; risk=0.355. Entry: MAIN-PROGRAM.... High fanout: SELECT-FIELD-FROM-DISPLAY (7)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "FROM",
+      "path": "FROM",
+      "line": null,
+      "snippet": "FROM ; ROLE:LEAF ; OUT: ; IN:BLQUOT,CDBRRD,CDREAD,CLQUOT,GREXEC,LCFLD,LFPPO,LNPBRN,LNQUOT,SFQUOT,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "24cec6f0ecc3120748fd637313eb50b4313dec12",
+      "path": "cobol_src\\CL\\WIMENU.CBL",
+      "line": 737,
+      "snippet": "* IF WE CALL A MENU FROM THE F10 AND THE MENU DISPLAY ON THE"
+    }
+  ],
+  "meta": {
+    "ts": 1759097700.5221834,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

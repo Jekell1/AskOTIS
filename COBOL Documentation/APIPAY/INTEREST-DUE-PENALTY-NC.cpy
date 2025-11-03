@@ -1,0 +1,45 @@
+      * NORTH CAROLINA, PRE-PAYOFF PENALTY, CAROLINA FINANCE  (10% OR $25.00)
+      * IF PAID OFF ANY TIME PRIOR TO MATURITY OF THE LOAN
+      *
+      * NOTE: THE LOANS ORIGINAL MATURITY DATE
+      *       IS USED WITHOUT REGARD FOR DEFERMENTS OR ADDONS.
+       INTEREST-DUE-PENALTY-NC.
+           IF SP-RBREDUC(7) NOT = 9999.06
+              GO TO INTEREST-DUE-PENALTY-25.
+
+      * CALCULATE ORIGINAL MATURITY DATE
+      
+           IF INDU-LPTRCD = "PO"
+              MOVE "Y" TO MDTE-FLAG
+                          MDTE-ORGTERM-FG
+              PERFORM MATURITY-DATE-CALCULATION
+              MOVE MDTE-DATE TO NUM-DATE
+              MOVE INDU-DATE-2 TO SYS-DATE
+              IF SYS-DATE < NUM-DATE
+                 COMPUTE INDU-PENALTY ROUNDED =
+                    (INDU-CURBAL * .10)
+                 IF INDU-PENALTY > 25.00
+                    MOVE 25.00 TO INDU-PENALTY
+                 END-IF
+                 COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                               + INDU-PENALTY.
+
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+
+      * OHIO STATE PREPAYMENT PENALTY (EFF 01-JAN-2007)
+      *
+      * IF ORIG PRIN <= 75K
+      *    PENALTY IS 1% OF LOAN NET BAL IF PAID < 5 YEARS FROM LOAN DATE
+      * IF ORIG PRIN  > 75K
+      *    IF PAID <=1 YEAR FROM LOAN DATE
+      *       PENALTY IS 2% OF LOAN NET BAL
+      *    IF PAID > 1  AND <= 2 YEARS FROM LOAN DATE
+      *       PENALTY IS 1% OF LOAN NET BAL
+      *    IF PAID > 2 YEARS FROM LOAN DATE
+      *       NO PENALTY
+      *
+      * NOTES:
+      *    PENALTY IS NOT CHARGED ON RENEWALS.
+      *    PENALTY IS ADDED TO THE INTEREST DUE ON PAYOFF.
+      

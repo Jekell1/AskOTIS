@@ -1,0 +1,70 @@
+<svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
+  <text x="600" y="30" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a1a1a">Call Chain: APIPAY (12 programs)</text>
+  
+  <!-- Main program at top center -->
+  <rect x="520" y="60" width="160" height="80" fill="#667eea" stroke="#4338ca" stroke-width="3" rx="8"/>
+  <text x="600" y="95" text-anchor="middle" fill="white" font-size="18" font-weight="bold">APIPAY</text>
+  <text x="600" y="118" text-anchor="middle" fill="white" font-size="13">Main Program</text>
+  
+  <!-- Row 1: Programs 1-4 -->
+  <rect x="50" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">FORM-PROGX</text>
+  <text x="120" y="228" text-anchor="middle" fill="white" font-size="11">Dynamic Call</text>
+  
+  <rect x="230" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFA</text>
+  <text x="300" y="228" text-anchor="middle" fill="white" font-size="11">Loan Processing</text>
+  
+  <rect x="410" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFB</text>
+  <text x="480" y="228" text-anchor="middle" fill="white" font-size="11">Payment File</text>
+  
+  <rect x="590" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF2</text>
+  <text x="660" y="228" text-anchor="middle" fill="white" font-size="11">File Handler</text>
+  
+  <!-- Row 2: Programs 5-8 -->
+  <rect x="50" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF9</text>
+  <text x="120" y="338" text-anchor="middle" fill="white" font-size="11">Notification</text>
+  
+  <rect x="230" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">GB/SETENV</text>
+  <text x="300" y="338" text-anchor="middle" fill="white" font-size="11">Environment Setup</text>
+  
+  <rect x="410" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF7</text>
+  <text x="480" y="338" text-anchor="middle" fill="white" font-size="11">File Processor</text>
+  
+  <rect x="590" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFC</text>
+  <text x="660" y="338" text-anchor="middle" fill="white" font-size="11">File Controller</text>
+  
+  <!-- Row 3: Programs 9-12 -->
+  <rect x="50" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">C$MAKEDIR</text>
+  <text x="120" y="448" text-anchor="middle" fill="white" font-size="11">Directory Utility</text>
+  
+  <rect x="230" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">EXIT PROGRAM</text>
+  <text x="300" y="448" text-anchor="middle" fill="white" font-size="11">Control Flow</text>
+  
+  <rect x="410" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">GP-PAYOFF-NONCASH</text>
+  <text x="480" y="448" text-anchor="middle" fill="white" font-size="11">Payment Handler</text>
+  
+  <rect x="590" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">TO</text>
+  <text x="660" y="448" text-anchor="middle" fill="white" font-size="11">Transfer Out</text>
+  
+  <!-- Arrows from main to all called programs (simplified - just a few examples) -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+  <line x1="520" y1="120" x2="120" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="580" y1="140" x2="300" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="600" y1="140" x2="480" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="620" y1="140" x2="660" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+</svg>

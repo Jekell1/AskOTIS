@@ -1,0 +1,27 @@
+graph TD
+    A[Date Difference Methods] --> B[YRTYPE 999 - Truth in Lending]
+    A --> C[YRTYPE 998 - Elapsed Unit Periods]
+    
+    B --> B1[Standardized 30-day Months]
+    B --> B2[Standardized 360-day Year]
+    B --> B3[Whole Month Counting]
+    B --> B4[Reg Z Compliant Results]
+    
+    C --> C1[30-day Unit Periods]
+    C --> C2[Day Precision for Partial Periods]
+    C --> C3[Remainder Days Tracked]
+    C --> C4[Payment Schedule Alignment]
+    
+    subgraph "Example Calculation"
+    D[Start: 03/03/97] --> E[End: 05/02/97]
+    E --> F[YRTYPE 999 Result]
+    E --> G[YRTYPE 998 Result]
+    
+    F --> F1[Months: 2]
+    F --> F2[Days: 60]
+    F --> F3[Remainder: 0]
+    
+    G --> G1[Months: 1]
+    G --> G2[Days: 60]
+    G --> G3[Remainder: 30]
+    end

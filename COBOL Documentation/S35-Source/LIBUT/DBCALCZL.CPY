@@ -1,0 +1,1051 @@
+      ******************************************************************
+      *
+      * IDENTIFICATION: LIBUT/DBCALCZL
+      *
+      * DESCRIPTION   : DEBUG MULSIL VARIABLES
+      *                 USED TO GET MULSIL VARIABLES AND LOAD THEM
+      *                 INTO A OUTPUT FILE.
+      *
+      * OUTPUT FILE   : /USR/TMP/MULSIL-YYMMDD-HHMMSS
+      *
+      *=================================================================
+      * REV:
+      * JKC 2022-0614 ***NEW***
+      *
+      ******************************************************************
+      *
+      *   D B C A L C Z L - R O U T I N E
+      *
+      ******************************************************************
+       DBCALCZL-ROUTINE SECTION.
+
+      D    STOP DBCALCZL-ECHO-TEXT.
+           IF ( DBCALCZL-FIRST-TIME = "T" )      *> TESTING FUNCTION
+              PERFORM DBCALCZL-INITIALIZATION
+              PERFORM DBCALCZL-TEST-SETTINGS
+           ELSE
+           IF ( DBCALCZL-FIRST-TIME = "Y" )
+              PERFORM DBCALCZL-INITIALIZATION.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE "CMP-LOOP-COUNT"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-LOOP-COUNT             TO DBCALCZL-DETAIL-SIGN5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-LOOP-COUNT-MAX"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-LOOP-COUNT-MAX         TO DBCALCZL-DETAIL-SIGN5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-TOTAL-NOTE"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-TOTAL-NOTE             TO DBCALCZL-DETAIL-SIGN7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INT-CHARGEABLE"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INT-CHARGEABLE         TO DBCALCZL-DETAIL-SIGN7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-NEW-LOAN-PROCEEDS"    TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-NEW-LOAN-PROCEEDS      TO DBCALCZL-DETAIL-SIGN7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1ST-PMT-MTHS"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1ST-PMT-MTHS           TO DBCALCZL-DETAIL-NUM3.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1ST-PMT-DAYS"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1ST-PMT-DAYS           TO DBCALCZL-DETAIL-NUM3.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1ST-PMT-EXTENSION"    TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1ST-PMT-EXTENSION      TO DBCALCZL-DETAIL-NUM3.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-ETBL"                 TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-ETBL                   TO DBCALCZL-DETAIL-NUM1.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-LOANDATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-LOANDATE               TO DBCALCZL-DATE-NOW.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INTDATE"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INTDATE                TO DBCALCZL-DATE-NOW. 
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-FILEDATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-FILEDATE               TO DBCALCZL-DETAIL-DATE-NOW. 
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1STPYDATE"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1STPYDATE              TO DBCALCZL-DETAIL-DATE-NOW.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-TERM"                 TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-TERM                   TO DBCALCZL-DETAIL-NUM4.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-PURPOSE-CD"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-PURPOSE-CD             TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-COLLTRL-CD"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-COLLTRL-CD             TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-SOURCE-CD"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-SOURCE-CD              TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-PROCEEDS"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-PROCEEDS               TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-PROCEEDS-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-PROCEEDS-SW            TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+     *     MOVE "CMP-BALLOON"              TO DBCALCZL-DETAIL-PROMPT.
+     *     MOVE CMP-BALLOON                TO DBCALCZL-DETAIL-%.
+     *     PERFORM DBCALCZL-WRITE-RECORD.
+
+     *     MOVE "CMP-BALLOON-SW"           TO DBCALCZL-DETAIL-PROMPT.
+     *     MOVE CMP-BALLOON-SW             TO DBCALCZL-DETAIL-%.
+     *     PERFORM DBCALCZL-WRITE-RECORD.
+
+     *     MOVE "CMP-SELLPR-FG"            TO DBCALCZL-DETAIL-PROMPT.
+     *     MOVE CMP-SELLPR-FG              TO DBCALCZL-DETAIL-%.
+     *     PERFORM DBCALCZL-WRITE-RECORD.
+
+     *     MOVE "CMP-DOWNPY-FG"            TO DBCALCZL-DETAIL-PROMPT.
+     *     MOVE CMP-DOWNPY-FG              TO DBCALCZL-DETAIL-%.
+     *     PERFORM DBCALCZL-WRITE-RECORD.
+
+     *     MOVE "CMP-PERDOWN-FG"           TO DBCALCZL-DETAIL-PROMPT.
+     *     MOVE CMP-PERDOWN-FG             TO DBCALCZL-DETAIL-%.
+     *     PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INS-WHO"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INS-WHO                TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INS-TYPE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INS-TYPE               TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INS-ELIG"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INS-ELIG               TO DBCALCZL-DETAIL-TEXT-5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-POINTS"               TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-POINTS                 TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-POINTS-SW"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-POINTS-SW              TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-GL-AMOUNT-TOTAL"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-GL-AMOUNT-TOTAL        TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-GL-AMOUNT-TOTAL-FINCHG" TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-GL-AMOUNT-TOTAL-FINCHG   TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-OVR-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-OVR-RATE               TO DBCALCZL-DETAIL-RATE.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-OVR-RATE-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-OVR-RATE-SW            TO DBCALCZL-DETAIL-TEXT-5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-EFF-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-EFF-RATE               TO DBCALCZL-DETAIL-RATE.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-SIM-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-SIM-RATE               TO DBCALCZL-DETAIL-RATE.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-APR-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-APR-RATE               TO DBCALCZL-DETAIL-RATE.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-END-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-END-RATE               TO DBCALCZL-DETAIL-RATE.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           PERFORM VARYING DBCALCZL-SUB FROM 1 BY 1
+                     UNTIL DBCALCZL-SUB > 8
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-CO(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-CO(DBCALCZL-SUB)              
+                                           TO DBCALCZL-DETAIL-NUM2.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-USE-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-USE-SW(DBCALCZL-SUB)          
+                                           TO DBCALCZL-DETAIL-TEXT5.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-TERM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-TERM(DBCALCZL-SUB)            
+                                           TO DBCALCZL-DETAIL-NUM4. 
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-TERM-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-TERM-SW(DBCALCZL-SUB)         
+                                           TO DBCALCZL-DETAIL-TEXT5
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-COVERAGE(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-COVERAGE(DBCALCZL-SUB)        
+                                           TO DBCALCZL-DETAIL-NUM7V99.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-COVERAGE-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-COVERAGE-SW(DBCALCZL-SUB)         
+                                           TO DBCALCZL-DETAIL-TEXT5.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-PREMIUM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-PREMIUM(DBCALCZL-SUB)         
+                                           TO DBCALCZL-DETAIL-NUM7V99.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-PREMIUM-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-PREMIUM-SW(DBCALCZL-SUB)          
+                                           TO DBCALCZL-DETAIL-TEXT5.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-SW(DBCALCZL-SUB)              
+                                           TO DBCALCZL-DETAIL-TEXT5.
+             PERFORM DBCALCZL-WRITE-RECORD
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INSFINCHG-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INSFINCHG-SW(DBCALCZL-SUB)        
+                                           TO DBCALCZL-DETAIL-TEXT5.
+             PERFORM DBCALCZL-WRITE-RECORD.
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-REJECT-TERM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-REJECT-TERM(DBCALCZL-SUB)
+                                           TO DBCALCZL-DETAIL-NUM4.
+             PERFORM DBCALCZL-WRITE-RECORD.
+
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "CMP-INS-TAX(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE CMP-INS-TAX(DBCALCZL-SUB)
+                                           TO DBCALCZL-DETAIL-SIGN7V99.
+             PERFORM DBCALCZL-WRITE-RECORD.
+
+           END-PERFORM.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    MOVE "CMP-SELLPR"               TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-SELLPR                 TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-DOWNPY"               TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-DOWNPY                 TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-PERDOWN"              TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-PERDOWN                TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-FEE-CHG(1)"           TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-FEE-CHG(1)             TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-FEE-CHG-SW(1)"        TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-FEE-CHG-SW(1)          TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-FEE-CHG(2)"           TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-FEE-CHG(2)             TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+      *    MOVE "CMP-FEE-CHG-SW(2)"        TO DBCALCZL-DETAIL-PROMPT.
+      *    MOVE CMP-FEE-CHG-SW(2)          TO DBCALCZL-DETAIL-%.
+      *    PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-SERVICE-CHG"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-SERVICE-CHG            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-SERVICE-CHG-SW"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-SERVICE-CHG-SW         TO DBCALCZL-DETAIL-TEXT5
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-MAINT-FEES"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-MAINT-FEES             TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-MAINT-FEES-SW"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-MAINT-FEES-SW          TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1ST-PY-EXT"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1ST-PY-EXT             TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-1ST-PY-EXT-SW"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-1ST-PY-EXT-SW          TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-INT-CHARGE"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-INT-CHARGE             TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-AMT-FINANCD"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-AMT-FINANCD            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-APR-FINANCD"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-APR-FINANCD            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-LOAN-AMOUNT"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-LOAN-AMOUNT            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-TOT-REPYBLE"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-TOT-REPYBLE            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-ANTIC-EARNS"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-ANTIC-EARNS            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-ODD-1ST-PMT"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-ODD-1ST-PMT            TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-REGPYAMT"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-REGPYAMT               TO DBCALCZL-DETAIL-NUM7V99.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "CMP-REGPYAMT-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE CMP-REGPYAMT-SW            TO DBCALCZL-DETAIL-TEXT5.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE "COP-NO-OF-TIMES-CALLED"   TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-NO-OF-TIMES-CALLED     TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-RETURN-CODE"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-RETURN-CODE            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-LOOP-COUNT"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-LOOP-COUNT             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-LOOP-COUNT-MAX"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-LOOP-COUNT-MAX         TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-BALLOON-LAST-FG"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-BALLOON-LAST-FG        TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-TOTAL-NOTE"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-TOTAL-NOTE             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INT-CHARGEABLE"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INT-CHARGEABLE         TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-NEW-LOAN-PROCEEDS"    TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-NEW-LOAN-PROCEEDS      TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1ST-PMT-MTHS"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1ST-PMT-MTHS           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1ST-PMT-DAYS"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1ST-PMT-DAYS           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1ST-PMT-EXTENSION"    TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1ST-PMT-EXTENSION      TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-ETBL"                 TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-ETBL                   TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-MATURITY-DATE"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-MATURITY-DATE          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-LOANTYPE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-LOANTYPE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SMALLOAN"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SMALLOAN               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SALEFIN"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SALEFIN                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SERVACCT"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SERVACCT               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-CAN-LOAN-NO"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-CAN-LOAN-NO            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-UNITPER-CD"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-UNITPER-CD             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-UNITPER-FREQ"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-UNITPER-FREQ           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRIOR-LOAN-STATE"     TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRIOR-LOAN-STATE       TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRIOR-LOAN-CLASS"     TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRIOR-LOAN-CLASS       TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRBAL"                TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRBAL                  TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRINTDUE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRINTDUE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRFINCHGRB"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRFINCHGRB             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRINSRB"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRINSRB                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRPAID-AHEAD"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRPAID-AHEAD           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRLOAN-RESTRICTED"    TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRLOAN-RESTRICTED      TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-RESTRICT-ADJ"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-RESTRICT-ADJ           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-DUAL-LOAN-ADJ"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-DUAL-LOAN-ADJ          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRIOR-CASHADV"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRIOR-CASHADV          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-RESTRICT-SERCHG"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-RESTRICT-SERCHG        TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-RESTRICT-HIGH-CASHADV" TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-RESTRICT-HIGH-CASHADV   TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRIOR-LOAN-DATE"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRIOR-LOAN-DATE        TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-STATE-WORKER"         TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-STATE-WORKER           TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FINCHG"               TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FINCHG                 TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-MFEE-RESTRICT"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-MFEE-RESTRICT          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PRIOR-SUB-CLASS"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PRIOR-SUB-CLASS        TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-LOANDATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-LOANDATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INTDATE"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INTDATE                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FILEDATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FILEDATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1STPYDATE"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1STPYDATE              TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-TERM"                 TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-TERM                   TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PURPOSE-CD"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PURPOSE-CD             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-COLLTRL-CD"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-COLLTRL-CD             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SOURCE-CD"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SOURCE-CD              TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PROCEEDS"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PROCEEDS               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PROCEEDS-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PROCEEDS-SW            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-BALLOON"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-BALLOON                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-BALLOON-SW"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-BALLOON-SW             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SELLPR-FG"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SELLPR-FG              TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-DOWNPY-FG"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-DOWNPY-FG              TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PERDOWN-FG"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PERDOWN-FG             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INS-WHO"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INS-WHO                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INS-TYPE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INS-TYPE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INS-ELIG"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INS-ELIG               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-POINTS"               TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-POINTS                 TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-POINTS-SW"            TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-POINTS-SW              TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-GL-AMOUNT-TOTAL"      TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-GL-AMOUNT-TOTAL        TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-GL-AMOUNT-TOTAL-FINCHG" TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-GL-AMOUNT-TOTAL-FINCHG   TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-OVR-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-OVR-RATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-OVR-RATE-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-OVR-RATE-SW            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-EFF-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-EFF-RATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SIM-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SIM-RATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-APR-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-APR-RATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-END-RATE"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-END-RATE               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           PERFORM VARYING DBCALCZL-SUB FROM 1 BY 1
+                     UNTIL DBCALCZL-SUB > 8
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-CO(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-CO(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-USE-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-USE-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-TERM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-TERM(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-TERM-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-TERM-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-COVERAGE(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-COVERAGE(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-COVERAGE-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-COVERAGE-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-PREMIUM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-PREMIUM(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-PREMIUM-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-PREMIUM-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INSFINCHG-SW(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INSFINCHG-SW(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-REJECT-TERM(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-REJECT-TERM(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+             MOVE SPACES                   TO DBCALCZL-DETAIL-PROMPT
+             STRING "COP-INS-TAX(", DBCALCZL-SUB,")"
+                       DELIMITED BY "  " INTO DBCALCZL-DETAIL-PROMPT
+             MOVE COP-INS-TAX(DBCALCZL-SUB)             
+                                           TO DBCALCZL-DETAIL-%
+             PERFORM DBCALCZL-WRITE-RECORD
+  
+           END-PERFORM.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE "COP-SELLPR"               TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SELLPR                 TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-DOWNPY"               TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-DOWNPY                 TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-PERDOWN"              TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-PERDOWN                TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FEE-CHG(1)"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FEE-CHG(1)             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FEE-CHG-SW(1)"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FEE-CHG-SW(1)          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FEE-CHG(2)"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FEE-CHG(2)             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-FEE-CHG-SW(2)"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-FEE-CHG-SW(2)          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SERVICE-CHG"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SERVICE-CHG            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-SERVICE-CHG-SW"       TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-SERVICE-CHG-SW         TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-MAINT-FEES"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-MAINT-FEES             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-MAINT-FEES-SW"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-MAINT-FEES-SW          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1ST-PY-EXT"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1ST-PY-EXT             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-1ST-PY-EXT-SW"        TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-1ST-PY-EXT-SW          TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-INT-CHARGE"           TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-INT-CHARGE             TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-AMT-FINANCD"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-AMT-FINANCD            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-APR-FINANCD"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-APR-FINANCD            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-LOAN-AMOUNT"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-LOAN-AMOUNT            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-TOT-REPYBLE"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-TOT-REPYBLE            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-ANTIC-EARNS"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-ANTIC-EARNS            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-ODD-1ST-PMT"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-ODD-1ST-PMT            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-REGPYAMT"             TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-REGPYAMT               TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+           MOVE "COP-REGPYAMT-SW"          TO DBCALCZL-DETAIL-PROMPT.
+           MOVE COP-REGPYAMT-SW            TO DBCALCZL-DETAIL-%.
+           PERFORM DBCALCZL-WRITE-RECORD.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE ALL "="                    TO DBCALCZL-ECHO-TEXT.
+           MOVE DBCALCZL-ECHO-CMD          TO DBCALCZL-SYSTEM-CMD.
+           CALL 'SYSTEM' USING DBCALCZL-SYSTEM.
+
+      *=================================================================
+       DBCALCZL-ROUTINE-EXIT.
+           EXIT.
+
+      ******************************************************************
+      *
+      *   D B C A L C Z L - I N I T I A L I Z A T I O N 
+      *
+      ******************************************************************
+       DBCALCZL-INITIALIZATION SECTION.
+
+           MOVE "N" TO DBCALCZL-FIRST-TIME.
+
+           ACCEPT DBCALCZL-TIME-NOW FROM TIME.
+           ACCEPT DBCALCZL-DATE-NOW FROM CENTURY-DATE.
+
+           MOVE DBCALCZL-DATE-YYMMDD TO DBCALCZL-OUTPUT-DATE.
+           MOVE DBCALCZL-TIME-HHMMSS TO DBCALCZL-OUTPUT-TIME.
+
+           CALL "C$TOLOWER" USING DBCALCZL-OUTPUT-FILE, VALUE 8.
+           CALL "C$TOLOWER" USING DBCALCZL-ECHO-CMD,    VALUE 4.
+
+           MOVE DBCALCZL-OUTPUT-FILE TO DBCALCZL-SYSTEM-OUTPUT.
+
+      *=================================================================
+       DBCALCZL-INITIAL-EXIT.
+           EXIT.
+
+      ******************************************************************
+      *
+      *   D B C A L C Z L - T E S T - S E T T I N G S
+      *
+      *=================================================================
+      * DESC: USED FOR FORCE SETTING THE DEC-VARS AND WS-VARS FIELDS
+      *       JUST TO TEST THE OUTPUTS.
+      ******************************************************************
+       DBCALCZL-TEST-SETTINGS SECTION.
+
+           MOVE ZEROES TO CMP-LOOP-COUNT.
+           MOVE ZEROES TO CMP-LOOP-COUNT-MAX.
+           MOVE ZEROES TO CMP-TOTAL-NOTE.
+           MOVE ZEROES TO CMP-INT-CHARGEABLE.
+           MOVE ZEROES TO CMP-NEW-LOAN-PROCEEDS.
+           MOVE ZEROES TO CMP-1ST-PMT-MTHS.
+           MOVE ZEROES TO CMP-1ST-PMT-DAYS.
+           MOVE ZEROES TO CMP-1ST-PMT-EXTENSION.
+           MOVE ZEROES TO CMP-ETBL.
+           MOVE ZEROES TO CMP-LOANDATE.
+           MOVE ZEROES TO CMP-INTDATE.
+           MOVE ZEROES TO CMP-FILEDATE.
+           MOVE ZEROES TO CMP-1STPYDATE.
+           MOVE ZEROES TO CMP-TERM.
+           MOVE ZEROES TO CMP-PURPOSE-CD.
+           MOVE ZEROES TO CMP-COLLTRL-CD.
+           MOVE ZEROES TO CMP-SOURCE-CD.
+           MOVE ZEROES TO CMP-PROCEEDS.
+           MOVE ZEROES TO CMP-PROCEEDS-SW.
+           MOVE ZEROES TO CMP-BALLOON.
+           MOVE ZEROES TO CMP-BALLOON-SW.
+           MOVE ZEROES TO CMP-SELLPR-FG.
+           MOVE ZEROES TO CMP-DOWNPY-FG.
+           MOVE ZEROES TO CMP-PERDOWN-FG.
+           MOVE ZEROES TO CMP-INS-WHO.
+           MOVE ZEROES TO CMP-INS-TYPE.
+           MOVE ZEROES TO CMP-INS-ELIG.
+           MOVE ZEROES TO CMP-POINTS.
+           MOVE ZEROES TO CMP-POINTS-SW.
+           MOVE ZEROES TO CMP-GL-AMOUNT-TOTAL.
+           MOVE ZEROES TO CMP-GL-AMOUNT-TOTAL-FINCHG.
+           MOVE ZEROES TO CMP-OVR-RATE.
+           MOVE ZEROES TO CMP-OVR-RATE-SW.
+           MOVE ZEROES TO CMP-EFF-RATE.
+           MOVE ZEROES TO CMP-SIM-RATE.
+           MOVE ZEROES TO CMP-APR-RATE.
+           MOVE ZEROES TO CMP-END-RATE.
+
+           PERFORM VARYING DBCALCZL-SUB FROM 1 BY 1
+                     UNTIL DBCALCZL-SUB > 8
+             MOVE ZEROES TO CMP-INS-CO(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-USE-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-TERM(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-TERM-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-COVERAGE(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-COVERAGE-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-PREMIUM(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-PREMIUM-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INSFINCHG-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-REJECT-TERM(DBCALCZL-SUB)
+             MOVE ZEROES TO CMP-INS-TAX(DBCALCZL-SUB)
+           END-PERFORM.
+
+           MOVE ZEROES TO CMP-SELLPR.
+           MOVE ZEROES TO CMP-DOWNPY.
+           MOVE ZEROES TO CMP-PERDOWN.
+           MOVE ZEROES TO CMP-FEE-CHG(1).
+           MOVE ZEROES TO CMP-FEE-CHG-SW(1).
+           MOVE ZEROES TO CMP-FEE-CHG(2).
+           MOVE ZEROES TO CMP-FEE-CHG-SW(2).
+           MOVE ZEROES TO CMP-SERVICE-CHG.
+           MOVE ZEROES TO CMP-SERVICE-CHG-SW.
+           MOVE ZEROES TO CMP-MAINT-FEES.
+           MOVE ZEROES TO CMP-MAINT-FEES-SW.
+           MOVE ZEROES TO CMP-1ST-PY-EXT.
+           MOVE ZEROES TO CMP-1ST-PY-EXT-SW.
+           MOVE ZEROES TO CMP-INT-CHARGE.
+           MOVE ZEROES TO CMP-AMT-FINANCD.
+           MOVE ZEROES TO CMP-APR-FINANCD.
+           MOVE ZEROES TO CMP-LOAN-AMOUNT.
+           MOVE ZEROES TO CMP-TOT-REPYBLE.
+           MOVE ZEROES TO CMP-ANTIC-EARNS.
+           MOVE ZEROES TO CMP-ODD-1ST-PMT.
+           MOVE ZEROES TO CMP-REGPYAMT.
+           MOVE ZEROES TO CMP-REGPYAMT-SW.
+
+           MOVE ZEROES TO COP-NO-OF-TIMES-CALLED.
+           MOVE ZEROES TO COP-RETURN-CODE.
+           MOVE ZEROES TO COP-LOOP-COUNT.
+           MOVE ZEROES TO COP-LOOP-COUNT-MAX.
+           MOVE ZEROES TO COP-BALLOON-LAST-FG.
+           MOVE ZEROES TO COP-TOTAL-NOTE.
+           MOVE ZEROES TO COP-INT-CHARGEABLE.
+           MOVE ZEROES TO COP-NEW-LOAN-PROCEEDS.
+           MOVE ZEROES TO COP-1ST-PMT-MTHS.
+           MOVE ZEROES TO COP-1ST-PMT-DAYS.
+           MOVE ZEROES TO COP-1ST-PMT-EXTENSION.
+           MOVE ZEROES TO COP-ETBL.
+           MOVE ZEROES TO COP-MATURITY-DATE.
+           MOVE ZEROES TO COP-LOANTYPE.
+           MOVE ZEROES TO COP-SMALLOAN.
+           MOVE ZEROES TO COP-SALEFIN.
+           MOVE ZEROES TO COP-SERVACCT.
+           MOVE ZEROES TO COP-CAN-LOAN-NO.
+           MOVE ZEROES TO COP-UNITPER-CD.
+           MOVE ZEROES TO COP-UNITPER-FREQ.
+           MOVE ZEROES TO COP-PRIOR-LOAN-STATE.
+           MOVE ZEROES TO COP-PRIOR-LOAN-CLASS.
+           MOVE ZEROES TO COP-PRBAL.
+           MOVE ZEROES TO COP-PRINTDUE.
+           MOVE ZEROES TO COP-PRFINCHGRB.
+           MOVE ZEROES TO COP-PRINSRB.
+           MOVE ZEROES TO COP-PRPAID-AHEAD.
+           MOVE ZEROES TO COP-PRLOAN-RESTRICTED.
+           MOVE ZEROES TO COP-RESTRICT-ADJ.
+           MOVE ZEROES TO COP-DUAL-LOAN-ADJ.
+           MOVE ZEROES TO COP-PRIOR-CASHADV.
+           MOVE ZEROES TO COP-RESTRICT-SERCHG.
+           MOVE ZEROES TO COP-RESTRICT-HIGH-CASHADV.
+           MOVE ZEROES TO COP-PRIOR-LOAN-DATE.
+           MOVE ZEROES TO COP-STATE-WORKER.
+           MOVE ZEROES TO COP-FINCHG.
+           MOVE ZEROES TO COP-MFEE-RESTRICT.
+           MOVE ZEROES TO COP-PRIOR-SUB-CLASS.
+           MOVE ZEROES TO COP-LOANDATE.
+           MOVE ZEROES TO COP-INTDATE.
+           MOVE ZEROES TO COP-FILEDATE.
+           MOVE ZEROES TO COP-1STPYDATE.
+           MOVE ZEROES TO COP-TERM.
+           MOVE ZEROES TO COP-PURPOSE-CD.
+           MOVE ZEROES TO COP-COLLTRL-CD.
+           MOVE ZEROES TO COP-SOURCE-CD.
+           MOVE ZEROES TO COP-PROCEEDS.
+           MOVE ZEROES TO COP-PROCEEDS-SW.
+           MOVE ZEROES TO COP-BALLOON.
+           MOVE ZEROES TO COP-BALLOON-SW.
+           MOVE ZEROES TO COP-SELLPR-FG.
+           MOVE ZEROES TO COP-DOWNPY-FG.
+           MOVE ZEROES TO COP-PERDOWN-FG.
+           MOVE ZEROES TO COP-INS-WHO.
+           MOVE ZEROES TO COP-INS-TYPE.
+           MOVE ZEROES TO COP-INS-ELIG.
+           MOVE ZEROES TO COP-POINTS.
+           MOVE ZEROES TO COP-POINTS-SW.
+           MOVE ZEROES TO COP-GL-AMOUNT-TOTAL.
+           MOVE ZEROES TO COP-GL-AMOUNT-TOTAL-FINCHG.
+           MOVE ZEROES TO COP-OVR-RATE.
+           MOVE ZEROES TO COP-OVR-RATE-SW.
+           MOVE ZEROES TO COP-EFF-RATE.
+           MOVE ZEROES TO COP-SIM-RATE.
+           MOVE ZEROES TO COP-APR-RATE.
+           MOVE ZEROES TO COP-END-RATE.
+
+           PERFORM VARYING DBCALCZL-SUB FROM 1 BY 1
+                     UNTIL DBCALCZL-SUB > 8
+             MOVE ZEROES TO COP-INS-CO(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-USE-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-TERM(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-TERM-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-COVERAGE(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-COVERAGE-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-PREMIUM(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-PREMIUM-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INSFINCHG-SW(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-REJECT-TERM(DBCALCZL-SUB)
+             MOVE ZEROES TO COP-INS-TAX(DBCALCZL-SUB)
+           END-PERFORM.
+
+           MOVE ZEROES TO COP-SELLPR.
+           MOVE ZEROES TO COP-DOWNPY.
+           MOVE ZEROES TO COP-PERDOWN.
+           MOVE ZEROES TO COP-FEE-CHG(1).
+           MOVE ZEROES TO COP-FEE-CHG-SW(1).
+           MOVE ZEROES TO COP-FEE-CHG(2).
+           MOVE ZEROES TO COP-FEE-CHG-SW(2).
+           MOVE ZEROES TO COP-SERVICE-CHG.
+           MOVE ZEROES TO COP-SERVICE-CHG-SW.
+           MOVE ZEROES TO COP-MAINT-FEES.
+           MOVE ZEROES TO COP-MAINT-FEES-SW.
+           MOVE ZEROES TO COP-1ST-PY-EXT.
+           MOVE ZEROES TO COP-1ST-PY-EXT-SW.
+           MOVE ZEROES TO COP-INT-CHARGE.
+           MOVE ZEROES TO COP-AMT-FINANCD.
+           MOVE ZEROES TO COP-APR-FINANCD.
+           MOVE ZEROES TO COP-LOAN-AMOUNT.
+           MOVE ZEROES TO COP-TOT-REPYBLE.
+           MOVE ZEROES TO COP-ANTIC-EARNS.
+           MOVE ZEROES TO COP-ODD-1ST-PMT.
+           MOVE ZEROES TO COP-REGPYAMT.
+           MOVE ZEROES TO COP-REGPYAMT-SW.
+
+      *=================================================================
+       DBCALCZL-TEST-SETT-EXIT.
+           EXIT.
+
+      ******************************************************************
+      *
+      *   D B C A L C Z L - W R I T E - R E C O R D
+      *
+      ******************************************************************
+       DBCALCZL-WRITE-RECORD SECTION.
+
+      D    STOP DBCALCZL-DETAIL-LINE.
+           MOVE DBCALCZL-DETAIL-LINE       TO DBCALCZL-ECHO-TEXT.
+           MOVE DBCALCZL-ECHO-CMD          TO DBCALCZL-SYSTEM-CMD.
+           CALL 'SYSTEM' USING DBCALCZL-SYSTEM.
+
+           MOVE SPACES                     TO DBCALCZL-DETAIL-LINE.
+
+      *=================================================================
+       DBCALCZL-WRITE-RECORD-EXIT.
+           EXIT.
+

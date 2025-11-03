@@ -1,0 +1,36 @@
+graph TD
+    A[MAIN-PROGRAM] --> B{Batch Mode?}
+    B -->|Yes| C[BATCH-PAYMENT-ROUTINE]
+    B -->|No| D[SELECTION-MODULE]
+    
+    C --> E[Validate Auto-PL Settings]
+    E --> F[Process P&L Transaction]
+    F --> G[Generate Auto Refund]
+    G --> H[Update Loan Records]
+    H --> Z[END-ROUTINE]
+    
+    D --> I[INITIALIZE]
+    I --> J[DISPLAY-ENTRY-LN]
+    J --> K[ACCEPT-ENTRY-RTN]
+    K --> L{Transaction Valid?}
+    L -->|No| M[Display Error]
+    M --> J
+    L -->|Yes| N{GL Distribution?}
+    N -->|Yes| O[DISBURSE-OTHER]
+    N -->|No| P[Process Transaction]
+    O --> P
+    P --> Q{Auto-PL Required?}
+    Q -->|Yes| R[UPDATE-AUTOMATIC-PL]
+    Q -->|No| S[Update Balances]
+    R --> S
+    S --> T[Write Payment History]
+    T --> U[Update Cash Drawer]
+    U --> Z
+    
+    Z --> V[Close Files]
+    V --> W[SQL Disconnect]
+    W --> X[Program End]
+    
+    style A fill:#e1f5fe
+    style Z fill:#c8e6c9
+    style X fill:#ffcdd2

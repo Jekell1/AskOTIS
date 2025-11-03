@@ -1,0 +1,411 @@
+{
+  "timestamp": "2025-10-20T15:51:42.781059",
+  "routing_results": {
+    "passed": 12,
+    "failed": 1,
+    "details": [
+      {
+        "id": "T1",
+        "question": "What happens when user enters transaction code PL?",
+        "expected": [
+          "transactions",
+          "ui_paths",
+          "menu_trees"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "transactions",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "programs",
+          "flows",
+          "flow_edges"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "T2",
+        "question": "Explain the workflow for transaction BD",
+        "expected": [
+          "transactions"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "transactions",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "programs",
+          "flows",
+          "flow_edges"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "T3",
+        "question": "What programs run when user enters transaction code OF?",
+        "expected": [
+          "transactions",
+          "programs"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "transactions",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "programs",
+          "flows",
+          "flow_edges"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "T4",
+        "question": "Which transaction codes are available from the loan menu?",
+        "expected": [
+          "transactions",
+          "menu_trees"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "flows",
+          "flow_edges",
+          "calls",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "program_deps",
+          "transactions"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "C1",
+        "question": "Which programs are most complex?",
+        "expected": [
+          "complexity"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "complexity",
+          "programs",
+          "flows",
+          "paragraphs",
+          "calls",
+          "program_deps"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "C2",
+        "question": "Show me programs with high nesting depth",
+        "expected": [
+          "complexity"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "complexity",
+          "programs",
+          "flows",
+          "paragraphs",
+          "calls",
+          "program_deps"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "C3",
+        "question": "What are the performance risks in UP1534?",
+        "expected": [
+          "complexity",
+          "programs"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "complexity",
+          "programs",
+          "flows",
+          "paragraphs",
+          "calls",
+          "program_deps"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "C4",
+        "question": "List programs with high file I/O operations",
+        "expected": [
+          "complexity"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "complexity",
+          "programs",
+          "flows",
+          "paragraphs",
+          "calls",
+          "program_deps"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "C5",
+        "question": "How many programs are in the very_complex category?",
+        "expected": [
+          "complexity"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "programs",
+          "paragraphs",
+          "data_items",
+          "flows",
+          "files",
+          "calls",
+          "program_deps",
+          "complexity"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "M1",
+        "question": "Which complex programs handle transaction code PL?",
+        "expected": [
+          "transactions",
+          "complexity"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "transactions",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "programs",
+          "flows",
+          "flow_edges",
+          "complexity"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "M2",
+        "question": "What are the most complex programs in the loan workflow?",
+        "expected": [
+          "transactions",
+          "complexity",
+          "flows"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "transactions",
+          "ui_paths",
+          "menu_trees",
+          "screen_nodes",
+          "programs",
+          "flows",
+          "flow_edges",
+          "complexity"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "CTRL1",
+        "question": "What does APIPAY program do?",
+        "expected": [
+          "programs",
+          "flows"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "programs",
+          "flows",
+          "flow_edges",
+          "paragraphs",
+          "calls",
+          "program_deps",
+          "files",
+          "complexity"
+        ],
+        "status": "pass"
+      },
+      {
+        "id": "CTRL2",
+        "question": "Show me the COPY statements in BICLAS",
+        "expected": [
+          "copybook_usage",
+          "code"
+        ],
+        "actual": [
+          "code",
+          "code_new",
+          "programs",
+          "paragraphs",
+          "data_items",
+          "flows",
+          "files",
+          "calls",
+          "program_deps"
+        ],
+        "status": "fail"
+      }
+    ]
+  },
+  "availability_results": {
+    "passed": 2,
+    "failed": 0,
+    "details": [
+      {
+        "index": "transaction_taxonomy",
+        "count": 51,
+        "expected_min": 50,
+        "status": "pass"
+      },
+      {
+        "index": "program_complexity",
+        "count": 1736,
+        "expected_min": 1700,
+        "status": "pass"
+      }
+    ]
+  },
+  "routing_score": 92.3076923076923,
+  "availability_score": 100.0,
+  "test_questions": {
+    "transaction_questions": [
+      {
+        "id": "T1",
+        "question": "What happens when user enters transaction code PL?",
+        "expected_indexes": [
+          "transactions",
+          "ui_paths",
+          "menu_trees"
+        ],
+        "success_criteria": "Should mention programs: CDLIST, CDMAIN, and workflow details"
+      },
+      {
+        "id": "T2",
+        "question": "Explain the workflow for transaction BD",
+        "expected_indexes": [
+          "transactions"
+        ],
+        "success_criteria": "Should describe the business day workflow"
+      },
+      {
+        "id": "T3",
+        "question": "What programs run when user enters transaction code OF?",
+        "expected_indexes": [
+          "transactions",
+          "programs"
+        ],
+        "success_criteria": "Should list programs that handle OF transaction"
+      },
+      {
+        "id": "T4",
+        "question": "Which transaction codes are available from the loan menu?",
+        "expected_indexes": [
+          "transactions",
+          "menu_trees"
+        ],
+        "success_criteria": "Should list transaction codes accessible from loan-related menus"
+      }
+    ],
+    "complexity_questions": [
+      {
+        "id": "C1",
+        "question": "Which programs are most complex?",
+        "expected_indexes": [
+          "complexity"
+        ],
+        "success_criteria": "Should mention UP1534 (3,478 complexity) and UP15VY (3,395 complexity)"
+      },
+      {
+        "id": "C2",
+        "question": "Show me programs with high nesting depth",
+        "expected_indexes": [
+          "complexity"
+        ],
+        "success_criteria": "Should mention UP15VY (2,603 levels) and UP1534 (2,491 levels)"
+      },
+      {
+        "id": "C3",
+        "question": "What are the performance risks in UP1534?",
+        "expected_indexes": [
+          "complexity",
+          "programs"
+        ],
+        "success_criteria": "Should mention: 3,478 complexity, 17,923 LOC, deep nesting, very_complex category"
+      },
+      {
+        "id": "C4",
+        "question": "List programs with high file I/O operations",
+        "expected_indexes": [
+          "complexity"
+        ],
+        "success_criteria": "Should mention UP15VY (2,022 operations) and CLFILE (713 operations)"
+      },
+      {
+        "id": "C5",
+        "question": "How many programs are in the very_complex category?",
+        "expected_indexes": [
+          "complexity"
+        ],
+        "success_criteria": "Should mention 769 programs (44.3%)"
+      }
+    ],
+    "mixed_intent_questions": [
+      {
+        "id": "M1",
+        "question": "Which complex programs handle transaction code PL?",
+        "expected_indexes": [
+          "transactions",
+          "complexity"
+        ],
+        "success_criteria": "Should combine transaction workflow with complexity metrics for CDLIST, CDMAIN"
+      },
+      {
+        "id": "M2",
+        "question": "What are the most complex programs in the loan workflow?",
+        "expected_indexes": [
+          "transactions",
+          "complexity",
+          "flows"
+        ],
+        "success_criteria": "Should identify complex programs involved in loan transactions"
+      }
+    ],
+    "control_questions": [
+      {
+        "id": "CTRL1",
+        "question": "What does APIPAY program do?",
+        "expected_indexes": [
+          "programs",
+          "flows"
+        ],
+        "success_criteria": "Should explain APIPAY functionality (not Phase 2 dependent)"
+      },
+      {
+        "id": "CTRL2",
+        "question": "Show me the COPY statements in BICLAS",
+        "expected_indexes": [
+          "copybook_usage",
+          "code"
+        ],
+        "success_criteria": "Should list copybooks used by BICLAS (not Phase 2 dependent)"
+      }
+    ]
+  }
+}

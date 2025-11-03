@@ -1,0 +1,21 @@
+graph TD
+    A[Leap Year Handling] --> B[Extract Year]
+    B --> C{Year Divisible by 4?}
+    C -->|Yes| D{Month > February?}
+    C -->|No| E[No Leap Day Adjustment]
+    D -->|Yes| F[Add Extra Day for February 29]
+    D -->|No| E
+    
+    subgraph "Special Century Year Logic"
+    G[Check Century Year] --> H{Is Year = 2000?}
+    H -->|Yes| I{Month > February?}
+    H -->|No| J[Apply Standard Leap Year Rule]
+    I -->|Yes| K[Special Adjustment for Year 2000]
+    I -->|No| J
+    end
+    
+    L[C-LEAP-YEAR-TEST] --> M{LEAP-YEAR-TRUE?}
+    M -->|Yes| N{Month > February?}
+    M -->|No| O[No Leap Day Adjustment]
+    N -->|Yes| P[Add 1 to Day Count]
+    N -->|No| O

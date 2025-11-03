@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSTY
+           SELECT TY-FILE ASSIGN TO TY-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY TY1-KEY
+                  FILE STATUS FILE-STAT.

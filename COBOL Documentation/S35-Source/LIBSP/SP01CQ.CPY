@@ -1,0 +1,149 @@
+      * COPYMEMBER: LIBSP/SP01CQ
+      ******************************************************************
+      *               (CQ)
+      *    DAILY COLLECTOR QUEUE FILE
+      *          DETAIL ONLY (OLD CQ-TYPE = "D")
+      *
+      *          CQSFILE CONTAINS THE HEADER/SUMMARY RECORDS
+      *
+      *
+      * CQ1-KEY: CQ-BRNO, CQ-ACCTNO
+      * CQ2-KEY: CQ-BRNO, CQ-COLLID, CQ-REV-BEHAVIOR-RISK, CQ-SEQ-FG,
+      *          CQ-DATE, CQ-START-TIME, CQ-REV-DEL,
+      *          CQ-MISC-KEY-FLD, CQ-REV-PDUE-DAYS, CQ-REV-BAL,
+      *          CQ-SEQ
+      *
+      *  NOTE!!! THE FIELDS IN CQ2-KEY MUST MATCH THE FIELDS IN
+      *          CQS-CQ2-KEY-FIELDS AREA BOTH IN SIZE & POSITION.
+      *          CS & KC 2019-0307
+      *
+      *    HEY!!  WE HAD PROBLEMS WITH DUPLICATE SECONDARY KEYS,
+      *           SAME COLLECTOR, BAL, DEL.  SO I ADDED A SEQ,
+      *           AND CHANGED SELECT TO SAY NO DUPS ON CQ2-KEY
+      *           AND IT WILL STOP DUPS ON CQ2 KEY, BUT ONLY IF
+      *           YOU REMOVE THE FILE & RE-CREATE, WITH THE
+      *           NEW FILE SELECT!!  THIS IS ONLY NEEDED IF
+      *           THEY HAVE DUPS & CAN'T DO F1 SKIP.
+      *
+      *    NOTE - I PUT A SIGN ON CQ-TIME & ACTUALLY PUT NEGATIVE
+      *    NUMBERS IN THERE FOR THE TIME ZONE FACTOR.  BUT I DON'T
+      *    THINK IT MATTERS IF A COMP-3 NUMBER IS NEGATIVE...I MEAN
+      *    IN AN INDEX -4 COMES BEFORE -5 (4D, 5D, ETC).  THE POSITIVE
+      *    NUMBERS I THINK WOULD COME LATER SINCE THEY'D BE 4F, 5F.
+      *    BUT I REALLY WANT THESE NUMBERS TO COME OUT WITH IN NUMERICAL
+      *    ORDER WITH THE SIGNS ALLOWED SO THE SEQUENCE IS EAST TO WEST:
+      *    EASTERN(-5), THEN  CENTRAL(-6), MOUNTAIN (-7), PACIFIC(-8)
+      *
+      *    ALSO, NOTE - THE FACTOR STORED HERE HAS ALREADY BEEN ADJUSTED
+      *    BACK AN HOUR FOR DAYLIGHT SAVINGS.  FOR EX., CUSTOMER IS
+      *    EASTERN (-5) BUT ZONE IS CODED DAYLIGHT SAVINGS & IT'S
+      *    JULY SO VALUE OF CQ-TIME IS -4.
+      *
+      *=================================================================
+      *
+      * CQ-DATE & CQ-DATE-QUEUED ARE STORING IN YYYYMMDD IN A30
+      * AND DOES NOT NEED TO FIXED LATER (A31)            KEC 2016.1006
+      *
+      *=================================================================
+      * REV:
+      * 040896  BLL  ADD CQ-MISC-KEY-FIELD (FOR POT PAST-DUE)
+      * MJD 990125 ----- UPDATED IN FLEXGEN -----
+      * BLV 000821 PUT A SIGN ON CQ-TIME - IT WAS IMPLIED,
+      *            SO DIDN'T CHANGE FILE DEFINITION
+      * BLV 000908 ADD CQ-TIME-ZONE-ERROR, TFC PR# 25
+      * BLV 040615 ADD CQ-REV-BEHAVIOR-RISK, REGACC PR#59
+      * BLM 160913 CHANGE CQ-DATE FROM S9(7) COMP-3 TO 9(8),
+      *            REMOVE COMP-3'S FROM KEY FIELDS(EXCEPT FOR
+      *            CQ-START-TIME, SEE NOTES ABOVE ABOUT NEGATIVES),
+      *            INCREASED CQ-REV-BAL TO 7, DECREASED CQ-PDUE-DAYS
+      *            TO 4 & REMOVED REDEF, ADDED CQ-SEQ TO KEEP KEY
+      *            UNIQUE, ADDED FUTURE-KEY1 & 2, INCREASE UNUSED.
+      *            CQ-DATE-QUEUED WAS IN THE WEIRD 9(7), WILL JUST
+      *            STORE THIS AS A NORMAL MMDDYY DATE NOW.
+      * KEC 2016.1004 CHANGED CQ-REC TO 130 BYTES. ADDED CQ-SIZE.
+      * KEC 2016.1004 ADDED CQ-BRNO RIGHT BEFORE CQ1-KEY.
+      *               ADDED CQ-LTOUCH-DATE.
+      *               CHANGED CQ-REC TO 140 BYTES (CQ-SIZE).
+      *  CS 2019.0124 MOVED CQ-BRNO TO KEY, REMOVED FILLER FROM CQ2-KEY,
+      *            WAS ALSO FILLER IN A15 AND PUT THE 3 BYTES AT END.
+      *  CS 2019.0124 KEN,CINDY, AND BARB TALKED ABOUT THE FILLER(3) AT END OF
+      *            CQ2-KEY, BARB THINKS SHE MIGHT HAVE ADDED IT BECAUSE 
+      *            CUSTOMERS WERE ASKING FOR DIFFERENT THINGS, NO IDEA
+      *            WHY CQ-START-TIME IS STILL COMP-3, ITS NOT REALLY A TIME,
+      *            ITS AN OFFSET.  KEN IS GOING TO CHECK WITH ALAN TO SEE
+      *            IF THE COMP3 IS A PROBLEM ON A SECONDARY KEY, IF SO
+      *            WE WILL NEED TO DIG IT TO FIND OUT IF IT CREATES A 
+      *            PROBLEM WITH THE ORDER.
+      *  CS 2019.0213 THE HEADER RECORD NEEDS TO BE A SEPARATE FILE, 
+      *            IT WILL BE SP01CQS.
+      *  CS 2019.0307 KEN AND I DECIDED WE NEEDED TO HOLD THE DETAIL-CQ2-KEY
+      *            WITHIN THE CQSFILE(CQS-CQ2-KEY-FIELDS). IN A15, EVERYTHING IS
+      *            IN THE CQFILE, ITS DRIVEN BY TYPE THAT DETERMINES IF ITS A
+      *            SUMMARY OR DETAIL CQ2 RECORD AND BOTH ARE USED TO SETUP THE
+      *            GET OF THE NEXT RECORD.
+      *  CS 2019.0319 WE STILL HAVE PROBLEMS WITH DUPLICATE CQ2-KEY 
+      *                  ON F1-SKIP. WHATS HAPPENING IS WHEN WE F1-SKIP,
+      *                  THE HEADER(CQSFILE IN A32)IS ADDING 1 TO 
+      *                  CQS-CQ-REV-BAL(SUMMARY FILE) FOR THE NEXT READ 
+      *                  OF THE DETAIL CQFILE. SO IF 2 ACCTS WITH THE SAME
+      *                  CQ2-KEY,LETS SAY REV-BAL OF 998999, I SKIP THE FIRST
+      *                  ACCT AND WRITE THE CQS(SUMMARY) WITH A REV-BAL OF
+      *                  999000, SO ON THE NEXT READ, WE MOVE CQS-CQ-FIELDS           *                  TO CQ2-KEY AND READ-NEXT. SINCE THE CQ2-KEY NOW HAS 
+      *                  A REV-BAL OF 999000, THE DUPLICATES ARE SKIPPED,
+      *                  (REV-BAL 998999). IF WE DIDNT ADD 1, WE WOULD CONTINUE
+      *                  TO GET THE SAME ACCOUNT.
+      *    JUST AS A NOTE: WE GO THRU THE SAME STEP OF ADDING 1 TO THE HEADER 
+      *         CQ-RECORD IN A15, AND CQ2-KEY DUPLICATES ARE BEING SKIPPED
+      *         IN A15,A30,A32
+      *
+      *         CQ2-KEY = CQ-BRNO,CQ-COLLID,CQ-REV-BEHAVIOR-RISK,CQ-SEQ-FG,
+      *                   CQ-DATE,CQ-START-TIME,CQ-FUTURE-KEY1,CQ-REV-DEL
+      *                   CQ-MISC-KEY-FLD,CQ-REV-PDUE-DAYS,CQ-REV-BAL,
+      *                   CQ-FUTURE-KEY2, CQ-SEQ.
+      *          CQ-SEQ DOES NOT EXIST IN A15 SO ADDED IN THIS RELEASE BUT ITS
+      *          NOT BEING UPDATED ON DUPLICATES. THIS WAS ADDED TO CQRUN
+      *              MOVE SAVE-CQ-SEQ TO CQ-SEQ.  
+      *              PERFORM WRITE-CQ1-FILE.
+      *              IF IO-FG NOT = 0     
+      *                IF E-CODE = "22"  
+      *                IF SAVE-CQ-SEQ < 999
+      *                   ADD 1 TO SAVE-CQ-SEQ
+      *                   GO TO WRITE-CQ-REC. 
+      *   CS 2019.0529ADD FUTURE FIELDS
+      *  BAH 2020.0323 CLEANED UP FUTURE FIELDS, REMOVED GROUP LEVELS
+      *   CS 2021.0426 REMOVED FUTURE FIELD CQ-REC NEW SIZE 83   
+      *   CS 2021.0506 REMOVED FUTURE-KEY1 AND FUTURE-KEY2
+      *  BAH 2023.0612 ADDED FILLER
+      ******************************************************************
+       78  CQ-SIZE                      VALUE 125.
+       01  CQ-REC.
+           03  CQ1-KEY.
+               05  CQ-BRNO                  PIC 9(4).
+               05  CQ-ACCTNO            PIC 9(8).
+           03  CQ-COLLID            PIC XXX.
+           03  CQ-REV-BEHAVIOR-RISK PIC 9.
+           03  CQ-SEQ-FG            PIC X.
+      * CQ-DATE & CQ-DATE-QUEUED ARE STORING IN YYYYMMDD
+      * AND DOES NOT NEED TO FIXED LATER 
+      $XFD DATE=YYYYMMDD
+            03  CQ-DATE              PIC 9(8).
+            03  CQ-START-TIME        PIC S9(4)   COMP-3.
+            03  CQ-SEQ-FIELDS.
+      * FUTURE KEY, MAYBE POOL AND/OR ACTION?  LIKE SPECIAL ACCTS
+      * THEY WANT AT BEGINNING OF DAY'S QUEUE
+                05  CQ-REV-DEL       PIC 9(5).
+                05  CQ-MISC-KEY-FLD  PIC X(3).
+                05  CQ-REV-PDUE-DAYS PIC 9(5).
+                05  CQ-REV-BAL       PIC 9(7).
+                05  CQ-SEQ           PIC 9(3).
+
+      $XFD DATE=YYYYMMDD
+           03  CQ-LTOUCH-DATE       PIC 9(08) COMP-3.
+           03  CQ-WORK-COLLID       PIC XXX.
+           03  CQ-WORKED-FG         PIC X.
+           03  CQ-IN-PROCESS        PIC X.
+      $XFD DATE=YYYYMMDD
+           03  CQ-DATE-QUEUED       PIC 9(8)  COMP-3.
+           03  CQ-TIME-ZONE-ERROR   PIC X.
+
+           03  FILLER               PIC X(58).

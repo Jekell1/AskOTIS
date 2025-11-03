@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSRB
+           SELECT RB-FILE ASSIGN TO RB-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY RB1-KEY
+                  FILE STATUS FILE-STAT.

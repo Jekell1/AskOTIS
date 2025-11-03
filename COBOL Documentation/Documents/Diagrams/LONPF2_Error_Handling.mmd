@@ -1,0 +1,86 @@
+graph TD
+    A[Error Detected] --> B{Error Category?}
+    
+    B --> C[File I/O Error]
+    B --> D[Business Rule Violation]
+    B --> E[Data Validation Error]
+    B --> F[Concurrency Error]
+    B --> G[System Error]
+    
+    C --> H[Check File Status]
+    H --> I{Critical File Error?}
+    I -->|Yes| J[Set ERRCD = X]
+    I -->|No| K[Set ERRCD = E]
+    J --> L[Close All Files]
+    K --> M[Continue with Warning]
+    L --> N[Terminate Program]
+    
+    D --> O{Rule Violation Type?}
+    O -->|Invalid Transaction| P[Transaction Code Error]
+    O -->|Amount Validation| Q[Amount Range Error]
+    O -->|Account Status| R[Status Validation Error]
+    O -->|Business Logic| S[Logic Validation Error]
+    
+    P --> T[Display Invalid Transaction Message]
+    Q --> U[Display Amount Error Message]
+    R --> V[Display Status Error Message]
+    S --> W[Display Logic Error Message]
+    
+    E --> X{Validation Error Type?}
+    X -->|Missing Data| Y[Display Required Field Message]
+    X -->|Invalid Format| Z[Display Format Error Message]
+    X -->|Out of Range| AA[Display Range Error Message]
+    
+    F --> BB{Concurrency Type?}
+    BB -->|Record Lock| CC[Wait and Retry]
+    BB -->|Data Changed| DD[Loan Changed Error]
+    
+    G --> EE[System Resource Error]
+    EE --> FF[Log System Error]
+    FF --> GG[Set Critical Error Code]
+    
+    T --> HH[Set ERRCD and MESS]
+    U --> HH
+    V --> HH
+    W --> HH
+    Y --> HH
+    Z --> HH
+    AA --> HH
+    
+    HH --> II[CONDITIONAL-SEND-MESS]
+    II --> JJ{Route Code Check}
+    JJ -->|Display| KK[Display Message to User]
+    JJ -->|Log Only| LL[Log Message Only]
+    
+    CC --> MM{Retry Successful?}
+    MM -->|Yes| NN[Continue Processing]
+    MM -->|No| OO[Set Timeout Error]
+    
+    DD --> PP[Set Error M - Loan Changed]
+    
+    KK --> QQ[Wait for User Response]
+    LL --> RR[Continue Background Processing]
+    M --> RR
+    NN --> RR
+    
+    QQ --> SS{User Action?}
+    SS -->|Retry| TT[Return to Processing]
+    SS -->|Cancel| UU[Exit Transaction]
+    SS -->|Help| VV[Display Help Screen]
+    VV --> QQ
+    
+    N --> WW[Program Termination]
+    OO --> XX[Set Error Status]
+    PP --> XX
+    UU --> XX
+    GG --> XX
+    XX --> YY[Return Error to Caller]
+    
+    TT --> ZZ[Resume Normal Processing]
+    RR --> ZZ
+    
+    style A fill:#ffebee
+    style J fill:#ffcdd2
+    style N fill:#f44336
+    style ZZ fill:#c8e6c9
+    style YY fill:#ff9800

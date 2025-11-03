@@ -1,0 +1,55 @@
+graph TD
+    A[EVALUATE TA-YRTYPE] --> B{Year Type Value}
+    
+    B -->|358| C[C-TIM360-358]
+    B -->|360| C
+    B -->|361| D[C-TIM361]
+    B -->|362| E[C-TIM362]
+    B -->|365| F[C-TIM365-367]
+    B -->|367| F
+    B -->|998| G[C-TIM999-998]
+    B -->|999| G
+    B -->|Other| H[No Processing]
+    
+    C --> C1[360/358 Day Year Calculation]
+    C1 --> C2[Adjust days > 30 to 30]
+    C2 --> C3[Handle February special cases]
+    C3 --> C4[Apply leap year logic]
+    
+    D --> D1[361 Day Year Calculation]
+    D1 --> D2[Jefferson NJ specific logic]
+    
+    E --> E1[362 Day Year Calculation]
+    E1 --> E2[Mercury Alabama specific logic]
+    
+    F --> F1[365/367 Day Year Calculation]
+    F1 --> F2[Standard/Leap year processing]
+    
+    G --> G1[999/998 Special Timing]
+    G1 --> G2[Unit period calculations]
+    
+    H --> H1[Return without processing]
+    
+    C4 --> I[Calculate Results]
+    D2 --> I
+    E2 --> I
+    F2 --> I
+    G2 --> I
+    H1 --> I
+    
+    I --> I1[Set ELAPSED-MONTHS]
+    I1 --> I2[Set ELAPSED-DAYS]
+    I2 --> I3[Set ELAPSED-REM]
+    I3 --> I4[Set ELAPSED-RESULTS]
+    I4 --> J[Return to Caller]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#f3e5f5
+    style F fill:#f3e5f5
+    style G fill:#f3e5f5
+    style H fill:#ffcdd2
+    style I fill:#fff9c4
+    style J fill:#c8e6c9

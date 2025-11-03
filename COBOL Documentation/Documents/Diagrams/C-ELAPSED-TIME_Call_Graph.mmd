@@ -1,0 +1,42 @@
+graph TD
+    A[C-ELAPSED-TIME] --> B[Parameter Setup]
+    A --> C[Zero Date Check]
+    A --> D[Phase 1 Processing]
+    A --> E[Phase 2 Processing]
+    
+    D --> D1[C-TIMALL]
+    D --> D2[C-TIM-RESULTS]
+    
+    E --> E1[C-TIMALL]
+    E --> E2[Unit Period Logic]
+    
+    D1 --> D1A[Year-Specific Routines]
+    D1A --> D1B[C-TIM360-358]
+    D1A --> D1C[C-TIM365-367]
+    D1A --> D1D[C-TIM999-998]
+    D1A --> D1E[Other Year Types]
+    
+    D1B --> D1B1[C-TIMBEG]
+    D1B --> D1B2[C-TIMEND]
+    D1B --> D1B3[C-LEAP-YEAR-TEST]
+    
+    D1C --> D1C1[C-TIMBEG]
+    D1C --> D1C2[C-TIMEND]
+    
+    E1 --> E1A[Year-Specific Routines]
+    E1A --> E1B[C-TIM998]
+    E1A --> E1C[C-TIM360]
+    E1A --> E1D[C-TIM365]
+    
+    D2 --> D2A[Result Processing Logic]
+    E2 --> E2A[Unit Calculation Logic]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff9c4
+    style C fill:#fff9c4
+    style D fill:#f3e5f5
+    style E fill:#e8f5e8
+    style D1 fill:#f8bbd9
+    style D2 fill:#f8bbd9
+    style E1 fill:#f8bbd9
+    style E2 fill:#f8bbd9

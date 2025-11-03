@@ -1,0 +1,276 @@
+{
+  "indexes": [
+    {
+      "index": "new_cobol_calls",
+      "count": 7520,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "call_id"
+      ],
+      "vector_fields": [
+        "snippet_vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['caller_program', 'callee_program']"
+      ],
+      "vector_probe": {
+        "snippet_vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "28fc1d233cc3e81f1292be4e6986feefec1941b3"
+      ],
+      "facet_cardinality_sample": {
+        "caller_program": 1,
+        "callee_program": 1,
+        "call_type": 1,
+        "is_dynamic": 1,
+        "has_vector": 1
+      }
+    },
+    {
+      "index": "new_cobol_copybook_meta",
+      "count": 8213,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "copybook_id"
+      ],
+      "vector_fields": [
+        "summary_vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['copybook_name']"
+      ],
+      "vector_probe": {
+        "summary_vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "6b2a8435196df1ef8b3dd80239471b4b"
+      ],
+      "facet_cardinality_sample": {
+        "copybook_name": 1,
+        "program_like": 1,
+        "lines_total": 1,
+        "lines_non_comment": 1,
+        "data_division_present": 1,
+        "working_storage_items": 1,
+        "linkage_items": 1,
+        "redefines_count": 1,
+        "occurs_count": 1,
+        "level01_count": 1,
+        "approximate_item_count": 1,
+        "has_vector": 1
+      }
+    },
+    {
+      "index": "new_cobol_copybook_usage",
+      "count": 112535,
+      "schema_status": "match",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "usage_id"
+      ],
+      "vector_fields": [
+        "context_vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['program_id', 'program_name', 'copybook_name', 'normalized_copybook_name', 'raw_copy_line', 'context_snippet', 'program_classification']"
+      ],
+      "vector_probe": {
+        "context_vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "f790cd48249fc9f5360fd120b47b9c558c5ec012"
+      ],
+      "facet_cardinality_sample": {
+        "program_id": 1,
+        "program_name": 1,
+        "copybook_name": 1,
+        "normalized_copybook_name": 1,
+        "section": 1,
+        "line_start": 1,
+        "line_end": 1,
+        "inclusion_order": 1,
+        "raw_copy_line": 1,
+        "context_snippet": 1,
+        "expansion_present": 1,
+        "has_replacing_clause": 1,
+        "program_classification": 0,
+        "ingested_at": 1,
+        "has_vector": 1
+      }
+    },
+    {
+      "index": "new_cobol_data_items",
+      "count": 267769,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "item_id"
+      ],
+      "vector_fields": [
+        "vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['item_name']"
+      ],
+      "vector_probe": {
+        "vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "26fb289e8cf5a8a788a5d528a4e3c5b8"
+      ],
+      "facet_cardinality_sample": {
+        "program_id": 1,
+        "level": 1,
+        "item_name": 1,
+        "occurs": 0,
+        "redefines": 0,
+        "usage": 0,
+        "length_bytes": 1,
+        "is_group": 1,
+        "has_vector": 1
+      }
+    },
+    {
+      "index": "new_cobol_flow_edges",
+      "count": 368454,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "edge_id"
+      ],
+      "vector_fields": [
+        "edge_vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['program_id', 'caller_para', 'target_para', 'resolved_target_para', 'edge_text', 'ingested_at']"
+      ],
+      "vector_probe": {
+        "edge_vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "DEFI01-117-MAIN-ROUTINE-PAID-THRU-CALCULATION"
+      ],
+      "facet_cardinality_sample": {
+        "edge_id": 1,
+        "file_id": 1,
+        "program_id": 1,
+        "caller_para": 1,
+        "target_para": 1,
+        "resolved_target_para": 1,
+        "edge_subkind": 1,
+        "edge_kind": 1,
+        "resolution_strategy": 1,
+        "line": 1,
+        "edge_text": 1,
+        "has_vector": 1,
+        "ingested_at": 1
+      }
+    },
+    {
+      "index": "new_cobol_paragraphs",
+      "count": 224655,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "para_id"
+      ],
+      "vector_fields": [
+        "para_vector"
+      ],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['program_id']"
+      ],
+      "vector_probe": {
+        "para_vector": {
+          "retrievable_attempt": false,
+          "non_null_seen": null,
+          "schema_retrievable_flag": false
+        }
+      },
+      "vector_coverage_sample": {},
+      "sample_keys": [
+        "BICREA-EXIT-405-409"
+      ],
+      "facet_cardinality_sample": {
+        "program_id": 1,
+        "kind": 1,
+        "has_vector": 1
+      }
+    },
+    {
+      "index": "new_cobol_program_meta",
+      "count": 9541,
+      "schema_status": "unknown",
+      "missing_fields": [],
+      "unexpected_fields": [],
+      "key_fields": [
+        "program_id"
+      ],
+      "vector_fields": [],
+      "structural_issues": [
+        "STRING_FACETABLE_SEARCHABLE:['program_id', 'sample_call_lines']"
+      ],
+      "vector_probe": {},
+      "vector_coverage_sample": {
+        "unique_callees": 1.0,
+        "unique_callers": 1.0
+      },
+      "sample_keys": [
+        "RESCHD_EVA"
+      ],
+      "facet_cardinality_sample": {
+        "program_id": 1,
+        "outgoing_count": 0,
+        "incoming_count": 0,
+        "has_cycles": 0,
+        "call_depth_score": 0,
+        "sample_call_lines": 0,
+        "total_lines": 1,
+        "covered_lines": 1,
+        "coverage_pct": 1,
+        "paragraph_count": 1,
+        "avg_paragraph_length": 1,
+        "median_paragraph_length": 1,
+        "max_paragraph_length": 1,
+        "gap_count": 1,
+        "largest_gap_length": 1,
+        "classification": 1
+      }
+    }
+  ],
+  "total_indexes": 7
+}

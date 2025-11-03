@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIM360 COBOL Program Design Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIM360 COBOL Program Design Document</span>
+        </nav>
+        <main class="content">
+<h1 id="tim360-cobol-program-design-document">TIM360 COBOL Program Design Document</h1>
+<p><strong>Location:</strong> <code>./APIPAY_Inlined.CBL</code>
+<strong>Generated on:</strong> 2025-07-24</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a><ul>
+<li><a href="#high-level-flow">High-Level Flow</a></li>
+<li><a href="#detailed-flows">Detailed Flows</a></li>
+</ul>
+</li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p>TIM360 is a COBOL routine for calculating elapsed time between two dates using the 30/360 day-count convention. It is used in financial, actuarial, and loan calculations where a 360-day year (12 months of 30 days) is required. TIM360 is implemented as a section in <code>APIPAY_Inlined.CBL</code> and delegates most logic to shared routines.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Elapsed time calculation between two dates using the 30/360 convention</li>
+<li>Used for interest, loan, and actuarial computations</li>
+<li>Supports negative elapsed time (start date after end date)</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>NUM-DATE</code> (Start date, format: YYYYMMDD)</li>
+<li><code>SYS-DATE</code> (End date, format: YYYYMMDD)</li>
+<li>(Internally set) <code>ELAPSED-YRTYPE</code> = 360</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>ELAPSED-DAYS</code>: Total days elapsed (30/360 logic)</li>
+<li><code>ELAPSED-MONTHS</code>: Number of full months elapsed</li>
+<li><code>ELAPSED-REM</code>: Remaining days after full months</li>
+<li><code>ELAPSED-RESULT</code>: Comparison result (e.g., LT, GT, EQ)</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">flowchart TD
+    Start([Start: Call TIM360]) --> SetYrtype[Set ELAPSED-YRTYPE = 360]
+    SetYrtype --> PerformTimall[PERFORM TIMALL]
+    PerformTimall --> CheckZero{NUM-DATE or SYS-DATE = 0?}
+    CheckZero -- Yes --> SetZero[Set outputs to 0, exit]
+    CheckZero -- No --> SaveState[Save NDTE-DATE, set unit period to M/1]
+    SaveState --> SetAction[Set action code to 'E']
+    SetAction --> PerformDater[PERFORM DATER-ROUTINE]
+    PerformDater --> RestoreState[Restore NDTE-DATE]
+    RestoreState --> CallElapsed[In DATER-ROUTINE: Call C-ELAPSED-TIME]
+    CallElapsed --> SetupWS[Set up working storage]
+    SetupWS --> PerformCtimall[PERFORM C-TIMALL]
+    PerformCtimall --> CheckYrtype2{TA-YRTYPE = 360?}
+    CheckYrtype2 -- Yes --> PerformCtim360[PERFORM C-TIM360-358]
+    PerformCtim360 --> AdjustDays[Adjust days > 30 to 30]
+    AdjustDays --> LeapYear[Handle leap year for Feb]
+    LeapYear --> ComputeElapsed[Compute elapsed: years*360 + months*30 + days]
+    ComputeElapsed --> PerformCtimend[PERFORM C-TIMEND]
+    PerformCtimend --> Finalize[Set sign, finalize outputs]
+    Finalize --> Return[Return results]
+</div>
+<h4 id="detailed-mermaid-diagrams">Detailed Mermaid Diagrams</h4>
+<p><strong>TIM360 Detailed Flow</strong><br />
+<sub>Shows the full step-by-step logic for the TIM360 routine, including all major decision points and calls.</sub></p>
+<div class="mermaid">flowchart TD
+    Start([Start: Call TIM360]) --> SetYrtype[Set ELAPSED-YRTYPE = 360]
+    SetYrtype --> PerformTimall[PERFORM TIMALL]
+    PerformTimall --> CheckZero{NUM-DATE or SYS-DATE = 0?}
+    CheckZero -- Yes --> SetZero[Set outputs to 0, exit]
+    CheckZero -- No --> SaveState[Save NDTE-DATE, set unit period to M/1]
+    SaveState --> SetAction[Set action code to 'E']
+    SetAction --> PerformDater[PERFORM DATER-ROUTINE]
+    PerformDater --> RestoreState[Restore NDTE-DATE]
+    RestoreState --> CallElapsed[In DATER-ROUTINE: Call C-ELAPSED-TIME]
+    CallElapsed --> SetupWS[Set up working storage]
+    SetupWS --> PerformCtimall[PERFORM C-TIMALL]
+    PerformCtimall --> CheckYrtype2{TA-YRTYPE = 360?}
+    CheckYrtype2 -- Yes --> PerformCtim360[PERFORM C-TIM360-358]
+    PerformCtim360 --> AdjustDays[Adjust days > 30 to 30]
+    AdjustDays --> LeapYear[Handle leap year for Feb]
+    LeapYear --> ComputeElapsed[Compute elapsed time based on years, months, and days]
+    ComputeElapsed --> PerformCtimend[PERFORM C-TIMEND]
+    PerformCtimend --> Finalize[Set sign, finalize outputs]
+    Finalize --> Return[Return results]
+</div>
+<p><strong>C-TIM360-358 Logic</strong><br />
+<sub>Details the 30/360 calculation logic, including day/month adjustments and leap year handling.</sub></p>
+<div class="mermaid">flowchart TD
+    Begin([Begin C-TIM360-358]) --> TimBeg[PERFORM C-TIMBEG]
+    TimBeg --> CheckD1[IF WS-DATE1-DD > 30]
+    CheckD1 -- Yes --> SetD1[Set WS-DATE1-DD = 30]
+    CheckD1 -- No --> CheckD2
+    SetD1 --> CheckD2[IF WS-DATE2-DD > 30]
+    CheckD2 -- Yes --> SetD2[Set WS-DATE2-DD = 30]
+    CheckD2 -- No --> LeapYear[Handle leap year for Feb]
+    SetD2 --> LeapYear
+    LeapYear --> Compute[Compute elapsed]
+    Compute --> TimEnd[PERFORM C-TIMEND]
+    TimEnd --> End([End C-TIM360-358])
+</div>
+<p><strong>TIMALL Driver Flow</strong><br />
+<sub>Illustrates the driver logic for all time calculations, including input validation and routine setup.</sub></p>
+<div class="mermaid">flowchart TD
+    Begin([Begin TIMALL]) --> CheckZero{NUM-DATE = 0 or SYS-DATE = 0?}
+    CheckZero -- Yes --> SetZero[Set outputs to 0, exit]
+    CheckZero -- No --> SaveState[Save NDTE-DATE, HOLD-UNITPER-INFO]
+    SaveState --> SetUnit[Set DATER-UNITPER-CD = 'M', FREQ = 1]
+    SetUnit --> SetAction[Set DATER-ACTION-CODE = 'E']
+    SetAction --> PerformDater[PERFORM DATER-ROUTINE]
+    PerformDater --> RestoreState[Restore NDTE-DATE, HOLD-UNITPER-INFO]
+    RestoreState --> End([End TIMALL])
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+title TIM360 Batch/Sequential Timeline
+section TIM360
+TIM360 Call           :a1, 2025-07-24, 1d
+TIMALL Driver         :a2, after a1, 1d
+DATER-ROUTINE         :a3, after a2, 1d
+C-ELAPSED-TIME        :a4, after a3, 1d
+C-TIMALL              :a5, after a4, 1d
+C-TIM360-358          :a6, after a5, 1d
+C-TIMEND              :a7, after a6, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>TIM360 SECTION</strong>: Entry point. Sets year type to 360 and delegates to TIMALL.</li>
+<li><strong>TIMALL SECTION</strong>: Driver for all time calculations. Handles input validation, sets up unit period, and calls DATER-ROUTINE.</li>
+<li><strong>DATER-ROUTINE</strong>: Core date calculation logic. Calls C-ELAPSED-TIME.</li>
+<li><strong>C-ELAPSED-TIME</strong>: Sets up working storage, delegates to C-TIMALL.</li>
+<li><strong>C-TIMALL</strong>: Dispatches to the correct year-type routine (C-TIM360-358 for 360).</li>
+<li><strong>C-TIM360-358</strong>: Implements 30/360 logic. Adjusts days, handles leap years, computes elapsed time.</li>
+<li><strong>C-TIMEND</strong>: Finalizes sign and output fields.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">flowchart LR
+    NUM-DATE & SYS-DATE --> TIM360
+    TIM360 --> TIMALL
+    TIMALL --> DATER-ROUTINE
+    DATER-ROUTINE --> C-ELAPSED-TIME
+    C-ELAPSED-TIME --> C-TIMALL
+    C-TIMALL --> C-TIM360-358
+    C-TIM360-358 --> C-TIMEND
+    C-TIMEND --> ELAPSED-DAYS & ELAPSED-MONTHS & ELAPSED-REM & ELAPSED-RESULT
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><code>DATER-ROUTINE</code> (internal, not a separate program)</li>
+<li><code>C-ELAPSED-TIME</code> (internal)</li>
+<li><code>C-TIMALL</code> (internal)</li>
+<li><code>C-TIM360-358</code> (internal)</li>
+<li><code>C-TIMEND</code> (internal)</li>
+<li><code>C-LEAP-YEAR-TEST</code> (internal)</li>
+<li><code>C-CALL-JUL</code> (internal)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>If either input date is zero, all outputs are set to zero and the routine exits.</li>
+<li>If invalid date formats are detected, the routine defaults to safe values.</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Input validation for zero or invalid dates</li>
+<li>Leap year logic for February</li>
+<li>Negative elapsed time supported</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Input date is zero or invalid</li>
+<li>February 29th on non-leap years</li>
+<li>Start date after end date (results are negative)</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures:</strong> Uses working-storage fields for dates, elapsed values, and temporary variables.</li>
+<li><strong>File Handling:</strong> No direct file I/O in TIM360; relies on in-memory data.</li>
+<li><strong>Key Algorithms:</strong> 30/360 day-count, leap year detection, sign handling for negative intervals.</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by other routines in APIPAY_Inlined.CBL for timing calculations</li>
+<li>Can be called by external programs for 30/360 logic</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; all logic is internal to APIPAY_Inlined.CBL</li>
+<li>Uses internal copybooks and working-storage</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    TIM360 --> TIMALL
+    TIMALL --> DATER-ROUTINE
+    DATER-ROUTINE --> C-ELAPSED-TIME
+    C-ELAPSED-TIME --> C-TIMALL
+    C-TIMALL --> C-TIM360-358
+    C-TIM360-358 --> C-TIMEND
+</div>
+<hr />
+<p><strong>See also:</strong>
+- <a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE Documentation</a>
+- <a href="Diagrams/C-TIM360-358_flow.mmd">C-TIM360-358 Detailed Flow</a>
+- <a href="Diagrams/TIMALL_flow.mmd">TIMALL Driver Flow</a>
+- <a href="APIPAY_Documentation.html">Main APIPAY Documentation</a></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSDM
+           SELECT DM-FILE ASSIGN TO DM-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY DM1-KEY
+                  FILE STATUS FILE-STAT.

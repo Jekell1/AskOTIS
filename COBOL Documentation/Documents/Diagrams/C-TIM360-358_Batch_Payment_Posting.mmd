@@ -1,0 +1,12 @@
+flowchart TD
+    A[Start] --> B[Read Input Data]
+    B --> C[Validate Transaction]
+    C --> D{Valid?}
+    D -- Yes --> E[Post Payment]
+    D -- No --> F[Log Error]
+    E --> G[Accrue Interest]
+    G --> H[Update Account Status]
+    H --> I[Log Success]
+    F --> J[Abort Transaction]
+    I --> K[End]
+    J --> K

@@ -1,0 +1,68 @@
+graph TD
+    A[Balance Calculation Start] --> B[Load Current Balances]
+    B --> B1[LP-OTHBAL = LN-OTHBAL]
+    B1 --> B2[LP-OT2BAL = LN-OT2BAL]
+    B2 --> B3[LP-INTBAL = LN-INTBAL]
+    B3 --> B4[LP-LCBAL = LN-LCBAL]
+    B4 --> B5[LP-CURBAL = LN-CURBAL]
+    
+    B5 --> C{Transaction Type}
+    
+    C -->|AL| D[Late Charge Calculation]
+    D --> D1[Apply Late Charge Formula]
+    D1 --> D2[Calculate Partial Payments]
+    D2 --> D3[Update LC Balance]
+    D3 --> D4[Set LC Paid Through Date]
+    
+    C -->|AI| E[Interest Calculation]
+    E --> E1{Interest Bearing Loan?}
+    E1 -->|Yes| E2[Add Induced Interest]
+    E1 -->|No| E3[Skip Interest Addition]
+    E2 --> F
+    E3 --> F
+    
+    C -->|WL/WI| G[Waiver Processing]
+    G --> G1[Validate Waiver Limits]
+    G1 --> G2{Waiver Type}
+    G2 -->|WL| G3[Reduce Late Charge Balance]
+    G2 -->|WI| G4[Reduce Interest Balance]
+    G3 --> F
+    G4 --> F
+    
+    C -->|OT/WO/O2/W2| H[Other Charge Processing]
+    H --> H1{Positive or Negative?}
+    H1 -->|Positive| H2[Add to Other Balance]
+    H1 -->|Negative| H3[Reduce Other Balance]
+    H2 --> H4[Validate Amount Limits]
+    H3 --> H5[Check Minimum Balance]
+    H4 --> F
+    H5 --> F
+    
+    C -->|AP| I[Applied Payment Processing]
+    I --> I1[Distribute to LC First]
+    I1 --> I2[Apply Remainder to Interest]
+    I2 --> I3[Apply Remainder to Other]
+    I3 --> F
+    
+    C -->|OP| J[Other Payment Processing]
+    J --> J1[Auto OT/AP Combination]
+    J1 --> J2[Apply Distribution Logic]
+    J2 --> F
+    
+    C -->|RE| K[Repossession Expense]
+    K --> K1[Add to Interest Due]
+    K1 --> K2[Add to Other Balance]
+    K2 --> F
+    
+    D4 --> F[Final Balance Calculation]
+    F --> F1[Compute Applied Current]
+    F1 --> F2[LP-APCUR = LP-TRAMT - LP-APINT - LP-APOTH - LP-APOT2 - LP-APLC]
+    F2 --> F3[Update Current Balance]
+    F3 --> F4[Calculate New Paid Through Date]
+    F4 --> F5[Set IBPC Status]
+    F5 --> L[Balance Update Complete]
+    
+    style A fill:#e1f5fe
+    style L fill:#c8e6c9
+    style C fill:#fff3e0
+    style F fill:#f3e5f5

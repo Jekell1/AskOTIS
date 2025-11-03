@@ -1,0 +1,18 @@
+       LCAP-D-ADVANCE.
+           PERFORM LCAP-UPD-LCPD.
+           IF LN-PAY-SCHLD-FG = "Y"
+              ADD 1 TO LCAP-PMT-NO
+              MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-AMTNEEDED
+                                            LCHG-CURPAY
+              COMPUTE LCAP-DELFAC ROUNDED =
+                        SCHD-AMT(LCAP-PMT-NO) * (SP-LCDELFAC / 100)
+           ELSE
+              MOVE LN-REGPYAMT TO LCAP-AMTNEEDED
+                                  LCHG-CURPAY.
+           GO TO LCAP-D-BEGIN.
+
+      * NO ASSESSMENT REQUIRED, ADVANCE LCAP-LCPDTH-DATE
+      * TO WHERE PAYMENTS TODATE ARE PAID THRU
+      * IF IT WILL ADVANCE LCPDTH ONLY, SINCE
+      * ADVANCEMENT OF LCPDTH COULD HAVED OCCURED
+      * VIA TIME.

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIPAY System Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .nav-breadcrumb {
+            background: #e9ecef;
+            padding: 15px 30px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 30px;
+        }
+        .diagram-section {
+            margin-bottom: 50px;
+        }
+        .diagram-section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .diagram-description {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 5px 5px 0;
+        }
+        .diagram-container {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .diagram-controls {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .toc {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 APIPAY System Diagrams</h1>
+            <p>Visual representation of program flow, transactions, and data architecture</p>
+        </div>
+
+        <div class="nav-breadcrumb">
+            <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY Documentation</a> > System Diagrams
+        </div>
+
+        <div class="content">
+            <div class="toc">
+                <h3>Diagram Contents</h3>
+                <ol>
+                    <li><a href="#program-flow">APIPAY Program Flow</a></li>
+                    <li><a href="#transaction-flow">Transaction Processing Flow</a></li>
+                    <li><a href="#data-flow">Data Flow Architecture</a></li>
+                </ol>
+            </div>
+
+            <div class="diagram-section" id="program-flow">
+                <h2>APIPAY Program Flow</h2>
+                <div class="diagram-description">
+                    <p><strong>Overview:</strong> This diagram shows the complete execution flow of the APIPAY program from initialization through completion. It illustrates the validation steps, decision points, and program calls that occur during payment processing.</p>
+                </div>
+                <div class="diagram-container">
+                    <div class="mermaid">
+flowchart TD
+    A[Start APIPAY] --> B[Parse Input Parameters]
+    B --> C[Initialize Environment]
+    C --> D[Connect to Database]
+    D --> E[Validate Branch Record]
+    
+    E --> F{Branch Valid?}
+    F -->|No| G[Return Error Code 2]
+    F -->|Yes| H[Validate Reference Code]
+    
+    H --> I{Ref Code Valid?}
+    I -->|No| J[Return Error Code 3]
+    I -->|Yes| K[Check Machine Assignment]
+    
+    K --> L{Branch on Machine?}
+    L -->|No| M[Return Error Code 4]
+    L -->|Yes| N[Check Day Open Status]
+    
+    N --> O{Day Open?}
+    O -->|No| P[Return Error Code 6]
+    O -->|Yes| Q[Validate Loan Account]
+    
+    Q --> R{Account Exists?}
+    R -->|No| S[Return Error Code 10]
+    R -->|Yes| T[Determine Transaction Type]
+    
+    T --> U{Transaction Code?}
+    U -->|PY/PA| V[Call LONPFC]
+    U -->|RP| W[Call LONPFB]
+    U -->|PL/P2/P3| X[Call LONPF9]
+    U -->|RE/O2/OT| Y[Call LONPF7]
+    U -->|RV/BK/BD| Z[Call LONPF2]
+    
+    V --> AA{Payoff Required?}
+    W --> AA
+    X --> AA
+    Y --> AA
+    Z --> AA
+    
+    AA -->|Yes| BB[Call LONPFA]
+    AA -->|No| CC[Update Log File]
+    BB --> CC
+    
+    CC --> DD[Set Return Status]
+    DD --> EE[Close Files]
+    EE --> FF[End Program]
+    
+    G --> EE
+    J --> EE
+    M --> EE
+    P --> EE
+    S --> EE
+
+    style A fill:#e1f5fe
+    style FF fill:#c8e6c9
+    style G fill:#ffcdd2
+    style J fill:#ffcdd2
+    style M fill:#ffcdd2
+    style P fill:#ffcdd2
+    style S fill:#ffcdd2
+                    </div>
+                    <div class="diagram-controls">
+                        <button class="btn" onclick="downloadDiagram('program-flow')">Download SVG</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="diagram-section" id="transaction-flow">
+                <h2>Transaction Processing Flow</h2>
+                <div class="diagram-description">
+                    <p><strong>Overview:</strong> This diagram illustrates how different transaction types are routed to their respective processing programs and the decision logic used to determine the appropriate handler for each transaction.</p>
+                </div>
+                <div class="diagram-container">
+                    <div class="mermaid">
+flowchart TD
+    A[Transaction Input] --> B{Transaction Code}
+    
+    B -->|PY - Payment| C[LONPFC<br/>Payment Processor]
+    B -->|PA - Payment Alt| C
+    B -->|RP - Rebate| D[LONPFB<br/>Rebate Processor]
+    B -->|PL - P&L| E[LONPF9<br/>P&L Processor]
+    B -->|P2 - P&L Type 2| E
+    B -->|P3 - P&L Type 3| E
+    B -->|RE - Repossession| F[LONPF7<br/>Repo/Other Processor]
+    B -->|O2 - Other Type 2| F
+    B -->|OT - Other| F
+    B -->|RV - Reversal| G[LONPF2<br/>Reversal/Bankruptcy Processor]
+    B -->|BK - Bankruptcy| G
+    B -->|BD - Bankruptcy Dismissal| G
+    
+    C --> H[Process Standard Payment]
+    D --> I[Process Interest Rebate]
+    E --> J[Process Charge-off to P&L]
+    F --> K[Process Repo/Other Transaction]
+    G --> L[Process Reversal/Bankruptcy]
+    
+    H --> M{Payment Results in Payoff?}
+    I --> M
+    J --> M
+    K --> M
+    L --> M
+    
+    M -->|Yes| N[LONPFA<br/>Payoff Processor]
+    M -->|No| O[Transaction Complete]
+    
+    N --> P[Process Loan Payoff<br/>Calculate Final Amounts<br/>Close Account]
+    P --> Q[Generate Payoff Documentation]
+    Q --> R[Account Closed Successfully]
+    
+    O --> S[Update Transaction Log]
+    R --> S
+    S --> T[Return to APIPAY]
+
+    style A fill:#e1f5fe
+    style C fill:#e8f5e8
+    style D fill:#f3e5f5
+    style E fill:#ffebee
+    style F fill:#fff3e0
+    style G fill:#f5f5f5
+    style N fill:#e0f2f1
+    style R fill:#c8e6c9
+                    </div>
+                    <div class="diagram-controls">
+                        <button class="btn" onclick="downloadDiagram('transaction-flow')">Download SVG</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="diagram-section" id="data-flow">
+                <h2>Data Flow Architecture</h2>
+                <div class="diagram-description">
+                    <p><strong>Overview:</strong> This diagram shows the data flow and file interactions within the APIPAY system, illustrating how information moves between different system components and data stores.</p>
+                </div>
+                <div class="diagram-container">
+                    <div class="mermaid">
+flowchart LR
+    A[Input Parameters<br/>BT-REC Format] --> B[APIPAY<br/>Main Controller]
+    
+    B --> C[BR-FILE<br/>Branch Master]
+    B --> D[CD1-FILE<br/>Code Definitions]
+    B --> E[LN1-FILE<br/>Loan Master]
+    B --> F[GB-FILE<br/>Global Parameters]
+    B --> G[RC2-FILE<br/>Daily Control]
+    
+    C --> H{Validation<br/>Checks}
+    D --> H
+    E --> H
+    F --> H
+    G --> H
+    
+    H -->|Valid| I[Payment Processors<br/>LONPFC/LONPFB/LONPF9<br/>LONPF7/LONPF2]
+    H -->|Invalid| J[Error Processing<br/>Return Error Code]
+    
+    I --> K[LN1-FILE<br/>Update Balances]
+    I --> L[LTP1-FILE<br/>Payment History]
+    I --> M[LXE1-FILE<br/>Extended Data]
+    I --> N[WK-FILE<br/>Work File]
+    
+    K --> O{Payoff<br/>Detected?}
+    L --> O
+    M --> O
+    N --> O
+    
+    O -->|Yes| P[LONPFA<br/>Payoff Processor]
+    O -->|No| Q[Transaction Complete]
+    
+    P --> R[Final Account Updates]
+    P --> S[REF-FILE<br/>Refund Processing]
+    P --> T[RPT-FILE<br/>Payoff Reports]
+    
+    R --> U[LOG-FILE<br/>Transaction Log]
+    Q --> U
+    S --> U
+    T --> U
+    J --> U
+    
+    U --> V[OP-FILE<br/>Operations Log]
+    V --> W[Audit Trail<br/>Complete]
+
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style I fill:#e8f5e8
+    style P fill:#e0f2f1
+    style W fill:#c8e6c9
+    style J fill:#ffcdd2
+                    </div>
+                    <div class="diagram-controls">
+                        <button class="btn" onclick="downloadDiagram('data-flow')">Download SVG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Download diagram as SVG
+        function downloadDiagram(diagramId) {
+            const element = document.querySelector(`#${diagramId} .mermaid svg`);
+            if (element) {
+                const svgData = new XMLSerializer().serializeToString(element);
+                const svgBlob = new Blob([svgData], {type: "image/svg+xml;charset=utf-8"});
+                const svgUrl = URL.createObjectURL(svgBlob);
+                const downloadLink = document.createElement("a");
+                downloadLink.href = svgUrl;
+                downloadLink.download = `apipay-${diagramId}.svg`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(svgUrl);
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

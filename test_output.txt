@@ -1,0 +1,102 @@
+
+≡ƒº¬ DETERMINISTIC RP COPYBOOK RETRIEVAL TEST
+Testing transaction-specific copybook question handling
+
+================================================================================
+TEST 1: Router Pattern Detection
+================================================================================
+
+Query: List all copybooks used in LONPF2 when handling RP transactions?...
+  Type: transaction_copybooks
+  Match: Γ£à transaction_copybooks
+
+Query: What copybooks are used when processing RP in LONPF2?...
+  Type: transaction_copybooks
+  Match: Γ£à transaction_copybooks
+
+Query: Show me copybooks for RP transaction in LONPF2...
+  Type: transaction_copybooks
+  Match: Γ£à transaction_copybooks
+
+Query: Which copybooks does LONPF2 use for RP handling?...
+  Type: transaction_copybooks
+  Match: Γ£à transaction_copybooks
+
+================================================================================
+TEST 2: Answer Consistency (5 runs)
+================================================================================
+
+≡ƒöº Initializing RAG system...
+
+Γ¥ô Question: List all copybooks used in LONPF2 when handling RP transactions?
+
+≡ƒöä Running query 5 times to test consistency...
+
+No IN entry points found, returning all copybooks as fallback
+Run 1/5... ΓÅ▒∩╕Å TIMING: Routing took 0.000s
+≡ƒôè Dynamic retrieval: question_type=transaction_copybooks, max_results=200
+ΓÅ▒∩╕Å TIMING: Retrieval took 0.567s
+ΓÅ▒∩╕Å TIMING: Memory context took 0.000s
+ΓÅ▒∩╕Å TIMING: Generation took 16.783s
+ΓÅ▒∩╕Å TIMING SUMMARY: Total=17.350s (Route=0.000s, Retrieve=0.567s, Memory=0.000s, Generate=16.783s)
+Γ£ô (8 copybooks, 12720 chars, 17.35s)
+No IN entry points found, returning all copybooks as fallback
+Run 2/5... ΓÅ▒∩╕Å TIMING: Routing took 0.000s
+≡ƒôè Dynamic retrieval: question_type=transaction_copybooks, max_results=200
+ΓÅ▒∩╕Å TIMING: Retrieval took 0.504s
+ΓÅ▒∩╕Å TIMING: Memory context took 0.000s
+ΓÅ▒∩╕Å TIMING: Generation took 25.834s
+ΓÅ▒∩╕Å TIMING SUMMARY: Total=26.337s (Route=0.000s, Retrieve=0.504s, Memory=0.000s, Generate=25.834s)
+Γ£ô (2 copybooks, 17463 chars, 26.34s)
+No IN entry points found, returning all copybooks as fallback
+Run 3/5... ΓÅ▒∩╕Å TIMING: Routing took 0.000s
+≡ƒôè Dynamic retrieval: question_type=transaction_copybooks, max_results=200
+ΓÅ▒∩╕Å TIMING: Retrieval took 0.460s
+ΓÅ▒∩╕Å TIMING: Memory context took 0.000s
+ΓÅ▒∩╕Å TIMING: Generation took 27.117s
+ΓÅ▒∩╕Å TIMING SUMMARY: Total=27.577s (Route=0.000s, Retrieve=0.460s, Memory=0.000s, Generate=27.117s)
+Γ£ô (4 copybooks, 17732 chars, 27.58s)
+No IN entry points found, returning all copybooks as fallback
+Run 4/5... ΓÅ▒∩╕Å TIMING: Routing took 0.000s
+≡ƒôè Dynamic retrieval: question_type=transaction_copybooks, max_results=200
+ΓÅ▒∩╕Å TIMING: Retrieval took 0.486s
+ΓÅ▒∩╕Å TIMING: Memory context took 0.000s
+ΓÅ▒∩╕Å TIMING: Generation took 20.443s
+ΓÅ▒∩╕Å TIMING SUMMARY: Total=20.929s (Route=0.000s, Retrieve=0.486s, Memory=0.000s, Generate=20.443s)
+Γ£ô (5 copybooks, 16129 chars, 20.93s)
+No IN entry points found, returning all copybooks as fallback
+Run 5/5... ΓÅ▒∩╕Å TIMING: Routing took 0.000s
+≡ƒôè Dynamic retrieval: question_type=transaction_copybooks, max_results=200
+ΓÅ▒∩╕Å TIMING: Retrieval took 0.473s
+ΓÅ▒∩╕Å TIMING: Memory context took 0.000s
+ΓÅ▒∩╕Å TIMING: Generation took 26.415s
+ΓÅ▒∩╕Å TIMING SUMMARY: Total=26.889s (Route=0.000s, Retrieve=0.473s, Memory=0.000s, Generate=26.415s)
+Γ£ô (4 copybooks, 17057 chars, 26.89s)
+
+================================================================================
+CONSISTENCY ANALYSIS
+================================================================================
+
+Copybook counts: [8, 2, 4, 5, 4]
+Answer lengths: [12720, 17463, 17732, 16129, 17057]
+
+ΓÜá∩╕Å VARIANCE: Counts vary from 2 to 8
+
+Answer length variance: 28.3%
+ΓÜá∩╕Å VARIANCE: Answer lengths vary significantly (> 10% variance)
+
+================================================================================
+SAMPLE ANSWER (Run 1)
+================================================================================
+Here is a complete list of all copybooks used in the LONPF2 program. Since your question specifies "when handling RP transactions," and the retrieved context does not differentiate copybook usage by transaction type (RP vs others), I am listing all copybooks referenced in LONPF2. In COBOL, copybooks are typically included at compile time and available to all logic paths, including RP transaction handling.
+
+**Total copybooks used in LONPF2: 200**
+
+Below is the full list, with a brief description ...
+
+================================================================================
+TEST SUMMARY
+================================================================================
+
+ΓÜá∩╕Å SOME TESTS FAILED
+   - Answer consistency needs improvement

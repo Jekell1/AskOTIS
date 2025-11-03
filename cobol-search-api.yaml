@@ -1,0 +1,295 @@
+openapi: 3.1.0
+info:
+  title: COBOL Search API
+  version: 1.0.0
+  description: |
+    Azure AI Search API for searching COBOL code at the line level.
+    This API provides full-text search capabilities across your entire COBOL codebase,
+    allowing you to find specific variables, procedures, programs, and code patterns.
+    
+    ## Features
+    - Line-level COBOL code search
+    - Symbol name and type filtering
+    - Full-text search with ranking
+    - Field-specific searches
+    - Pagination support
+    
+    ## Authentication
+    Use your Azure AI Search admin key or query key in the `api-key` header.
+    
+  contact:
+    name: COBOL Search API Support
+    email: support@example.com
+
+servers:
+  - url: https://az-use1-ai-search.search.windows.net
+    description: Production Azure AI Search Service
+
+paths:
+  /indexes/cobol-index/docs/search:
+    post:
+      summary: Search the COBOL index
+      description: |
+        Search across all indexed COBOL code lines. Supports full-text search,
+        filtering, field selection, and result ranking.
+        
+        ## Search Examples
+        - Find specific variables: `"CUSTOMER-ACCNT-NO"`
+        - Search procedures: `"PERFORM"`
+        - Find programs: filter by `symbol_kind eq 'program'`
+        - Code patterns: `"IF"` or `"MOVE"`
+        
+      security:
+        - apiKeyHeader: []
+      parameters:
+        - in: query
+          name: api-version
+          required: true
+          schema:
+            type: string
+            default: "2024-07-01"
+          description: Azure Search API version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+            examples:
+              simple_search:
+                summary: Simple text search
+                value:
+                  search: "CUSTOMER-ACCNT-NO"
+                  top: 10
+              filtered_search:
+                summary: Search with filtering
+                value:
+                  search: "*"
+                  filter: "symbol_kind eq 'variable'"
+                  select: "repo_path,line,code,symbol_name,symbol_kind"
+                  top: 20
+              program_search:
+                summary: Find programs
+                value:
+                  search: "*"
+                  filter: "symbol_kind eq 'program'"
+                  select: "repo_path,symbol_name,code"
+                  top: 50
+              complex_search:
+                summary: Complex search with multiple criteria
+                value:
+                  search: "IDENTIFICATION DIVISION"
+                  select: "repo_path,line,code,symbol_name,symbol_kind"
+                  orderby: "repo_path"
+                  top: 100
+      responses:
+        "200":
+          description: Successful search response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+              examples:
+                search_results:
+                  summary: Example search results
+                  value:
+                    "@odata.context": "https://az-use1-ai-search.search.windows.net/indexes/cobol-index/$metadata#docs(*)"
+                    "@odata.count": 150
+                    "value": [
+                      {
+                        "@search.score": 1.5,
+                        "id": "Q0xfX0FDVUNNLkNCTC5qc29ubA",
+                        "repo_path": "https://waazuse1aistorage.blob.core.windows.net/aisearch/S35-Source/S35JSON/CL__ACUMEM.CBL.jsonl",
+                        "line": 25,
+                        "code": "       01  CUSTOMER-ACCNT-NO           PIC X(15).",
+                        "symbol_name": "CUSTOMER-ACCNT-NO",
+                        "symbol_kind": "variable"
+                      }
+                    ]
+        "400":
+          description: Bad request - invalid search parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized - invalid API key
+        "403":
+          description: Forbidden - insufficient permissions
+        "429":
+          description: Too many requests - rate limit exceeded
+
+  /indexes/cobol-index/docs/count:
+    get:
+      summary: Get total document count
+      description: Returns the total number of indexed COBOL documents
+      security:
+        - apiKeyHeader: []
+      parameters:
+        - in: query
+          name: api-version
+          required: true
+          schema:
+            type: string
+            default: "2024-07-01"
+      responses:
+        "200":
+          description: Document count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Total number of documents in the index
+                    example: 65503
+
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: api-key
+      description: Azure AI Search admin key or query key
+
+  schemas:
+    SearchRequest:
+      type: object
+      properties:
+        search:
+          type: string
+          description: |
+            Search query. Use "*" for all documents, quotes for exact matches.
+            Examples: "CUSTOMER-ACCNT-NO", "PROGRAM-ID", "*"
+          example: "CUSTOMER-ACCNT-NO"
+        select:
+          type: string
+          description: |
+            Comma-separated list of fields to return.
+            Available fields: id, repo_path, line, code, symbol_name, symbol_kind, calls
+          example: "repo_path,line,code,symbol_name,symbol_kind"
+        filter:
+          type: string
+          description: |
+            OData filter expression to narrow results.
+            Examples: "symbol_kind eq 'variable'", "line gt 100"
+          example: "symbol_kind eq 'variable'"
+        orderby:
+          type: string
+          description: |
+            Field to sort by with optional direction (asc/desc).
+            Examples: "repo_path", "line desc", "symbol_name asc"
+          example: "repo_path"
+        top:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 50
+          description: Maximum number of results to return
+          example: 20
+        skip:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of results to skip (for pagination)
+          example: 0
+        count:
+          type: boolean
+          default: false
+          description: Include total count of matching documents
+          example: true
+        searchMode:
+          type: string
+          enum: ["any", "all"]
+          default: "any"
+          description: Whether ANY or ALL search terms must match
+        searchFields:
+          type: string
+          description: |
+            Comma-separated list of fields to search in.
+            Available: code, symbol_name, repo_path
+          example: "code,symbol_name"
+      required:
+        - search
+
+    SearchResponse:
+      type: object
+      properties:
+        "@odata.context":
+          type: string
+          description: OData context URL
+        "@odata.count":
+          type: integer
+          description: Total number of matching documents (if count=true)
+        value:
+          type: array
+          items:
+            $ref: '#/components/schemas/CobolDocument'
+
+    CobolDocument:
+      type: object
+      properties:
+        "@search.score":
+          type: number
+          format: float
+          description: Relevance score for this result
+          example: 1.5
+        id:
+          type: string
+          description: Unique document identifier
+          example: "Q0xfX0FDVUNNLkNCTC5qc29ubA"
+        repo_path:
+          type: string
+          description: Full path to the source file in blob storage
+          example: "https://waazuse1aistorage.blob.core.windows.net/aisearch/S35-Source/S35JSON/CL__ACUMEM.CBL.jsonl"
+        line:
+          type: integer
+          description: Line number in the source file
+          example: 25
+        code:
+          type: string
+          description: The actual COBOL code line
+          example: "       01  CUSTOMER-ACCNT-NO           PIC X(15)."
+        symbol_name:
+          type: string
+          nullable: true
+          description: Name of the COBOL symbol (variable, procedure, program)
+          example: "CUSTOMER-ACCNT-NO"
+        symbol_kind:
+          type: string
+          nullable: true
+          enum: ["variable", "procedure", "program", "section", "paragraph"]
+          description: Type of COBOL symbol
+          example: "variable"
+        calls:
+          type: array
+          items:
+            type: string
+          description: List of programs or procedures called from this line
+          example: []
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code
+            message:
+              type: string
+              description: Human-readable error message
+          required:
+            - message
+
+tags:
+  - name: Search
+    description: COBOL code search operations
+  - name: Statistics
+    description: Index statistics and information
+
+externalDocs:
+  description: Azure AI Search REST API Documentation
+  url: https://docs.microsoft.com/en-us/rest/api/searchservice/

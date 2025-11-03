@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCR-MONTHS Program Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCR-MONTHS Program Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-incr-months-program-documentation">C-INCR-MONTHS Program Documentation</h1>
+<p><strong>Location:</strong> APIPAY/APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-INCR-MONTHS<br />
+<strong>Date Written:</strong> See source comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>C-INCR-MONTHS increments a date by a specified number of months, adjusting for month and year boundaries. It ensures the resulting date is valid and normalized, handling leap years and month-end logic.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Date increment by months</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>NDTE-DATE</code>: Date to increment (CCYYMMDD)</li>
+<li><code>WS-UP-WORK</code>: Number of months to increment</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>NDTE-DATE</code>: Incremented date (CCYYMMDD)</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    A[Start] --> B[Calculate Years/Months]
+    B --> C[Adjust for Month Overflow]
+    C --> D[Adjust for Day Overflow]
+    D --> E[Call New Date]
+    E --> F[Update NDTE-DATE]
+    F --> G[End]
+</div>
+<h3 id="detailed-flow">Detailed Flow</h3>
+<div class="mermaid">%% Mermaid Flowchart: C-INCR-MONTHS Detailed Flow
+graph TD
+    Start([Start])
+    CalcYM["Divide months into years/months"]
+    AddToDate["Add to NDTE-MM/NDTE-CCYY"]
+    MonthUnder["If month < 1, adjust"]
+    MonthOver["If month > 12, adjust"]
+    DayOverflow["If day > 99, set to 99"]
+    MoveFields["Move fields to NDTE"]
+    CallNewDate["PERFORM C-CALL-NEWDATE"]
+    UpdateFields["Update NDTE fields"]
+    End([End])
+
+    Start --> CalcYM --> AddToDate --> MonthUnder --> MonthOver --> DayOverflow --> MoveFields --> CallNewDate --> UpdateFields --> End
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+title C-INCR-MONTHS Batch Timeline
+    section Initialization
+    Calculate_Years_Months :done, a1, 2025-07-31, 1d
+    section Calculation
+    Adjust_for_Month_Overflow :a2, after a1, 1d
+    Adjust_for_Day_Overflow :a3, after a2, 1d
+    Call_New_Date :a4, after a3, 1d
+    Update_NDTE_Fields :a5, after a4, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-INCR-MONTHS</strong>: Divides months into years/months, adjusts for overflow, and updates NDTE fields.</li>
+<li><strong>C-CALL-NEWDATE</strong>: Ensures the resulting date is valid.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    NDTE-DATE --> WS-NDTE-MM-S
+    WS-UP-WORK --> WS-NDTE-MM-S
+    WS-NDTE-MM-S --> NDTE-MM
+    WS-NDTE-CCYY-S --> NDTE-CCYY
+    NDTE-MM --> NDTE-DATE
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>C-CALL-NEWDATE (internal)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>Adjusts for invalid months/days</li>
+<li>Ensures valid date output</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates month and day fields</li>
+<li>Handles overflow/underflow</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Month &lt; 1 or &gt; 12</li>
+<li>Day &gt; 99</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses working-storage fields</li>
+<li>No external file I/O</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by routines requiring month arithmetic</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; uses internal paragraphs</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    C-INCR-MONTHS --> C-CALL-NEWDATE
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

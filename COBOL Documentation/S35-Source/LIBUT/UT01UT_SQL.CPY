@@ -1,0 +1,89 @@
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *%%% TEST FOR /usr/local/bin/sql-pgm-col.sh
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+       01  QUT-REC.
+           03  QUT-CODE                    PIC X(02).
+           03  QUT-LTOUCH-DATE             PIC X(10).
+           03  QUT-DESC                    PIC X(16).
+           03  QUT-REINSTATE-WINDOW        PIC X(01).
+           03  QUT-REPO-RENOTICE           PIC X(01).
+           03  QUT-TITLE-RELEASE-TYPE      PIC X(01).
+           03  QUT-AUCTION-DATE-REQ        PIC X(01).
+           03  QUT-GEOGRAPHIC-CODE         PIC 9(04).
+           03  QUT-MAX-LOAN-AVAIL          PIC 9(6)V99.
+           03  QUT-MAX-TAX-LOAN-AMT        PIC S9(7)V99.
+           03  QUT-NSF-FEE-AMT             PIC S9(5)V99.
+           03  QUT-ARRAY1-1                PIC X(1).
+           03  QUT-ARRAY1-2                PIC X(1).
+           03  QUT-ARRAY1-3                PIC X(1).
+           03  QUT-ARRAY1-4                PIC X(1).
+           03  QUT-ARRAY1-5                PIC X(1).
+           03  QUT-ARRAY1-6                PIC X(1).
+           03  QUT-ARRAY1-7                PIC X(1).
+           03  QUT-ARRAY1-8                PIC X(1).
+           03  QUT-ARRAY1-9                PIC X(1).
+           03  QUT-ARRAY1-10               PIC X(1).
+           03  QUT-ARRAY1-11               PIC X(1).
+           03  QUT-TEST1                   PIC X(1).
+           03  QUT-ARRAY2-1                PIC X(2).
+           03  QUT-ARRAY2-2                PIC X(2).
+           03  QUT-ARRAY2-3                PIC X(2).
+           03  QUT-ARRAY2-4                PIC X(2).
+           03  QUT-ARRAY2-5                PIC X(2).
+           03  QUT-ARRAY2-6                PIC X(2).
+           03  QUT-ARRAY2-7                PIC X(2).
+           03  QUT-ARRAY2-8                PIC X(2).
+           03  QUT-ARRAY2-9                PIC X(2).
+           03  QUT-ARRAY2-10               PIC X(2).
+           03  QUT-ARRAY2-11               PIC X(2).
+           03  QUT-ARRAY2-12               PIC X(2).
+           03  QUT-ARRAY2-13               PIC X(2).
+           03  QUT-ARRAY2-14               PIC X(2).
+           03  QUT-ARRAY2-15               PIC X(2).
+           03  QUT-ARRAY2-16               PIC X(2).
+           03  QUT-ARRAY2-17               PIC X(2).
+           03  QUT-ARRAY2-18               PIC X(2).
+           03  QUT-ARRAY2-19               PIC X(2).
+           03  QUT-ARRAY2-20               PIC X(2).
+           03  QUT-ARRAY2-21               PIC X(2).
+           03  QUT-ARRAY2-22               PIC X(2).
+           03  QUT-TEST2                   PIC X(2).
+           03  QUT-TEST-3-4A-1-1           PIC X(4).
+           03  QUT-TEST-3-4-5-1-1-1        PIC X(5).
+           03  QUT-TEST-3-4B               PIC X(4).
+           03  QUT-TEST3                   PIC X(3).
+           03  QUT-SSNO1        PIC 9(9).
+           03  QUT-MAKERCD1     PIC X.
+           03  QUT-SSNO2        PIC 9(9).
+           03  QUT-MAKERCD2     PIC X.
+           03  QUT-SSNO3        PIC 9(9).
+           03  QUT-MAKERCD3     PIC X.
+           03  QUT-SSNO4        PIC 9(9).
+           03  QUT-MAKERCD4     PIC X.
+           03  QUT-STATFLAGS        PIC X(20).
+           03  QUT-1STPYDATE        PIC 9(8).
+           03  QUT-INSEFF-DATE     PIC 9(8)      COMP-3.
+           03  QUT-CL-REBATE    PIC X.
+           03  QUT-AH-REBATE    PIC X.
+           03  QUT-PP-REBATE    PIC X.
+           03  QUT-INT-REBATE   PIC X.
+           03  QUT-SC-REBATE    PIC X.
+           03  QUT-MF-REBATE    PIC X.
+           03  QUT-DF-REBATE    PIC X.
+           03  QUT-EX-REBATE    PIC X.
+           03  QUT-O1-REBATE    PIC X.
+           03  QUT-O2-REBATE    PIC X.
+           03  QUT-O3-REBATE    PIC X.
+           03  QUT-O4-REBATE    PIC X.
+           03  QUT-O5-REBATE    PIC X.
+           03  QUT-O6-REBATE    PIC X.
+           03  QUT-O7-REBATE    PIC X.
+           03  QUT-UN-O7-REB    PIC X.
+           03  QUT-UN-O8-REB    PIC X.
+           03  QUT-UN-O9-REB    PIC X.
+           03  QUT-UN-O10-REB   PIC X.
+           03  QUT-TEST-ALPHA       PIC X(9).

@@ -1,0 +1,217 @@
+      * COPYMEMBER: LIBGB/DECLRP.CPY
+      ******************************************************************
+      *
+      * IDENTIFICATION: LIBGB/DECLRP
+      * DESCRIPTION   : SQL DECLARE ROUTINES
+      *                 NEEDED WHEN PROGRAM HAS NO VISION FILES AND
+      *                 CANNOT USE STANDARD DECLARE COPY MEMBERS USED
+      *                 IN PROCEDURE DIVISION DECLARATIVES.
+      *
+      *=================================================================
+      * REV:
+      * JKC 2021-0513 ***NEW***
+      * JKC 2022-0222 IN SQL-IO-VALIDATION ROUTINE ADDED A CHECK TO SEE
+      *               IF THE SQL CONNECTION (EXT-ACUSQL-CONNECT-STAT)
+      *               IS OPEN (GOOD) THEN `PERFORM CLOSE-FILES`;
+      *               NEED TO ONLY CLOSE FILES/TABLES WHEN THERE IS
+      *               AN SQL CONNECTION OTHERWISE YOU CAN GET INTO
+      *               AN INIFITE LOOP DUE TO THE SQL-DISCONNECT IN
+      *               SQL-ERROR WHICH THEN YOU CANNOT CLOSE CURSORS
+      *               IF THE CONNECTION HAS BEEN CLOSED.
+      *
+      * JKC 2022-0622 MOVED THIS FROM LIBIO TO LIBGB; LIBIO WAS REMOVED
+      * JKC 2023-0901 ADDED CALL TO CL/ACUMEM FOR OTIS MEMORY USAGE LOG
+      * JKC 2023-0929 ADDED COUNT-IT PARAGRAPH FOR SQL ROW COUNT IO
+      * JKC 2023-1201 ADDED CHECK OF "ROW " IN SQL-IO-VALIDATION
+      * JKC 2024-0124 ADDED OTIS TRACE LOGGING LOGIC
+      *
+      * JKC 2024-0501 ADDED USE OF EXT-API-SCREEN-DISABLE AND
+      *         EXT-API-MESS FOR SUPPRESS SCREEN INTERACTIONS FOR
+      *         USE IN API PROGRAMS WITHOUT SCREENS.
+      *
+      ******************************************************************
+       OPEN-IT.
+           MOVE "OPEN ERROR" TO E-MSG.
+           MOVE SPACES TO E-KEYX.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       COUNT-IT.
+           MOVE "ROW COUNT ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       READ-IT.
+           MOVE "READ ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       WRITE-IT.
+           MOVE "WRITE ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       REWRITE-IT.
+           MOVE "REWRITE ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       DELETE-IT.
+           MOVE "DELETE ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       START-IT.
+           MOVE "START ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.
+       CLOSE-IT.
+           MOVE "CLOSE ERROR" TO E-MSG.
+       FORM-IT.
+           MOVE "FORM ERROR" TO E-MSG.
+           MOVE STAT TO E-STATUS-ERROR.
+           MOVE SPACES TO E-KEYX.
+       SUSPEND.
+      *    CALL SUSP.
+           CALL "C$SLEEP" USING 1.
+       ALARM.
+      *    IF EXT-ROUTE-BUF NOT = "70"
+      *       DISPLAY OMITTED WITH BEEP.
+       FILE-ERRORS.
+           MOVE E-FILE TO E-FILEX ERRLOGW-FILE.
+           MOVE FORM-PATHNAME TO E-PROG ERRLOGW-PROGX.
+           MOVE E-MSG TO ERRLOGW-TYPE.
+           MOVE E-CODE TO ERRLOGW-CODE.
+           MOVE E-SUBCODE TO ERRLOGW-SUBCODE.
+           MOVE E-KEYX TO ERRLOGW-KEY.
+           MOVE "E" TO ERRLOGW-ACTION.
+           MOVE "CL/ERRLOG" TO FORM-NAM.
+           CALL "ERRLOG" USING FORM-PATH ERRLOGW-AREA EXIT-PATHNAME.
+           CANCEL "ERRLOG".
+           IF EXT-ROUTE-BUF = "70"
+              MOVE E-MSG  TO EXT-EOBUF-MESS-TYPE
+              MOVE E-CODE TO EXT-EOBUF-MESS-CODE
+              MOVE E-FILEX TO EXT-EOBUF-MESS-PATH
+              PERFORM CLOSE-FILES
+              MOVE "E" TO EXT-EOBUF-ERRCD
+              GO TO EXIT-PROG.
+           PERFORM ALARM.
+           IF E-MSG4 = "OPEN" OR "WRIT" OR "REWR"
+              MOVE "**** STOP ****"       TO ERRMSG-HEAD
+              STRING "                    CALL HOME "
+                     "OFFICE OR SUPPORT             "
+                     DELIMITED BY SIZE INTO ERRMSG-MSG1
+              STRING "AN ERROR HAS OCCURRED         "
+                     "                DO NOT PROCEED"
+                     DELIMITED BY SIZE INTO ERRMSG-MSG2
+              MOVE SPACES         TO ERRMSG-MSG3
+              PERFORM CALL-ERRMSG.
+           MOVE SPACES TO MESS.
+      * THIS MUST STAY LIKE THIS, E-MSG HAS "OPEN ERROR" OR WHATEVER
+      * IN IT, IT MUST GET MOVED AS BELOW
+           MOVE ERROR-MSG-HEAD TO ERRMSG-HEAD.
+           MOVE ERROR-MSG-STAT TO ERRMSG-MSG1.
+           MOVE ERROR-MSG-PATH TO ERRMSG-MSG2.
+      *    MOVE SPACES         TO ERRMSG-MSG3.
+           MOVE ERROR-MSG-KEY  TO ERRMSG-MSG3.
+           PERFORM CALL-ERRMSG.
+           MOVE SPACES TO MESS.
+
+       FILE-ERRORS-TERMINATE.
+      * A30, STARRED OFF, 7/26/12 BLM:
+      *    IF WINDOWS-OPEN > ZERO
+      *       CALL DELWIN
+      *       SUBTRACT 1 FROM WINDOWS-OPEN
+      *       GO TO FILE-ERRORS-TERMINATE.
+           MOVE "E" TO EXT-EOBUF-ERRCD.
+           PERFORM CLOSE-FILES.
+           GO TO EXIT-PROG.
+
+       SEND-MESS.
+           IF EXT-ROUTE-BUF = "70" OR "60"
+              MOVE MESS TO EXT-EOBUF-MESS
+           ELSE
+           IF ( EXT-API-SCREEN-DISABLE = "Y" )
+              MOVE MESS TO EXT-API-MESS
+           ELSE
+              PERFORM ALARM
+              DISPLAY MESSAGE BOX MESS.
+
+       COPY "LIBGB/ERRMSG.CPY".
+       COPY "LIBGB/TMMSG.CPY".
+
+       SQL-IO-VALIDATION.
+
+      * GOOD
+           IF ( E-MSG4  = "OPEN" ) AND 
+              ( SQLCODE = 1      )
+              EXIT PARAGRAPH
+           ELSE
+      * GOOD
+           IF ( SQLCODE = 0      )
+              EXIT PARAGRAPH.
+
+           MOVE 9 TO IO-FG.
+
+      * EOF OR ROW NOT FOUND
+           IF (( E-MSG4  = "READ" )  OR 
+               ( E-MSG4  = "ROW " )) AND
+              (  SQLCODE = 100     )
+              EXIT PARAGRAPH.
+
+      * DUPLICATE ROW
+           IF ( E-MSG4   = "WRIT"  ) AND 
+      * LIKE VISION "22,00"
+              ( SQLSTATE = "23000" )
+              MOVE "22"    TO FILE-STAT
+              MOVE "00"    TO SECONDARY-FILE-STAT
+              MOVE "22,00" TO FILE-STAT-DISP
+                              E-STATUS-ERROR
+              EXIT PARAGRAPH.
+
+           MOVE E-FILE        TO E-FILEX ERRLOGW-FILE.
+           MOVE FORM-PATHNAME TO E-PROG ERRLOGW-PROGX.
+           MOVE E-MSG         TO ERRLOGW-TYPE.
+           MOVE E-CODE        TO ERRLOGW-CODE.
+           MOVE E-SUBCODE     TO ERRLOGW-SUBCODE.
+           MOVE E-KEYX        TO ERRLOGW-KEY.
+           MOVE "E"           TO ERRLOGW-ACTION.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "CL/ERRSQL"   TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH ERRLOGW-AREA
+                                 SQLCA EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+
+           MOVE "E" TO EXT-EOBUF-ERRCD.
+
+      * DEFINED IN LIBGB/CONNECT_SQL.CPY
+           PERFORM SQL-ERROR. 
+
+      
+      * ONLY CLOSE FILES/TABLES WHEN THERE IS AN SQL CONNECTION
+      * OTHERWISE YOU CAN GET INTO AN INIFITE LOOP DUE TO THE
+      * SQL-DISCONNECT IN SQL-ERROR WHICH THEN YOU CANNOT CLOSE CURSORS
+      * IF THE CONNECTION HAS BEEN CLOSED.
+      * NOTE: THIS WORKS FOR TABLES; NOT SURE WHAT HAPPENS WITH VISION
+      *       WORK FILES, IMPORT & EXPORT EXTRACTION FILES; BELIEVE
+      *       THEY SHOULD WORK FINE IF GOING RIGHT BACK INTO THE
+      *       PROGRAM (THEORY IS THE CLOSING OF A PROGRAM WILL CLOSE
+      *       THE FILES).                           BAH & JKC 2022-0214
+      
+      * CLOSE VISION FILES
+           IF ( EXT-ACUSQL-CONNECT-STAT-GOOD )
+              PERFORM CLOSE-FILES.
+
+      * FORCE EXIT OF PROGRAM
+           GO TO EXIT-PROG.
+
+       CLOSE-FILES.
+
+      * OTIS MEMORY USAGE LOG
+           IF ( EXT-TCLP-ACUMEM-UPDATE )
+              CALL "ACUMEM" USING FORM-PATHNAME 
+              CANCEL "ACUMEM".
+
+      * OTIS TRACE USAGE LOG
+           IF ( EXT-TCLP-TRACE-UPDATE ) 
+              MOVE "PROGRAM FINISH (LIBGB/DECLRP_SQL)"
+                TO EXT-TCLP-TRACE-MESS
+              CALL "TRACE" USING FORM-PATHNAME
+              CANCEL "TRACE".
+
+           MOVE "CLOSE ERROR" TO E-MSG.

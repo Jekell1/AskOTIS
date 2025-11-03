@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSTZ
+           SELECT TZ-FILE ASSIGN TO TZ-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY TZ1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,18 @@
+graph TD
+    A[MAIN-PROGRAM Start] --> B[Call GB/SETENV]
+    B --> C[Establish SQL Connection]
+    C --> D[PERFORM GET-GPENV]
+    D --> E[Parse INPUT-STRING to BT-REC]
+    E --> F[Convert BT fields to BP-REC]
+    F --> G[Date Conversion MMDDYY to YYYYMMDD]
+    G --> H[PERFORM INITIALIZATION]
+    H --> I{Initialization Success?}
+    
+    I -->|No| J[GO TO END-PROGRAM]
+    I -->|Yes| K[Environment Setup Complete]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style H fill:#fff3e0
+    style I fill:#fce4ec
+    style K fill:#e8f5e8

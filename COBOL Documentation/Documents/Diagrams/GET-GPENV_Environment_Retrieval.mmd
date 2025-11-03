@@ -1,0 +1,15 @@
+graph TD
+    A[System Environment] --> B[GPENV Variable]
+    B --> C[ACCEPT Statement]
+    C --> D{Environment Access}
+    D -->|Success| E[Parse Environment Data]
+    D -->|Failure| F[Default/Spaces Values]
+    E --> G[Populate GP-REC Fields]
+    F --> G
+    G --> H[Configuration Available]
+    
+    style A fill:#e3f2fd
+    style B fill:#f1f8e9
+    style C fill:#fff3e0
+    style D fill:#fce4ec
+    style G fill:#e8f5e8

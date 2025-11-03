@@ -1,0 +1,246 @@
+p
+1. CREATE BRANCH DATA DIRECTORY
+4
+6
+y
+p
+16. FEE CODE COPY
+4
+44
+y
+p
+5. COPY GLOBAL FILE RECORDS
+8
+6
+y
+p
+20. COLLECTOR ID COPY
+8
+44
+y
+p
+6. GLOBAL FILE MAINTENANCE
+9
+6
+y
+p
+7. DELETE ENTIRE GL BRANCH
+10
+6
+y
+p
+8. CREATE NEW BRANCHES GL MASTERS
+11
+6
+y
+p
+23. COLLECTOR POOL COPY
+11
+44
+y
+p
+9. CAN LOAN COPY
+12
+6
+y
+p
+24. LOAN CLASS COPY
+12
+44
+y
+p
+10. CAN LOAN DELETE
+13
+5
+y
+p
+25. INSURANCE COMPANY COPY
+13
+44
+y
+p
+26. DEALER MASTER FILE COPY
+14
+44
+y
+p
+12. BRANCH RECORD COPY
+15
+5
+y
+p
+27. COPY BRANCH BATCH OPTIONS
+15
+44
+y
+p
+13. EXTRACTION COPY
+16
+5
+y
+p
+28. COPY GLOBAL HOLIDAY TABLE
+16
+44
+y
+p
+14. GENERAL LEDGER INTERFACE COPY
+17
+5
+y
+p
+29. INSURANCE RATE TABLE COPY
+17
+44
+y
+p
+15. STATE PARAMETER COPY
+18
+5
+y
+p
+ENTER SELECTION:
+21
+27
+y
+p
+F2 - SIGN OFF
+23
+29
+n
+f
+CONAME
+
+N(40)
+1
+21
+n
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+EXITPROG
+GB/INSTMU
+N(9)
+0
+0
+n
+n
+y
+n
+n
+y
+n
+n
+n
+n
+y
+f
+SEL
+
+DD
+21
+44
+y
+y
+y
+n
+y
+n
+n
+n
+n
+n
+y
+f
+SYSDATE
+
+N(8)
+1
+1
+n
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+SYSTIME
+`
+N(8)
+1
+10
+n
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+TITLE
+INSTALL MENU
+N(12)
+2
+34
+n
+n
+y
+y
+n
+n
+n
+n
+n
+n
+y
+f
+USERID
+          
+N(10)
+0
+0
+n
+n
+y
+n
+n
+y
+n
+n
+n
+n
+y
+f
+VOLID
+       
+N(7)
+0
+0
+n
+n
+n
+n
+n
+y
+n
+n
+n
+n
+y

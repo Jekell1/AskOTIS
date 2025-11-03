@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM999-998 - Truth in Lending and Elapsed Unit Period Calculations</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM999-998 - Truth in Lending and Elapsed Unit Period Calculations</span>
+        </nav>
+        <main class="content">
+<h1>C-TIM999-998 - Truth in Lending and Elapsed Unit Period Calculations</h1>
+<p><strong>Location:</strong> <code>.\C-TIM999-998.cpy</code><br />
+<strong>Program ID:</strong> C-TIM999-998<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#technical-details">Technical Details</a></li>
+<li><a href="#example-results">Example Results</a></li>
+<li><a href="#limitations-and-edge-cases">Limitations and Edge Cases</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Overview</h2>
+<p><code>C-TIM999-998</code> is a specialized date utility section that implements two important time calculation methods:
+1. <strong>YRTYPE 999</strong>: Truth in Lending method (Regulation Z compliant)
+2. <strong>YRTYPE 998</strong>: Elapsed Unit Periods calculation</p>
+<p>This utility is particularly important for financial and loan applications where regulatory compliance and precise period calculations are required for interest, payment terms, and disclosure documents.</p>
+<h2>Purpose</h2>
+<p>The primary purpose of this utility is to provide standardized, regulatory-compliant methods for calculating elapsed time between two dates, particularly for:</p>
+<ul>
+<li>Truth in Lending disclosures (Reg Z)</li>
+<li>Unit period calculations for loan payment schedules</li>
+<li>Financial period calculations for interest accrual</li>
+<li>Payment interval determination</li>
+</ul>
+<h2>Usage</h2>
+<h3>Input</h3>
+<ul>
+<li><code>WS-DATE1-CCYY</code>, <code>WS-DATE1-MM</code>, <code>WS-DATE1-DD</code>: First date (starting date) in CCYY-MM-DD format</li>
+<li><code>WS-DATE2-CCYY</code>, <code>WS-DATE2-MM</code>, <code>WS-DATE2-DD</code>: Second date (ending date) in CCYY-MM-DD format</li>
+<li>The year type (998 or 999) is determined by the calling context</li>
+</ul>
+<h3>Output</h3>
+<ul>
+<li><code>ELAPSED_MONTHS</code>: </li>
+<li>For YRTYPE 999: Number of whole months between dates</li>
+<li>For YRTYPE 998: Number of elapsed unit periods</li>
+<li><code>ELAPSED_DAYS</code>: Total number of days between dates</li>
+<li><code>ELAPSED_REM</code>: Remainder days (30 days for YRTYPE 998, 0 for YRTYPE 999)</li>
+</ul>
+<h3>Example Call</h3>
+<pre><code class="language-cobol">MOVE start-date TO WS-DATE1.
+MOVE end-date TO WS-DATE2.
+PERFORM C-TIM999-998.
+DISPLAY &quot;Elapsed months: &quot; ELAPSED_MONTHS.
+DISPLAY &quot;Elapsed days: &quot; ELAPSED_DAYS.
+DISPLAY &quot;Remainder: &quot; ELAPSED_REM.
+</code></pre>
+<h2>Technical Details</h2>
+<h3>Algorithm</h3>
+<ol>
+<li>Initializes variables via <code>C-TIMBEG</code></li>
+<li>Calculates month difference between dates (years × 12 + month difference)</li>
+<li>Adjusts for day differences (subtracts 1 month if day1 &gt; day2)</li>
+<li>Increments date2 backward by calculated months to reach a reference date</li>
+<li>Converts dates to Julian format</li>
+<li>Calculates days based on the formula: (months × 30) + Julian date difference</li>
+<li>Finalizes the calculation via <code>C-TIMEND</code></li>
+</ol>
+<h3>Truth in Lending (999) Method</h3>
+<p>This method follows Regulation Z requirements for credit disclosure calculations:
+- Uses a standardized month length (30 days)
+- Uses a standardized year length (360 days)
+- Provides consistent period calculations regardless of actual calendar variations</p>
+<h3>Elapsed Unit Periods (998) Method</h3>
+<p>The 998 method calculates actual payment periods:
+- Each period is exactly 30 days
+- Used for determining payment schedules and intervals
+- Provides a consistent basis for financial calculations</p>
+<h2>Example Results</h2>
+<pre><code>For dates:  
+NUM-DATE: 03/03/97  
+SYS-DATE: 05/02/97  
+
+YRTYPE 999:
+ELAPSED_MONTHS: 2
+ELAPSED_DAYS: 60
+ELAPSED_REM: 0
+
+YRTYPE 998:
+ELAPSED_MONTHS: 1
+ELAPSED_DAYS: 60
+ELAPSED_REM: 30
+</code></pre>
+<h2>Limitations and Edge Cases</h2>
+<ul>
+<li>The method assumes a standardized 30-day month</li>
+<li>Special handling is required when the day of the first date exceeds the day of the second date</li>
+<li>Results may differ from actual calendar calculations since these are regulatory/financial methods</li>
+</ul>
+<h2>Dependencies</h2>
+<ul>
+<li><code>C-TIMBEG</code>: Initializes the working storage variables</li>
+<li><code>C-TIMEND</code>: Finalizes the calculation</li>
+<li><code>C-INCR-MONTHS</code>: Used to increment dates by months</li>
+<li><code>C-CALL-JUL</code>: Converts dates to Julian format</li>
+</ul>
+<h2>Related Utilities</h2>
+<ul>
+<li><code>C-TIM360-358</code>: Calculates elapsed time using a 360-day or 358-day year</li>
+<li><code>C-TIM361</code>: Calculates elapsed time using a 361-day year type</li>
+<li><code>C-TIM362</code>: Calculates elapsed time using a 362-day year type</li>
+<li><code>C-TIM365-367</code>: Calculates elapsed time using a 365-day or 367-day year type</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

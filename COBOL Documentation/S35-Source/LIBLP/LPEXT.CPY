@@ -1,0 +1,92 @@
+      * COPYMEMBER: LIBLP/LPEXT
+      ******************************** 
+      *   E X T R A C T   D A T A      
+      *   INPUT      : DATA-AREA       
+      *                DATA-TYPE       
+      *                DATA-OFFSET     
+      *                DATA-DIGITS     
+      *                DATA-DECIMAL    
+      *   OUTPUT     : A-BUF (ALPHA)   
+      *                NUMOUT (NUM)    
+      *   USED: LONPMC (VARIABLE FORMS) AND LONPS3 (FORM INQUIRY)
+      *********************************
+       EXTRACT-DATA SECTION.
+       EXT-WHAT-TYPE.
+           GO TO EXT-TYPE-ALPHA EXT-TYPE-NUMERIC EXT-TYPE-SNUMERIC
+              EXT-TYPE-COMP EXT-TYPE-SCOMP EXT-TYPE-COMP-BIN
+              EXT-TYPE-SCOMP-BIN DEPENDING DATA-TYPE.
+       EXT-TYPE-ALPHA.
+           MOVE " " TO A-BUF.
+           MOVE DATA-DIGITS TO DATA-BYTES.
+           PERFORM EXT-FILL-LTOR.
+           GO TO EXIT-EXTRACT-DATA.
+       EXT-TYPE-NUMERIC.
+           MOVE 0 TO B-CHAR.
+           MOVE DATA-DIGITS TO DATA-BYTES.
+           PERFORM EXT-FILL-RTOL.
+           MOVE B-CHAR TO DATA-NUMOUT.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-TYPE-SNUMERIC.
+           MOVE 0 TO C-CHAR.
+           MOVE DATA-DIGITS TO DATA-BYTES.
+           PERFORM EXT-FILL-RTOL.
+           MOVE C-CHAR TO DATA-NUMOUT.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-TYPE-COMP.
+           MOVE 0 TO D-CHAR.
+           COMPUTE DATA-BYTES = (DATA-DIGITS + 2) / 2.
+           PERFORM EXT-FILL-RTOL.
+           MOVE D-CHAR TO DATA-NUMOUT.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-TYPE-SCOMP.
+           MOVE 0 TO E-CHAR.
+           COMPUTE DATA-BYTES = (DATA-DIGITS + 2) / 2.
+           PERFORM EXT-FILL-RTOL.
+           MOVE E-CHAR TO DATA-NUMOUT.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-TYPE-COMP-BIN.
+           MOVE 0 TO F-CHAR.
+           MOVE COMP-BIN-TBL(DATA-DIGITS) TO DATA-BYTES.
+           PERFORM EXT-FILL-RTOL.
+           MOVE F-CHAR TO DATA-NUMOUT.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-TYPE-SCOMP-BIN.
+           MOVE 0 TO G-CHAR.
+           MOVE SCOMP-BIN-TBL(DATA-DIGITS) TO DATA-BYTES.
+           COMPUTE COMP-LOW-BYTES = 8 * 16 ** (2 * DATA-BYTES - 1).
+           COMPUTE COMP-HIGH-BYTES = 16 ** (2 * DATA-BYTES).
+           PERFORM EXT-FILL-RTOL.
+           MOVE G-CHAR TO DATA-NUMOUT.
+           IF DATA-NUMOUT > COMP-LOW-BYTES
+              COMPUTE DATA-NUMOUT = DATA-NUMOUT - COMP-HIGH-BYTES.
+           GO TO EXT-SCALE-NUMERIC.
+       EXT-SCALE-NUMERIC.
+           PERFORM EXT-DIV-10 DATA-DECIMAL TIMES.
+           GO TO EXIT-EXTRACT-DATA.
+       EXT-DIV-10.
+           DIVIDE 10 INTO DATA-NUMOUT.
+       EXIT-EXTRACT-DATA.
+           EXIT.
+
+       EXT-FILL-LTOR SECTION.
+       EXT-ALP-ONLY.
+           MOVE 1 TO DATA-SUB.
+           PERFORM EXT-NEXT-LTOR DATA-BYTES TIMES.
+           GO TO EXIT-EXT-FILL-LTOR.
+       EXT-NEXT-LTOR.
+           MOVE DATA-CHAR(DATA-OFFSET) TO A-CHAR(DATA-SUB).
+           ADD 1 TO DATA-SUB DATA-OFFSET.
+       EXIT-EXT-FILL-LTOR.
+           EXIT.
+
+       EXT-FILL-RTOL SECTION.
+       EXT-NUM-ONLY.
+           MOVE 40 TO DATA-SUB.
+           COMPUTE DATA-OFFSET = DATA-OFFSET + DATA-BYTES - 1.
+           PERFORM EXT-NEXT-RTOL DATA-BYTES TIMES.
+           GO TO EXIT-EXT-FILL-RTOL.
+       EXT-NEXT-RTOL.
+           MOVE DATA-CHAR(DATA-OFFSET) TO A-CHAR(DATA-SUB).
+           SUBTRACT 1 FROM DATA-OFFSET DATA-SUB.
+       EXIT-EXT-FILL-RTOL.
+           EXIT.

@@ -1,0 +1,76 @@
+graph TD
+    A[Error Detected] --> B{Error Type}
+    B -->|Input Validation| C[Input Error Handler]
+    B -->|File Access| D[File Error Handler]
+    B -->|Business Logic| E[Business Rule Error]
+    B -->|System Error| F[System Error Handler]
+    
+    C --> G[Log Input Error]
+    G --> H[Display Error Message]
+    H --> I[Return to Input Screen]
+    I --> J[Allow Re-entry]
+    
+    D --> K[Log File Error]
+    K --> L{File Critical?}
+    L -->|Yes| M[Abort Transaction]
+    L -->|No| N[Continue with Warning]
+    
+    E --> O[Log Business Error]
+    O --> P[Display Business Rule Message]
+    P --> Q{Override Allowed?}
+    Q -->|Yes| R[Prompt for Password]
+    Q -->|No| S[Reject Transaction]
+    
+    R --> T{Password Valid?}
+    T -->|Yes| U[Allow Override]
+    T -->|No| V[Access Denied]
+    
+    F --> W[Log System Error]
+    W --> X[Display System Message]
+    X --> Y[Initiate Recovery]
+    Y --> Z{Recovery Successful?}
+    Z -->|Yes| AA[Resume Processing]
+    Z -->|No| BB[Abort with Error]
+    
+    J --> CC[Continue Processing]
+    N --> CC
+    U --> CC
+    AA --> CC
+    
+    M --> DD[Error Exit]
+    S --> DD
+    V --> DD
+    BB --> DD
+    
+    subgraph "Error Logging"
+        EE[Write Error Log]
+        FF[Update Audit Trail]
+        GG[Create Error Report]
+    end
+    
+    G --> EE
+    K --> EE
+    O --> EE
+    W --> EE
+    
+    EE --> FF
+    FF --> GG
+    
+    subgraph "Error Messages"
+        HH["Invalid Account Number"]
+        II["File Access Error"]
+        JJ["Rebate Exceeds Original"]
+        KK["System Resource Error"]
+    end
+    
+    H --> HH
+    L --> II
+    P --> JJ
+    X --> KK
+    
+    style C fill:#ffeb3b
+    style D fill:#ff9800
+    style E fill:#ff5722
+    style F fill:#f44336
+    style DD fill:#ffcdd2
+    style CC fill:#c8e6c9

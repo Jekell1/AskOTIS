@@ -1,0 +1,19 @@
+flowchart LR
+    A[C-TIMBEG] --> B[C-CALL-JUL]
+    A --> C[Julian Conversion Process]
+    B --> D[Date Validation]
+    B --> E[Format Conversion]
+    C --> F[WS-JUL-1 Generation]
+    C --> G[WS-JUL-2 Generation]
+    
+    H[Calling Programs] --> A
+    I[C-TIMALL] --> A
+    J[C-ELAPSED-TIME] --> A
+    K[Date Comparison Routines] --> A
+    
+    style A fill:#4fc3f7
+    style B fill:#81c784
+    style H fill:#ffb74d
+    style I fill:#ffb74d
+    style J fill:#ffb74d
+    style K fill:#ffb74d

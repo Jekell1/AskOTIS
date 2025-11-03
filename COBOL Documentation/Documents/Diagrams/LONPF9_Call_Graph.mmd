@@ -1,0 +1,41 @@
+graph TD
+    A[MAIN-PROGRAM] --> B[BATCH-PAYMENT-ROUTINE]
+    A --> C[SELECTION-MODULE]
+    
+    C --> D[INITIALIZE]
+    C --> E[DISPLAY-ENTRY-LN]
+    C --> F[ACCEPT-ENTRY-RTN]
+    
+    F --> G[ACCEPT-ENTER-TILLNO]
+    F --> H[ACCEPT-CHECK-VDUSTATUS]
+    F --> I[ACCEPT-GL-DISBURSE]
+    F --> J[ACCEPT-PO-CODE]
+    
+    I --> K[DISBURSE-OTHER-INIT]
+    K --> L[DISBURSE-GLNO-ENTRY]
+    K --> M[DISBURSE-TOTAL-VERIFY]
+    
+    C --> N[UPDATE-AUTOMATIC-PL]
+    N --> O[READ-LN1-FILE]
+    N --> P[CALCULATE-REFUND]
+    N --> Q[GENERATE-AC-TRANSACTION]
+    
+    C --> R[ENTER-PLREASON]
+    C --> S[SETUP-AC-LINE]
+    C --> T[SET-PAYOFF-LINES]
+    
+    E --> U[DISPLAY-NEXT-DOWN]
+    E --> V[DISPLAY-NEXT-UP]
+    
+    A --> W[ERROR-HANDLING]
+    W --> X[DECLARE-ERROR]
+    W --> Y[CLOSE-FILES]
+    
+    B --> Z[VALIDATE-AUTO-PL]
+    B --> AA[PROCESS-BATCH-TRANSACTION]
+    B --> BB[UPDATE-BATCH-BALANCES]
+    
+    style A fill:#e1f5fe
+    style W fill:#ffebee
+    style N fill:#e8f5e8
+    style I fill:#fff3e0

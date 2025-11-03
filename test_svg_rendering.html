@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG Rendering Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .svg-container {
+            margin: 1.5rem 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Rendering Tests</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Simple SVG in Markdown Code Block</h2>
+        <p>Input format: <code>```svg ... ```</code></p>
+        <div id="test1"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Inline SVG</h2>
+        <p>Direct SVG tags in content</p>
+        <div id="test2"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: SVG with Program Flow Example</h2>
+        <p>Typical OTIS response with SVG diagram</p>
+        <div id="test3"></div>
+    </div>
+
+    <script>
+        // Copy the SVG processing functions from otis-rag-chat.html
+        function processSVGContent(content) {
+            const svgPlaceholders = [];
+            let placeholderIndex = 0;
+
+            console.log('Processing SVG content...');
+
+            // 1. Detect SVG in markdown code blocks (```svg ... ```)
+            content = content.replace(/```svg\s*\n([\s\S]+?)```/gi, (match, svgContent) => {
+                console.log('Found SVG in markdown block');
+                const sanitized = sanitizeSVG(svgContent.trim());
+                if (sanitized) {
+                    const placeholder = `__SVG_PLACEHOLDER_${placeholderIndex}__`;
+                    svgPlaceholders.push({ placeholder, svg: wrapSVG(sanitized) });
+                    placeholderIndex++;
+                    return placeholder;
+                }
+                return match;
+            });
+
+            // 2. Detect inline SVG tags
+            content = content.replace(/<svg[\s\S]*?<\/svg>/gi, (match) => {
+                console.log('Found inline SVG');
+                const sanitized = sanitizeSVG(match);
+                if (sanitized) {
+                    const placeholder = `__SVG_PLACEHOLDER_${placeholderIndex}__`;
+                    svgPlaceholders.push({ placeholder, svg: wrapSVG(sanitized) });
+                    placeholderIndex++;
+                    return placeholder;
+                }
+                return escapeHtml(match);
+            });
+
+            // Replace placeholders with actual SVG containers
+            svgPlaceholders.forEach(({ placeholder, svg }) => {
+                content = content.replace(placeholder, svg);
+            });
+
+            return content;
+        }
+
+        function sanitizeSVG(svgString) {
+            const dangerous = [
+                /<script[\s\S]*?<\/script>/gi,
+                /on\w+\s*=\s*["'][^"']*["']/gi,
+                /javascript:/gi,
+                /<iframe[\s\S]*?<\/iframe>/gi,
+                /<object[\s\S]*?<\/object>/gi,
+                /<embed[\s\S]*?>/gi
+            ];
+
+            let cleaned = svgString;
+            dangerous.forEach(pattern => {
+                cleaned = cleaned.replace(pattern, '');
+            });
+
+            if (!cleaned.trim().match(/<svg[\s\S]*?>/i)) {
+                return null;
+            }
+
+            return cleaned;
+        }
+
+        function wrapSVG(svgContent) {
+            return `<div class="svg-container">${svgContent}</div>`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Test 1: SVG in markdown code block
+        const test1Input = `Here's a flow diagram:
+
+\`\`\`svg
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="10" width="100" height="50" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
+  <text x="60" y="40" text-anchor="middle" fill="white" font-family="Arial" font-size="14">START</text>
+  
+  <line x1="110" y1="35" x2="150" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <rect x="150" y="10" width="100" height="50" fill="#2196F3" stroke="#1565C0" stroke-width="2"/>
+  <text x="200" y="40" text-anchor="middle" fill="white" font-family="Arial" font-size="14">PROCESS</text>
+  
+  <line x1="250" y1="35" x2="290" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <rect x="290" y="10" width="100" height="50" fill="#F44336" stroke="#C62828" stroke-width="2"/>
+  <text x="340" y="40" text-anchor="middle" fill="white" font-family="Arial" font-size="14">END</text>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+</svg>
+\`\`\`
+
+The flow shows the basic process.`;
+
+        // Test 2: Inline SVG
+        const test2Input = `<svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="50" r="40" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="100" y="55" text-anchor="middle" fill="white" font-family="Arial" font-size="16">TEST</text>
+</svg>`;
+
+        // Test 3: OTIS-style response
+        const test3Input = `**Program Flow for LOAN Processing:**
+
+The system follows this execution path:
+
+\`\`\`svg
+<svg width="600" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Program -->
+  <rect x="50" y="20" width="150" height="60" fill="#667eea" stroke="#764ba2" stroke-width="2" rx="5"/>
+  <text x="125" y="45" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">LOANMAIN</text>
+  <text x="125" y="65" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Main Entry</text>
+  
+  <!-- Arrow 1 -->
+  <line x1="200" y1="50" x2="260" y2="50" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Validation -->
+  <rect x="260" y="20" width="150" height="60" fill="#4CAF50" stroke="#2E7D32" stroke-width="2" rx="5"/>
+  <text x="335" y="45" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">LOANVAL</text>
+  <text x="335" y="65" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Validation</text>
+  
+  <!-- Arrow 2 -->
+  <line x1="335" y1="80" x2="335" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Processing -->
+  <rect x="260" y="120" width="150" height="60" fill="#2196F3" stroke="#1565C0" stroke-width="2" rx="5"/>
+  <text x="335" y="145" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">LOANPROC</text>
+  <text x="335" y="165" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Core Processing</text>
+  
+  <!-- Arrow 3 -->
+  <line x1="410" y1="150" x2="470" y2="150" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- Output -->
+  <rect x="470" y="120" width="150" height="60" fill="#FF9800" stroke="#E65100" stroke-width="2" rx="5"/>
+  <text x="545" y="145" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">LOANOUT</text>
+  <text x="545" y="165" text-anchor="middle" fill="white" font-family="Arial" font-size="11">Output Generation</text>
+  
+  <!-- Return arrow -->
+  <path d="M 545 180 L 545 220 L 125 220 L 125 80" stroke="#999" stroke-width="2" stroke-dasharray="5,5" fill="none" marker-end="url(#arrow)"/>
+  <text x="300" y="235" text-anchor="middle" fill="#666" font-family="Arial" font-size="10">Return to Main</text>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333" />
+    </marker>
+  </defs>
+</svg>
+\`\`\`
+
+**Key Points:**
+- LOANMAIN orchestrates the entire process
+- LOANVAL performs validation checks
+- LOANPROC handles core business logic
+- LOANOUT generates the final output`;
+
+        // Process and display results
+        document.getElementById('test1').innerHTML = processSVGContent(test1Input).replace(/\n/g, '<br>');
+        document.getElementById('test2').innerHTML = processSVGContent(test2Input);
+        document.getElementById('test3').innerHTML = processSVGContent(test3Input).replace(/\n/g, '<br>');
+        
+        console.log('All tests rendered');
+    </script>
+</body>
+</html>

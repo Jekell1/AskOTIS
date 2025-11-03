@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXBW
+           SELECT XBW-FILE ASSIGN TO XBW-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XBW-KEY
+                  FILE STATUS FILE-STAT.

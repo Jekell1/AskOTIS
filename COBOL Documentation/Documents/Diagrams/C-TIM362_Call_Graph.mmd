@@ -1,0 +1,86 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-TIM362 Module]
+    B --> C[Component Calculation]
+    C --> D[Decision Logic]
+    D --> E[Simple Arithmetic OR Complex Logic]
+    E --> F[Result Assembly]
+    F --> G[Return to Caller]
+    
+    subgraph "Called Modules"
+        H[C-TIMBEG]
+        I[C-TIMEND]
+        J[C-INCR-MONTHS]
+        K[C-CALL-JUL Multiple Calls]
+        L[C-LEAP-YEAR-TEST]
+    end
+    
+    subgraph "Processing Paths"
+        M[Simple 30-Day Path]
+        N[Complex Hybrid Path]
+        O[Month Adjustment Logic]
+        P[Julian Date Conversion]
+        Q[End-of-Month Validation]
+    end
+    
+    subgraph "Working Storage"
+        R[WS-DATEX Working Date]
+        S[WS-XREM Year Difference]
+        T[WS-XMONTHS Month Difference]
+        U[WS-XDAYS Day Difference/Result]
+        V[WS-HOLD-MOS Adjusted Months]
+        W[WS-TMP-WORK Month Length]
+        X[WS-TMP-JUL-1/2 Julian Dates]
+        Y[P-DATE-IN/P-JULIAN-DATE Conversion]
+    end
+    
+    subgraph "Output Structure"
+        Z[WS-XDAYS Final Result]
+        AA[ELAPSED-MONTHS]
+        BB[ELAPSED-DAYS]
+        CC[ELAPSED-REM]
+    end
+    
+    subgraph "Data Tables"
+        DD[DYTOM Array Day-of-Year Table]
+        EE[LEAP-YEAR-LOGIC]
+        FF[JULIAN-CONVERSION-TABLES]
+    end
+    
+    B --> H
+    F --> I
+    E --> J
+    E --> K
+    E --> L
+    
+    D --> M
+    D --> N
+    E --> O
+    E --> P
+    E --> Q
+    
+    B --> R
+    C --> S
+    C --> T
+    C --> U
+    E --> V
+    E --> W
+    E --> X
+    E --> Y
+    
+    G --> Z
+    I --> AA
+    I --> BB
+    I --> CC
+    
+    E --> DD
+    E --> EE
+    K --> FF
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style B fill:#f3e5f5
+    style H fill:#e8f5e8
+    style I fill:#e8f5e8
+    style J fill:#e8f5e8
+    style K fill:#e8f5e8
+    style L fill:#e8f5e8

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSLX
+           SELECT LX-FILE ASSIGN TO LX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LX1-KEY
+                  FILE STATUS FILE-STAT.

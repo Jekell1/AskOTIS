@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMALL - COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMALL - COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-timall-cobol-utility-documentation">C-TIMALL - COBOL Utility Documentation</h1>
+<p><strong>Location:</strong> .\APIPAY\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-TIMALL<br />
+<strong>Written:</strong> [See source comments]</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p>C-TIMALL is a COBOL utility section that performs selected time routines based on the value of TA-YRTYPE. It delegates to specific time calculation routines (such as C-TIM360-358, C-TIM361, C-TIM362, C-TIM365-367, C-TIM999-998) to compute elapsed time, months, and days between dates for various loan and batch processing scenarios.</p>
+<hr />
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Elapsed time calculation (various year types)</li>
+<li>Delegation to specific time routines</li>
+</ul>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>TA-YRTYPE (year type selector)</li>
+<li>Date fields (WS-DATE1, WS-DATE2, etc.)</li>
+</ul>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>Elapsed months</li>
+<li>Elapsed days</li>
+<li>Elapsed remainder</li>
+</ul>
+<hr />
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    Start([Start]) --> EvaluateType[Evaluate TA-YRTYPE]
+    EvaluateType --> C-TIM360-358
+    EvaluateType --> C-TIM361
+    EvaluateType --> C-TIM362
+    EvaluateType --> C-TIM365-367
+    EvaluateType --> C-TIM999-998
+    C-TIM360-358 --> End([End])
+    C-TIM361 --> End([End])
+    C-TIM362 --> End([End])
+    C-TIM365-367 --> End([End])
+    C-TIM999-998 --> End([End])
+</div>
+<hr />
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-TIMALL Batch Timeline
+    dateFormat  YYYY-MM-DD
+    section Steps
+    Evaluate TA-YRTYPE :done, 2025-07-31, 0.1h
+    Perform Routine    :active, 2025-07-31, 0.2h
+</div>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>Evaluate TA-YRTYPE:</strong> Determines which time routine to perform based on TA-YRTYPE value.</li>
+<li><strong>Perform Routine:</strong> Calls the appropriate section (C-TIM360-358, C-TIM361, etc.)</li>
+</ul>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    TA-YRTYPE --> RoutineSelector
+    RoutineSelector --> TimeRoutine
+    TimeRoutine --> ElapsedTime
+</div>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><a href="C-TIM360-358_Documentation.html">C-TIM360-358</a>: Elapsed time calculation</li>
+<li><a href="C-TIM361_Documentation.html">C-TIM361</a>: Time routine</li>
+<li><a href="C-TIM362_Documentation.html">C-TIM362</a>: Time routine</li>
+<li><a href="C-TIM365-367_Documentation.html">C-TIM365-367</a>: Time routine</li>
+<li><a href="C-TIM999-998_Documentation.html">C-TIM999-998</a>: Time routine</li>
+<li><a href="APIPAY_Documentation.html">APIPAY</a>: Main batch payment processor</li>
+</ul>
+<hr />
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<div class="mermaid">graph TD
+    ErrorDetected([Error Detected]) --> LogError[Log Error]
+    LogError --> End([End])
+</div>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates TA-YRTYPE value</li>
+<li>Handles errors in delegated routines</li>
+</ul>
+<hr />
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid TA-YRTYPE</li>
+<li>Errors in time routine sections</li>
+</ul>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures:</strong> TA-YRTYPE, date fields</li>
+<li><strong>File Handling:</strong> None (delegates to other routines)</li>
+<li><strong>Key Algorithms:</strong> Delegation via EVALUATE and PERFORM</li>
+</ul>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by APIPAY and other batch utilities for time-based calculations</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>Input: TA-YRTYPE, date fields</li>
+<li>Output: Elapsed time fields</li>
+<li>Copybooks: LIBGB/DATER.CPY</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    MAIN --> C-TIMALL
+    C-TIMALL --> C-TIM360-358
+    C-TIMALL --> C-TIM361
+    C-TIMALL --> C-TIM362
+    C-TIMALL --> C-TIM365-367
+    C-TIMALL --> C-TIM999-998
+</div>
+<hr />
+<p><em>For further details, see the APIPAY documentation and embedded diagrams.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

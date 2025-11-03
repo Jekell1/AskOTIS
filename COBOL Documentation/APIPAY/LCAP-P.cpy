@@ -1,0 +1,219 @@
+      **************************************************************
+      *   SP-LCFRML = P    INDIANA   LATE CHARGE FORMULA (PRIN ONLY)
+      *                    PACESETTERS
+      *
+      *   NOTE:
+      *        LCAP-PARTIALS (HOLDS LCAP-CURDUE AT EXIT)
+      *        LCAP-LCPAID   (HOLDS LCAP-CURDATE AT EXIT)
+      **************************************************************
+       LCAP-P SECTION.
+           MOVE LCAP-TOTPAYMNTD TO LCAP-PAYMNTD.
+           MOVE LCAP-PARTIALS TO LCAP-LST-CURDUE.
+      * REARRANGE LAST PAYDATE (MMDD.YY) INTO (MMDDYY):
+           MULTIPLY LCAP-LCPAID BY 100 GIVING DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           MOVE DATE-YYYYMMDD TO LCAP-CURDATE
+                                 LCAP-LST-CURDATE.
+
+           ADD LN-TOTLCHG LCAP-LPAPLC LCAP-LPAPINT GIVING LCAP-WRK.
+           IF LCAP-AMTNEEDED NOT = LCAP-UNPAID-PORTION
+              SUBTRACT LCAP-WRK FROM LCAP-AMTNEEDED.
+
+      *-----------------------------------------------------------
+      * DETERMINE PAID THRU & AMD AMT-NEEDED, BASED ON
+      *    LCAP-TOTPAYMNTD & LN-TOTLCHG.
+      * IF REMAINING PORTION OF PAYMENT IS LESS THAN TOTAL LATE
+      *    CHARGES PAID, SET FULL PAYMENT AS AMTNEEDED.
+      *-----------------------------------------------------------
+      * SAVE LCAP-TOTPAYMNTD:
+           MOVE LCAP-TOTPAYMNTD TO LCAP-WRK.
+           COMPUTE PDTH-PAYMNTD
+                   LCAP-PAYMNTD
+                   LCAP-TOTPAYMNTD = LCAP-TOTPAYMNTD + LN-TOTLCHG.
+           PERFORM LCAP-PICK-PDTH-CALC.
+
+           IF LN-PAY-SCHLD-FG = "Y"
+              MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-WRK2
+              COMPUTE LCAP-WRK2 ROUNDED = LCAP-REMAIN * LCAP-WRK2
+           ELSE
+              MOVE LN-REGPYAMT TO LCAP-WRK2
+              IF LCAP-TOTPAYMNTD < LN-1STPYAMT
+                 MOVE LN-1STPYAMT TO LCAP-WRK2
+              END-IF
+              COMPUTE LCAP-WRK2 ROUNDED =
+                           PDTH-REMAIN * LCAP-WRK2.
+
+           IF LCAP-WRK2 < LN-TOTLCHG
+              IF LN-PAY-SCHLD-FG = "Y"
+                 MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-AMTNEEDED
+              ELSE
+                 MOVE LN-REGPYAMT TO LCAP-AMTNEEDED.
+      * RESTORE LCAP-TOTPAYMNTD:
+           MOVE LCAP-WRK TO LCAP-TOTPAYMNTD.
+
+      * IF LCAP-LST-CURDATE = 0 (121290 JTG)
+      * IF NO LAST CURRENT DATE OR NO CURRENT DUE AND LATE
+      * CHARGE PDTH AHEAD OF PAID THRU MOVE REGPAY OR SCHEDULE AMT TO
+      * AMTNEEDED.
+      
+           IF LCAP-LST-CURDATE = 0 OR
+               (LCAP-LST-CURDATE NOT = 0 AND LCAP-LST-CURDUE = 0)
+              MOVE PDTH-DATE-FULL TO SYS-DATE
+              PERFORM LCAP-LCPDTH-DATE-TEST
+              IF ELAPSED-DAYS < 0
+                 IF LN-PAY-SCHLD-FG = "Y"
+                    MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-AMTNEEDED
+                 ELSE
+                    MOVE LN-REGPYAMT TO LCAP-AMTNEEDED.
+
+      * SETUP CURRENT PAYMENT AND LAST CURRENT PAYMENT,
+      * SEE IF CURRENT PAYMENT IS ON TIME:
+           PERFORM LCAP-P-CURRENT-PERIOD.
+
+       LCAP-P-BEGIN.
+      * TEST IF LATE CHARGE PAID THRU (LCAP-LCPDTH) IS
+      * ON OR AFTER MATURITY, IF SO EXIT:
+           PERFORM LCAP-MDTE-CHK.
+           IF ELAPSED-DAYS NOT > 0
+              GO TO LCAP-P-EXIT.
+
+      * ASSESSING LATE CHARGES? (AL)
+      * IF SO, STOP ASSESSING WHEN LATE CHARGES ARE BROUGHT
+      * UP TODATE, WHEN LATE CHARGE PAID THRU (LCAP-LCPDTH)
+      * IS ON OR AFTER PAYDATE:
+           IF LCAP-LPTRCD = "AL"
+              MOVE LCAP-PAYDATE TO SYS-DATE
+              PERFORM LCAP-LCPDTH-DATE-TEST
+              IF ELAPSED-DAYS NOT > 0
+                 GO TO LCAP-P-EXIT
+              ELSE
+                 MOVE 0 TO LCAP-CURDATE LCAP-CURDUE.
+
+      * DOES PAYMENT AND LCPDTH INDICATE AN ASSESSMENT ?
+           PERFORM LCAP-ASSESS-CHK.
+           IF LCAS-ASSESS NOT = "Y"
+              GO TO LCAP-P-NOASSESS.
+
+      * TEST FOR LAST CURRENT PAYMENT:
+           IF LCAP-LST-CURDATE NOT = 0
+              MOVE LCAP-LST-CURDATE TO SYS-DATE
+              PERFORM LCAP-LCPDTH-DATE-TEST
+              IF ELAPSED-DAYS = 0
+                 MOVE LCAP-LST-CURDATE TO NUM-DATE
+                 MOVE PDTH-DATE-FULL TO SYS-DATE
+                 PERFORM TIM
+                 IF ELAPSED-DAYS < 0
+                    MOVE LCAP-LST-CURDUE TO LCAP-AMTNEEDED
+                 ELSE
+                    IF LCAP-AMTNEEDED > LCAP-LST-CURDUE
+                       MOVE LCAP-LST-CURDUE TO LCAP-AMTNEEDED.
+
+      * TEST FOR AMTNEEDED LESS THAN THE DELINQUINCY FACTOR
+      * IN (SPR'S), IF SO ASSESS NO LATE CHARGE:
+           IF LCAP-AMTNEEDED < LCAP-DELFAC
+              GO TO LCAP-P-ADVANCE.
+
+      * DETERMINE THE AMOUNT OF THE LATE CHARGE:
+      * IF SP-LCTYPE = "C" OR "J", LCHG-LATE IS INITIALIZED,
+      * SINCE LATE CHARGE IS BASED ON % OF AMOUNT DELINQUENT:
+           MOVE LCAP-AMTNEEDED TO LCHG-LATE.
+           MOVE LCAP-LCPDTH-DATE TO LCHG-LCPDTH-DATE.
+           PERFORM LCAP-CALC-TEST.
+
+      * IF LCAP-TRAMT IS NOT ENOUGH TO COVER CHARGE, USE OWING:
+           IF LCAP-TRAMT < LCHG-CHARGE
+              COMPUTE LCAP-OWE = LCAP-OWE +
+                                  (LCHG-CHARGE - LCAP-TRAMT)
+              ADD LCAP-TRAMT TO LCAP-APP
+              MOVE 0 TO LCAP-TRAMT
+           ELSE
+              ADD LCHG-CHARGE TO LCAP-APP
+              SUBTRACT LCHG-CHARGE FROM LCAP-TRAMT.
+
+       LCAP-P-ADVANCE.
+      *UPDATE LATE CHARGE PAID THRU
+           PERFORM LCAP-UPD-LCPD.
+           IF LN-PAY-SCHLD-FG = "Y"
+              ADD 1 TO LCAP-PMT-NO
+              MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-AMTNEEDED
+                                            LCHG-CURPAY
+           ELSE
+              MOVE LN-REGPYAMT TO LCAP-AMTNEEDED
+                                  LCHG-CURPAY.
+           GO TO LCAP-P-BEGIN.
+
+      *******************************************************
+      * NO ASSESSMENT IS REQUIRED; ADVANCE LCAP-LCPDTH-DATE
+      * TO WHERE PAYMENTS TODATE ARE PAID THRU, ONLY
+      * IF IT WILL ADVANCE LCPDTH, SINCE LCPDTH COULD
+      * HAVE ADVANCED BEYOND PAID THRU VIA TIME.
+      *******************************************************
+       LCAP-P-NOASSESS.
+           IF LCAP-LPTRCD NOT = "AL"
+              ADD LCAP-TRAMT LCAP-PAYMNTD GIVING PDTH-PAYMNTD
+                                                 LCAP-PAYMNTD
+              IF SP-LCFRMLA = "H"
+                 ADD LCAP-APP TO PDTH-PAYMNTD
+                                 LCAP-PAYMNTD.
+
+      * IF LATE CHARGES, INTEREST TOTAL MORE THAN PAYMENT
+      * RECOMPUTE PDTH PAYMENTS.
+      * ??????? ON WHAT TO DO IF PAYMENT SCHEDULES:
+           IF LCAP-LPTRCD NOT = "AL"
+              IF SP-LCFRMLA = "P"
+                 ADD LN-TOTLCHG LCAP-LPAPLC LCAP-APP LCAP-LPAPINT
+                                                 GIVING LCAP-WRK
+                 ADD LCAP-WRK TO PDTH-PAYMNTD
+                                 LCAP-PAYMNTD
+                 COMPUTE PDTH-PAYMENTS = LCAP-WRK / LN-REGPYAMT
+                 IF PDTH-PAYMENTS > 1
+                    COMPUTE PDTH-PAYMNTD
+                            LCAP-PAYMNTD = PDTH-PAYMNTD
+                                   - ( PDTH-PAYS * LN-REGPYAMT).
+
+      * CALCULATE PAID THRU, IF SAME AS LATE CHARGE PAID
+      * MOVE PDTH TO LATE PAID THRU, IF UNPAID LESS THAN DELFAC
+      * UPDATE LATE CHARGE PAID THRU
+           IF LCAP-LPTRCD NOT = "AL"
+              PERFORM LCAP-PICK-PDTH-CALC
+              MOVE NDTE-DATE TO SYS-DATE
+              PERFORM LCAP-LCPDTH-DATE-TEST
+              IF ELAPSED-DAYS NOT < 0
+                 MOVE PDTH-DATE-FULL TO LCAP-LCPDTH-DATE
+                 IF LCAP-UNPAID-PORTION NOT = 0
+                          AND LCAP-UNPAID-PORTION < LCAP-DELFAC
+                    PERFORM LCAP-UPD-LCPD.
+
+      * INSURE THAT LCPDTH ADVANCES TO CURRENT PAYMENT DATE
+      * IF  CURRENT  PAYMENT IS NOT DELIQUENT:
+           IF LCAP-CURDATE NOT = 0
+              MOVE LCAP-CURDATE TO SYS-DATE
+              PERFORM LCAP-LCPDTH-DATE-TEST
+              IF ELAPSED-DAYS > 0
+                 IF LCAP-CURDUE < LCAP-DELFAC
+                    IF ELAPSED-DAYS > 0
+                       MOVE LCAP-CURDATE TO LCAP-LCPDTH-DATE
+                    ELSE
+                       PERFORM LCAP-UPD-LCPD.
+
+      * ? PAST MATURITY,
+      * IF SO FORCE LCAP-LCPDTH-DATE TO MATURITY:
+       LCAP-P-MATURITY-TEST.
+           PERFORM LCAP-MDTE-CHK.
+           IF ELAPSED-DAYS NOT > 0
+              MOVE SYS-DATE TO LCAP-LCPDTH-DATE.
+
+       LCAP-P-EXIT.
+           MOVE LCAP-CURDUE TO LCAP-PARTIALS.
+      * REARRANGE DATE (MMDDYY) TO (MMDD.YY):
+           MOVE LCAP-CURDATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.
+           MULTIPLY DATE-MMDDYY BY 0.01 GIVING LCAP-LCPAID.
+
+      ***********************************************
+      *    TEST CURRENT PAYMENT ON TIME
+      *
+      *    IF SO, ESTABLISH WHETHER ITS A NEW PERIOD
+      *    OR LAST PAYMENT PERIOD AND SETUP AMOUNTS
+      *    DELIQUENT FOR LAST OR BOTH PERIODS.
+      ***********************************************

@@ -1,0 +1,33 @@
+graph TD
+    A[C-TIMALL Entry] --> B{Check Input Dates}
+    B -->|NUM-DATE = 0 OR SYS-DATE = 0| C[Set All Results to Zero]
+    B -->|Valid Dates| D[Backup State Variables]
+    
+    C --> C1[MOVE 0 TO ELAPSED-DAYS]
+    C1 --> C2[MOVE 0 TO ELAPSED-MONTHS]
+    C2 --> C3[MOVE 0 TO ELAPSED-REM]
+    C3 --> C4[MOVE SPACES TO ELAPSED-RESULTS]
+    C4 --> Z[Return to Caller]
+    
+    D --> D1[MOVE NDTE-DATE TO DATER-HOLD-NDTE-DATE]
+    D1 --> D2[MOVE DATER-UNITPER-INFO TO HOLD-UNITPER-INFO]
+    D2 --> E[Set Default Parameters]
+    
+    E --> E1[MOVE M TO DATER-UNITPER-CD]
+    E1 --> E2[MOVE 1 TO DATER-UNITPER-FREQ]
+    E2 --> E3[MOVE E TO DATER-ACTION-CODE]
+    E3 --> F[PERFORM DATER-ROUTINE]
+    
+    F --> G[Restore State Variables]
+    G --> G1[MOVE HOLD-UNITPER-INFO TO DATER-UNITPER-INFO]
+    G1 --> G2[MOVE DATER-HOLD-NDTE-DATE TO NDTE-DATE]
+    G2 --> Z
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#ffcdd2
+    style D fill:#e8f5e8
+    style E fill:#f3e5f5
+    style F fill:#fff9c4
+    style G fill:#e8f5e8
+    style Z fill:#c8e6c9

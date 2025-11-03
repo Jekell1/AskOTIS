@@ -1,0 +1,25 @@
+      *================================================================*
+      * END COPYBOOK: LIBGB\GETENV.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBGB\RMFILE.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBGB/RMFILE
+      * REV  BLM 140416 CHANGE FROM SYSTEM CALL TO CBL_DELETE_FILE; USE
+      *                 ADDITIONAL CALLS TO REMOVE .IDX OR .VIX IF NEEDED
+       REMOVE-WORKFILE.
+           PERFORM ACCESS-CALL.
+           IF STAT = "00"
+             CALL "CBL_DELETE_FILE" USING ACCESS-BUF GIVING STAT-99
+             INSPECT ACCESS-BUF REPLACING FIRST "    " BY IDX-SUFFIX
+             PERFORM ACCESS-CALL
+             IF STAT = "00"
+                CALL "CBL_DELETE_FILE" USING ACCESS-BUF GIVING STAT-99
+             END-IF
+             INSPECT ACCESS-BUF REPLACING FIRST IDX-SUFFIX BY VIX-SUFFIX
+             PERFORM ACCESS-CALL
+             IF STAT = "00"
+                CALL "CBL_DELETE_FILE" USING ACCESS-BUF GIVING STAT-99.
+      *================================================================*
+      * END COPYBOOK: LIBGB\RMFILE.CPY                                *
+      *================================================================*

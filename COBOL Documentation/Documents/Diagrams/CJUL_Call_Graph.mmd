@@ -1,0 +1,20 @@
+graph TD
+    A[External Calling Program] --> B[CJUL SECTION]
+    B --> C[DATER-ROUTINE]
+    C --> D[Internal Date Logic]
+    D --> E[Julian to Calendar Conversion]
+    E --> F[Date Validation]
+    F --> G[Error Checking]
+    G --> C
+    C --> B
+    B --> A
+    
+    H[JUL SECTION] -.->|Often used together| B
+    I[Date Arithmetic Routines] --> B
+    J[Calendar Calculations] --> B
+    K[Batch Processing] --> B
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style A fill:#e8f5e8
+    style H fill:#fff3e0

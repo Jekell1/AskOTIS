@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-DATER-MAIN - Date Processing Router</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-DATER-MAIN - Date Processing Router</span>
+        </nav>
+        <main class="content">
+<h1>C-DATER-MAIN - Date Processing Router</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Section:</strong> C-DATER-MAIN SECTION</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>C-DATER-MAIN</strong> is the central date processing router within the APIPAY system. This utility serves as a dispatcher that routes different date processing requests to specialized date calculation routines based on action codes. It provides a unified interface for all date-related operations including conversions, calculations, validations, and comparisons.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Function Type:</strong> Date processing router and dispatcher</li>
+<li><strong>Processing Mode:</strong> Action-code driven routing</li>
+<li><strong>Input Method:</strong> Uses global DATER-BUFFER structure</li>
+<li><strong>Output Method:</strong> Updates global date fields and result indicators</li>
+<li><strong>Integration:</strong> Central hub for all date operations in APIPAY</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>C-DATER-MAIN centralizes date processing by:</p>
+<ol>
+<li><strong>Unified Interface:</strong> Provides single entry point for all date operations</li>
+<li><strong>Action Routing:</strong> Dispatches requests to appropriate specialized routines</li>
+<li><strong>Data Management:</strong> Manages date conversions and format standardization</li>
+<li><strong>Validation Control:</strong> Ensures consistent date validation across the system</li>
+<li><strong>Error Handling:</strong> Provides centralized error processing for date operations</li>
+</ol>
+<h2>Transaction Types Supported</h2>
+<p>The program supports the following action codes for different date operations:</p>
+<table>
+<thead>
+<tr>
+<th>Action Code</th>
+<th>Description</th>
+<th>Target Routine</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>E</strong></td>
+<td>Elapsed Time</td>
+<td>C-ELAPSED-TIME</td>
+<td>Calculate time difference between dates</td>
+</tr>
+<tr>
+<td><strong>N</strong></td>
+<td>New Date</td>
+<td>C-CALL-NEWDATE</td>
+<td>Adjust inconsistent dates to valid format</td>
+</tr>
+<tr>
+<td><strong>I</strong></td>
+<td>Increment</td>
+<td>C-INCREMENT-PERIODS</td>
+<td>Add periods (days/months/years) to date</td>
+</tr>
+<tr>
+<td><strong>C</strong></td>
+<td>Calendar to Julian</td>
+<td>C-CALL-CJUL</td>
+<td>Convert Julian to calendar date</td>
+</tr>
+<tr>
+<td><strong>J</strong></td>
+<td>Julian Conversion</td>
+<td>C-CALL-JUL</td>
+<td>Convert calendar to Julian date</td>
+</tr>
+<tr>
+<td><strong>W</strong></td>
+<td>Weekday</td>
+<td>C-WEEKDAY</td>
+<td>Determine day of week</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Date Compare</td>
+<td>C-DATE-COMPARE</td>
+<td>Compare two dates</td>
+</tr>
+<tr>
+<td><strong>T</strong></td>
+<td>Date Test</td>
+<td>C-DATE-TEST</td>
+<td>Validate date format and values</td>
+</tr>
+</tbody>
+</table>
+<h2>Input Parameters</h2>
+<h3>Primary Control Fields</h3>
+<ul>
+<li><strong>DATER-ACTION-CODE</strong> (PIC X): Action to perform (E/N/I/C/J/W/D/T)</li>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Primary input date in YYYYMMDD format</li>
+<li><strong>SYS-DATE</strong> (PIC 9(8)): Secondary date for comparisons/calculations</li>
+<li><strong>JULIAN-DATE</strong> (PIC 9(5)): Julian date for conversions</li>
+</ul>
+<h3>Unit Period Parameters (for Increment operations)</h3>
+<ul>
+<li><strong>DATER-UNITPER-CD</strong> (PIC X): Unit type (M/D/Y/S/W/B)</li>
+<li><strong>DATER-UNITPER-FREQ</strong> (PIC 9(3)): Frequency of periods</li>
+<li><strong>NDTE-HOLD</strong> (PIC S9(5)): Number of periods to increment</li>
+</ul>
+<h3>Year Type Parameter</h3>
+<ul>
+<li><strong>ELAPSED-YRTYPE</strong> (PIC 9(3)): Year calculation method (360/361/362/365/367/999/998)</li>
+</ul>
+<h2>Output Fields</h2>
+<h3>Date Results</h3>
+<ul>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Updated primary date</li>
+<li><strong>SYS-DATE</strong> (PIC 9(8)): Updated secondary date  </li>
+<li><strong>JULIAN-DATE</strong> (PIC 9(5)): Calculated Julian date</li>
+<li><strong>NDTE-DATE</strong> (PIC 9(8)): Normalized date result</li>
+</ul>
+<h3>Calculation Results</h3>
+<ul>
+<li><strong>ELAPSED-MONTHS</strong> (PIC S9(7) COMP-3): Months between dates</li>
+<li><strong>ELAPSED-DAYS</strong> (PIC S9(9) COMP-3): Days between dates</li>
+<li><strong>ELAPSED-REM</strong> (PIC S9(7) COMP-3): Remainder days</li>
+<li><strong>DAY--OF-WEEK</strong> (PIC 9): Day of week (1=Sunday through 7=Saturday)</li>
+</ul>
+<h3>Comparison Results</h3>
+<ul>
+<li><strong>ELAPSED-RESULTS</strong> (PIC X): Comparison result (L/E/G)</li>
+<li><strong>SYS-IS-LT</strong>: System date is less than NUM-DATE</li>
+<li><strong>SYS-IS-EQ</strong>: System date equals NUM-DATE  </li>
+<li><strong>SYS-IS-GT</strong>: System date is greater than NUM-DATE</li>
+</ul>
+<h2>Program Flow Diagrams</h2>
+<h3>Main Flow</h3>
+<p><img alt="C-DATER-MAIN Main Flow" src="Diagrams/C-DATER-MAIN_Main_Flow.mmd" /></p>
+<h3>Action Code Processing</h3>
+<p><img alt="C-DATER-MAIN Action Processing" src="Diagrams/C-DATER-MAIN_Action_Processing.mmd" /></p>
+<h2>Data Flow Mapping</h2>
+<pre><code>Input: DATER-ACTION-CODE → Route Decision
+       NUM-DATE, SYS-DATE → Date Processing Routines
+       DATER-UNITPER-INFO → Increment Operations
+       ELAPSED-YRTYPE → Time Calculations
+
+Processing: Convert Formats → Execute Action → Process Results
+
+Output: Updated Date Fields → ELAPSED-RESULTS → Return Values
+</code></pre>
+<h2>Referenced Programs</h2>
+<p>The following specialized date processing routines are called by C-DATER-MAIN:</p>
+<ul>
+<li><strong>C-ELAPSED-TIME</strong> - <a href="C-ELAPSED-TIME_Documentation.html">C-ELAPSED-TIME Documentation</a></li>
+<li><strong>C-CALL-NEWDATE</strong> - <a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE Documentation</a></li>
+<li><strong>C-INCREMENT-PERIODS</strong> - <a href="C-INCREMENT-PERIODS_Documentation.html">C-INCREMENT-PERIODS Documentation</a></li>
+<li><strong>C-CALL-CJUL</strong> - <a href="C-CALL-CJUL_Documentation.html">C-CALL-CJUL Documentation</a></li>
+<li><strong>C-CALL-JUL</strong> - <a href="C-CALL-JUL_Documentation.html">C-CALL-JUL Documentation</a></li>
+<li><strong>C-WEEKDAY</strong> - <a href="C-WEEKDAY_Documentation.html">C-WEEKDAY Documentation</a></li>
+<li><strong>C-DATE-COMPARE</strong> - <a href="C-DATE-COMPARE_Documentation.html">C-DATE-COMPARE Documentation</a></li>
+<li><strong>C-DATE-TEST</strong> - <a href="C-DATE-TEST_Documentation.html">C-DATE-TEST Documentation</a></li>
+</ul>
+<h2>Error Handling and Validation</h2>
+<h3>Input Validation</h3>
+<ul>
+<li>Validates action codes against supported values</li>
+<li>Checks date format consistency before processing</li>
+<li>Verifies unit period parameters for increment operations</li>
+</ul>
+<h3>Error Processing</h3>
+<ul>
+<li>Invalid action codes result in no processing</li>
+<li>Date validation errors are handled by individual routines</li>
+<li>Maintains data integrity through format conversions</li>
+</ul>
+<h3>Recovery Procedures</h3>
+<ul>
+<li>Preserves original action code after processing</li>
+<li>Restores date formats on completion</li>
+<li>Ensures consistent state regardless of operation success</li>
+</ul>
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<pre><code class="language-cobol">01  DATER-BUFFER.
+    03  DATER-ACTION-CODE       PIC X     VALUE &quot; &quot;
+    03  JULIAN-DATE             PIC 9(5)
+    03  NUM-DATE                PIC 9(8)  VALUE 0
+    03  SYS-DATE                PIC 9(8)  VALUE 0
+    03  NDTE-DATE               PIC 9(8)  VALUE 0
+    03  NDTE-HOLD               PIC S9(5) LEADING SEPARATE VALUE 0
+    03  DATER-UNITPER-INFO
+        05  DATER-UNITPER-CD    PIC X              VALUE &quot;M&quot;
+        05  DATER-UNITPER-FREQ  PIC 9(3)           VALUE 1
+    03  ELAPSED-YRTYPE          PIC 9(3)           VALUE 365
+    03  ELAPSED-RESULTS         PIC X              VALUE &quot; &quot;
+    03  DAY--OF-WEEK            PIC 9              VALUE 0
+</code></pre>
+<h3>Key Algorithms</h3>
+<ol>
+<li><strong>Action Code Evaluation:</strong></li>
+<li>Uses EVALUATE statement for efficient routing</li>
+<li>Preserves action code state during processing</li>
+<li>
+<p>Ensures single-path execution per request</p>
+</li>
+<li>
+<p><strong>Date Format Management:</strong></p>
+</li>
+<li>Converts system numeric dates before processing</li>
+<li>Maintains YYYYMMDD format consistency</li>
+<li>
+<p>Handles format restoration after operations</p>
+</li>
+<li>
+<p><strong>Parameter Preservation:</strong></p>
+</li>
+<li>Saves action code to prevent corruption</li>
+<li>Maintains original input states</li>
+<li>Restores context after processing</li>
+</ol>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li>APIPAY main processing routines</li>
+<li>Loan calculation modules</li>
+<li>Payment processing functions</li>
+<li>Date validation utilities</li>
+</ul>
+<h3>Called Utilities</h3>
+<ul>
+<li>All date-specific processing routines</li>
+<li>Format conversion utilities</li>
+<li>Validation and testing functions</li>
+</ul>
+<h3>Data Dependencies</h3>
+<ul>
+<li>DATER-BUFFER global structure</li>
+<li>System date formats</li>
+<li>Julian date conversion tables</li>
+</ul>
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><img alt="C-DATER-MAIN Call Graph" src="Diagrams/C-DATER-MAIN_Call_Graph.mmd" /></p>
+<h3>Internal Flow</h3>
+<pre><code>C-DATER-MAIN
+├── CONVERT-SYS-NUM-NDTE-DATES-IN
+├── Action-Specific Routines (based on EVALUATE)
+│   ├── C-ELAPSED-TIME
+│   ├── C-CALL-NEWDATE  
+│   ├── C-INCREMENT-PERIODS
+│   ├── C-CALL-CJUL
+│   ├── C-CALL-JUL
+│   ├── C-WEEKDAY
+│   ├── C-DATE-COMPARE
+│   └── C-DATE-TEST
+└── CONVERT-SYS-NUM-NDTE-DATES-OUT
+</code></pre>
+<h3>Processing Sequence</h3>
+<ol>
+<li><strong>Initialize:</strong> Convert input date formats</li>
+<li><strong>Save State:</strong> Preserve action code</li>
+<li><strong>Route:</strong> Execute appropriate date routine based on action code</li>
+<li><strong>Restore:</strong> Return action code to original state</li>
+<li><strong>Finalize:</strong> Convert output date formats</li>
+</ol>
+<hr />
+<p><strong>Note:</strong> This utility is critical for all date operations in the APIPAY system. Modifications should be thoroughly tested across all calling programs to ensure date calculation consistency.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

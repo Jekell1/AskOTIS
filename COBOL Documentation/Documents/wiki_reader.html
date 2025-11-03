@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Documentation Wiki</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: calc(100vh - 40px);
+        }
+
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .server-status {
+            margin-left: 1rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            padding: 20px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .nav-section:last-child {
+            border-bottom: none;
+        }
+
+        .nav-section h3 {
+            padding: 0 20px 10px 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #475569;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(90deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1e293b;
+            border-left-color: #94a3b8;
+            transform: translateX(2px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1d4ed8;
+            border-left-color: #3b82f6;
+            font-weight: 600;
+            transform: translateX(4px);
+        }
+
+        .nav-item .icon {
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            border-color: #2563eb;
+        }
+
+        /* Content Display */
+        .content-display {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome p {
+            color: #64748b;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            font-size: 1.2rem;
+        }
+
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .program-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .program-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .program-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .program-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .program-card h3 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .program-card p {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .program-card .tag {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1d4ed8;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Markdown content styling */
+        .markdown-content {
+            max-width: none;
+        }
+
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4 {
+            color: #1e293b;
+            margin: 1.5em 0 0.5em 0;
+            font-weight: 600;
+        }
+
+        .markdown-content h1 {
+            font-size: 2.2rem;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.4rem;
+            color: #3b82f6;
+        }
+
+        .markdown-content p {
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .markdown-content ul,
+        .markdown-content ol {
+            margin: 1rem 0 1rem 2rem;
+            color: #475569;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #dc2626;
+            font-size: 0.9em;
+        }
+
+        .markdown-content pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        .markdown-content pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .markdown-content th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .markdown-content tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        /* Mermaid diagram styling */
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .sidebar {
+                order: 2;
+            }
+
+            .main-content {
+                order: 1;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome h2 {
+                font-size: 2rem;
+            }
+
+            .program-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 COBOL Documentation Wiki</h1>
+            <div class="subtitle">
+                Comprehensive documentation for COBOL payment processing systems
+                <span id="server-status" class="server-status">🔄 Loading...</span>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>📋 Navigation</h2>
+            </div>
+
+            <div class="nav-section">
+                <h3>🏠 Overview</h3>
+                <a class="nav-item active" onclick="showHome()" id="nav-home">
+                    <span class="icon">🏠</span> Home
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <h3>💼 Main Programs</h3>
+                <a class="nav-item" onclick="loadProgram('APIPAY')" id="nav-APIPAY">
+                    <span class="icon">💳</span> APIPAY - Payment Processor
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPFB')" id="nav-LONPFB">
+                    <span class="icon">🏦</span> LONPFB - Bill Pay System
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPFC')" id="nav-LONPFC">
+                    <span class="icon">💰</span> LONPFC - Check Processing
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <h3>🔧 Supporting Programs</h3>
+                <a class="nav-item" onclick="loadProgram('LONPF2')" id="nav-LONPF2">
+                    <span class="icon">🌐</span> LONPF2 - Wire Transfer
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPF7')" id="nav-LONPF7">
+                    <span class="icon">🚗</span> LONPF7 - Repossession
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPF9')" id="nav-LONPF9">
+                    <span class="icon">🛡️</span> LONPF9 - Insurance
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <h3>📊 Resources</h3>
+                <a class="nav-item" onclick="showDiagrams()" id="nav-diagrams">
+                    <span class="icon">📊</span> System Diagrams
+                </a>
+                <a class="nav-item" onclick="showAbout()" id="nav-about">
+                    <span class="icon">ℹ️</span> About
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <div class="breadcrumb" id="breadcrumb">
+                    <a href="#" onclick="showHome()">🏠 Home</a>
+                </div>
+                <div class="content-actions">
+                    <button class="btn" onclick="refreshContent()" title="Refresh">🔄 Refresh</button>
+                    <button class="btn btn-primary" onclick="window.print()" title="Print">🖨️ Print</button>
+                </div>
+            </div>
+
+            <div class="content-display" id="content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#1e293b',
+                primaryBorderColor: '#e2e8f0',
+                lineColor: '#64748b',
+                background: '#ffffff'
+            }
+        });
+
+        let currentPage = 'home';
+        let contentCache = {};
+
+        // Program metadata - using the actual files available in Documents
+        const programs = {
+            'APIPAY': {
+                title: 'APIPAY - Payment Processor',
+                description: 'Main payment processing system handling various transaction types',
+                file: 'APIPAY_Documentation.md',
+                tag: 'Core System',
+                icon: '💳'
+            },
+            'LONPFB': {
+                title: 'LONPFB - Bill Pay System',
+                description: 'Bill payment processing and transaction handling',
+                file: 'LONPFB_Documentation.md',
+                tag: 'Bill Processing',
+                icon: '🏦'
+            },
+            'LONPFC': {
+                title: 'LONPFC - Check Processor',
+                description: 'Check transaction processing and validation',
+                file: 'LONPFC_Documentation.md',
+                tag: 'Check Processing',
+                icon: '💰'
+            },
+            'LONPF2': {
+                title: 'LONPF2 - Wire Transfer Processor',
+                description: 'Wire transfer and electronic payment processing',
+                file: 'LONPF2_Documentation.md',
+                tag: 'Electronic Transfer',
+                icon: '🌐'
+            },
+            'LONPF7': {
+                title: 'LONPF7 - Repossession Processor',
+                description: 'Asset repossession and recovery transaction processing',
+                file: 'LONPF7_Documentation.md',
+                tag: 'Asset Recovery',
+                icon: '🚗'
+            },
+            'LONPF9': {
+                title: 'LONPF9 - Insurance Processor',
+                description: 'Insurance payment and disbursement processing',
+                file: 'LONPF9_Documentation.md',
+                tag: 'Insurance',
+                icon: '🛡️'
+            }
+        };
+
+        // Available diagrams - using the actual files in Documents/Diagrams
+        const availableDiagrams = {
+            'APIPAY_Transaction_Processing.mmd': 'APIPAY Transaction Processing',
+            'APIPAY_Complete_Call_Graph.mmd': 'APIPAY Complete Call Graph',
+            'APIPAY_Database_Updates.mmd': 'APIPAY Database Updates',
+            'APIPAY_Error_Handling.mmd': 'APIPAY Error Handling',
+            'LONPFC_Main_Flow.mmd': 'LONPFC Main Flow',
+            'LONPFC_Transaction_Processing.mmd': 'LONPFC Transaction Processing',
+            'LONPFC_Error_Handling.mmd': 'LONPFC Error Handling',
+            'LONPFC_Payment_Distribution.mmd': 'LONPFC Payment Distribution',
+            'LONPFC_Deferment_Processing.mmd': 'LONPFC Deferment Processing'
+        };
+
+        // Navigation functions
+        function showHome() {
+            currentPage = 'home';
+            updateBreadcrumb('🏠 Home');
+            setActiveNav('nav-home');
+            
+            const content = `
+                <div class="welcome">
+                    <h2>Welcome to the COBOL Documentation Wiki</h2>
+                    <p>Comprehensive documentation for COBOL payment processing systems. Explore detailed documentation, system diagrams, and technical specifications for the payment processing suite.</p>
+                    
+                    <div class="program-grid">
+                        ${Object.entries(programs).map(([key, program]) => `
+                            <div class="program-card" onclick="loadProgram('${key}')">
+                                <h3>${program.icon} ${program.title}</h3>
+                                <p>${program.description}</p>
+                                <span class="tag">${program.tag}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function loadProgram(programId) {
+            if (!programs[programId]) {
+                showError(`Program '${programId}' not found`);
+                return;
+            }
+
+            currentPage = programId;
+            const program = programs[programId];
+            updateBreadcrumb(`<a href="#" onclick="showHome()">🏠 Home</a> > ${program.icon} ${program.title}`);
+            setActiveNav(`nav-${programId}`);
+
+            // Check cache first
+            if (contentCache[programId]) {
+                displayContent(contentCache[programId]);
+                return;
+            }
+
+            // Show loading
+            document.getElementById('content').innerHTML = '<div class="loading">Loading documentation...</div>';
+
+            // Load Markdown content
+            fetch(program.file)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    // Convert Markdown to HTML
+                    const html = marked.parse(markdown);
+                    
+                    // Cache content
+                    contentCache[programId] = html;
+                    
+                    displayContent(html);
+                })
+                .catch(error => {
+                    console.error('Error loading program:', error);
+                    showFileAccessError(program.file, program.title, error.message);
+                });
+        }
+
+        function displayContent(html) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = `<div class="markdown-content">${html}</div>`;
+            
+            // Process any Mermaid diagrams
+            const mermaidElements = contentDiv.querySelectorAll('.mermaid');
+            if (mermaidElements.length > 0) {
+                mermaid.run();
+            }
+            
+            // Scroll to top
+            contentDiv.scrollTop = 0;
+        }
+
+        function showDiagrams() {
+            currentPage = 'diagrams';
+            updateBreadcrumb('<a href="#" onclick="showHome()">🏠 Home</a> > 📊 System Diagrams');
+            setActiveNav('nav-diagrams');
+            
+            const content = `
+                <div class="welcome">
+                    <h2>📊 System Flow Diagrams</h2>
+                    <p>Interactive Mermaid diagrams showing system architecture, data flows, and process workflows.</p>
+                    
+                    <div class="program-grid">
+                        ${Object.entries(availableDiagrams).map(([file, title]) => `
+                            <div class="program-card" onclick="loadDiagram('${file}')">
+                                <h3>📊 ${title}</h3>
+                                <p>Interactive system diagram</p>
+                                <span class="tag">Mermaid</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function loadDiagram(diagramFile) {
+            const diagramTitle = availableDiagrams[diagramFile] || diagramFile.replace('.mmd', '').replace(/_/g, ' ');
+            updateBreadcrumb(`<a href="#" onclick="showHome()">🏠 Home</a> > <a href="#" onclick="showDiagrams()">📊 Diagrams</a> > ${diagramTitle}`);
+            
+            document.getElementById('content').innerHTML = '<div class="loading">Loading diagram...</div>';
+            
+            fetch(`Diagrams/${diagramFile}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(diagramCode => {
+                    const content = `
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2>📊 ${diagramTitle}</h2>
+                            <p style="color: #64748b;">Interactive system flow diagram</p>
+                        </div>
+                        <div class="mermaid">${diagramCode}</div>
+                    `;
+                    
+                    displayContent(content);
+                })
+                .catch(error => {
+                    console.error('Error loading diagram:', error);
+                    showFileAccessError(`Diagrams/${diagramFile}`, diagramTitle, error.message);
+                });
+        }
+
+        function showAbout() {
+            currentPage = 'about';
+            updateBreadcrumb('<a href="#" onclick="showHome()">🏠 Home</a> > ℹ️ About');
+            setActiveNav('nav-about');
+            
+            const content = `
+                <div class="welcome">
+                    <h2>ℹ️ About This Documentation Wiki</h2>
+                    <p>This wiki provides comprehensive documentation for COBOL payment processing systems, built from source code analysis and system documentation.</p>
+                    
+                    <div style="max-width: 800px; margin: 2rem auto; text-align: left;">
+                        <h3 style="color: #1e293b; margin-bottom: 1rem;">📋 Documentation Coverage</h3>
+                        <ul style="color: #475569; line-height: 1.8;">
+                            <li><strong>APIPAY:</strong> Main payment processing system with detailed technical documentation</li>
+                            <li><strong>LONPF Series:</strong> Supporting programs for specialized transaction types</li>
+                            <li><strong>System Diagrams:</strong> Interactive Mermaid diagrams showing data flows and processes</li>
+                            <li><strong>Technical Details:</strong> Program structures, data flows, and integration points</li>
+                        </ul>
+                        
+                        <h3 style="color: #1e293b; margin: 2rem 0 1rem 0;">🛠️ Features</h3>
+                        <ul style="color: #475569; line-height: 1.8;">
+                            <li>Modern responsive design with glassmorphism effects</li>
+                            <li>Interactive Mermaid diagrams with zoom and pan</li>
+                            <li>Markdown content rendering with syntax highlighting</li>
+                            <li>Fast content loading with intelligent caching</li>
+                            <li>Print-friendly layouts for documentation export</li>
+                            <li>Mobile-optimized navigation and content display</li>
+                        </ul>
+                        
+                        <h3 style="color: #1e293b; margin: 2rem 0 1rem 0;">📁 Available Programs</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                            ${Object.values(programs).map(program => `
+                                <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                                    <strong style="color: #1e293b;">${program.icon} ${program.title.split(' - ')[0]}</strong>
+                                    <div style="color: #64748b; font-size: 0.9rem; margin-top: 0.5rem;">${program.tag}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 10px; padding: 2rem; margin: 2rem 0; text-align: center;">
+                            <p style="color: #1e293b; margin: 0; font-weight: 500;">
+                                📚 <strong>Source:</strong> Documentation generated from COBOL source code analysis<br>
+                                🎯 <strong>Purpose:</strong> Comprehensive technical reference for payment system development
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function showFileAccessError(filename, title, errorMessage) {
+            const content = `
+                <div style="text-align: center; padding: 3rem; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border-radius: 15px; margin: 2rem;">
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">🔒 File Access Issue</h3>
+                    <p style="color: #64748b; margin-bottom: 2rem;">
+                        Cannot load <strong>${title}</strong><br>
+                        <em>${errorMessage}</em>
+                    </p>
+                    
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            🔄 Retry
+                        </button>
+                        <button class="btn" onclick="showHome()">
+                            🏠 Back to Home
+                        </button>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.7); padding: 1rem; border-radius: 8px; font-size: 0.875rem; color: #64748b;">
+                        <p><strong>Expected location:</strong> <code style="background: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 4px;">${filename}</code></p>
+                        <p>This wiki loads content from the Documents directory. Ensure all Markdown files are present.</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function showError(message) {
+            const content = `
+                <div class="error">
+                    <h3>❌ Error</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="showHome()" style="margin-top: 1rem;">Return to Home</button>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function updateBreadcrumb(html) {
+            document.getElementById('breadcrumb').innerHTML = html;
+        }
+
+        function setActiveNav(activeId) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to current item
+            const activeItem = document.getElementById(activeId);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+
+        function refreshContent() {
+            // Clear cache and reload current page
+            contentCache = {};
+            
+            if (currentPage === 'home') {
+                showHome();
+            } else if (currentPage === 'diagrams') {
+                showDiagrams();
+            } else if (currentPage === 'about') {
+                showAbout();
+            } else {
+                loadProgram(currentPage);
+            }
+        }
+
+        function checkServerStatus() {
+            const statusElement = document.getElementById('server-status');
+            
+            // Check if we're running through a server
+            if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+                statusElement.innerHTML = '🟢 Server Active';
+                statusElement.style.background = 'rgba(34, 197, 94, 0.2)';
+                statusElement.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+                statusElement.style.color = '#166534';
+                statusElement.title = 'Running on web server - all features available';
+            } else {
+                statusElement.innerHTML = '📁 File Mode';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusElement.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                statusElement.style.color = '#991b1b';
+                statusElement.title = 'Running directly from files - some features may be limited';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showHome();
+            checkServerStatus();
+        });
+    </script>
+</body>
+</html>

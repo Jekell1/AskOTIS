@@ -1,0 +1,66 @@
+{
+  "indexes": [
+    {
+      "index": "new_cobol_copybook_usage",
+      "total_docs": 114307,
+      "vectorized_docs": 114307,
+      "missing_vectors": 0,
+      "coverage_pct": 100.0,
+      "key_fields_present": [
+        "context_vector",
+        "has_vector"
+      ]
+    },
+    {
+      "index": "new_cobol_copybook_meta",
+      "total_docs": 7817,
+      "vectorized_docs": 7817,
+      "missing_vectors": 0,
+      "coverage_pct": 100.0,
+      "key_fields_present": [
+        "has_vector",
+        "summary_vector"
+      ]
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "total_docs": 1104574,
+      "vectorized_docs": 1104574,
+      "missing_vectors": 0,
+      "coverage_pct": 100.0,
+      "key_fields_present": [
+        "excerpt_vector",
+        "has_vector"
+      ]
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "total_docs": 106669,
+      "vectorized_docs": "N/A",
+      "missing_vectors": "N/A",
+      "coverage_pct": "N/A",
+      "key_fields_present": []
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "total_docs": 0,
+      "vectorized_docs": 0,
+      "missing_vectors": 0,
+      "coverage_pct": "N/A",
+      "key_fields_present": [
+        "has_vector",
+        "summary_vector"
+      ]
+    },
+    {
+      "index": "new_cobol_ui_paths",
+      "total_docs": 0,
+      "vectorized_docs": 0,
+      "missing_vectors": 0,
+      "coverage_pct": "N/A",
+      "key_fields_present": [
+        "has_vector"
+      ]
+    }
+  ]
+}

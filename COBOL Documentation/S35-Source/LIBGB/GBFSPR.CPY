@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGB/GBFSPR
+           SELECT PR-FILE ASSIGN PRU-FILE
+                  ORGANIZATION LINE SEQUENTIAL
+                  LOCK MODE EXCLUSIVE
+                  FILE STATUS FILE-STAT.
+      *    SELECT ASSIGN "FORM"
+      *           ORGANIZATION LINE SEQUENTIAL
+      *           FILE STATUS FILE-STAT.

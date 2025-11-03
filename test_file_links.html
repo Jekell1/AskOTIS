@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Link Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #333;
+        }
+        .message-content {
+            line-height: 1.6;
+        }
+        /* File hyperlink styles */
+        .message-content .file-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #667eea;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 1px 0;
+        }
+        .message-content .file-link:hover {
+            color: #764ba2;
+            border-bottom-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 3px;
+            padding: 1px 4px;
+        }
+        .message-content .file-link::before {
+            content: "📄 ";
+            font-size: 0.9em;
+        }
+        .result {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            margin-top: 10px;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 File Hyperlink Test</h1>
+    
+    <div class="test-box">
+        <h2>Test 1: Basic File References</h2>
+        <div class="message-content" id="test1">
+            <!-- Will be filled by JavaScript -->
+        </div>
+        <div class="result" id="result1">Click result will appear here</div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 2: Multiple Files</h2>
+        <div class="message-content" id="test2">
+            <!-- Will be filled by JavaScript -->
+        </div>
+        <div class="result" id="result2">Click result will appear here</div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 3: Files in Context</h2>
+        <div class="message-content" id="test3">
+            <!-- Will be filled by JavaScript -->
+        </div>
+        <div class="result" id="result3">Click result will appear here</div>
+    </div>
+
+    <script>
+        function formatMessage(content) {
+            // Convert file hyperlinks
+            // Pattern: [[FILE:filename.ext|Display Text]]
+            content = content.replace(/\[\[FILE:([^\|]+)\|([^\]]+)\]\]/g, (match, filename, displayText) => {
+                return `<a href="#" class="file-link" data-filename="${filename}" title="Tell me about ${filename}">${displayText}</a>`;
+            });
+            return content;
+        }
+
+        function handleFileLinkClick(filename) {
+            const resultId = this.getAttribute('data-result');
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = `✅ Clicked! Would populate question box with: <code>Tell me about ${filename}</code>`;
+            resultDiv.style.background = '#d1fae5';
+            
+            setTimeout(() => {
+                resultDiv.style.background = '#f0f9ff';
+            }, 2000);
+        }
+
+        // Test data
+        const tests = [
+            {
+                id: 'test1',
+                resultId: 'result1',
+                content: 'The [[FILE:APIPAY.CBL|APIPAY.CBL]] program calls [[FILE:REFUPD.CBL|REFUPD.CBL]]'
+            },
+            {
+                id: 'test2',
+                resultId: 'result2',
+                content: 'Files involved: [[FILE:MAIN.cbl|MAIN.cbl]], [[FILE:UTILS.cpy|UTILS.cpy]], and [[FILE:HELPER.CBL|HELPER.CBL]]'
+            },
+            {
+                id: 'test3',
+                resultId: 'result3',
+                content: 'According to [[FILE:SOURCE.CBL|SOURCE.CBL]] (line 123), the routine validates input from copybook [[FILE:COPY-BOOK.CPY|COPY-BOOK.CPY]]'
+            }
+        ];
+
+        // Initialize tests
+        tests.forEach(test => {
+            const div = document.getElementById(test.id);
+            div.innerHTML = formatMessage(test.content);
+            
+            // Add click handlers to all file links in this div
+            div.querySelectorAll('.file-link').forEach(link => {
+                link.setAttribute('data-result', test.resultId);
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleFileLinkClick.call(this, this.getAttribute('data-filename'));
+                });
+            });
+        });
+
+        console.log('✅ File link test page initialized');
+        console.log('Hover over the file names to see tooltips');
+        console.log('Click on them to simulate the interaction');
+    </script>
+</body>
+</html>

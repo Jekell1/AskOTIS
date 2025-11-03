@@ -1,0 +1,96 @@
+flowchart TD
+    A[Start C-TIM361] --> B[PERFORM C-TIMBEG]
+    B --> C[Initialize Working Variables]
+    C --> D[Day Standardization]
+    
+    D --> E{WS-DATE1-DD > 30?}
+    E -->|Yes| F[MOVE 30 TO WS-DATE1-DD]
+    E -->|No| G{WS-DATE2-DD > 30?}
+    
+    F --> G
+    G -->|Yes| H[MOVE 30 TO WS-DATE2-DD]
+    G -->|No| I[Forward February Processing]
+    
+    H --> I
+    I --> J{DATE2-MM = 2 AND DATE2-DD > DATE1-DD?}
+    J -->|Yes| K[Check DATE2 Leap Year]
+    J -->|No| L[Backward February Processing]
+    
+    K --> M[MOVE WS-DATE2-CCYY TO LEAP-YEAR-CCYY]
+    M --> N[PERFORM C-LEAP-YEAR-TEST]
+    N --> O{LEAP-YEAR-TRUE AND DATE2-DD = 29?}
+    
+    O -->|Yes| P[MOVE 30 TO WS-DATE2-DD]
+    O -->|No| Q{LEAP-YEAR-FALSE AND DATE2-DD = 28?}
+    
+    Q -->|Yes| P
+    Q -->|No| L
+    
+    P --> L
+    L --> R{DATE2-MM = 2 AND DATE2-DD < DATE1-DD?}
+    R -->|Yes| S[Check DATE2 Leap Year for Backward]
+    R -->|No| T[Complex February Logic]
+    
+    S --> U[MOVE WS-DATE2-CCYY TO LEAP-YEAR-CCYY]
+    U --> V[PERFORM C-LEAP-YEAR-TEST]
+    V --> W{LEAP-YEAR-TRUE AND DATE2-DD = 29?}
+    
+    W -->|Yes| X[MOVE 29 TO WS-DATE1-DD]
+    W -->|No| Y{LEAP-YEAR-FALSE AND DATE2-DD = 28?}
+    
+    Y -->|Yes| Z[MOVE 28 TO WS-DATE1-DD]
+    Y -->|No| T
+    
+    X --> T
+    Z --> T
+    
+    T --> AA[Complex Conditional Check]
+    AA --> BB{NOT Multiple Conditions?}
+    
+    BB -->|Yes| CC[February 28 Special Processing]
+    BB -->|No| DD[Skip Special Processing]
+    
+    CC --> EE[MOVE WS-DATE1-CCYY TO LEAP-YEAR-CCYY]
+    EE --> FF[PERFORM C-LEAP-YEAR-TEST]
+    FF --> GG{LEAP-YEAR-FALSE?}
+    
+    GG -->|Yes| HH[ADD 2 TO WS-DATE1-DD]
+    GG -->|No| II[ADD 1 TO WS-DATE1-DD]
+    
+    HH --> JJ[Final Calculation]
+    II --> JJ
+    DD --> JJ
+    
+    JJ --> KK[COMPUTE WS-XDAYS]
+    KK --> LL[Years: DATE2-CCYY - DATE1-CCYY × 360]
+    LL --> MM[Months: DATE2-MM - DATE1-MM × 30]
+    MM --> NN[Days: DATE2-DD - DATE1-DD]
+    NN --> OO[Sum All Components]
+    
+    OO --> PP[PERFORM C-TIMEND]
+    PP --> QQ[End C-TIM361]
+    
+    subgraph "Complex Conditions"
+        RR[DATE1-MM = 2]
+        SS[DATE1-DD >= 28]
+        TT[Cross-Month Span]
+        UU[Not Same Date]
+    end
+    
+    style A fill:#e1f5fe
+    style QQ fill:#c8e6c9
+    style E fill:#fff3e0
+    style G fill:#fff3e0
+    style J fill:#fff3e0
+    style O fill:#fff3e0
+    style Q fill:#fff3e0
+    style R fill:#fff3e0
+    style W fill:#fff3e0
+    style Y fill:#fff3e0
+    style BB fill:#fff3e0
+    style GG fill:#fff3e0
+    style B fill:#e8f5e8
+    style N fill:#e8f5e8
+    style V fill:#e8f5e8
+    style FF fill:#e8f5e8
+    style PP fill:#e8f5e8

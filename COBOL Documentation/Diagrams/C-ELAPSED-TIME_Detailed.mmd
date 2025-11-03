@@ -1,0 +1,16 @@
+%% Mermaid Flowchart: C-ELAPSED-TIME Detailed Flow
+graph TD
+    Start([Start])
+    InitVars["Initialize variables"]
+    ReadInput["Read input records"]
+    ProcessLoop{More records?}
+    Validate["Validate record"]
+    Calc["Calculate elapsed time"]
+    WriteOutput["Write output record"]
+    Error["Handle errors"]
+    End([End])
+
+    Start --> InitVars --> ReadInput --> ProcessLoop
+    ProcessLoop -- Yes --> Validate --> Calc --> WriteOutput --> ReadInput
+    ProcessLoop -- No --> End
+    Validate -- Error --> Error --> ReadInput

@@ -1,0 +1,32 @@
+flowchart TD
+    A[Julian Calculation Components] --> B[Year Component]
+    A --> C[Month Component]
+    A --> D[Day Component]
+    A --> E[Leap Day Adjustment]
+    
+    B --> F[YEAR-1900-1 × 1461 ÷ 4]
+    F --> G[Days from complete years since 1900]
+    
+    C --> H[DYTOM Month Lookup]
+    H --> I[Jan=0, Feb=31, Mar=59, etc.]
+    
+    D --> J[Current Day of Month]
+    J --> K[Direct day value 1-31]
+    
+    E --> L{Month > Feb AND Leap Year?}
+    L -->|Yes| M[Add 1 extra day]
+    L -->|No| N[Add 0 extra days]
+    
+    O[Final Formula]
+    O --> P[Julian = Year + Month + Day + Leap]
+    
+    Q[DYTOM Table]
+    Q --> R[Jan: 0, Feb: 31, Mar: 59]
+    Q --> S[Apr: 90, May: 120, Jun: 151]
+    Q --> T[Jul: 181, Aug: 212, Sep: 243]
+    Q --> U[Oct: 273, Nov: 304, Dec: 334]
+    
+    style A fill:#e1f5fe
+    style O fill:#f3e5f5
+    style Q fill:#fff9c4
+    style L fill:#fff3e0

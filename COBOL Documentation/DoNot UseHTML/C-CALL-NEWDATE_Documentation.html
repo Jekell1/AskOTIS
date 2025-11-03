@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-CALL-NEWDATE Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-CALL-NEWDATE Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-CALL-NEWDATE Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-CALL-NEWDATE.cpy</code><br />
+<strong>Program ID:</strong> C-CALL-NEWDATE<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#functional-description">Functional Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#usage-scenarios">Usage Scenarios</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-CALL-NEWDATE</strong> module is a core date conversion utility within the APIPAY system that provides comprehensive date format standardization and validation capabilities. This module converts various date input formats into a standardized 8-digit CCYYMMDD format, handling multiple input scenarios including partial dates, different separators, and various date representations.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-CALL-NEWDATE</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Multi-format date conversion and standardization</li>
+<li><strong>Location</strong>: APIPAY/C-CALL-NEWDATE.cpy</li>
+<li><strong>Dependencies</strong>: None (self-contained utility)</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-CALL-NEWDATE serves as the primary date normalization engine for the APIPAY system, ensuring that all date inputs are converted to a consistent CCYYMMDD format regardless of their original format. The module handles various input scenarios including:</p>
+<ul>
+<li>Full dates with different separators (/, -, spaces)</li>
+<li>Partial dates requiring current date completion</li>
+<li>Year format variations (2-digit vs 4-digit)</li>
+<li>Month/day validation and error handling</li>
+<li>Special handling for blank or invalid inputs</li>
+</ul>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Multi-Format Support</strong>: Accepts dates in various formats and separators</li>
+<li><strong>Intelligent Year Handling</strong>: Processes both 2-digit and 4-digit years with century logic</li>
+<li><strong>Date Validation</strong>: Validates month and day ranges with appropriate error handling</li>
+<li><strong>Current Date Integration</strong>: Uses system date for partial date completion</li>
+<li><strong>Error Recovery</strong>: Provides standardized error handling for invalid inputs</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NEWDATE-INPUT</strong>: Variable-length input containing the date to be processed</li>
+<li><strong>NEWDATE-INPUT-LENGTH</strong>: Length of the input date string</li>
+<li><strong>Current System Date</strong>: Used for partial date completion</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-NEWDATE-OUT-CCYY</strong>: 4-digit output year</li>
+<li><strong>WS-NEWDATE-OUT-MM</strong>: 2-digit output month</li>
+<li><strong>WS-NEWDATE-OUT-DD</strong>: 2-digit output day</li>
+<li><strong>Return Code</strong>: Success/failure indication</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Input Analysis</h4>
+<ul>
+<li>Analyzes input length and format</li>
+<li>Identifies separators (/, -, space)</li>
+<li>Determines if input is complete or partial</li>
+</ul>
+<h4>Phase 2: Date Parsing</h4>
+<ul>
+<li>Extracts day, month, and year components</li>
+<li>Handles various separator scenarios</li>
+<li>Processes numeric-only inputs</li>
+</ul>
+<h4>Phase 3: Year Processing</h4>
+<ul>
+<li>Converts 2-digit years to 4-digit format</li>
+<li>Applies century logic (typically 19xx/20xx pivot)</li>
+<li>Validates year reasonableness</li>
+</ul>
+<h4>Phase 4: Validation</h4>
+<ul>
+<li>Validates month range (01-12)</li>
+<li>Validates day range based on month</li>
+<li>Checks for leap year considerations</li>
+</ul>
+<h4>Phase 5: Assembly</h4>
+<ul>
+<li>Combines validated components</li>
+<li>Formats output in CCYYMMDD structure</li>
+<li>Sets appropriate return codes</li>
+</ul>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-NEWDATE-WORK-AREA
+├── WS-NEWDATE-IN-WORK        (Input processing area)
+├── WS-NEWDATE-PARSE-WORK     (Parsing work area)
+├── WS-NEWDATE-DAY            (Day component)
+├── WS-NEWDATE-MONTH          (Month component)
+├── WS-NEWDATE-YEAR           (Year component)
+├── WS-NEWDATE-SEPARATOR      (Detected separator)
+└── WS-NEWDATE-ERROR-FLAG     (Error indication)
+</code></pre>
+<h3>Constants and Tables</h3>
+<ul>
+<li><strong>Month validation table</strong>: Days per month</li>
+<li><strong>Year pivot points</strong>: Century determination logic</li>
+<li><strong>Error codes</strong>: Standardized error responses</li>
+</ul>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Input Date] → [Format Analysis] → [Component Extraction] → 
+[Year Processing] → [Validation] → [Assembly] → [Output CCYYMMDD]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>APIPAY Main</strong>: Primary date processing</li>
+<li><strong>Date validation routines</strong>: Input sanitization</li>
+<li><strong>Report generation modules</strong>: Date formatting</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li>System date services (for current date)</li>
+<li>Date validation utilities</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Error Conditions</h3>
+<ol>
+<li><strong>Invalid Input Length</strong>: Input too short or too long</li>
+<li><strong>Invalid Separators</strong>: Unrecognized date separators</li>
+<li><strong>Invalid Month</strong>: Month not in range 01-12</li>
+<li><strong>Invalid Day</strong>: Day not valid for the specified month</li>
+<li><strong>Invalid Year</strong>: Year outside acceptable range</li>
+</ol>
+<h3>Error Recovery</h3>
+<ul>
+<li>Returns standardized error codes</li>
+<li>Maintains input data integrity</li>
+<li>Provides diagnostic information</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: Single-pass processing for most inputs</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Processing Speed</strong>: Optimized for high-volume date processing</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Date Conversion</h3>
+<pre><code class="language-cobol">MOVE &quot;12/31/2023&quot; TO NEWDATE-INPUT
+MOVE LENGTH OF &quot;12/31/2023&quot; TO NEWDATE-INPUT-LENGTH
+PERFORM C-CALL-NEWDATE
+* Result: WS-NEWDATE-OUT = 20231231
+</code></pre>
+<h3>Partial Date Processing</h3>
+<pre><code class="language-cobol">MOVE &quot;12/31&quot; TO NEWDATE-INPUT
+MOVE LENGTH OF &quot;12/31&quot; TO NEWDATE-INPUT-LENGTH
+PERFORM C-CALL-NEWDATE
+* Uses current year for completion
+</code></pre>
+<h2>Maintenance Notes</h2>
+<h3>Modification History</h3>
+<ul>
+<li>Original implementation for multi-format support</li>
+<li>Enhanced year pivot logic for Y2K compliance</li>
+<li>Added validation for leap year scenarios</li>
+</ul>
+<h3>Future Enhancements</h3>
+<ul>
+<li>Additional date format support</li>
+<li>Internationalization capabilities</li>
+<li>Enhanced error diagnostics</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-DATE-TEST_Documentation.html">C-DATE-TEST Documentation</a> - Date validation utilities</li>
+<li><a href="C-DATER-MAIN_Documentation.html">C-DATER-MAIN Documentation</a> - Main date processing module</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-CALL-NEWDATE_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-CALL-NEWDATE_Input_Processing.mmd">Input Processing Logic</a></li>
+<li><a href="../Diagrams/C-CALL-NEWDATE_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

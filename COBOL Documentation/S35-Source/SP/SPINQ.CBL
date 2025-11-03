@@ -1,0 +1,62 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      SPINQ.
+       DATE-WRITTEN.    013184.
+      ****************************************************************
+      *
+      *  DESCRIPTION:  COLLECTION WORK SCREEN
+      *
+      *   NOTE: BOTH SPINQ.C AND XPINQ.C SHARE THE
+      *         CODE FOUND IN LIBSP/SPINQ1(BEG OF PROGRAM THRU
+      *                                    WORKING STORAGE)
+      *                     & LIBSP/SPINQ2 (DECLARATIVES THRU END)
+      *         LINKAGE IS DIFFERENCE BECAUSE WI/BWLNS3 CALLS
+      *         XPINQ & PASSES SELECTED LOAN # IN LINKAGE.
+      *=================================================================
+      * REV:
+      *  CS 170321 IF WORLD, IF ACCOUNT IS 'BK' PERFORM VERIFY-PASSWORD,
+      *            IF STAT NOT 'OK', DISPLAY FULL SCREEN WINDOW, IF THE
+      *            USER TYPES 'Y' TO CONTINUE INTO ACCOUNT, CREATE A
+      *            LOAN MEMO "BK ACCOUNT ACCESSED" WITH USERID /TIME.
+      *            ALSO CREATE A LOG FILE /USR/DATA/R?/LG ADDED
+      *            WRLDBK_SCN.CPY TO SCREEN SECTION. WORLD PR#1234
+      *
+      *  CS 180330 CHANGED HOLD-FACTOR TO HAVE VALUE OF +0 LIKE A15,
+      *            WITHOUT THIS, IT JUNKED UP ADDING HOLD-FACTOR TO
+      *            TEST-HOUR (LIBSP/SPINQ1.CPY)
+      *  CS 180403 FIXED ENTRY OF PROMISE DATE 2 (LIBSP/SPINQ2)
+      *  CS 180403 FIXED WINDOW FOR COLLECTOR SCREEN WAS AT EDGE OF
+      *            SCREEN
+      *  CS 190205 COMMENT AWFILE COPIES AND REPLACE WITH WORKER
+      *            LIBLP/LPCPAW
+      *
+      * SMR 2023-0925 ADDED VCQFILE LOGIC TO RESOLVE DIFFICULTY WITH
+      *          THE CQ2-KEY WORKING WITH A SCAN WINDOW AND/OR USING A
+      *          START-GREATER IO PARAGRAPH.  USING A TEMPORARY VISION
+      *          CQFILE HELPS KEEP THE SAME EXPECT RESULTS FROM A15.
+      *
+      ******************************************************************
+
+       COPY "LIBSP/SPINQ1.CPY".
+
+      * NOTE, THE FOLLOWING ARE IN WORKING STORAGE HERE IN SPINQ
+      * THEY ARE IN LINKAGE IN XPINQ, BECAUSE XPINQ CAN BE CALLED
+      * FROM WI/BWLNS3 WITH AN ACCT NUMBER PASSWD
+       01  BWLNS3-LINK-BUF.
+           03  BWLNS3-SCANYN      PIC X(1) VALUE "N".
+           03  BWLNS3-LINK-ACCTNO PIC 9(8) VALUE 0.
+
+      ***********************************
+      *   C O N T R O L   M O D U L E   *
+      ***********************************
+       COPY "LIBGB/GETFMW.CPY".
+
+       SCREEN SECTION.
+       COPY "LIBSP/SPINQ_SCN.CPY".
+       COPY "LIBWI/NXCNTC_SCN.CPY".
+       COPY "LIBWI/NXCNT2_SCN.CPY".
+       COPY "LIBWI/INBRT2_SCN.CPY".
+       COPY "LIBWI/WRLDBK_SCN.CPY".
+       PROCEDURE DIVISION
+           USING FORM-PATHNAME EXIT-PATHNAME.
+
+       COPY "LIBSP/SPINQ2.CPY".

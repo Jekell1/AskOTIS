@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBAP/APFSAD
+      *    INCLUDE IN AUTOCR
+           SELECT AD-FILE ASSIGN AD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY AD1-KEY
+                  FILE STATUS FILE-STAT.

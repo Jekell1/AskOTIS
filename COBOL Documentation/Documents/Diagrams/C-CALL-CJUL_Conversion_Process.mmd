@@ -1,0 +1,57 @@
+flowchart TD
+    A[Julian Input CJUL-IN] --> B[Scale by 4]
+    B --> C[JUL-BY4 = CJUL-IN × 4]
+    
+    C --> D[Calculate 4-Year Periods]
+    D --> E[DIVIDE BY 1461]
+    E --> F[Years Count + Remainder]
+    
+    F --> G[Modulo Adjustment]
+    G --> H{Remainder ≠ 0?}
+    H -->|Yes| I[MOD-JUL = 1]
+    H -->|No| J[MOD-JUL = 0]
+    
+    I --> K[Calculate Calendar Year]
+    J --> K
+    K --> L[CCYY = Years × 4 ÷ 1461 + MOD]
+    
+    L --> M[Calculate Adjusted Day]
+    M --> N[Day = JULIAN - Year_Base]
+    N --> O[Leap Year Detection]
+    
+    O --> P{Year ÷ 4 = 0?}
+    P -->|Yes| Q{Day ≥ 60?}
+    P -->|No| R[No Leap Adjustment]
+    
+    Q -->|Yes| S[WORK = 1]
+    Q -->|No| R
+    
+    R --> T[WORK = 0]
+    S --> U[Apply Leap Adjustment]
+    T --> U
+    U --> V[Final Day = Day - WORK]
+    
+    V --> W[Month Lookup Process]
+    W --> X[Use DYTOM Array]
+    X --> Y[Scan from December to January]
+    
+    Y --> Z[Month Boundaries]
+    Z --> AA[Jan=0 Feb=31 Mar=59 Apr=90...]
+    AA --> BB[Find Correct Month]
+    
+    BB --> CC[Special February Logic]
+    CC --> DD{Day = 59 and Leap Year?}
+    DD -->|Yes| EE[February 29]
+    DD -->|No| FF[Regular Day Calc]
+    
+    EE --> GG[Final Assembly]
+    FF --> GG
+    GG --> HH[Add 1900 to Year]
+    HH --> II[Output CCYYMMDD]
+    
+    style A fill:#e3f2fd
+    style II fill:#e8f5e8
+    style H fill:#fff8e1
+    style P fill:#fff8e1
+    style Q fill:#fff8e1
+    style DD fill:#fff8e1

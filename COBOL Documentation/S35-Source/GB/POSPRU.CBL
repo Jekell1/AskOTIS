@@ -1,0 +1,81 @@
+      * A30
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  POSPRU.
+      *********************************************
+      *  DIR : GB
+      *  DESC: RETURN CONTROL TO TERMINAL
+      *        THIS ROUTINE EXECUTED AFTER PRINT DEVICE
+      *        HAS BEEN CLOSED. FOR AUXILLARY PRINT,
+      *        SET TERMINAL ACCORDINGLY. FOR SCREEN PRINT,
+      *        SWITCH TERMINAL TO 80 COLUMNS
+      *
+      *  MG  991007 FIXED VDUSTATUS/IO-FG/STAT PER DEVELOPMENT MEETING.
+      *********************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)GB/POSPRU.CBL S34 05/28/21-12:22:16 >".
+
+       COPY "LIBGB/FILEWK.CPY".
+       01  EXT-EOBUF-MESS   REDEFINES MESS PIC X(61).
+      * PRINT OFF:
+       01  CMD-TPUT-MC4  PIC X(8)  VALUE "TPUT MC4".
+       COPY "LIBGB/GETPRW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+
+       COPY "LIBGB/GETFMW.CPY".
+
+      * MUST MATCH SIZE OF PRU-PATH IN LIBGB/GETPRW
+       01  PRU-PATHX    PIC X(90).
+       01  STATX        PIC XX.
+       COPY "LIBGB/PRU_LNK.CPY".
+
+       PROCEDURE DIVISION
+           USING STATX PRU-PATHX FORM-PATHNAME PRU-LINK EXIT-PATHNAME.
+
+      *********************************
+       MAIN-PROGRAM SECTION.
+      *********************************
+      D    STOP MESS.
+           MOVE PRU-PATHX TO PRU-PATH.
+
+
+           IF (Q-BUF = "N" AND P-BUF = "00") OR
+               (Q-BUF = "P" AND P-BUF = "00")
+              GO TO PRINT-PRU.
+
+           GO TO END-PROG.
+
+      * IF PRINTING AUXILIARY MODE (PIGGY BACK),  RESET AUXILIARY
+       PRINT-PRU.
+
+      *    CALL "C$SLEEP" USING 2.
+
+           CALL "C$TOLOWER" USING CMD-TPUT-MC4, VALUE 8.
+           MOVE CMD-TPUT-MC4 TO SYSTEM-BUF.
+      * THIS MUST STAY C$SYSTEM OR GARBAGE LOCKS UP PRINTER, NO IDEA WHY
+           CALL "C$SYSTEM" USING SYSTEM-BUF 2 GIVING STAT-99.
+      *    PERFORM SYSTEM-CALL.
+
+      *    CALL "C$SLEEP" USING 2.
+
+           GO TO EXIT-PROG.
+
+      **********
+      *  MISC
+      **********
+       MISC SECTION.
+       COPY "LIBGB/SYSTEM.CPY".
+       COPY "LIBGB/GETENV.CPY".
+       COPY "LIBGB/SENDMESS.CPY".
+       END-PROG.
+           MOVE STAT TO STATX.
+           MOVE PRU-PATH TO PRU-PATHX.
+       EXIT-PROG.
+           EXIT PROGRAM.

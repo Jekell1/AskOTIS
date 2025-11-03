@@ -1,0 +1,19 @@
+      * REPAY PAYMENTS
+       OPEN-REPAY-TRP-FILE-OUTPUT.
+           PERFORM OPEN-IT.
+           MOVE REPAY-TRP-IFN TO E-FILE.
+           OPEN OUTPUT REPAY-TRP-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-REPAY-TRP-FILE-OUTPUT.
+           IF IO-FG = 7
+              CLOSE REPAY-TRP-FILE
+              GO TO OPEN-REPAY-TRP-FILE-OUTPUT.
+       WRITE-REPAY-TRP-FILE.
+           PERFORM WRITE-IT.
+           MOVE REPAY-TRP-IFN TO E-FILE.
+           WRITE REPAY-TRP-REC.
+           IF IO-FG = 8
+              GO TO WRITE-REPAY-TRP-FILE.
+       CLOSE-REPAY-TRP-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE REPAY-TRP-FILE.

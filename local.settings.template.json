@@ -1,0 +1,31 @@
+{
+  "IsEncrypted": false,
+    "Values": {
+      "FUNCTIONS_WORKER_RUNTIME": "python",
+      "FUNCTIONS_EXTENSION_VERSION": "~4",
+      "AzureWebJobsStorage": "<storage-connection-string>",
+      "AzureWebJobsDashboard": "<storage-connection-string>",
+      "AzureWebJobsSecretStorageType": "Files",
+      "DEPLOYMENT_STORAGE_CONNECTION_STRING": "<storage-connection-string>",
+      "APPLICATIONINSIGHTS_CONNECTION_STRING": "<app-insights-connection-string>",
+      "APPINSIGHTS_INSTRUMENTATIONKEY": "<instrumentation-key>",
+      "DOCINTELLIGENCE_ENDPOINT": "https://<your-docintelligence>.cognitiveservices.azure.com/",
+      "DOCINTELLIGENCE_KEY": "<docintelligence-key>",
+      "SEARCH_ENDPOINT": "https://<your-search>.search.windows.net",
+      "SEARCH_KEY": "<search-key>",
+      "AZURE_SEARCH_ENDPOINT": "https://<your-search>.search.windows.net",
+      "AZURE_SEARCH_KEY": "<search-key>",
+      "SOURCE_STORAGE_ACCOUNT": "<storage-account>",
+      "SOURCE_BLOB_CONTAINER": "aisearch",
+      "SOURCE_CODE_PREFIX": "S35-Source/",
+      "SOURCE_JSONL_PREFIX": "JSONL/",
+      "OPENAI_API_KEY": "<openai-api-key-or-remove>",
+      "OPENAI_EMBED_MODEL": "text-embedding-3-large",
+      "OPENAI_EMBEDDING_MODEL": "text-embedding-3-large",
+      "AZURE_OPENAI_ENDPOINT": "https://<your-azure-openai>.openai.azure.com",
+      "AZURE_OPENAI_KEY": "<azure-openai-key>",
+      "AZURE_OPENAI_DEPLOYMENT": "gpt-4o",
+      "AZURE_OPENAI_EMBED_DEPLOYMENT": "text-embedding-3-large"
+    },
+    "ConnectionStrings": {}
+  }

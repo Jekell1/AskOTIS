@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF9 - Loan Processing Transaction Posting System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">LONPF9 - Loan Processing Transaction Posting System</span>
+        </nav>
+        <main class="content">
+<h1>LONPF9 - Loan Processing Transaction Posting System</h1>
+<p><strong>Location:</strong> .\S35-Source\LP\LONPF9.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> LONPF9<br />
+<strong>Date Written:</strong> March 13, 1986</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>LONPF9</strong> is a sophisticated COBOL loan processing program specifically designed for <strong>Transaction Posting</strong> in a loan servicing system. It serves as <strong>Program 9</strong> in the loan processing suite and handles specialized transaction types including partial payoffs, payoffs, insurance reversals, accelerations, and bankruptcy status management.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Interactive screen-based processing with batch payment capabilities</li>
+<li><strong>Primary Function:</strong> Transaction posting for specialized loan operations and payoff scenarios</li>
+<li><strong>Transaction Focus:</strong> Handles "JD", "PL", "PI", "PW", "P2", "P3", "P4", "P5", "RP", "IR", "AC", "BK", "BD" transaction codes</li>
+<li><strong>Integration:</strong> Part of the larger LONPF family of loan processing programs</li>
+<li><strong>Screen Interface:</strong> Uses VDU (Video Display Unit) forms for user interaction with comprehensive validation</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>LONPF9 serves critical functions in loan servicing by:</p>
+<ol>
+<li><strong>Payoff Management:</strong> Processes various types of loan payoffs (full and partial)</li>
+<li><strong>Judgment Decisions:</strong> Handles judgment decision postings and accelerations</li>
+<li><strong>Insurance Processing:</strong> Manages insurance reversal transactions and adjustments</li>
+<li><strong>Bankruptcy Management:</strong> Sets and removes bankruptcy status codes</li>
+<li><strong>Acceleration Processing:</strong> Handles account acceleration scenarios</li>
+<li><strong>Batch Payment Support:</strong> Provides automated transaction posting for batch payment systems</li>
+<li><strong>Dealer Reserve Management:</strong> Processes dealer reserve adjustments and handling</li>
+<li><strong>P&amp;L Processing:</strong> Manages profit and loss transactions with automatic refund capabilities</li>
+</ol>
+<h3>Historical Context</h3>
+<p>Originally created in March 1986, LONPF9 has evolved through numerous enhancements:</p>
+<ul>
+<li><strong>Major Revisions:</strong> Over 150+ documented changes since inception</li>
+<li><strong>Recent Additions:</strong> Batch payment routines (2022), enhanced cash drawer support (2016-2017)</li>
+<li><strong>Compliance Updates:</strong> 8-digit date support (2017), global file management improvements</li>
+<li><strong>Integration Enhancements:</strong> Enhanced APIPAY integration, inter-branch payment support</li>
+</ul>
+<hr />
+<h2>Transaction Types Supported</h2>
+<p>LONPF9 supports the following transaction codes:</p>
+<h3>Primary Transaction Types</h3>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Business Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>JD</strong></td>
+<td>Judgment Decision</td>
+<td>Posts judgment decisions and account accelerations</td>
+</tr>
+<tr>
+<td><strong>PL</strong></td>
+<td>Partial Payoff/P&amp;L</td>
+<td>Handles partial loan payoffs and profit/loss adjustments</td>
+</tr>
+<tr>
+<td><strong>PI</strong></td>
+<td>Principal Interest</td>
+<td>Processes principal and interest adjustments</td>
+</tr>
+<tr>
+<td><strong>PW</strong></td>
+<td>Principal Write-off</td>
+<td>Manages principal write-off transactions</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>P&amp;L Type 2</td>
+<td>Secondary profit/loss transaction processing</td>
+</tr>
+<tr>
+<td><strong>P3</strong></td>
+<td>P&amp;L Type 3</td>
+<td>Tertiary profit/loss transaction processing</td>
+</tr>
+<tr>
+<td><strong>P4</strong></td>
+<td>P&amp;L Type 4</td>
+<td>Quaternary profit/loss transaction processing</td>
+</tr>
+<tr>
+<td><strong>P5</strong></td>
+<td>P&amp;L Type 5</td>
+<td>Quinary profit/loss transaction processing</td>
+</tr>
+<tr>
+<td><strong>RP</strong></td>
+<td>Repo Payment</td>
+<td>Processes repossession-related payments</td>
+</tr>
+<tr>
+<td><strong>IR</strong></td>
+<td>Insurance Reversal</td>
+<td>Handles insurance reversal transactions</td>
+</tr>
+<tr>
+<td><strong>AC</strong></td>
+<td>Acceleration</td>
+<td>Processes account acceleration scenarios</td>
+</tr>
+<tr>
+<td><strong>BK</strong></td>
+<td>Bankruptcy Status</td>
+<td>Sets bankruptcy status on accounts</td>
+</tr>
+<tr>
+<td><strong>BD</strong></td>
+<td>Bankruptcy Discharge</td>
+<td>Removes bankruptcy status from accounts</td>
+</tr>
+</tbody>
+</table>
+<h3>Automatic Processing Features</h3>
+<ul>
+<li><strong>Auto-PL-REF-AC:</strong> Automatic partial payoff refund and acceleration</li>
+<li><strong>Dealer Reserve Management:</strong> Automatic handling of negative dealer reserves</li>
+<li><strong>Earnings Integration:</strong> Real-time earnings calculation and updating</li>
+<li><strong>GL Distribution:</strong> Automatic general ledger entry distribution</li>
+</ul>
+<hr />
+<h2>Input Parameters</h2>
+<h3>Primary Input Structure (PROG-BUF)</h3>
+<h4>Loan Processing Buffer (LP-REC)</h4>
+<pre><code class="language-cobol">LP-BRNO              PIC 9(03)      - Branch Number
+LP-ACCTNO            PIC 9(06)      - Account Number  
+LP-TRCD              PIC X(02)      - Transaction Code
+LP-TRAMT             PIC 9(07)V99   - Transaction Amount
+LP-PAYDATE           PIC 9(08)      - Payment Date (CCYYMMDD)
+LP-REFNO             PIC X(10)      - Reference Number
+LP-TILLNO            PIC 9(02)      - Till Number
+LP-IBPC              PIC X(01)      - Inter-branch/Principal Code
+LP-PLREASON          PIC X(02)      - P&amp;L Reason Code
+LP-POCD              PIC X(02)      - Payoff Code
+</code></pre>
+<h4>Transaction Processing Fields</h4>
+<pre><code class="language-cobol">LP-APRIN             PIC 9(07)V99   - Applied to Principal
+LP-APINT             PIC 9(07)V99   - Applied to Interest  
+LP-APLC              PIC 9(07)V99   - Applied to Late Charges
+LP-APOTH             PIC 9(07)V99   - Applied to Other
+LP-APOT2             PIC 9(07)V99   - Applied to Other 2
+LP-CURBAL            PIC S9(07)V99  - Current Balance
+LP-INTDUE            PIC 9(07)V99   - Interest Due
+LP-LCDUE             PIC 9(07)V99   - Late Charges Due
+</code></pre>
+<h3>Branch Processing Parameters</h3>
+<pre><code class="language-cobol">BR-AUTO-PL-REF-AC    PIC X(01)      - Auto P&amp;L Refund/Acceleration
+BR-PASSWORD-DRAWER   PIC X(01)      - Password Required for Drawer
+BR-GL-TYPE-ALLOWED   PIC X(20)      - Allowed GL Types
+BR-GL-ENTRY-DEFAULT  PIC X(01)      - Default GL Entry Method
+</code></pre>
+<h3>State Processing Parameters</h3>
+<pre><code class="language-cobol">SP-ERNFRMLA          PIC X(02)      - Earnings Formula Code
+SP-ERNACCEL-CD       PIC X(01)      - Earnings Acceleration Code
+SP-ERNJD-CD          PIC X(01)      - Earnings JD Code
+SP-LCFRMLA           PIC X(02)      - Late Charge Formula
+</code></pre>
+<hr />
+<h2>Output Fields</h2>
+<h3>Transaction Results (UPDATE-BUF)</h3>
+<h4>Updated Loan Record Fields</h4>
+<pre><code class="language-cobol">LN-CURBAL            PIC S9(07)V99  - Updated Current Balance
+LN-PRINBAL           PIC 9(07)V99   - Updated Principal Balance
+LN-INTDUE            PIC 9(07)V99   - Updated Interest Due
+LN-LCDUE             PIC 9(07)V99   - Updated Late Charges Due
+LN-OTHDUE            PIC 9(07)V99   - Updated Other Due
+LN-OT2DUE            PIC 9(07)V99   - Updated Other 2 Due
+LN-TOTPAYMNTD        PIC 9(08)V99   - Total Payments Made
+LN-TOTINT            PIC 9(08)V99   - Total Interest Collected
+LN-TOTLCHG           PIC 9(08)V99   - Total Late Charges
+</code></pre>
+<h4>Processing Status Fields</h4>
+<pre><code class="language-cobol">ERRCD                PIC X(01)      - Error Code (Space=Success)
+ROUTE-CD             PIC X(02)      - Routing Code
+POSTING-ERRCD        PIC X(01)      - Posting Error Code
+RETURN-STATUS        PIC 9(02)      - Return Status Code
+</code></pre>
+<h4>Audit Trail Fields</h4>
+<pre><code class="language-cobol">LP-SEQNO             PIC 9(04)      - Sequence Number
+LP-USERID            PIC X(08)      - User ID
+LP-TIMESTAMP         PIC X(14)      - Transaction Timestamp
+LOG-MSG              PIC X(30)      - Log Message
+</code></pre>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3>Main Program Flow</h3>
+<p><a href="Diagrams/LONPF9_Main_Flow.mmd">LONPF9 Main Flow</a></p>
+<h3>Transaction Processing Flow</h3>
+<p><a href="Diagrams/LONPF9_Transaction_Processing.mmd">LONPF9 Transaction Processing</a></p>
+<h3>Auto P&amp;L Processing Flow</h3>
+<p><a href="Diagrams/LONPF9_Auto_PL_Processing.mmd">LONPF9 Auto PL Processing</a></p>
+<h3>Error Handling Flow</h3>
+<p><a href="Diagrams/LONPF9_Error_Handling.mmd">LONPF9 Error Handling</a></p>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<p><a href="Diagrams/LONPF9_Batch_Timeline.mmd">LONPF9 Batch Timeline</a></p>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>1. MAIN-PROGRAM Section</h3>
+<p><strong>Purpose:</strong> Program initialization and control flow management</p>
+<p><strong>Key Operations:</strong>
+- Establishes SQL connection for database operations
+- Validates state parameters and branch records<br />
+- Sets up control variables and screen forms
+- Determines batch vs. interactive processing mode
+- Performs environment variable setup</p>
+<p><strong>Control Flow:</strong></p>
+<pre><code class="language-cobol">MAIN-PROGRAM → 
+  BATCH-PAYMENT-ROUTINE (if batch mode) OR
+  SELECTION-MODULE (if interactive mode) →
+  END-ROUTINE
+</code></pre>
+<h3>2. BATCH-PAYMENT-ROUTINE Section</h3>
+<p><strong>Purpose:</strong> Handles automated batch payment processing</p>
+<p><strong>Key Operations:</strong>
+- Validates automatic P&amp;L refund configurations
+- Processes P&amp;L transactions with automatic refunds
+- Handles dealer reserve acceptance/rejection
+- Manages earnings calculations for batch transactions
+- Updates loan records without user interaction</p>
+<p><strong>Validation Logic:</strong>
+- Checks BR-AUTO-PL-REF-AC settings for automatic processing
+- Validates transaction amounts against account balances
+- Ensures proper earnings formula application</p>
+<h3>3. SELECTION-MODULE Section</h3>
+<p><strong>Purpose:</strong> Interactive transaction processing and user interface management</p>
+<p><strong>Key Operations:</strong>
+- Displays loan account information and current balances
+- Handles user input for transaction details
+- Validates transaction codes and amounts
+- Processes GL (General Ledger) distribution entries
+- Manages screen flow and user prompts</p>
+<p><strong>Transaction Flow:</strong></p>
+<pre><code class="language-cobol">INITIALIZE → 
+  DISPLAY-ENTRY-LN → 
+  ACCEPT-ENTRY-RTN → 
+  PROCESS-TRANSACTION → 
+  UPDATE-RECORDS
+</code></pre>
+<h3>4. INITIALIZE Section</h3>
+<p><strong>Purpose:</strong> Sets up transaction-specific processing parameters</p>
+<p><strong>Key Operations:</strong>
+- Initializes working storage areas
+- Sets up earnings calculation parameters
+- Configures account-specific settings
+- Prepares GL distribution buffers
+- Sets transaction validation flags</p>
+<h3>5. ACCEPT-ENTRY-RTN Section</h3>
+<p><strong>Purpose:</strong> Handles user input validation and screen processing</p>
+<p><strong>Key Operations:</strong>
+- Validates transaction codes against allowed types
+- Checks transaction amounts for reasonableness
+- Handles cash drawer number entry
+- Manages payoff code entry and validation
+- Processes GL distribution overrides</p>
+<h3>6. UPDATE-AUTOMATIC-PL Section</h3>
+<p><strong>Purpose:</strong> Processes automatic P&amp;L refund and acceleration</p>
+<p><strong>Key Operations:</strong>
+- Calculates refund amounts based on configurations
+- Generates automatic "AC" (acceleration) transactions
+- Updates earnings and accumulation fields
+- Maintains proper audit trail
+- Ensures balance consistency</p>
+<p><strong>Logic Flow:</strong>
+1. Determines if automatic processing applies
+2. Calculates refund amounts
+3. Posts refund transaction
+4. Generates acceleration transaction if needed
+5. Updates all related balances</p>
+<h3>7. Error Handling Paragraphs</h3>
+<p><strong>DECLARE-ERROR Section:</strong> Manages file I/O errors and system failures
+<strong>Validation Routines:</strong> Check transaction validity and business rules
+<strong>Status Management:</strong> Updates return codes and error messages</p>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Input Data Flow</h3>
+<pre><code>APIPAY (Calling Program)
+    ↓
+PROG-BUF (Input Buffer)
+    ↓
+LP-REC (Transaction Data) → LONPF9 Processing
+    ↓
+LN-REC (Account Data) ← File System
+</code></pre>
+<h3>Processing Data Flow</h3>
+<pre><code>LP-REC → Validation → Business Logic → Calculations
+    ↓           ↓            ↓             ↓
+Error Codes  Balances   GL Entries   Earnings Updates
+    ↓           ↓            ↓             ↓
+UPDATE-BUF ← Results ← Audit Trail ← Status Codes
+</code></pre>
+<h3>Output Data Flow</h3>
+<pre><code>LONPF9 Processing Results
+    ↓
+UPDATE-BUF (Output Buffer)
+    ↓
+APIPAY (Calling Program) → Transaction Completion
+</code></pre>
+<h3>File Update Flow</h3>
+<pre><code>LN1-FILE (Loan Master) ← Balance Updates
+LP1-FILE (Payment History) ← Transaction Records  
+LX1-FILE (Extensions) ← Earnings/Accumulations
+CA1-FILE (Cash Drawer) ← Till Transactions
+</code></pre>
+<hr />
+<h2>Referenced Programs</h2>
+<h3>External Program Calls</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Called From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LPEARN</strong></td>
+<td>Earnings calculations</td>
+<td>Multiple paragraphs</td>
+</tr>
+<tr>
+<td><strong>LPCERN</strong></td>
+<td>Earnings processing</td>
+<td>Automatic PL routines</td>
+</tr>
+<tr>
+<td><strong>LPREGZ</strong></td>
+<td>Revolving account processing</td>
+<td>Transaction validation</td>
+</tr>
+<tr>
+<td><strong>ALLENT</strong></td>
+<td>GL distribution entry</td>
+<td>GL processing routines</td>
+</tr>
+<tr>
+<td><strong>PAYOFX</strong></td>
+<td>Payoff calculations</td>
+<td>Payoff processing</td>
+</tr>
+<tr>
+<td><strong>RBACT</strong></td>
+<td>Balloon payment calculations</td>
+<td>Actuarial method processing</td>
+</tr>
+</tbody>
+</table>
+<h3>Copy Members (Include Files)</h3>
+<table>
+<thead>
+<tr>
+<th>Copy Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP01LP.CPY</strong></td>
+<td>Loan payment record structure</td>
+</tr>
+<tr>
+<td><strong>LP01LN.CPY</strong></td>
+<td>Loan master record structure</td>
+</tr>
+<tr>
+<td><strong>LP01LX.CPY</strong></td>
+<td>Loan extension record structure</td>
+</tr>
+<tr>
+<td><strong>LP01SP.CPY</strong></td>
+<td>State parameter record structure</td>
+</tr>
+<tr>
+<td><strong>LP01BR.CPY</strong></td>
+<td>Branch parameter record structure</td>
+</tr>
+<tr>
+<td><strong>LONPF_SCN.CPY</strong></td>
+<td>Screen layout definitions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Error Code Management</h3>
+<table>
+<thead>
+<tr>
+<th>Error Code</th>
+<th>Description</th>
+<th>Action Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>X</strong></td>
+<td>Fatal system error</td>
+<td>Program termination</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td>Business rule violation</td>
+<td>Transaction rejected</td>
+</tr>
+<tr>
+<td><strong>P</strong></td>
+<td>Processing warning</td>
+<td>Continue with caution</td>
+</tr>
+<tr>
+<td><strong>Space</strong></td>
+<td>Successful processing</td>
+<td>Normal completion</td>
+</tr>
+</tbody>
+</table>
+<h3>Common Error Conditions</h3>
+<h4>1. Balance Validation Errors</h4>
+<ul>
+<li><strong>Negative balance conditions:</strong> Prevents accounts from going below allowable limits</li>
+<li><strong>Insufficient funds:</strong> Validates payment amounts against available balances</li>
+<li><strong>Payoff amount validation:</strong> Ensures payoff amounts are accurate</li>
+</ul>
+<h4>2. Transaction Code Validation</h4>
+<ul>
+<li><strong>Invalid transaction codes:</strong> Rejects unsupported transaction types</li>
+<li><strong>Branch-specific restrictions:</strong> Enforces branch-level transaction limits</li>
+<li><strong>Date validation:</strong> Ensures transaction dates are reasonable</li>
+</ul>
+<h4>3. Business Rule Validation</h4>
+<ul>
+<li><strong>Earnings formula compliance:</strong> Validates against state-specific earnings rules</li>
+<li><strong>GL distribution validation:</strong> Ensures proper general ledger account usage</li>
+<li><strong>Automatic processing validation:</strong> Validates auto-PL configurations</li>
+</ul>
+<h3>Validation Routines</h3>
+<h4>ACCEPT-CHECK-VDUSTATUS</h4>
+<ul>
+<li>Validates screen input and user responses</li>
+<li>Handles function key processing (F1-Help, F4-Bypass, etc.)</li>
+<li>Manages screen flow control</li>
+</ul>
+<h4>Business Rule Validation</h4>
+<ul>
+<li>Checks account status compatibility with transaction type</li>
+<li>Validates amount ranges and limits</li>
+<li>Ensures proper authorization levels</li>
+</ul>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4>Working Storage Key Variables</h4>
+<pre><code class="language-cobol">77  F4-FLAG              PIC 9(01)    - Bypass flag
+77  DISP-REV-BAL         PIC X(01)    - Display reversal balances
+77  DF-TEST              PIC X(01)    - Deferment test flag
+77  INDU-INTEREST        PIC 9(07)V99 - Induced interest amount
+</code></pre>
+<h4>Critical Copy Members</h4>
+<ul>
+<li><strong>LPWSLP.CPY:</strong> Loan processing working storage</li>
+<li><strong>LPWSLX.CPY:</strong> Extension working storage  </li>
+<li><strong>LPWSLN.CPY:</strong> Loan master working storage</li>
+</ul>
+<h3>File Handling</h3>
+<h4>Primary Files Used</h4>
+<ul>
+<li><strong>LN1-FILE:</strong> Loan master file (Input/Output)</li>
+<li><strong>LP1-FILE:</strong> Payment history file (Output)</li>
+<li><strong>LX1-FILE:</strong> Loan extension file (Input/Output)</li>
+<li><strong>SP1-FILE:</strong> State parameters (Input)</li>
+<li><strong>BR-FILE:</strong> Branch parameters (Input)</li>
+<li><strong>CA1-FILE:</strong> Cash drawer file (Output)</li>
+</ul>
+<h3>Key Algorithms</h3>
+<h4>1. Automatic P&amp;L Processing Algorithm</h4>
+<pre><code class="language-cobol">IF (LP-TRCD = &quot;PL&quot; AND BR-AUTO-PL-REF-AC = &quot;1&quot;) OR
+   (LP-TRCD = &quot;P2&quot; AND BR-AUTO-PL-REF-AC = &quot;2&quot; OR &quot;3&quot;) OR  
+   (LP-TRCD = &quot;P3&quot; AND BR-AUTO-PL-REF-AC = &quot;3&quot;)
+   PERFORM UPDATE-AUTOMATIC-PL
+</code></pre>
+<h4>2. Earnings Calculation Integration</h4>
+<ul>
+<li>Real-time earnings computation using LPEARN/LPCERN</li>
+<li>Support for multiple earnings formulas (15, 16, 23)</li>
+<li>Integration with actuarial method calculations</li>
+</ul>
+<h4>3. Balance Management Algorithm</h4>
+<ul>
+<li>Maintains current balance consistency</li>
+<li>Updates principal, interest, and other balances</li>
+<li>Handles negative balance scenarios appropriately</li>
+</ul>
+<hr />
+<h2>Integration Points</h2>
+<h3>APIPAY Integration</h3>
+<p>LONPF9 is called from APIPAY with the following transaction codes:
+- <strong>"PL", "P2", "P3"</strong> transactions route to LONPF9
+- Integrated through FORM-PROGX calling mechanism
+- Uses standard PROG-BUF and UPDATE-BUF interfaces</p>
+<h3>Inter-branch Processing</h3>
+<ul>
+<li><strong>Password Protection:</strong> Inter-branch transactions require special authorization</li>
+<li><strong>Branch Validation:</strong> Validates source and target branch permissions</li>
+<li><strong>Cash Drawer Management:</strong> Handles multi-branch cash drawer scenarios</li>
+</ul>
+<h3>Real-time System Integration</h3>
+<ul>
+<li><strong>SQL Database Connectivity:</strong> Uses embedded SQL for real-time data access</li>
+<li><strong>Earnings System Integration:</strong> Real-time earnings calculation and posting</li>
+<li><strong>GL System Integration:</strong> Automatic general ledger entry creation</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LN1-FILE</strong></td>
+<td>Loan master records</td>
+<td>Read/Write</td>
+</tr>
+<tr>
+<td><strong>SP1-FILE</strong></td>
+<td>State processing parameters</td>
+<td>Read Only</td>
+</tr>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch configuration parameters</td>
+<td>Read Only</td>
+</tr>
+<tr>
+<td><strong>DL1-FILE</strong></td>
+<td>Dealer information</td>
+<td>Read Only</td>
+</tr>
+<tr>
+<td><strong>CD1-FILE</strong></td>
+<td>Code table definitions</td>
+<td>Read Only</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Update Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP1-FILE</strong></td>
+<td>Payment transaction history</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td><strong>LX1-FILE</strong></td>
+<td>Loan extensions/earnings</td>
+<td>Update</td>
+</tr>
+<tr>
+<td><strong>CA1-FILE</strong></td>
+<td>Cash drawer transactions</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td><strong>LXG1-FILE</strong></td>
+<td>GL distribution records</td>
+<td>Insert</td>
+</tr>
+</tbody>
+</table>
+<h3>Temporary Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Working file for calculations</td>
+<td>Program execution</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><a href="Diagrams/LONPF9_Call_Graph.mmd">LONPF9 Call Graph</a></p>
+<h3>Key Performance Flow</h3>
+<ol>
+<li><strong>MAIN-PROGRAM</strong> calls <strong>BATCH-PAYMENT-ROUTINE</strong> or <strong>SELECTION-MODULE</strong></li>
+<li><strong>SELECTION-MODULE</strong> performs <strong>INITIALIZE</strong> → <strong>DISPLAY-ENTRY-LN</strong> → <strong>ACCEPT-ENTRY-RTN</strong></li>
+<li><strong>ACCEPT-ENTRY-RTN</strong> performs validation and calls <strong>UPDATE-AUTOMATIC-PL</strong> if needed</li>
+<li>Error handling performed through <strong>DECLARE-ERROR</strong> section</li>
+<li>All paths converge at <strong>END-ROUTINE</strong> for cleanup and termination</li>
+</ol>
+<h3>Critical Subroutine Dependencies</h3>
+<ul>
+<li><strong>File Access Routines:</strong> OPEN/READ/WRITE/CLOSE operations for all files</li>
+<li><strong>Screen Management:</strong> VDU display and accept routines</li>
+<li><strong>Calculation Routines:</strong> Earnings, balance, and GL distribution calculations</li>
+<li><strong>Validation Routines:</strong> Business rule and data validation checks</li>
+</ul>
+<hr />
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Batch Processing Mode:</strong> Reduces overhead for multiple transactions</li>
+<li><strong>Efficient File Access:</strong> Strategic file opening/closing to minimize I/O</li>
+<li><strong>Screen Caching:</strong> Optimized screen display and refresh operations</li>
+</ul>
+<h3>Resource Management</h3>
+<ul>
+<li><strong>Memory Usage:</strong> Optimized working storage allocation</li>
+<li><strong>SQL Connection Management:</strong> Efficient database connection handling  </li>
+<li><strong>File Buffer Management:</strong> Proper buffer allocation for high-volume processing</li>
+</ul>
+<hr />
+<h2>Security and Compliance</h2>
+<h3>Access Control</h3>
+<ul>
+<li><strong>Password Protection:</strong> Required for sensitive operations</li>
+<li><strong>Branch Authorization:</strong> Enforces branch-level security restrictions</li>
+<li><strong>User Audit Trail:</strong> Comprehensive logging of all user actions</li>
+</ul>
+<h3>Compliance Features</h3>
+<ul>
+<li><strong>Regulatory Compliance:</strong> Supports state-specific regulatory requirements</li>
+<li><strong>Audit Requirements:</strong> Maintains detailed transaction logs</li>
+<li><strong>Data Integrity:</strong> Comprehensive validation and consistency checks</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

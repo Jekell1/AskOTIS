@@ -1,0 +1,21 @@
+graph TD
+    A[APIPAY Program] -->|Calls| B[C-TIM999-998]
+    B -->|Initializes| C[C-TIMBEG]
+    B -->|Month Increments| D[C-INCR-MONTHS]
+    B -->|Julian Conversion| E[C-CALL-JUL]
+    B -->|Finalizes| F[C-TIMEND]
+    
+    G[Other Date Processing] -->|May Call| B
+    
+    subgraph "Data Flow"
+    H[Input: WS-DATE1] --> B
+    I[Input: WS-DATE2] --> B
+    B --> J[Output: ELAPSED_MONTHS]
+    B --> K[Output: ELAPSED_DAYS]
+    B --> L[Output: ELAPSED_REM]
+    end
+    
+    subgraph "Regulatory Context"
+    M[Regulation Z] -->|Defines| N[Truth in Lending Method]
+    N -->|Implemented by| B
+    end

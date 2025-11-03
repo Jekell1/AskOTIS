@@ -1,0 +1,69 @@
+{
+  "question": "What CopyBooks are used in DAILY.CBL",
+  "scope": "variable",
+  "expanded_query": "CBL CopyBooks DAILY What are in used",
+  "aliases": {},
+  "answer_outline": "- Explain variable role (read vs write dominance).\n- List top reader and writer programs.\n- Show representative reference lines.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "cobol-symbols",
+      "id": "71db79c19fb12273193af1f5745300193618a035",
+      "path": "cobol_src\\SP\\METRO2.CBL",
+      "line": 514,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "79b061ea6af1af03553a9ba22f72f055c0981390",
+      "path": "BF568D45149C54021AB912DA72490F49FBB22358",
+      "line": 777,
+      "snippet": "01  DAILY-BUF3."
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "e455aac6e61099a36a309153d6865fed64444157",
+      "path": "AE43FA2D2B0F2AE73F2FD72D6B1D957AEC08936F",
+      "line": 1329,
+      "snippet": "01  DAILY-BUF3."
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "IN",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "IN-SUB",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "DAILY-BUF3",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759097692.7660258,
+    "k": 6,
+    "candidate_indexes": [
+      "variable_usage",
+      "symbol_refs",
+      "data_items",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "DAILY",
+      "CBL"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

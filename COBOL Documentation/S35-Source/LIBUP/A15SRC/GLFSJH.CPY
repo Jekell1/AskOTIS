@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGL/GLFSJH
+      *    INCLUDE IN AUTOCR
+           SELECT JH-FILE ASSIGN JH-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY JH1-KEY
+                  FILE STATUS FILE-STAT.

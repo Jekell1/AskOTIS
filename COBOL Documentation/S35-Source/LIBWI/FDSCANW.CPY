@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBWI/FDSCANW
+      *  2024.0503 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  FDSCAN-BUF.
+           03  FDSCAN-FMTYPE     PIC XX.
+           03  FDSCAN-ALLOW-CHG  PIC X.
+           03  FDSCAN-KEY-ALP.
+               09  FDSCAN-KEY    PIC 9(4).
+           03  FDSCAN-STATUS     PIC XX.

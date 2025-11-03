@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXLTI
+           SELECT XLTI-FILE ASSIGN TO XLTI-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLTI-KEY
+                  FILE STATUS FILE-STAT.

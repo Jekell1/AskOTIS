@@ -1,0 +1,46 @@
+flowchart TD
+    A[Start C-INCREMENT-PERIODS] --> B[Save Date Components]
+    B --> C[WS-NDTE-MM-S = NDTE-MM]
+    C --> D[WS-NDTE-DD-S = NDTE-DD]
+    D --> E[WS-NDTE-CCYY-S = NDTE-CCYY]
+    E --> F[Calculate Work Value]
+    F --> G[WS-UP-WORK = NDTE-HOLD × FREQ]
+    G --> H[Evaluate Unit Period Code]
+    
+    H --> I{DATER-UNITPER-CD}
+    I -->|M| J[Months - C-INCR-MONTHS]
+    I -->|S| K[Semi-months - C-INCR-HALF-MONTHS]
+    I -->|W| L[Weeks - WS-UP-WORK × 7]
+    I -->|B| M[Bi-weeks - WS-UP-WORK × 14]
+    I -->|D| N[Days - C-INCR-DAYS]
+    I -->|Y| O[Years - WS-UP-WORK × 12]
+    
+    L --> P[C-INCR-DAYS]
+    M --> P
+    N --> P
+    O --> Q[C-INCR-MONTHS]
+    J --> Q
+    K --> R[C-INCR-HALF-MONTHS]
+    
+    P --> S[Restore Date Components]
+    Q --> S
+    R --> S
+    
+    S --> T[NDTE-MM = WS-NDTE-MM-S]
+    T --> U[NDTE-DD = WS-NDTE-DD-S]
+    U --> V[NDTE-CCYY = WS-NDTE-CCYY-S]
+    V --> W[Date Validation]
+    W --> X[DATER-ACTION-CODE = N]
+    X --> Y[C-CALL-NEWDATE]
+    Y --> Z[End C-INCREMENT-PERIODS]
+    
+    style A fill:#e1f5fe
+    style Z fill:#c8e6c9
+    style I fill:#fff3e0
+    style H fill:#f3e5f5
+    style J fill:#e8f5e8
+    style K fill:#fff9c4
+    style L fill:#ffeb3b
+    style M fill:#ff9800
+    style N fill:#2196f3
+    style O fill:#9c27b0

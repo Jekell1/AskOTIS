@@ -1,0 +1,1981 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.    NOFILE.
+       DATE-WRITTEN.  10-31-2023.
+      ******************************************************************
+      *
+      * DESCRIPTION   : COMPARE S35 NOFILE WITH A15 NOFILE
+      *            
+      *                 TO BE USED AFTER AN UPDATE
+      *                 WILL COMPARE EACH FIELD AND REPORT ANY 
+      *                 DIFFERENCES, AS LONG AS FIELD EXIST IN BOTH FILES
+      *
+      *  LOOPS THRU THE S35 FILE AND RECREATES A15 RECORD USING CREATE-NOREC
+      *    COPE FOR COMPARE.
+      * * * NEED TO TAKE OUT THE C$JUSTIFY STATEMENTS AFTER BRIAN REMOVES
+      *     THE "TRIM" STATEMENT FROM THE ASCII LOAD
+      * * *
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBGB/GBFSPR.CPY".
+           SELECT LN-FILE ASSIGN TO OLN-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LN1-KEY
+                  ALTERNATE RECORD KEY LN2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY LN3-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY LN4-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY LN5-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY LN6-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY LN7-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT LP-FILE ASSIGN TO OLP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LP1-KEY
+                  FILE STATUS FILE-STAT.
+
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBGB/GBFDPR.CPY".
+       FD  LN-FILE
+           LABEL RECORDS ARE STANDARD.
+       COPY "LIBUP/A15SRC/LP01LN.CPY".
+       FD  LP-FILE
+           LABEL RECORDS ARE STANDARD.
+       COPY "LIBUP/A15SRC/LP01LP.CPY".
+
+      ******************************************************************
+      *
+      *     W O R K I N G - S T O R A G E   S E C T I O N
+      *
+      ******************************************************************
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(37) VALUE
+           "@(#)UT/NOFILE S35 01/21/25-10:58:05 >".
+
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBGB/GB01GR.CPY".
+       COPY "LIBGB/GB01GR_SQL.CPY".
+       COPY "LIBGB/GBWSGR.CPY".
+       COPY "LIBLP/LP01NO.CPY".
+       COPY "LIBLP/LP01NO_SQL.CPY".
+       COPY "LIBLP/LPWSNO.CPY".
+
+       COPY "LIBUP/A15SRC/LP01NO.CPY" REPLACING LEADING "NO" BY "ONO".
+
+       01  OLN-PATH                    PIC X(35) VALUE SPACES.
+       01  OLN-ALL-PATH.
+           03  OLN-ALL-BASE     PIC X(9).
+           03  FILLER           PIC X     VALUE "/".
+           03  OLN-ALL-MACHINE  PIC XX.
+           03  FILLER           PIC X     VALUE "/".
+           03  OLN-ALL-DATA     PIC X(6).
+           03  FILLER           PIC X(10) VALUE
+               "/LP/LNFILE".
+
+       01  OLP-PATH                    PIC X(35) VALUE SPACES.
+       01  OLP-ALL-PATH.
+           03  OLP-ALL-BASE     PIC X(9).
+           03  FILLER           PIC X     VALUE "/".
+           03  OLP-ALL-MACHINE  PIC XX.
+           03  FILLER           PIC X     VALUE "/".
+           03  OLP-ALL-DATA     PIC X(6).
+           03  FILLER           PIC X(10) VALUE
+               "/GB/LPFILE".
+
+      *********************************************************
+      *        SQL DECLARE SECTION - WORKERS
+      *********************************************************
+
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  PASS-SQL                    PIC X(200).
+       01  RET-DB-NAME                 PIC X(50).
+       01  RET-SERVER-NAME             PIC X(50).
+       01  RET-VERSION                 PIC X(100).
+       01  MISC-RETURN-CODE            PIC S9(4)   COMP-5.
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+      ******************************************************************
+      *
+      *    M I S C E L L A N E O U S - W O R K E R S
+      *
+      ******************************************************************
+
+       01  AGEING-WORKERS.
+           03  AGEING-DATE            PIC 9(6).
+           03  FILLER                REDEFINES AGEING-DATE.
+               05  AGEING-DATE-MO     PIC 99.
+               05  AGEING-DATE-DA     PIC 99.
+               05  AGEING-DATE-YR     PIC 99.
+      * FIELDS FOR COMPUTE-RECDEL:
+           03  RDSUB                  PIC S9(6)      COMP.
+           03  RECDEL                 PIC S9(5)      COMP.
+           03  RDPOT30                PIC X          VALUE " ".
+           03  RDPOTCHGOFF            PIC X          VALUE " ".
+      * FIELDS FOR COMPUTE RECENCY:
+           03  RSUB                   PIC S9(6)      COMP.
+           03  RECENCY                PIC S9(5)      COMP.
+      * FIELDS FOR COMPUTE-CONTRACTUAL:
+           03  CSUB                   PIC S9(6)      COMP.
+           03  CONTRACTUAL            PIC S9(5)      COMP.
+           03  CPOT30                 PIC X          VALUE " ".
+           03  CPOTCHGOFF             PIC X          VALUE " ".
+           03  CSUB-ALDEL-FG          PIC X          VALUE " ".
+           03  CTFC-NM                PIC S9(6)      COMP.
+      * FIELDS FOR COMPUTE-PAID-AHEAD:
+           03  PSUB                   PIC S9(6)      COMP.
+      * AGEING WORK FIELDS:
+           03  AGEING-HOLD            PIC S9(5)      COMP.
+           03  AGEING-HOLD-SUB        PIC S9(6)      COMP.
+           03  AGEING-HOLD-AGEING     PIC S9(5)      COMP.
+           03  AGEING-WORK            PIC S9(7)V9(9) COMP.
+           03  AGEING-TOTPAYMNTD-SV   PIC S9(7)V99   COMP.
+           03  AGEING-HOLD-REMAIN     PIC V9(12)     COMP.
+           03  AGEING-HOLD-REMAIN2    PIC V9(12)     COMP.
+           03  AGEING-PERCENT-FACTOR  PIC 9(3)V9(3)  COMP.
+           03  AGEING-HOLD-CONTPDTH   PIC 9(4)       COMP.
+           03  AGEING-SKIP-CON-REC-FG PIC X          VALUE " ".
+           03  AGEING-NO-TOBE-PAID    PIC S9(4)      COMP.
+           03  AGEING-NO-PAID         PIC S9(4)      COMP.
+           03  AGEING-WK-DATE         PIC 9(6)       COMP.
+           03  AGEING-SUB-WORKER      PIC S9(6)     COMP.
+           03  AGEING-SUB-REMAIN      PIC 9(6)      COMP.
+       01  AGEING-E-1STPYAMT     PIC S9(7)V99 COMP.
+       01  AGEING-E-REGPYAMT     PIC S9(7)V99 COMP.
+       01  AGEING-E-LASTPYAMT    PIC S9(7)V99 COMP.
+
+       01  CRNO-WORKERS.
+           03  CRNO-PAYDATE          PIC 9(6)   COMP.
+           03  CRNO-MAKERCD          PIC X.
+           03  CRNO-HOLDDA           PIC 99     COMP.
+           03  CRNO-LPTRCD           PIC XX     VALUE "PY".
+           03  CRNO-LPREC-FG         PIC X      VALUE " ".
+           03  CRNO-AVCR-RESTRICT-FG PIC X      VALUE " ".
+           03  CRNO-DEF-STOP-MESS    PIC X      VALUE " ".
+           03  CRNO-RECAST-FG        PIC X      VALUE " ".
+           03  CRNO-GET-PAYOFF-ONLY  PIC X      VALUE " ".
+           03  CRNO-HOLD-CONTRFRMLA  PIC X      VALUE " ".
+           03  CRNO-HOLD-TOTPAYMNTD  PIC S9(7)V99 COMP-3 VALUE 0.
+
+       01  MACHINE-R1.
+           03  FILLER                  PIC X VALUE X"72".
+           03  FILLER                  PIC 9 VALUE 1.
+       01  MACHINE-R2.
+           03  FILLER                  PIC X VALUE X"72".
+           03  FILLER                  PIC 9 VALUE 2.
+
+       01  HOLD-TILLNO                 PIC 9(2).
+       01  HOLD-PAYEE                  PIC X(60).
+       01  OLD-ACCTNO                  PIC 9(8).
+       01  FILLER REDEFINES OLD-ACCTNO.
+           03  NEW-ACCTNO              PIC 9(6).
+           03  FILLER                  PIC 99.
+
+       01  MISC-CURSOR-STAT            PIC X(2) VALUE SPACES.
+           88  MISC-CURSOR-STAT-GOOD            VALUE "00".
+           88  MISC-CURSOR-STAT-BAD             VALUE "  " THRU "//"
+                                                      "01" THRU "~~".
+
+       01  PROCESS-STAT                PIC X(08)    VALUE SPACES.
+           88  PROCESS-STAT-GOOD                    VALUE "00".
+           88  PROCESS-STAT-BAD                     VALUE "  " THRU "//"
+                                                         "01" THRU "~~".
+       01  RECORDS-PROCESSED           PIC 9(9)   VALUE 0.
+           88  NO-RECORDS-FOUND                     VALUE ZEROES.
+
+       01  STARTING-TIME               PIC X(08)     VALUE SPACES.
+       01  SUB                         PIC 9(04)     VALUE ZEROES.
+
+       01  SYSDATE-YYYYMMDD            PIC 9(8)     VALUE ZEROES.
+
+       01  LEGEND                      PIC X(79)     VALUE SPACES.
+       01  LEGEND-LIST                 PIC X(07)     VALUE "LEGEND.".
+
+
+      *-----------------------------------------------------------------
+       01  LEGEND-ACCEPT-YN.
+           03  FILLER PIC X(30) VALUE "F1-RESET, F7-EXIT             ".
+           03  FILLER PIC X(30) VALUE "                              ".
+           03  FILLER PIC X(19) VALUE "     ACCEPT (Y/N): ".
+
+       01  SOURCE-PATH-LIST            PIC X(07)     VALUE "S-PATH.".
+
+       COPY "LIBGB/EOBUF_EXT.CPY".
+           03  SOURCE-PATH             PIC X(9).
+           03  BEG-BRANCH              PIC 9(04).
+           03  END-BRANCH              PIC 9(04).
+           03  BEG-ACCTNO              PIC 9(06).
+           03  END-ACCTNO              PIC 9(06).
+           03  GROUP-FLAG              PIC X(01).
+           03  ENT-GROUP               PIC X(04).
+
+       01  VERSION-CONTROL             PIC X(01)     VALUE "A".
+
+      *-----------------------------------------------------------------
+       01  SV-BEG-BRANCH               PIC 9(04)     VALUE 9999.
+       01  SV-END-BRANCH               PIC 9(04)     VALUE 9999.
+       01  SV-GROUP-FLAG               PIC X(01)     VALUE SPACES.
+       01  SV-ENT-GROUP                PIC X(04)     VALUE SPACES.
+
+       01  LN-COUNT            PIC 9(03)     VALUE 99.
+       01  LN-FEED             PIC 9(02).
+       01  PAGE-NUMBER         PIC 9(04)     VALUE ZEROES.
+
+      ******************************************************************
+      *
+      *    H E A D E R - L I N E - W O R K E R S
+      *
+      ******************************************************************
+       01  HEADER-LINE-01.
+           03  H01-DATE                PIC X(08) VALUE SPACES.
+           03  FILLER                  PIC X(02) VALUE SPACES.
+           03  H01-TIME                PIC X(08) VALUE SPACES.
+           03  FILLER                  PIC X(6) VALUE SPACES.
+           03  H01-NAME                PIC X(40) VALUE SPACES.
+           03  FILLER                  PIC X(6) VALUE SPACES.
+           03  FILLER                  PIC X(06) VALUE "PAGE: ".
+           03  H01-PAGE                PIC Z(04).
+
+      *-----------------------------------------------------------------
+       01  HEADER-LINE-02.
+           03  FILLER                  PIC X(10) VALUE "USER ID:".
+           03  H02-USERID              PIC X(10) VALUE SPACES.
+           03  FILLER                  PIC X(10) VALUE SPACES.
+           03  H02-TITLE               PIC X(50) VALUE 
+           "NOTICE FILE (NOFILE) COMPARE A15 TO S35".
+
+       01  HEADER-LINE-03.
+           03  FILLER                PIC X(4) VALUE "BRNO".
+           03  FILLER                PIC X(5) VALUE SPACES.
+           03  FILLER                PIC X(6) VALUE "ACCTNO".
+           03  FILLER                PIC X(5) VALUE SPACES.
+           03  FILLER                PIC X(11) VALUE "DESCRIPTION".
+           03  FILLER                PIC X(17) VALUE SPACES.
+           03  FILLER                PIC X(3) VALUE "A15".
+           03  FILLER                PIC X(19) VALUE SPACES.
+           03  FILLER                PIC X(3) VALUE "S35".
+
+      ******************************************************************
+      *
+      *    D E T A I L - L I N E - W O R K E R S
+      *
+      ******************************************************************
+       01  DETAIL-LINE                        PIC X(80)   VALUE SPACES.
+
+       01  DETAIL-LINE-01                     REDEFINES DETAIL-LINE.
+           03  D01-BRNO                       PIC Z(3)9.
+           03  FILLER                         PIC X(5).
+           03  D01-ACCTNO                       PIC Z(9).
+           03  FILLER                         PIC X(2).
+           03  D01-TEXT                       PIC X(25).
+           03  FILLER                         PIC X(3).
+           03  D01-A15                        PIC X(20).
+           03  FILLER REDEFINES D01-A15.
+               05  D01-A15-NUM                PIC Z(7)9.9(3).
+               05  FILLER                     PIC X(8).
+           03  FILLER                         PIC X(2).
+           03  D01-S35                        PIC X(20).
+           03  FILLER REDEFINES D01-S35.
+               05  D01-S35-NUM                PIC Z(7)9.9(3).
+               05  FILLER                     PIC X(8).
+
+       01  RANGE-LINE-01                      REDEFINES DETAIL-LINE.
+           03  R01-PROMPT                     PIC X(32).
+           03  R01-FIELD                      PIC X(48).
+           03  R01-AMT                        REDEFINES R01-FIELD
+                                              PIC ZZZ,ZZZ,ZZ9.99-.
+           03  R01-NUMERIC                    REDEFINES R01-FIELD
+                                              PIC Z(10)9-.
+           03  R01-TEXT                       REDEFINES R01-FIELD
+                                              PIC X(48).
+
+      ******************************************************************
+      *
+      *    C O P Y - L I B R A R Y - W O R K E R S
+      *
+      ******************************************************************
+       COPY "LIBGB/ACCESSW.CPY".
+       COPY "LIBGB/DACCESSW.CPY".
+       COPY "LIBGB/BRSECUREW.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBGB/GETPRW.CPY".
+       COPY "LIBGB/GPENVW.CPY".
+       COPY "LIBGB/GRWORKW.CPY".
+       COPY "LIBGB/MKTEMPW_CMD.CPY".
+       COPY "LIBGB/PASSWDW.CPY".
+       COPY "LIBGB/PROGIDW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBWI/GRSCANW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBUT/NOFILE_DEF.CPY".
+       COPY "LIBUT/NOFILE_WKS.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+       COPY "LIBGB/PRU_LNK.CPY".
+
+      ******************************************************************
+      *
+      *     P R O G R A M   C O N T R O L
+      *
+      ******************************************************************
+       COPY "LIBGB/GETFMW.CPY".
+       SCREEN SECTION.
+       COPY "LIBUT/NOFILE_SCN.CPY".
+
+      *-----------------------------------------------------------------
+       PROCEDURE DIVISION
+            USING FORM-PATHNAME EXIT-PATHNAME.
+
+       DECLARATIVES.
+       DECLARE-ERROR SECTION.
+           USE AFTER ERROR PROCEDURE ON
+                 PR-FILE LN-FILE LP-FILE.
+       COPY "LIBGB/DECLRP.CPY".
+           PERFORM CLOSE-GR1-FILE.
+           PERFORM CLOSE-BR-FILE.
+           PERFORM CLOSE-PR-FILE.
+           CLOSE LN-FILE LP-FILE.
+       COPY "LIBGB/DECLRP2.CPY".
+
+      ******************************************************************
+      *
+      *    M A I N - P R O G R A M
+      *
+      ******************************************************************
+       MAIN-PROGRAM SECTION.
+
+           PERFORM SQL-CONNECT.
+
+      D    STOP MESS.
+           PERFORM INITIALIZATION.
+
+           IF ( PROCESS-STAT-BAD )
+              GO TO MAIN-PROGRAM-EXIT.
+
+           PERFORM EXECUTION-MODULE.
+
+           PERFORM RANGE-LINES.
+
+       MAIN-PROGRAM-EXIT.
+           GO TO END-PROGRAM.
+
+      ******************************************************************
+       INITIALIZATION SECTION.
+      ******************************************************************
+
+           MOVE STAT---GOOD                TO PROCESS-STAT.
+
+           MOVE FORM-PATHNAME              TO FORM-PATH.
+           MOVE "NOFILE" TO VDU-FORM-NAME.
+
+           PERFORM GET-GPENV.
+
+           MOVE NOFILE-QUEUE-POS TO Q-POS.
+           MOVE NOFILE-COPIES-POS TO C-POS.
+           MOVE NOFILE-PRU-POS   TO P-POS.
+           MOVE SPACES TO Q-BUF C-BUF P-BUF.
+       COPY "LIBGB/EOINIT.CPY".
+
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT                  TO STARTING-TIME.
+
+           IF EXT-ROUTE-BUF = "00"
+              MOVE "REPORT IN PROGRESS......" TO LEGEND
+              PERFORM SEND-LEGEND.
+
+           MOVE EXT-CONAME-SYSDATE TO ALP-DATE.
+           PERFORM CONVERT-ALPDATE-TO-YYYYMMDD.
+           MOVE DATE-YYYYMMDD TO SYSDATE-YYYYMMDD.
+
+           PERFORM START-MISC-CSR.
+           PERFORM READ-MISC-CSR-NEXT.
+           PERFORM CLOSE-MISC-CSR.
+
+           IF ( EXT-EOBUF-GROUP-FG = "Y" )
+              MOVE BEG-BRANCH              TO SV-BEG-BRANCH
+              MOVE END-BRANCH              TO SV-END-BRANCH
+              MOVE GROUP-FLAG              TO SV-GROUP-FLAG
+              MOVE ENT-GROUP               TO SV-ENT-GROUP
+              MOVE EXT-EOBUF-BRNO              TO BEG-BRANCH END-BRANCH
+              MOVE "N"                     TO GROUP-FLAG
+              MOVE EXT-EOBUF-GROUP-PRPATH      TO PRU-FILE
+           ELSE
+           IF ( BEG-BRANCH = ZEROES ) AND
+              ( END-BRANCH = ZEROES )
+              MOVE BEG-BRANCH              TO SV-BEG-BRANCH
+              MOVE END-BRANCH              TO SV-END-BRANCH
+              MOVE EXT-CONAME-USER-LOC     TO BEG-BRANCH
+                                              END-BRANCH.
+
+           PERFORM OPEN-BR-FILE.
+           PERFORM OPEN-GR1-FILE.
+           PERFORM OPEN-PR-FILE.
+
+           GO TO INITIALIZATION-EXIT.
+
+       INITIALIZATION-END.
+
+           MOVE "X"                        TO EXT-EOBUF-ERRCD.
+           MOVE STAT---BAD                 TO PROCESS-STAT.
+
+       INITIALIZATION-EXIT.
+           EXIT.
+
+      ***************************************************
+       ENTER-PARAMETERS SECTION.
+      ***************************************************
+
+           MOVE STAT---GOOD                TO PROCESS-STAT.
+
+           IF ( UP-KEY )
+              GO TO ENTER-END-ACCTNO.
+
+       ENTER-SOURCE-PATH.
+
+           IF SOURCE-PATH = SPACES
+              MOVE "A15_PATH"       TO GETENV-BUF
+              PERFORM GETENV-CALL
+              IF ( STAT-GOOD )
+                 MOVE GETENV-BUF    TO SOURCE-PATH
+              ELSE
+              MOVE "/USR/DATA"      TO SOURCE-PATH
+              END-IF
+              CALL "C$TOLOWER" USING SOURCE-PATH, VALUE 9
+              MOVE SOURCE-PATH-LIST TO WR-LIST
+              MOVE SOURCE-PATH      TO WR-BUF
+              PERFORM CALL-WRFORM.
+
+           MOVE "E  A090S-PATH." TO VDU.
+           PERFORM SCREENIO.
+
+           IF (        F1-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF (        F7-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF NOT ( ENTER-KEY ) GO TO ENTER-SOURCE-PATH.
+
+           IF ( VDUBUF = SPACES )
+              GO TO ENTER-SOURCE-PATH.
+
+           MOVE VDUBUF TO DIR-ACCESS-BUF SOURCE-PATH.
+           PERFORM DIR-ACCESS-CALL.
+           IF ( STAT-BAD )
+              MOVE "INVALID SOURCE DATA PATH" TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-SOURCE-PATH.
+
+           MOVE SPACES                     TO DIR-ACCESS-BUF.
+           STRING VDUBUF, "/", EXT-FILPATH-MACHINE
+                  DELIMITED BY " "       INTO DIR-ACCESS-BUF.
+           PERFORM DIR-ACCESS-CALL.
+           IF ( STAT-BAD )
+              MOVE "INVALID SOURCE DATA PATH" TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-SOURCE-PATH.
+
+           MOVE VDUBUF                TO SOURCE-PATH.
+
+       ENTER-BEG-BRANCH.
+
+           MOVE "E RA000BEG-BRANCH." TO VDU.
+           PERFORM SCREENIO.
+
+           IF (        F1-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF (        F3-KEY ) GO TO ENTER-ALL-BRANCH.
+           IF (        F6-KEY ) PERFORM SCAN-GR1-FILE.
+           IF (        F7-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF ( NOT ENTER-KEY ) GO TO ENTER-BEG-BRANCH.
+
+           MOVE VDUBUF TO WGR-WORD ENT-GROUP.
+
+           IF ( WGR-WORD-ZERO )
+              MOVE ZEROES TO WGR-SRESULT
+              GO TO BRANCH-IS-NUMERIC.
+
+           MOVE ZEROES TO WGR-MIN-LEVEL.
+           PERFORM CHECK-MEMBER.
+
+           IF ( WGR-ERR > ZEROES )
+              MOVE WGR-MSG(WGR-ERR) TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-BEG-BRANCH.
+
+           IF ( WGR-TYPE = "A" )
+              MOVE "S  A000END-BRANCH." TO VDU
+              MOVE SPACES               TO VDUBUF
+              PERFORM SCREENIO
+              MOVE "Y"                  TO GROUP-FLAG
+              MOVE ZEROES               TO BEG-BRANCH
+              MOVE 9999                 TO END-BRANCH
+              GO TO CHECK-BR-SECURITY.
+
+      *-----------------------------------------------------------------
+       BRANCH-IS-NUMERIC.
+
+           MOVE "N"           TO GROUP-FLAG.
+           MOVE WGR-SRESULT   TO BEG-BRANCH.
+
+           MOVE "SN N040BEG-BRANCH." TO VDU.
+           MOVE BEG-BRANCH           TO VDUNUM0.
+           PERFORM SCREENIO.
+
+      *-----------------------------------------------------------------
+       ENTER-END-BRANCH.
+
+           MOVE "ENNN040END-BRANCH." TO VDU.
+           PERFORM SCREENIO.
+
+           IF (        UP-KEY ) GO TO ENTER-BEG-BRANCH.
+           IF (        F1-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF (        F7-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF ( NOT ENTER-KEY ) GO TO ENTER-END-BRANCH.
+
+           MOVE VDUNUM0 TO END-BRANCH.
+
+           IF ( BEG-BRANCH > END-BRANCH )
+              MOVE "INVALID BRANCH RANGE" TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-BEG-BRANCH.
+
+           GO TO CHECK-BR-SECURITY.
+
+      *-----------------------------------------------------------------
+       ENTER-ALL-BRANCH.
+
+           MOVE "SNNN040BEG-BRANCH." TO VDU.
+           MOVE ZEROES               TO BEG-BRANCH VDUNUM0.
+           PERFORM SCREENIO.
+
+           MOVE "SNNN040END-BRANCH." TO VDU.
+           MOVE 9999                 TO END-BRANCH VDUNUM0.
+           PERFORM SCREENIO.
+
+           MOVE "N"                    TO GROUP-FLAG.
+
+      *-----------------------------------------------------------------
+       CHECK-BR-SECURITY.
+
+           PERFORM BR-RANGE-SECURITY.
+
+           IF ( BR-SECURITY-OKAY = "N" ) GO TO ENTER-BEG-BRANCH.
+
+
+       ENTER-BEG-ACCTNO.
+
+           MOVE "ENNN060BEG-ACCTNO." TO VDU.
+           PERFORM SCREENIO.
+
+           IF (        UP-KEY ) GO TO ENTER-END-BRANCH.
+           IF (        F1-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF (        F3-KEY ) GO TO ENTER-ALL-CKNO.
+           IF (        F7-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF ( NOT ENTER-KEY ) GO TO ENTER-BEG-ACCTNO.
+
+           MOVE VDUNUM0 TO BEG-ACCTNO.
+
+      *-----------------------------------------------------------------
+       ENTER-END-ACCTNO.
+
+           MOVE "ENNN060END-ACCTNO." TO VDU.
+           PERFORM SCREENIO.
+
+           IF (        UP-KEY ) GO TO ENTER-BEG-ACCTNO.
+           IF (        F1-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF (        F7-KEY ) GO TO ENTER-PARAMETERS-END.
+           IF ( NOT ENTER-KEY ) GO TO ENTER-END-ACCTNO.
+
+           MOVE VDUNUM0 TO END-ACCTNO.
+
+           IF ( BEG-ACCTNO > END-ACCTNO )
+              MOVE "INVALID CKNO RANGE" TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-BEG-ACCTNO.
+
+           GO TO ENTER-PARAMETERS-END.
+
+      *-----------------------------------------------------------------
+       ENTER-ALL-CKNO.
+
+           MOVE "SNNN060BEG-ACCTNO."  TO VDU.
+           MOVE ZEROES                TO BEG-ACCTNO VDUNUM0.
+           PERFORM SCREENIO.
+
+           MOVE "SNNN060END-ACCTNO."  TO VDU.
+           MOVE 999999                TO END-ACCTNO VDUNUM0.
+           PERFORM SCREENIO.
+
+       ENTER-PARAMETERS-END.
+
+           MOVE LEGEND-ACCEPT-YN TO LEGEND.
+           PERFORM SEND-LEGEND.
+
+           IF ( F1-KEY ) MOVE STAT---BAD   TO PROCESS-STAT.
+           IF ( F7-KEY ) MOVE STAT---BAD   TO PROCESS-STAT.
+
+       ENTER-PARAMETERS-EXIT.
+           EXIT.
+
+      ****************************************
+       EO-EXEC-AUDIT SECTION.
+      ****************************************
+
+      ****************************************
+       DISPLAY-PARAMETERS SECTION.
+      ****************************************
+
+           IF ( GROUP-FLAG = "Y" )
+              MOVE "S  A000BEG-BRANCH."    TO VDU
+              MOVE ENT-GROUP               TO VDUBUF
+              PERFORM SCREENIO
+              MOVE "S  A000END-BRANCH."    TO VDU
+              MOVE SPACES                  TO VDUBUF
+              PERFORM SCREENIO
+           ELSE
+              MOVE "SNNN040BEG-BRANCH."    TO VDU
+              MOVE BEG-BRANCH              TO VDUNUM0
+              PERFORM SCREENIO
+              MOVE "SNNN040END-BRANCH."    TO VDU
+              MOVE END-BRANCH              TO VDUNUM0
+              PERFORM SCREENIO.
+
+           MOVE "S  A090S-PATH."        TO VDU.     
+           MOVE SOURCE-PATH             TO VDUBUF.
+           PERFORM SCREENIO.
+
+           MOVE "SNNN060BEG-ACCTNO."       TO VDU.
+           MOVE BEG-ACCTNO                 TO VDUNUM0.
+           PERFORM SCREENIO.
+
+           MOVE "SNNN060END-ACCTNO."       TO VDU.
+           MOVE END-ACCTNO                 TO VDUNUM0.
+           PERFORM SCREENIO.
+
+
+       DISPLAY-PARAMETERS-EXIT.
+           EXIT.
+
+      *********************************************
+       SCAN-GR1-FILE SECTION.
+      *********************************************
+
+           MOVE "WI/GRSCAN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH GRSCAN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF ( GRSCAN-STATUS NOT = "00"   ) OR
+              ( GRSCAN-KEY      = SPACES )
+              MOVE "XX" TO VDUSTATUS
+              GO TO SCAN-GR1-FILE-EXIT.
+
+           MOVE "S  A000BEG-BRANCH." TO VDU.
+           MOVE GRSCAN-KEY           TO VDUBUF.
+           PERFORM SCREENIO.
+
+           MOVE GRSCAN-KEY TO VDUBUF.
+           MOVE "00"       TO VDUSTATUS.
+
+       SCAN-GR1-FILE-EXIT.
+           EXIT.
+
+      *******************************************
+       EXECUTION-MODULE SECTION.
+      *******************************************
+
+           MOVE ZEROES                     TO RECORDS-PROCESSED.
+
+           IF ( GROUP-FLAG = "N" )
+              MOVE BEG-BRANCH TO BR-NO
+              PERFORM START-BR-FILE
+              GO TO EXECUTION-NEXT-BRANCH.
+
+           MOVE ENT-GROUP TO GR-ID.
+           PERFORM SEARCH-GR-INIT.
+
+       EXECUTION-NEXT-GROUP.
+           IF ( GROUP-FLAG NOT = "Y" )
+              GO TO EXECUTION-NEXT-BRANCH.
+
+           PERFORM SEARCH-GR-NEXT.
+           IF ( WGR-SRESULT = 0 )
+              GO TO EXECUTION-MODULE-EXIT.
+
+           MOVE WGR-SRESULT TO BR-NO.
+           PERFORM READ-BR-FILE.
+           IF ( IO-BAD )
+              GO TO IO-ERROR.
+
+           GO TO EXECUTION-PROCESS-BRANCH.
+
+       EXECUTION-NEXT-BRANCH.
+           PERFORM READ-BR-FILE-NEXT.
+           IF ( IO-BAD             ) OR
+              ( BR-NO > END-BRANCH )
+              GO TO EXECUTION-MODULE-EXIT.
+
+       EXECUTION-PROCESS-BRANCH.
+
+           PERFORM PROCESS-BRANCH-DRIVER.
+
+           GO TO EXECUTION-NEXT-GROUP.
+
+       EXECUTION-MODULE-EXIT.
+           EXIT.
+
+     *********************************************************
+       PROCESS-BRANCH-DRIVER SECTION.
+     *********************************************************
+
+           MOVE 9999                       TO PROGID-SLEEP-COUNTER.
+           PERFORM SEND-PROGRESS-INDICATOR.
+
+      D    STOP MESS.
+           MOVE SOURCE-PATH  TO OLN-ALL-BASE.
+           MOVE MACHINE-R1   TO OLN-ALL-MACHINE.
+           MOVE BR-DATA-PATH TO OLN-ALL-DATA.
+           MOVE OLN-ALL-PATH TO OLN-PATH ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF ( STAT-BAD )
+              MOVE MACHINE-R2   TO OLN-ALL-MACHINE
+              MOVE OLN-ALL-PATH TO OLN-PATH ACCESS-BUF
+              PERFORM ACCESS-CALL
+              IF ( STAT-BAD )
+                 MOVE "MISSING A15 FILE" TO D01-TEXT 
+                 MOVE OLN-ALL-PATH       TO D01-A15
+                 MOVE SPACES             TO D01-S35
+                 PERFORM WRITE-DETAIL-LINE-ERROR
+                 GO TO PROCESS-BRANCH-DRIVER-END.
+
+      D    STOP MESS.
+           MOVE SOURCE-PATH  TO OLP-ALL-BASE.
+           MOVE MACHINE-R1   TO OLP-ALL-MACHINE.
+           MOVE BR-DATA-PATH TO OLP-ALL-DATA.
+           MOVE OLP-ALL-PATH TO OLP-PATH ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF ( STAT-BAD )
+              MOVE MACHINE-R2 TO OLP-ALL-MACHINE
+              MOVE OLP-ALL-PATH TO OLP-PATH ACCESS-BUF
+              PERFORM ACCESS-CALL
+              IF ( STAT-BAD )
+                 MOVE "MISSING A15 FILE" TO D01-TEXT 
+                 MOVE BR-NO              TO D01-BRNO
+                 MOVE OLP-ALL-PATH       TO D01-A15
+                 MOVE SPACES             TO D01-S35
+                 PERFORM WRITE-DETAIL-LINE-ERROR-KEY
+                 PERFORM WRITE-DETAIL-LINE
+                 GO TO PROCESS-BRANCH-DRIVER-END.
+
+           MOVE EXT-FILPATH-BASE           TO FILPATH-BASE.
+           MOVE BR-MACHINE                 TO FILPATH-MACHINE.
+           MOVE BR-DATA-PATH               TO FILPATH-DATA.
+
+           MOVE "B"                        TO NO-PATH-OVERRIDE.
+
+           PERFORM OPEN-NO1-FILE.
+           PERFORM OPEN-OLN1-FILE.
+
+           MOVE BEG-ACCTNO             TO LN-ACCTNO.
+
+           PERFORM START-OLN1-FILE.
+
+       PROCESS-BRANCH-NEXT-NO.
+           PERFORM READ-OLN1-FILE-NEXT.
+           IF IO-BAD
+              GO TO PROCESS-BRANCH-DRIVER-END.
+
+           PERFORM SEND-PROGRESS-INDICATOR.
+
+           IF ( LN-ACCTNO < BEG-ACCTNO ) OR
+              ( LN-ACCTNO > END-ACCTNO )
+              GO TO PROCESS-BRANCH-NEXT-NO.
+
+           ADD  01 TO RECORDS-PROCESSED.
+
+           PERFORM CREATE-A15-NOREC.
+
+           PERFORM COMPARE-FIELDS.
+
+           GO TO PROCESS-BRANCH-NEXT-NO.
+
+       PROCESS-BRANCH-DRIVER-END.
+
+           PERFORM CLOSE-NO1-FILE.
+
+       PROCESS-BRANCH-DRIVER-EXIT.
+           EXIT.
+
+       CREATE-A15-NOREC SECTION.
+
+
+
+           PERFORM CREATE-NOREC.
+
+
+      ******************************************************************
+       COMPARE-FIELDS SECTION.
+      ******************************************************************
+
+           MOVE NO-PATH-OWNBR     TO NO-BRNO.
+           MOVE ONO-ACCTNO        TO NEW-ACCTNO.
+           MOVE NEW-ACCTNO        TO NO-ACCTNO.
+           PERFORM READ-NO1-FILE.
+           IF IO-FG NOT = 0
+              MOVE "MISSING S35 RECORD" TO D01-TEXT
+              MOVE BR-NO      TO D01-BRNO
+              MOVE NO-ACCTNO    TO D01-ACCTNO
+              MOVE ONO-FMNO    TO D01-A15
+              MOVE ONO-TDUE    TO D01-S35
+              PERFORM WRITE-DETAIL-LINE
+              GO TO EXIT-COMPARE-FIELDS.
+
+      D    STOP MESS.
+
+           IF NO-BRNO NOT = ONO-BRNO
+              MOVE "NO-BRNO" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-BRNO  TO D01-A15-NUM
+              MOVE NO-BRNO   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-TDUE TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-TDUE-DATE
+              MOVE "NO-TDUE-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-TDUE-DATE   TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUELC NOT = ONO-TDUELC
+              MOVE "NO-TDUELC" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUELC  TO D01-A15-NUM
+              MOVE NO-TDUELC   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUEAMT NOT = ONO-TDUEAMT
+              MOVE "NO-TDUEAMT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUEAMT  TO D01-A15-NUM
+              MOVE NO-TDUEAMT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUEPRIN NOT = ONO-TDUEPRIN
+              MOVE "NO-TDUEPRIN" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUEPRIN  TO D01-A15-NUM
+              MOVE NO-TDUEPRIN   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUETBAL NOT = ONO-TDUETBAL
+              MOVE "NO-TDUETBAL" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUETBAL  TO D01-A15-NUM
+              MOVE NO-TDUETBAL   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUEPOFF NOT = ONO-TDUEPOFF
+              MOVE "NO-TDUEPOFF" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUEPOFF  TO D01-A15-NUM
+              MOVE NO-TDUEPOFF   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-LDUE TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-LDUE-DATE
+              MOVE "NO-LDUE-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-LDUE-DATE   TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LDUELC NOT = ONO-LDUELC
+              MOVE "NO-LDUELC" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LDUELC  TO D01-A15-NUM
+              MOVE NO-LDUELC   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LDUEAMT NOT = ONO-LDUEAMT
+              MOVE "NO-LDUEAMT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LDUEAMT  TO D01-A15-NUM
+              MOVE NO-LDUEAMT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-DATE-PAID-LAST TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-DATE-PAID-LAST
+              MOVE "NO-DATE-PAID-LAST-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-DATE-PAID-LAST TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-AMT-PAID-LAST NOT = ONO-AMT-PAID-LAST
+              MOVE "NO-AMT-PAID-LAST" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-AMT-PAID-LAST  TO D01-A15-NUM
+              MOVE NO-AMT-PAID-LAST   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LSTLPKEY NOT = ONO-LSTLPKEY
+              MOVE "NO-LSTLPKEY" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LSTLPKEY  TO D01-A15-NUM
+              MOVE NO-LSTLPKEY   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-NXDUE TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-NXDUE-DATE
+              MOVE "NO-NXDUE-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-NXDUE-DATE   TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-NXDUEAMT NOT = ONO-NXDUEAMT
+              MOVE "NO-NXDUEAMT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-NXDUEAMT  TO D01-A15-NUM
+              MOVE NO-NXDUEAMT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-NXDUELC NOT = ONO-NXDUELC
+              MOVE "NO-NXDUELC" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-NXDUELC  TO D01-A15-NUM
+              MOVE NO-NXDUELC   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TRUCONTR NOT = ONO-TRUCONTR
+              MOVE "NO-TRUCONTR" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TRUCONTR  TO D01-A15-NUM
+              MOVE NO-TRUCONTR   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-RECENCY NOT = ONO-RECENCY
+              MOVE "NO-RECENCY" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-RECENCY  TO D01-A15-NUM
+              MOVE NO-RECENCY   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-PDTH TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-PDTH-DATE
+              MOVE "NO-PDTH-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-PDTH-DATE   TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-LCPDTH TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-LCPDTH-DATE
+              MOVE "NO-LCPDTH-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-LCPDTH-DATE   TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LCHG-INTDUE NOT = ONO-LCHG-INTDUE
+              MOVE "NO-LCHG-INTDUE" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LCHG-INTDUE  TO D01-A15-NUM
+              MOVE NO-LCHG-INTDUE   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-AVAILCREDIT NOT = ONO-AVAILCREDIT
+              MOVE "NO-AVAILCREDIT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-AVAILCREDIT  TO D01-A15-NUM
+              MOVE NO-AVAILCREDIT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUEDELINQ NOT = ONO-TDUEDELINQ
+              MOVE "NO-TDUEDELINQ" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUEDELINQ  TO D01-A15-NUM
+              MOVE NO-TDUEDELINQ   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-DEFERMENT NOT = ONO-DEFERMENT
+              MOVE "NO-DEFERMENT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-DEFERMENT  TO D01-A15-NUM
+              MOVE NO-DEFERMENT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE ONO-TRUE-DUE-DATE TO DATE-MMDDYY.
+           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.
+           PERFORM TEST-INVALID-DATE.
+           IF DATE-YYYYMMDD NOT = NO-TRUE-DUE-DATE
+              MOVE "NO-TRUE-DUE-DATE-DATE" TO D01-TEXT
+              MOVE BR-NO          TO D01-BRNO
+              MOVE NO-ACCTNO      TO D01-ACCTNO
+              MOVE DATE-YYYYMMDD  TO D01-A15
+              MOVE NO-TRUE-DUE-DATE TO D01-S35
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-SCHED-PAYMENT NOT = ONO-SCHED-PAYMENT
+              MOVE "NO-SCHED-PAYMENT" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-SCHED-PAYMENT  TO D01-A15-NUM
+              MOVE NO-SCHED-PAYMENT   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-TDUECONTR NOT = ONO-TDUECONTR
+              MOVE "NO-TDUECONTR" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-TDUECONTR  TO D01-A15-NUM
+              MOVE NO-TDUECONTR   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LDUECONTR NOT = ONO-LDUECONTR
+              MOVE "NO-LDUECONTR" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LDUECONTR  TO D01-A15-NUM
+              MOVE NO-LDUECONTR   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-NXDUECONTR NOT = ONO-NXDUECONTR
+              MOVE "NO-NXDUECONTR" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-NXDUECONTR  TO D01-A15-NUM
+              MOVE NO-NXDUECONTR   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-CURRENT-AVAIL NOT = ONO-CURRENT-AVAIL
+              MOVE "NO-CURRENT-AVAIL" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-CURRENT-AVAIL  TO D01-A15-NUM
+              MOVE NO-CURRENT-AVAIL   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-LATE-CHG NOT = ONO-LATE-CHG
+              MOVE "NO-LATE-CHG" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-LATE-CHG  TO D01-A15-NUM
+              MOVE NO-LATE-CHG   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF NO-PAST-DUE-DAYS NOT = ONO-PAST-DUE-DAYS
+              MOVE "NO-PAST-DUE-DAYS" TO D01-TEXT
+              MOVE BR-NO     TO D01-BRNO
+              MOVE NO-ACCTNO TO D01-ACCTNO
+              MOVE ONO-PAST-DUE-DAYS  TO D01-A15-NUM
+              MOVE NO-PAST-DUE-DAYS   TO D01-S35-NUM
+              PERFORM WRITE-DETAIL-LINE.
+
+
+       EXIT-COMPARE-FIELDS.
+           EXIT.
+
+      ******************************************************************
+       WRITE-DETAIL-LINE SECTION.
+      ******************************************************************
+
+           ADD  LN-FEED                   TO LN-COUNT.
+
+           IF ( LN-COUNT > EXT-CONAME-RPT-LINES )
+              PERFORM WRITE-HEADER-LINES.
+
+           MOVE DETAIL-LINE                TO PR-REC.
+           PERFORM WRITE-PR-REC.
+           MOVE 01                         TO LN-FEED.
+           MOVE SPACES                     TO DETAIL-LINE.
+
+       WRITE-DETAIL-LINE-EXIT.
+           EXIT.
+
+      ******************************************************************
+       WRITE-HEADER-LINES SECTION.
+      ******************************************************************
+
+           MOVE 01                         TO LN-COUNT.
+           ADD  01                         TO PAGE-NUMBER.
+           PERFORM GET-TIME.
+
+           MOVE EXT-CONAME-SYSDATE         TO H01-DATE.
+           MOVE TIME-EDIT                  TO H01-TIME.
+           MOVE EXT-CONAME-CONAME          TO H01-NAME.
+           CALL "C$JUSTIFY"             USING H01-NAME "C".
+           MOVE PAGE-NUMBER            TO H01-PAGE.
+
+           MOVE HEADER-LINE-01             TO PR-REC.
+           MOVE 99                         TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           MOVE EXT-CONAME-USER-ID         TO H02-USERID.
+
+           MOVE HEADER-LINE-02             TO PR-REC.
+           ADD  01                         TO LN-COUNT.
+           MOVE 01                         TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           MOVE HEADER-LINE-03             TO PR-REC.
+           ADD  02                         TO LN-COUNT.
+           MOVE 02                         TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           MOVE 2                         TO LN-FEED.
+
+       WRITE-HEADER-LINES-EXIT.
+           EXIT.
+
+      ******************************************************************
+       RANGE-LINES SECTION.
+      ******************************************************************
+
+           MOVE 88                                    TO LN-COUNT.
+
+           IF ( GROUP-FLAG = "Y" )
+              MOVE "BEGINNING BRANCH              : " TO R01-PROMPT
+              MOVE ENT-GROUP                          TO R01-TEXT
+              MOVE 01                                 TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "ENDING BRANCH                 : " TO R01-PROMPT
+              MOVE SPACES                             TO R01-TEXT
+              MOVE 01                                 TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+           ELSE
+              MOVE "BEGINNING BRANCH              : " TO R01-PROMPT
+              MOVE BEG-BRANCH                         TO R01-NUMERIC
+              MOVE 01                                 TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "ENDING BRANCH                 : " TO R01-PROMPT
+              MOVE END-BRANCH                         TO R01-NUMERIC
+              MOVE 01                                 TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "BEGINNING ACCTNO              : "    TO R01-PROMPT.
+           MOVE BEG-ACCTNO                            TO R01-NUMERIC.
+           MOVE 02                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "ENDING    ACCTNO              : "    TO R01-PROMPT.
+           MOVE END-ACCTNO                            TO R01-NUMERIC.
+           MOVE 01                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "A15 RECORDS PROCESSED         :"     TO R01-PROMPT.
+           MOVE RECORDS-PROCESSED                     TO R01-NUMERIC.
+           MOVE 02                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "STARTING TIME                 : "    TO R01-PROMPT.
+           MOVE STARTING-TIME                         TO R01-TEXT.
+           MOVE 02                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "ENDING   TIME                 : "    TO R01-PROMPT.
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT                             TO R01-TEXT.
+           MOVE 01                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "DATABASE NAME : "                    TO R01-PROMPT.
+           MOVE RET-DB-NAME                           TO R01-TEXT.
+           MOVE 02                                    TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+       RANGE-LINES-EXIT.
+           EXIT.
+
+      ******************************************************************
+      *
+      *    C O P Y - L I B R A R Y - S E C T I O N S
+      *
+      ******************************************************************
+       COPY "LIBGB/BRSECURE.CPY".
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBGB/GPENV.CPY".
+       COPY "LIBGB/GRSERCH.CPY".
+       COPY "LIBGB/GRWORK.CPY".
+       COPY "LIBGB/PROGID.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/TIMEIO.CPY".
+
+      ************************************************
+       FORM-RESET SECTION.
+      ************************************************
+           MOVE EXT-CONAME-CONAME TO NOFILE-CONAME.
+           MOVE EXT-CONAME-SYSDATE TO NOFILE-SYSDATE.
+           DISPLAY NOFILE-SCREEN UPON EXT-EOBUF-WINDOW-HANDLE.
+           MOVE NOFILE-FORM-FIELDS TO WR-BUF.
+           MOVE NOFILE-FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+       FORM-RESET-EXIT.
+           EXIT.
+
+      ************************************************
+       SETUP-LINK-INFO SECTION.
+      ************************************************
+           MOVE NOFILE-HELP--FILE TO HELP-LINK-FILE.
+           MOVE NOFILE-HELP--DIR TO HELP-LINK-DIR.
+
+      ************************************************
+       VDU-CONVERT-FIELD SECTION.
+      ************************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBUT/NOFILE_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      ****************************************
+       TEST-INVALID-DATE SECTION.
+      ****************************************
+           IF DATE-YYYYMMDD NOT NUMERIC
+              MOVE 0     TO DATE-YYYYMMDD
+              GO TO EXIT-TEST-INVALID-DATE
+           ELSE
+           IF DATE-YYYYMMDD = 0 OR 20202020
+              MOVE 0     TO DATE-YYYYMMDD
+              GO TO EXIT-TEST-INVALID-DATE.
+
+      * CANT FIX BAD YEAR
+           IF (DATE-YYYYMMDD-YYYY = 0) AND
+               (DATE-YYYYMMDD-MM NOT = 0 OR DATE-YYYYMMDD-DD NOT = 0)
+              MOVE 0 TO DATE-YYYYMMDD
+              GO TO EXIT-TEST-INVALID-DATE.
+      * 20000003  00/03/00 A15
+
+      * 19638133
+      * 19750000
+      * 19970229
+
+      * CANT FIX A BAD MONTH, SO FORCE IT TO 12 IF ONLY THING IS WRONG
+      * DONT CARE IF DAY IS INVALID, IT WILL GET FIXED IN THE NEXT 'IF'
+           IF (DATE-YYYYMMDD-YYYY NOT = 0) AND
+                (DATE-YYYYMMDD-MM < 1 OR > 12)
+              MOVE 12 TO DATE-YYYYMMDD-MM.
+
+           IF (DATE-YYYYMMDD-DD < 1 OR > 31) OR
+              ((DATE-YYYYMMDD-MM = 02) AND (DATE-YYYYMMDD-DD > 28)) OR
+              ((DATE-YYYYMMDD-DD > 30) AND
+                            (DATE-YYYYMMDD-MM = 4 OR 6 OR 9 OR 11))
+                 MOVE 33            TO DATE-YYYYMMDD-DD
+                 MOVE DATE-YYYYMMDD TO NDTE-DATE
+                 PERFORM NEW-DATE-CALCULATION
+                 MOVE NDTE-DATE     TO DATE-YYYYMMDD.
+
+       EXIT-TEST-INVALID-DATE.
+           EXIT.
+
+      ******************************************************************
+       MISCELLANEOUS-PARAGRAPHS SECTION.
+      ******************************************************************
+       COPY "LIBGB/ACCESS.CPY".
+       COPY "LIBGB/DACCESS.CPY".
+       COPY "LIBGB/GETPR.CPY".
+       COPY "LIBGB/MKTEMP.CPY".
+       COPY "LIBGB/GETENV.CPY".
+       COPY "LIBGB/RMFILE.CPY".
+       COPY "LIBGB/SYSTEM.CPY".
+
+       INITIAL-PROGRESS-INDICATOR.
+
+           MOVE ZEROES                 TO PROGID-BRANCH.
+           MOVE "LEGEND:B."            TO PROGID-LINE-LIST.
+           MOVE PRU-LP                 TO PROGID-PRU-LP.
+           MOVE EXT-ROUTE-BUF              TO PROGID-ROUTE-BUF.
+           MOVE 9999                   TO PROGID-SLEEP-COUNTER.
+           MOVE 250                    TO PROGID-SLEEP-COUNTER-MAX.
+
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT              TO PROGID-TIME.
+
+           MOVE "B"                    TO PROGID-TYPE.
+           MOVE PROGID-TEXT-PROCESSING TO PROGID-TEXT.
+
+      *-----------------------------------------------------------------
+       SEND-PROGRESS-INDICATOR.
+
+           MOVE BR-NO                      TO PROGID-BRANCH.
+           MOVE PROGID-TEXT-PROCESSING     TO PROGID-TEXT.
+
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT                  TO PROGID-TIME.
+
+           IF EXT-ROUTE-BUF = "00"
+              PERFORM PROGID-DISPLAY.
+
+       SEND-LEGEND.
+           MOVE LEGEND TO WR-BUF.
+           MOVE LEGEND-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+       CREATE-NOREC SECTION.
+           PERFORM CREATE-NOREC-INITIALIZE.
+
+      * COMPUTE CONTRACTUAL & RECENCY:
+           MOVE CRNO-PAYDATE TO AGEING-DATE.
+           PERFORM COMPUTE-CONTRACTUAL.
+           MOVE CONTRACTUAL TO ONO-TRUCONTR.
+           PERFORM COMPUTE-RECENCY.
+           MOVE RECENCY TO ONO-RECENCY.
+ 
+      * COMPUTE TOTAL OF ALL BALANCES:
+           COMPUTE ONO-TDUETBAL =
+                LN-CURBAL + LN-OTHBAL + LN-INTBAL + LN-LCBAL.
+
+      * WORLD PR# 254, IF ACCOUNT PAID AHEAD BECAUSE OF LATE CHARGES,
+      * THE TODAY DUE WOULD BE 0, BUT NEXT DUE WOULD BE 3 PAYMENTS
+      * PLUS LATE CHARGES, THEY WANT TO SEE 1 PAYMENT DUE, AND NO LATE
+           MOVE SP-CONTRFRMLA TO CRNO-HOLD-CONTRFRMLA.
+           IF GP-IGNORE-LCHG-NXDUE = "Y"
+              IF SP-CONTRFRMLA-TOTAL
+                 MOVE " " TO SP-CONTRFRMLA
+                 MOVE LN-TOTPAYMNTD TO CRNO-HOLD-TOTPAYMNTD
+                 COMPUTE LN-TOTPAYMNTD = LN-TOTPAYMNTD - LN-TOTLCHG.
+ 
+      * COMPUTE CONTRACTUAL AND LATE CHARGE
+      * PAID THRU DATES:
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO ONO-PDTH.
+ 
+           MOVE LN-LCPDTH TO ONO-LCPDTH.
+
+      *  RETURNS NEXT SCHEDULED PAYMENT AMOUNT
+      *  AND IF PAYMENT IS PARTIALLY PAID, IT STILL RETURNS IT
+           MOVE PDTH-CUR-SCHD-PAY TO ONO-SCHED-PAYMENT.
+ 
+      ***********************************************
+      *    COMPUTE TODAY DUE FIGURES:
+      ***********************************************
+      * IF WDT, AVAIL CREDIT ROUTINE PERFORMS PAYOFF-LOAN ROUTINE FOR
+      * A PB PAYOFF TO GET NETDUE FOR THE CURRENT AVAILABLE FIELD,
+      * SO DONT DO PAYOFF ROUTINE HERE
+           IF BR-AVAIL-CREDIT NOT = "S"
+              MOVE CRNO-PAYDATE TO ONO-TDUE
+                                   POFF-PAYDATE
+              MOVE CRNO-MAKERCD TO POFF-MAKERCD
+              MOVE CRNO-DEF-STOP-MESS TO POFF-DEF-STOP-MESS
+              MOVE CRNO-LPTRCD TO POFF-LPTRCD
+              MOVE CRNO-RECAST-FG TO POFF-RECAST-FG
+              PERFORM PAYOFF-LOAN-ROUTINE
+              MOVE POFF-NETDUE TO ONO-TDUEPOFF.
+
+
+           MOVE POFF-NETDUE TO AVCR-POFF-NETDUE.
+           MOVE CRNO-PAYDATE TO AVCR-PAYDATE.
+      * ---THIS FLAG STOPS COMPUTE-AVAILABLE-CREDIT ROUTINE
+      *    FROM COMPUTING A PAYOFF:
+           MOVE "Y" TO AVCR-POFF-FG.
+           MOVE CRNO-DEF-STOP-MESS TO AVCR-DEF-STOP-MESS.
+           PERFORM COMPUTE-AVAILABLE-CREDIT.
+           MOVE AVCR-AVAILCREDIT TO ONO-AVAILCREDIT.
+           MOVE AVCR-RESTRICT-FG TO CRNO-AVCR-RESTRICT-FG.
+           MOVE AVCR-CURRENT-AVAIL TO ONO-CURRENT-AVAIL.
+ 
+      * IF WDT, AVAIL CREDIT ROUTINE PERFORMS PAYOFF-LOAN ROUTINE FOR
+      * A PB PAYOFF TO GET NETDUE FOR THE CURRENT AVAILABLE FIELD,
+      * SO MUST DO PAYOFF ROUTINE HERE
+           IF BR-AVAIL-CREDIT = "S"
+              MOVE CRNO-PAYDATE TO ONO-TDUE POFF-PAYDATE
+              MOVE CRNO-MAKERCD TO POFF-MAKERCD
+              MOVE CRNO-DEF-STOP-MESS TO POFF-DEF-STOP-MESS
+              MOVE CRNO-LPTRCD TO POFF-LPTRCD
+              MOVE CRNO-RECAST-FG TO POFF-RECAST-FG
+              PERFORM PAYOFF-LOAN-ROUTINE
+              MOVE POFF-NETDUE TO ONO-TDUEPOFF.
+
+      * TEST TO GET PAYOFF ONLY:
+           IF CRNO-GET-PAYOFF-ONLY = "Y"
+              GO TO CREATE-NOREC-REC-EXIT.
+
+      * COMPUTE PRINCIPAL PAYMENTS DUE TODAY:
+           MOVE LN-1STPYDATE TO CEPP1-DATE.
+           MOVE ONO-TDUE TO CEPP2-DATE.
+           PERFORM CONTRACTUAL-DELINQUENCY.
+           IF CDEL-DELINQUENT < 0
+              SUBTRACT CDEL-DELINQUENT FROM 0
+                                   GIVING ONO-TDUECONTR.
+           IF CDEL-ARREARAGE < 0
+              SUBTRACT CDEL-ARREARAGE FROM 0
+                                   GIVING ONO-TDUEPRIN
+                                          ONO-TDUEAMT.
+      * SET CONTRACTUAL PRINCIPLE (DELINQUENCY) FOR
+      * (PC) ACCOUNTS.
+            IF CDEL-DELINQUENT < 0
+               IF IBPC-FG = "P"
+                  SUBTRACT CDEL-DELINQUENT FROM 0
+                                        GIVING ONO-TDUEDELINQ.
+ 
+      * SETUP LC OR INT AMOUNTS:
+           ADD POFF-LCDUE TO ONO-TDUELC
+                             ONO-TDUEAMT.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      * JTG 000310 CHANGED ONO-LCHG-INTDUE TO REFLECT ALL LATE CHARGES
+      *            PLUS INTEREST DUE TODAY:
+      *
+           MOVE LN-LCPDTH TO LCHG-LCPDTH.
+           MOVE PDTH-CUR-SCHD-PAY TO LCHG-CURPAY
+                                     LCHG-LATE.
+           PERFORM LATE-CHARGE-CALCULATION.
+           MOVE LCHG-CHARGE TO ONO-LATE-CHG.
+
+           ADD POFF-INTDUE POFF-LCDUE GIVING ONO-LCHG-INTDUE.
+      *
+      *
+      *   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *   ONLY TAKE LATE CHARGES WHEN THE ACCOUNT IS NOT ACCELERATED
+      *   AND IT IS IN A PRECOMP STATUS OR IS LOAN CLASS TYPE IB
+      *    IF (LN-ACCELDATE = 0) AND
+      *       (IBPC-FG = "P" OR LN-LOANTYPE = "I")
+      *       MOVE LN-LCPDTH TO LCHG-LCPDTH
+      *       MOVE PDTH-CUR-SCHD-PAY TO LCHG-CURPAY
+      *                                 LCHG-LATE
+      *       PERFORM LATE-CHARGE-CALCULATION
+      *       ADD POFF-INTDUE LCHG-CHARGE GIVING ONO-LCHG-INTDUE
+      *       MOVE LCHG-CHARGE TO ONO-LATE-CHG
+      *    ELSE
+      *       MOVE POFF-LCDUE TO ONO-LATE-CHG
+      *       ADD POFF-INTDUE POFF-LCDUE GIVING ONO-LCHG-INTDUE.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    SETUP TRUE PAST DUE DAYS
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE CRNO-PAYDATE TO PDUE-TODAY.
+           MOVE LN-1STPYDATE TO PDUE-1STPYDATE.
+           PERFORM PAST-DUE-DAYS-CALCULATION.
+           MOVE PDUE-DAYS TO ONO-PAST-DUE-DAYS.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    IF REVOLVING AND THE ACCOUNT IS DAYS PAST DUE
+      *       THEN INCLUDE CURRENT CHARGES [LN-AGEING-AMT(1)]
+      *       IN ONO-TDUEAMT
+      *                                        REGENCY PR#1324
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           IF LN-REVOLVING = "Y"
+              IF ONO-PAST-DUE-DAYS > 0
+                 MOVE 0 TO CDEL-WORKER
+                 PERFORM VARYING CDEL FROM 1 BY 1 UNTIL CDEL > 8
+                    ADD LN-AGEING-AMT(CDEL) TO CDEL-WORKER
+                 END-PERFORM
+                 IF CDEL-WORKER > 0
+                    ADD LN-AGEING-AMT(1) TO ONO-TDUEAMT.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ 
+      * COMPUTE MATURITY DATE:
+           PERFORM MATURITY-DATE-CALCULATION.
+           MOVE MDTE-DATE TO NUM-DATE.
+           MOVE ONO-TDUE TO SYS-DATE.
+           PERFORM CMPDAT.
+           IF SYS-IS-GT
+              MOVE ONO-TDUEPOFF TO ONO-TDUEAMT.
+ 
+      ***********************************************
+      *    SETUP LAST AND NEXT DUE DATES:
+      ***********************************************
+           MOVE LN-UNITPER-CD TO DATER-UNITPER-CD.
+           MOVE LN-UNITPER-FREQ TO DATER-UNITPER-FREQ.
+
+           MOVE LN-1STPYDATE TO NDTE-DATE.
+           MOVE NDTE-DD TO CRNO-HOLDDA.
+           COMPUTE NDTE-HOLD = LN-TOTNODEF + LN-TOTNOALDEL - 1.
+           PERFORM INCREMENT-UNITPER.
+
+           MOVE NDTE-DATE TO NUM-DATE.
+           MOVE ONO-TDUE TO SYS-DATE.
+           PERFORM TIMUPER.
+           SUBTRACT 1 FROM ELAPSED-UNITPER GIVING NDTE-HOLD.
+
+       CREATE-NOREC-INCR-DATE.
+           IF LN-UNITPER-CD = "M"
+              MOVE CRNO-HOLDDA TO NDTE-DD.
+           MOVE NDTE-DATE TO ONO-LDUE NUM-DATE.
+           PERFORM INCREMENT-UNITPER.
+
+      * 1STPYDATE 10/14/01 "SEMI"
+      * TODAY = 3/26/02   LCPDTH 3/14/02
+      * THE INQUIRIES WERE SHOWING  LAST DUE = 3/13 (SHOULD BE 14)
+      *                            TODAY DUE = 3/26
+      *                             NEXT DUE = 3/28 (SHOULD BE 29)
+      * 1STPYDATE 1/30/02 "SEMI" LOANDATE 1/15/02
+      * TODAY = 3/26/02   LCPDTH 2/28/02
+      * THE INQUIRIES WERE SHOWING  LAST DUE = 3/13 (SHOULD BE 15)
+      *                            TODAY DUE = 3/26
+      *                             NEXT DUE = 3/28 (SHOULD BE 30)
+      * BAH PL# 357 (SAME LOGIC IN LPLCAP FROM JTG AND CS)
+           IF LN-UNITPER-CD = "S"
+              IF (NUM-DA = 28 OR 29) AND NDTE-MM = 03
+                 IF LN-1STPYDA = 14 OR 15
+                    MOVE LN-1STPYDA TO NDTE-DD
+                 ELSE
+                 IF LN-1STPYDA = 29 OR 30 OR 31
+                    SUBTRACT NUM-DA FROM LN-1STPYDA GIVING NDTE-HOLD
+                    PERFORM INCREMENT-DAYS.
+
+              
+      *CS           MOVE LN-LOANDATE TO SYS-DATE
+      *CS           IF S-DD = 14 OR 15
+      *CS              MOVE S-DD TO NDTE-DD.
+
+
+      * BAH PL# 357
+
+           MOVE NDTE-DATE TO NUM-DATE.
+           MOVE ONO-TDUE TO SYS-DATE.
+           PERFORM CMPDAT.
+           IF SYS-IS-EQ
+              MOVE 1 TO NDTE-HOLD
+              PERFORM INCREMENT-UNITPER
+              MOVE NDTE-DATE TO ONO-NXDUE
+           ELSE
+              IF SYS-IS-LT
+                 MOVE NDTE-DATE TO ONO-NXDUE
+              ELSE
+                 MOVE 1 TO NDTE-HOLD
+                 GO TO CREATE-NOREC-INCR-DATE.
+ 
+      * ADJUST DUE DATES TO PAYDATE:
+           IF LN-UNITPER-CD = "M"
+              MOVE ONO-LDUE TO NDTE-DATE
+              MOVE CRNO-HOLDDA TO NDTE-DD
+              PERFORM NEW-DATE-CALCULATION
+              MOVE NDTE-DATE TO ONO-LDUE
+              MOVE ONO-NXDUE TO NDTE-DATE
+              MOVE CRNO-HOLDDA TO NDTE-DD
+              PERFORM NEW-DATE-CALCULATION
+              MOVE NDTE-DATE TO ONO-NXDUE.
+ 
+      * TEST IF NEXT DUE IS PRIOR TO PAID THRU:
+           MOVE ONO-PDTH TO NUM-DATE.
+           MOVE ONO-NXDUE TO SYS-DATE.
+           PERFORM CMPDAT.
+
+           IF SYS-IS-GT
+                  OR (BR-PDTH-NXDUE = "Y"
+                                    AND SYS-IS-EQ)
+              NEXT SENTENCE
+           ELSE
+              MOVE ONO-PDTH TO NDTE-DATE
+              MOVE 1 TO NDTE-HOLD
+              IF LN-UNITPER-CD = "M"
+                 MOVE CRNO-HOLDDA TO NDTE-DD
+                 PERFORM INCREMENT-UNITPER
+                 MOVE NDTE-DATE TO ONO-NXDUE
+              ELSE
+      *JTG BUG?  PERFORM INCREMENT-UNITPER.
+                 PERFORM INCREMENT-UNITPER
+                 MOVE NDTE-DATE TO ONO-NXDUE.
+ 
+      * TEST IF AFTER MATURITY DATE:
+           MOVE MDTE-DATE TO NUM-DATE.
+           MOVE ONO-LDUE TO SYS-DATE.
+           PERFORM CMPDAT.
+           IF SYS-IS-GE
+              MOVE MDTE-DATE TO ONO-LDUE
+              MOVE 0 TO ONO-NXDUE
+              GO TO NOTICE-RECORD-LDUE
+           ELSE
+              MOVE ONO-NXDUE TO SYS-DATE
+              PERFORM CMPDAT
+              IF SYS-IS-GT
+                 MOVE 0 TO ONO-NXDUE
+                 GO TO NOTICE-RECORD-LDUE.
+ 
+      * TEST IF PRIOR TO 1STPYDATE:
+           MOVE ONO-NXDUE TO NUM-DATE.
+           MOVE LN-1STPYDATE TO SYS-DATE.
+           PERFORM CMPDAT.
+           IF SYS-IS-GT
+              MOVE 0 TO ONO-LDUE
+                        ONO-NXDUE
+           ELSE
+              MOVE ONO-LDUE TO NUM-DATE
+              PERFORM CMPDAT
+              IF SYS-IS-GT
+                 MOVE 0 TO ONO-LDUE.
+
+      ***********************************************
+      *    COMPUTE LAST DUE FIGURES:
+      ***********************************************
+       NOTICE-RECORD-LDUE.
+           IF ONO-LDUE NOT = 0
+              MOVE LN-1STPYDATE TO CEPP1-DATE
+              MOVE ONO-LDUE TO CEPP2-DATE
+
+      *     ....................................................
+      *     SET CDEL-LPCRNO-FG TO LET CONTRACTUAL-DELINQUENCY
+      *     ROUTINE COMPUTE CORRECT AMOUNT DUE WHEN LAST DUE
+      *     DATE DOSN'T FALL ON MONTHLY CYCLE EX. PAYMENTS DUE
+      *     ON 31TH AND LAST DUE IS 02/28
+              MOVE "Y" TO CDEL-LPCRNO-FG
+              PERFORM CONTRACTUAL-DELINQUENCY
+              MOVE " " TO CDEL-LPCRNO-FG
+      *     ....................................................
+
+              IF CDEL-DELINQUENT < 0
+                 SUBTRACT CDEL-DELINQUENT FROM 0
+                                      GIVING ONO-LDUECONTR
+              END-IF
+              IF CDEL-ARREARAGE < 0
+                 SUBTRACT CDEL-ARREARAGE FROM 0
+                                      GIVING ONO-LDUEAMT
+                 MOVE 0 TO LCAP-OWE
+      *   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *         ONLY TAKE LATE CHARGES WHEN THE ACCOUNT IS NOT ACCELERATED
+      *         AND IT IS IN A PRECOMP STATUS OR IS LOAN CLASS TYPE IB
+                 IF (LN-ACCELDATE = 0) AND
+                    (IBPC-FG = "P" OR LN-LOANTYPE = "I")
+                    MOVE ONO-LDUE TO LCAP-PAYDATE
+                    MOVE LN-1STPYDATE TO LCAP-1STPYDATE
+                    MOVE "AL" TO LCAP-LPTRCD
+                    MOVE 0 TO LCAP-LPAPLC
+                              LCAP-LPAPINT
+                    PERFORM LATE-CHARGE-APPLY
+                 END-IF
+                 ADD LN-LCBAL LCAP-OWE GIVING ONO-LDUELC
+                 ADD ONO-LDUELC TO ONO-LDUEAMT.
+
+      ***********************************************
+      *    COMPUTE NEXT DUE FIGURES:
+      ***********************************************
+       NOTICE-RECORD-NXDUE.
+           IF ONO-NXDUE NOT = 0
+              MOVE LN-1STPYDATE TO CEPP1-DATE
+              MOVE ONO-NXDUE TO CEPP2-DATE
+      *     ....................................................
+      *     SET CDEL-LPCRNO-FG TO LET CONTRACTUAL-DELINQUENCY
+      *     ROUTINE COMPUTE CORRECT AMOUNT DUE WHEN NEXT DUE
+      *     DATE DOSN'T FALL ON MONTHLY CYCLE EX. PAYMENTS DUE
+      *     ON 31TH AND LAST DUE IS 02/28
+              MOVE "Y" TO CDEL-LPCRNO-FG
+              PERFORM CONTRACTUAL-DELINQUENCY
+              MOVE " " TO CDEL-LPCRNO-FG
+      *     ....................................................
+              IF CDEL-DELINQUENT < 0
+                 SUBTRACT CDEL-DELINQUENT FROM 0
+                                      GIVING ONO-NXDUECONTR
+              END-IF
+              IF CDEL-ARREARAGE < 0
+                 SUBTRACT CDEL-ARREARAGE FROM 0
+                                      GIVING ONO-NXDUEAMT
+                 MOVE 0 TO LCAP-OWE
+      *         - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *         ONLY TAKE LATE CHARGES WHEN THE ACCOUNT IS NOT ACCELERATED
+      *         AND IT IS IN A PRECOMP STATUS OR IS LOAN CLASS TYPE IB
+                 IF (LN-ACCELDATE = 0) AND
+                    (IBPC-FG = "P" OR LN-LOANTYPE = "I")
+                    MOVE ONO-NXDUE TO LCAP-PAYDATE
+                    MOVE LN-1STPYDATE TO LCAP-1STPYDATE
+                    MOVE "AL" TO LCAP-LPTRCD
+                    MOVE 0 TO LCAP-LPAPLC
+                              LCAP-LPAPINT
+                    PERFORM LATE-CHARGE-APPLY
+                 END-IF
+                 ADD LN-LCBAL LCAP-OWE GIVING ONO-NXDUELC
+                 ADD ONO-NXDUELC TO ONO-NXDUEAMT.
+ 
+      ***********************************************
+      *    SETUP TRUE DUE DATE BASED ON PAID THRU
+      ***********************************************
+       UPDATE-TRUE-DUE-DATE.
+           MOVE ONO-PDTH TO NDTE-DATE.
+      * ADDED IF 3/16/98, 1STPYDATE 7/30/97 , PAID THRU 2/28/98, 
+      * NEXT DUE 3/30/98 BUT TRUEDUE WAS SHOWING 3/28/98
+           IF LN-UNITPER-CD = "M"
+              MOVE CRNO-HOLDDA TO NDTE-DD.
+           MOVE 1 TO NDTE-HOLD.
+           PERFORM INCREMENT-UNITPER.
+           MOVE NDTE-DATE TO ONO-TRUE-DUE-DATE.
+
+      ***********************************************
+      *    SETUP DEFERMENT AMOUNT FOR TODAY
+      ***********************************************
+           IF LN-CURBAL NOT = 0
+              MOVE "DF" TO DEFPOL-TRCD
+              MOVE CRNO-PAYDATE TO DEFPOL-DATE
+              PERFORM VALIDATE-DF-POLICY
+              IF DEFPOL-MAXIMUM = " "
+                 MOVE 1            TO DEF-NODEF
+                 MOVE CRNO-PAYDATE TO DEF-PAYDATE
+                 MOVE POFF-INTDUE  TO DEF-TOTAL-INTDUE
+                 PERFORM DEF-COMPUTE-DEFERMENT
+                 MOVE DEF-AMOUNT   TO ONO-DEFERMENT.
+
+      ***********************************************
+      *    SETUP WAGE ASSIGNMENT PASTDUE AMOUNT
+      ***********************************************
+           MOVE LN-1STPYDATE TO WDEL-1STPYDATE.
+           MOVE CRNO-PAYDATE TO WDEL-PAYDATE.
+           MOVE CRNO-MAKERCD TO WDEL-MAKERCD.
+           PERFORM WAGE-ASSIGN-DELINQ.
+           IF WDEL-ARREARAGE < 0
+              SUBTRACT WDEL-ARREARAGE FROM 0
+                                   GIVING ONO-WAGE-ASSIGN-DELINQ.
+
+      ***********************************************
+      *    SETUP LAST PAYMENT INFORMATION
+      ***********************************************
+       UPDATE-LAST-PAYMENT.
+           MOVE 0 TO ONO-DATE-PAID-LAST
+                     ONO-AMT-PAID-LAST.
+           IF CRNO-LPREC-FG NOT = " "
+              GO TO CREATE-NOREC-REC-EXIT.
+
+           MOVE LN-ACCTNO TO LP-ACCTNO.
+           MOVE 9999 TO LP-SEQNO.
+           PERFORM OPEN-LP1-FILE.
+           PERFORM START-LP1-FILE-NOT-GREATER.
+           PERFORM READ-LP1-FILE-PREVIOUS.
+           PERFORM CLOSE-LP1-FILE.
+           IF IO-FG NOT = 0
+                  OR LN-ACCTNO NOT = LP-ACCTNO
+                    OR LP-SEQNO = 1
+              GO TO CREATE-NOREC-REC-EXIT.
+           MOVE LP-PAYDATE TO ONO-DATE-PAID-LAST.
+           MOVE LP-TRAMT TO ONO-AMT-PAID-LAST.
+           MOVE LP1-KEY TO ONO-LSTLPKEY.
+
+       CREATE-NOREC-REC-EXIT.
+           MOVE " " TO CRNO-LPREC-FG
+                       CRNO-RECAST-FG
+                       CRNO-GET-PAYOFF-ONLY.
+           IF GP-IGNORE-LCHG-NXDUE = "Y"
+              IF CRNO-HOLD-CONTRFRMLA = "A"
+                 MOVE CRNO-HOLD-CONTRFRMLA TO SP-CONTRFRMLA
+                 MOVE CRNO-HOLD-TOTPAYMNTD TO LN-TOTPAYMNTD.
+
+       CREATE-NOREC-INITIALIZE SECTION.
+           PERFORM CLEAR-NO-FILE.
+
+      ******************************************************************
+       IO-ROUTINE SECTION.
+      ******************************************************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBLP/LPNOGS_SQL.CPY".
+       COPY "LIBGB/GBGRGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBPRINT.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBGB/GBGR1RN.CPY".
+       COPY "LIBLP/LPNO1RN.CPY".
+       OPEN-OLN1-FILE.
+           PERFORM OPEN-IT.
+           MOVE OLN-PATH TO E-FILE.
+           OPEN INPUT OLN-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-OLN1-FILE.
+           IF IO-FG = 7
+              CLOSE OLN-FILE
+              GO TO OPEN-OLN1-FILE.
+      *READ-OLN1-FILE.
+      *    PERFORM READ-IT.
+      *    MOVE OLN-PATH TO E-FILE.
+      *    MOVE OLN1-KEY TO E-KEYX.
+      *    READ OLN-FILE.
+      *    IF IO-FG = 8
+      *       GO TO READ-OLN1-FILE.
+       START-OLN1-FILE.
+           PERFORM START-IT.
+           MOVE OLN-PATH TO E-FILE.
+           MOVE OLN1-KEY TO E-KEYX.
+           START OLN-FILE KEY NOT < OLN1-KEY.
+       READ-OLN1-FILE-NEXT.
+           PERFORM READ-IT.
+           MOVE OLN-PATH TO E-FILE.
+           MOVE OLN1-KEY TO E-KEYX.
+           READ OLN-FILE NEXT.
+           IF IO-FG = 8
+              GO TO READ-OLN1-FILE-NEXT.
+       CLOSE-OLN1-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE OLN-FILE.
+
+       OPEN-OLP1-FILE.
+           PERFORM OPEN-IT.
+           MOVE OLP-PATH TO E-FILE.
+           OPEN INPUT OLP-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-OLP1-FILE.
+           IF IO-FG = 7
+              CLOSE OLP-FILE
+              GO TO OPEN-OLP1-FILE.
+      READ-OLP1-FILE.
+          PERFORM READ-IT.
+          MOVE OLP-PATH TO E-FILE.
+          MOVE OLP1-KEY TO E-KEYX.
+          READ OLP-FILE.
+          IF IO-FG = 8
+             GO TO READ-OLP1-FILE.
+       START-OLP1-FILE.
+           PERFORM START-IT.
+           MOVE OLP-PATH TO E-FILE.
+           MOVE OLP1-KEY TO E-KEYX.
+           START OLP-FILE KEY NOT < OLP1-KEY.
+       READ-OLP1-FILE-NEXT.
+           PERFORM READ-IT.
+           MOVE OLP-PATH TO E-FILE.
+           MOVE OLP1-KEY TO E-KEYX.
+           READ OLP-FILE NEXT.
+           IF IO-FG = 8
+              GO TO READ-OLP1-FILE-NEXT.
+       CLOSE-OLP1-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE OLP-FILE.
+
+
+      *=================================================================
+       START-MISC-CSR.
+           MOVE "SSP_TCLP_SELECT" TO E-FILE.
+           MOVE SPACES           TO E-KEYX.
+           MOVE "START ERROR"    TO E-MSG.
+           MOVE "GB/SQLINF"      TO E-PROG.
+
+           IF ( MISC-CURSOR-STAT-GOOD )
+              PERFORM CLOSE-MISC-CSR.
+
+           MOVE "SELECT DB_NAME(),@@SERVERNAME,@@VERSION" 
+              TO PASS-SQL.
+
+           EXEC SQL
+            DECLARE MISC_CURSOR CURSOR FOR
+                :MISC-RETURN-CODE = 
+                 EXEC SSP_TCLP_SELECT
+                  ( :PASS-SQL)
+                END-EXEC.
+
+           EXEC SQL
+               OPEN MISC_CURSOR
+           END-EXEC.
+
+           IF SQLCODE NOT = 0
+             PERFORM SQL-ERROR.
+
+           MOVE STAT---GOOD TO MISC-CURSOR-STAT.
+
+      *-----------------------------------------------------------------
+       READ-MISC-CSR-NEXT.
+           MOVE "SSP_TCLP_SELECT" TO E-FILE.
+           MOVE SPACES           TO E-KEYX.
+           MOVE "READ ERROR"     TO E-MSG.
+           MOVE "GB/SQLINF"      TO E-PROG.
+
+           IF ( MISC-CURSOR-STAT-GOOD )
+              EXEC SQL
+                 FETCH MISC_CURSOR INTO  
+                   :RET-DB-NAME,
+                   :RET-SERVER-NAME, 
+                   :RET-VERSION
+              END-EXEC
+           ELSE
+              MOVE 9        TO SQLCODE
+              MOVE "RDNXCR" TO SQLSTATE.
+
+           IF SQLCODE NOT = 0
+             PERFORM SQL-ERROR.
+
+      *-----------------------------------------------------------------
+       CLOSE-MISC-CSR.
+           MOVE "SSP_TCLP_SELECT" TO E-FILE.
+           MOVE SPACES           TO E-KEYX.
+           MOVE "CLOSE ERROR"    TO E-MSG.
+           MOVE "GB/SQLINF"      TO E-PROG.
+
+           IF ( MISC-CURSOR-STAT-GOOD )
+              EXEC SQL
+                   CLOSE MISC_CURSOR
+              END-EXEC
+              MOVE STAT---BAD TO MISC-CURSOR-STAT.
+
+      *-----------------------------------------------------------------
+
+       COPY "LIBGB/FERRORS.CPY".
+           MOVE "E" TO EXT-EOBUF-ERRCD.
+
+      ******************************************************************
+       END-PROGRAM SECTION.
+      ******************************************************************
+
+           PERFORM CLOSE-FILES.
+
+           IF ( EXT-ROUTE-BUF = "00" )
+              PERFORM PRU-OUT.
+
+      *     IF ( NO-RECORDS-FOUND )
+      *        MOVE "NO RECORDS FOUND FOR SELECTED RANGE" TO MESS
+      *        PERFORM SEND-MESS.
+
+       EXIT-PROG.
+
+           IF ( SV-BEG-BRANCH NOT = 9999 )
+              IF ( EXT-EOBUF-GROUP-FG = "Y" )
+                 MOVE SV-BEG-BRANCH        TO BEG-BRANCH
+                 MOVE SV-END-BRANCH        TO END-BRANCH
+                 MOVE SV-GROUP-FLAG        TO GROUP-FLAG
+                 MOVE SV-ENT-GROUP         TO ENT-GROUP
+              ELSE
+                 MOVE SV-BEG-BRANCH        TO BEG-BRANCH
+                 MOVE SV-END-BRANCH        TO END-BRANCH.
+
+           IF ( EXT-ROUTE-BUF = "00" )
+              MOVE EXIT-PATH               TO FORM-NAM
+              MOVE FORM-PATH               TO FORM-PATHNAME.
+
+       STOP-RUN.
+           IF EXT-ROUTE-BUF = "00" OR "40" OR "50"
+              DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN
+              DESTROY NOFILE-SCREEN
+              DESTROY EXT-EOBUF-WINDOW-HANDLE.
+           EXIT PROGRAM.

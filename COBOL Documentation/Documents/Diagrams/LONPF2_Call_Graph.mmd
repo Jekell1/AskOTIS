@@ -1,0 +1,85 @@
+graph TD
+    A[MAIN-PROGRAM SECTION] --> B[SQL-CONNECT]
+    A --> C[GET-GPENV]
+    A --> D[RESTORE-SCREEN]
+    A --> E[OPEN-LN1-FILE]
+    A --> F[READ-LN1-FILE]
+    A --> G[GET-LC]
+    A --> H[GET-CON-REC-PRIOR-LNUPD]
+    A --> I[GET-UNEARN-STATS-PRIOR-LNUPD]
+    A --> J[PAID-THRU-CALCULATION]
+    A --> K{LP-TRCD = RV?}
+    
+    K -->|Yes| L[UPDATE-LP-REVERSE]
+    K -->|No| M[Normal Processing]
+    
+    L --> N[LOCATE-ORIGINAL-TRANSACTION]
+    L --> O[REVERSE-AMOUNTS]
+    L --> P[UPDATE-REVERSE-FLAGS]
+    
+    M --> Q[UPDATE-BW1-FILE]
+    P --> Q
+    
+    Q --> R[OPEN-BW1-FILE]
+    Q --> S[READ-BW1-FILE]
+    Q --> T[UPDATE-BW1-CONT]
+    Q --> U[CLOSE-BW1-FILE]
+    
+    Q --> V[UPDATE-CA1-FILE]
+    V --> W[OPEN-CA1-FILE]
+    V --> X[READ-CA1-FILE]
+    V --> Y[UPDATE-CA1-CONT]
+    V --> Z[CLOSE-CA1-FILE]
+    
+    Q --> AA[UPDATE-DS1-FILE]
+    AA --> BB[UPDATE-DS1-CHECK-EXISTS]
+    AA --> CC[DS1-UPDATE-RESERVE-BAL]
+    AA --> DD[DS1-COMPUTE-PART-RC-AMT]
+    AA --> EE[UPDATE-DS1-SXSVSS]
+    
+    Q --> FF[UPDATE-TY1-FILE]
+    FF --> GG[OPEN-TY1-FILE]
+    FF --> HH[READ-TY1-FILE]
+    FF --> II[UPDATE-TY1-FILE-DLR-RESV]
+    FF --> JJ[UPDATE-TY1-POST-BR]
+    FF --> KK[CLOSE-TY1-FILE]
+    
+    Q --> LL[UPDATE-LN1-FILE]
+    LL --> MM[CALCULATE-NEW-BALANCES]
+    LL --> NN[UPDATE-PAYMENT-HISTORY]
+    LL --> OO[SET-ACCOUNT-FLAGS]
+    LL --> PP[HANDLE-PAYOFF-PROCESSING]
+    
+    Q --> QQ[UPDATE-LT1-FILE]
+    QQ --> RR[OPEN-LT1-FILE]
+    QQ --> SS[READ-LT1-FILE]
+    QQ --> TT[UPDATE-ADDON-RECORDS]
+    QQ --> UU[CLOSE-LT1-FILE]
+    
+    Q --> VV[UPDATE-TR1]
+    VV --> WW[UPDATE-TR1-OPEN]
+    VV --> XX[NEXT-AVAIL-SEQ]
+    VV --> YY[CREATE-TR-RECORD]
+    VV --> ZZ[WRITE-TR1-FILE]
+    
+    Q --> AAA[CHECK-UPDATE]
+    AAA --> BBB[VALIDATE-CHECK-REQUEST]
+    AAA --> CCC[CREATE-CHECK-RECORD]
+    AAA --> DDD[UPDATE-CHECK-SEQUENCE]
+    
+    Q --> EEE[CONDITIONAL-SEND-MESS]
+    EEE --> FFF[FORMAT-MESSAGE]
+    EEE --> GGG[DISPLAY-MESSAGE]
+    EEE --> HHH[LOG-MESSAGE]
+    
+    Q --> III[END-ROUTINE]
+    III --> JJJ[CLOSE-ALL-FILES]
+    III --> KKK[SET-RETURN-CODES]
+    III --> LLL[PROGRAM-EXIT]
+    
+    style A fill:#e1f5fe
+    style K fill:#fff3e0
+    style Q fill:#f3e5f5
+    style VV fill:#ffecb3
+    style LL fill:#ffecb3
+    style LLL fill:#e8f5e8

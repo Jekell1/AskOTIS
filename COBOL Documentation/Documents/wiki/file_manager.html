@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiki File Manager</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .section {
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section h2 {
+            color: #1e293b;
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .file-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .file-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-exists {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-empty {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .actions-bar {
+            background: #f8fafc;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Wiki File Manager</h1>
+            <p>Manage and verify COBOL documentation files</p>
+        </div>
+        
+        <div class="section">
+            <h2>📊 File Status Overview</h2>
+            <div id="file-overview">
+                <p>Scanning files...</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📄 Documentation Files</h2>
+            <div class="file-grid" id="doc-files">
+                <!-- Documentation files will be listed here -->
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Diagram Files</h2>
+            <div class="file-grid" id="diagram-files">
+                <!-- Diagram files will be listed here -->
+            </div>
+        </div>
+        
+        <div class="actions-bar">
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="scanFiles()">🔄 Refresh Scan</button>
+                <button class="btn btn-success" onclick="openWikiReader()">📖 Open Wiki Reader</button>
+            </div>
+            <div>
+                <a href="test.html" class="btn">🧪 Test Files</a>
+                <a href="index.html" class="btn">🏠 Original Wiki</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const expectedFiles = {
+            documentation: [
+                'APIPAY_Documentation.html',
+                'LONPFB_Documentation.html',
+                'LONPF7_Documentation_New.html',
+                'LONPF9_Documentation_New.html',
+                'LONPFC_Documentation_New.html',
+                'LONPF2_Documentation_New.html'
+            ],
+            diagrams: [
+                'diagrams/APIPAY_Transaction_Processing.mmd',
+                'diagrams/APIPAY_Error_Handling.mmd',
+                'diagrams/APIPAY_Database_Updates.mmd',
+                'diagrams/APIPAY_Complete_Call_Graph.mmd'
+            ]
+        };
+        
+        let fileStatus = {};
+        
+        async function checkFileExists(filename) {
+            try {
+                const response = await fetch(filename, { method: 'HEAD' });
+                if (response.ok) {
+                    // Check if file has content
+                    const fullResponse = await fetch(filename);
+                    const text = await fullResponse.text();
+                    return {
+                        exists: true,
+                        size: text.length,
+                        isEmpty: text.trim().length === 0
+                    };
+                }
+                return { exists: false, size: 0, isEmpty: true };
+            } catch (error) {
+                return { exists: false, size: 0, isEmpty: true };
+            }
+        }
+        
+        async function scanFiles() {
+            document.getElementById('file-overview').innerHTML = '<p>Scanning files...</p>';
+            document.getElementById('doc-files').innerHTML = '<p>Loading...</p>';
+            document.getElementById('diagram-files').innerHTML = '<p>Loading...</p>';
+            
+            // Check documentation files
+            for (const file of expectedFiles.documentation) {
+                fileStatus[file] = await checkFileExists(file);
+            }
+            
+            // Check diagram files
+            for (const file of expectedFiles.diagrams) {
+                fileStatus[file] = await checkFileExists(file);
+            }
+            
+            displayResults();
+        }
+        
+        function displayResults() {
+            // Update overview
+            const totalFiles = Object.keys(fileStatus).length;
+            const existingFiles = Object.values(fileStatus).filter(f => f.exists).length;
+            const emptyFiles = Object.values(fileStatus).filter(f => f.exists && f.isEmpty).length;
+            const workingFiles = Object.values(fileStatus).filter(f => f.exists && !f.isEmpty).length;
+            
+            document.getElementById('file-overview').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #0369a1;">${totalFiles}</div>
+                        <div style="color: #64748b;">Total Files</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #166534;">${workingFiles}</div>
+                        <div style="color: #64748b;">Working Files</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #fffbeb; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #d97706;">${emptyFiles}</div>
+                        <div style="color: #64748b;">Empty Files</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #fef2f2; border-radius: 8px;">
+                        <div style="font-size: 2rem; font-weight: bold; color: #dc2626;">${totalFiles - existingFiles}</div>
+                        <div style="color: #64748b;">Missing Files</div>
+                    </div>
+                </div>
+            `;
+            
+            // Update documentation files
+            const docHtml = expectedFiles.documentation.map(file => {
+                const status = fileStatus[file];
+                let statusClass = 'status-missing';
+                let statusText = 'Missing';
+                
+                if (status.exists && !status.isEmpty) {
+                    statusClass = 'status-exists';
+                    statusText = 'Ready';
+                } else if (status.exists && status.isEmpty) {
+                    statusClass = 'status-empty';
+                    statusText = 'Empty';
+                }
+                
+                return `
+                    <div class="file-card">
+                        <div class="file-name">${file}</div>
+                        <div class="file-info">
+                            <span class="status ${statusClass}">${statusText}</span>
+                            ${status.exists ? `• ${status.size} bytes` : ''}
+                        </div>
+                        <div class="file-actions">
+                            ${status.exists && !status.isEmpty ? 
+                                `<a href="${file}" target="_blank" class="btn btn-primary">📖 View</a>` : 
+                                `<button class="btn" disabled>❌ Not Available</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('doc-files').innerHTML = docHtml;
+            
+            // Update diagram files
+            const diagramHtml = expectedFiles.diagrams.map(file => {
+                const status = fileStatus[file];
+                let statusClass = 'status-missing';
+                let statusText = 'Missing';
+                
+                if (status.exists && !status.isEmpty) {
+                    statusClass = 'status-exists';
+                    statusText = 'Ready';
+                } else if (status.exists && status.isEmpty) {
+                    statusClass = 'status-empty';
+                    statusText = 'Empty';
+                }
+                
+                const fileName = file.split('/').pop();
+                
+                return `
+                    <div class="file-card">
+                        <div class="file-name">${fileName}</div>
+                        <div class="file-info">
+                            <span class="status ${statusClass}">${statusText}</span>
+                            ${status.exists ? `• ${status.size} bytes` : ''}
+                        </div>
+                        <div class="file-actions">
+                            ${status.exists && !status.isEmpty ? 
+                                `<button class="btn btn-primary" onclick="viewDiagram('${file}')">📊 View Diagram</button>` : 
+                                `<button class="btn" disabled>❌ Not Available</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('diagram-files').innerHTML = diagramHtml;
+        }
+        
+        function viewDiagram(diagramPath) {
+            // Open diagram in a new window
+            const win = window.open('', '_blank', 'width=800,height=600');
+            
+            fetch(diagramPath)
+                .then(response => response.text())
+                .then(diagramCode => {
+                    win.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>Diagram: ${diagramPath}</title>
+                            <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+                            <style>
+                                body { 
+                                    font-family: Arial, sans-serif; 
+                                    padding: 20px; 
+                                    background: #f9f9f9;
+                                    margin: 0;
+                                }
+                                .container {
+                                    background: white;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                }
+                                h1 { 
+                                    color: #333; 
+                                    text-align: center; 
+                                    margin-bottom: 20px;
+                                }
+                                .mermaid { 
+                                    text-align: center;
+                                    background: white;
+                                    padding: 20px;
+                                    border-radius: 8px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="container">
+                                <h1>${diagramPath.replace('diagrams/', '').replace('.mmd', '').replace(/_/g, ' ')}</h1>
+                                <div class="mermaid">${diagramCode}</div>
+                            </div>
+                            <script>
+                                mermaid.initialize({ startOnLoad: true });
+                            </script>
+                        </body>
+                        </html>
+                    `);
+                    win.document.close();
+                })
+                .catch(error => {
+                    win.document.write(`
+                        <html><body>
+                            <h1>Error</h1>
+                            <p>Could not load diagram: ${error.message}</p>
+                        </body></html>
+                    `);
+                    win.document.close();
+                });
+        }
+        
+        function openWikiReader() {
+            window.open('wiki_reader.html', '_blank');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', scanFiles);
+    </script>
+</body>
+</html>

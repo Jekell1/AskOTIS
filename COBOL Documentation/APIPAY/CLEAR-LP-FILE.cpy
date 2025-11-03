@@ -1,0 +1,81 @@
+      *================================================================*
+      * END COPYBOOK: LIBLP\ADDONSPR.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBLP\LPLPCL.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBLP/LPLPCL
+      ******************************************************************
+      *
+      * DESCRIPTION: LOAN PAYMENT FILE CLEAR ROUTINE
+      *
+      * ***NOTE*** : ANY CHANGES TO THE CLEAR ROUTINE NEEDS TO BE DONE
+      *              TO THE CLEAR ROUTINE FROM THE MP-REC [LIBLP/LPMPCL]
+      *
+      *=================================================================
+      * REV:
+      * 021898 BAH ADDED LP-PREPAY-PENALTY LP-PRORATED-INS-REB
+      * BAH 062598 CHANGED LP-TILLNO TO ALPHA, REMOVED THE MOVE 0
+      *  CS 081998 ADDED LP-POSTING-BR
+      * MJD 000119 ADDED LP-NOLCHG (WORLD PR#218)
+      * JTG 010227 ADDED LP-EXTRA-PRIN-LFP LP-REMAIN-INT-SINCE-LFP
+      *            LP-REMAIN-PRIN-SINCE-LFP  (LFP=LAST-FULL-PAYMENT)
+      *            LENDMARK, PR#1045 & PR#1380
+      * BLM 100305 ADDED LP-APPLIED-TO-ESCROW, REGWAN PR# 3506
+      *  CS 151208 ADD LP-ADDON-INTPDTH, LP-BRNO(DISPLAY ONLY)
+      *  CS 160201 ADD LP-FROMCL, LP-TOCL USED IN CLASS TRANSFER
+      *
+      * KEC 2017.0120 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *         ADDED NOTE OF NEEDING TO UPDATE THE CLEAR ROUTINE
+      *         FOR THE MP-REC [LIBLP/LPMPCL] IF ADDING TO HERE.
+      *  CS 190502 CLEAR FUTURE FIELDS
+      * BAH 20190628 REMOVED LP-RT-SEQNO REVOLVING
+      * BAH 20210427 REMOVED FUTURE FIELDS
+      * JKC 20220803 RESTORED MOVING ZEROES TO LP-TILLNO DUE TO GETTING
+      *         SQL ERROR "NUMERIC VALUE OUT OF RANGE".
+      * BAH 20240212 ADDED LP-REPAY-TRANS-ID #1641
+      * BAH 2025.0501 WAS MISSING LP-ESCROW-PREPAID S35Q-205
+      ******************************************************************
+       CLEAR-LP-FILE SECTION.
+
+           MOVE SPACES TO LP-REC.
+
+           MOVE 0 TO LP-TRDATE LP-PAYDATE
+                     LP-TRAMT LP-APOTH LP-APOT2 LP-APINT LP-APLC
+                     LP-APCUR LP-OTHBAL LP-OT2BAL LP-INTBAL
+                     LP-LCBAL LP-CURBAL LP-INTDUE LP-DLPROC LP-DLNO
+                     LP-EARNED(1) LP-EARNED(2) LP-EARNED(3)
+                     LP-INTPAID LP-SSNO LP-PDTH-DATE LP-LCPDTH-DATE
+                     LP-APINTOWE LP-REVSEQNO
+                     LP-NEWSTAT-RATE
+                     LP-POSTDATE LP-POSTTIME
+                     LP-DLRVCHGS-ADJ(1) LP-DLRVCHGS-ADJ(2)
+                     LP-DLRVCHGS-ADJ(3)
+                     LP-DLPARVHELD-ADJ LP-DLPARVPAID-ADJ
+                     LP-POSTING-BR LP-NOLCHG
+                     LP-EXTRA-PRIN-LFP LP-REMAIN-INT-SINCE-LFP
+                     LP-REMAIN-PRIN-SINCE-LFP LP-APPLIED-TO-ESCROW 
+                     LP-ADDON-INTPDTH-DATE
+      *NEW LP FIELDS
+                     LP-INTPDTH-DATE LP-PRIOR-POOLID LP-LT-SEQNO
+                     LP-NEW1ST-PYDATE LP-DEF-DUEDATE
+                     LP-ADDON-ORIG-REGPY LP-OLD1ST-PYDATE
+                     LP-DEF-TERM LP-LCPARTIALS
+                     LP-LCPAID LP-PREPAY-PENALTY  
+                     LP-PRORATED-INS-REB LP-ADDON-LAST-PYAMT 
+                     LP-FROMCL LP-TOCL LP-BRNO LP-LTOUCH-DATE
+                     LP-TILLNO LP-REPAY-TRANS-ID LP-ESCROW-PREPAID.
+      *================================================================*
+      * END COPYBOOK: LIBLP\LPLPCL.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBLP\LPLXGCL.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBLP/LPLXGCL
+      **************************************************************************
+      *    LPLXCL    LOAN PAYMENT TRAILER G/L CLEAR
+      *
+      * REV:
+      *  04/09/2021 BAH NEW
+      *  BAH 20210427 REMOVED FUTURE FIELDS
+      **************************************************************************

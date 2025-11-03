@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMUPER COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIMUPER COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="timuper-cobol-utility-documentation">TIMUPER COBOL Utility Documentation</h1>
+<hr />
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2025-07-28<br />
+<strong>Program ID:</strong> TIMUPER<br />
+<strong>Date Written:</strong> See Revision History</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagram">Program Flow Diagram</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+<li><a href="#revision-history">Revision History</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p><strong>TIMUPER</strong> is a COBOL routine in <code>APIPAY_Inlined.CBL</code> that calculates the elapsed time between two dates in terms of unit periods (months, days, years, weeks, semi-months, or bi-weekly periods). It is used to standardize date difference calculations for business logic, such as loan processing, payment schedules, and interest calculations. TIMUPER is designed to be side-effect free, preserving input dates and restoring any temporary values after computation.</p>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><strong>NUM-DATE</strong>: Start date (YYYYMMDD)</li>
+<li><strong>SYS-DATE</strong>: End date (YYYYMMDD)</li>
+<li><strong>DATER-UNITPER-CD</strong>: Unit period code (M=Month, D=Day, Y=Year, S=Semi-month, W=Week, B=Bi-weekly)</li>
+<li><strong>DATER-UNITPER-FREQ</strong>: Frequency of unit periods (integer)</li>
+</ul>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><strong>ELAPSED-UNITPER</strong>: Elapsed unit periods (integer)</li>
+<li><strong>ELAPSED-UNITPER-REM</strong>: Remaining days (integer)</li>
+<li><strong>ELAPSED-RESULT</strong>: Comparison result (e.g., LT, GT, EQ, LE, GE, GR)</li>
+<li><strong>ELAPSED-DAYS</strong>: Total elapsed days</li>
+<li><strong>ELAPSED-MONTHS</strong>: Total elapsed months</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days after full unit periods</li>
+</ul>
+<hr />
+<h2 id="program-flow-diagram">Program Flow Diagram</h2>
+<div class="mermaid">graph TD
+    A[Input NUM-DATE, SYS-DATE, UNITPER-CD, UNITPER-FREQ] --> B[Save NDTE-DATE]
+    B --> C[Set ELAPSED-YRTYPE to 999]
+    C --> D[Set DATER-ACTION-CODE to 'E']
+    D --> E[PERFORM DATER-ROUTINE]
+    E --> F[Restore NDTE-DATE]
+    F --> G[Output ELAPSED-UNITPER, ELAPSED-UNITPER-REM, etc.]
+</div>
+<hr />
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<p>TIMUPER is typically called as a subroutine within batch or sequential processes. Its execution is atomic and does not span multiple steps, so a Gantt chart is not required. For batch context, see the parent program (e.g., APIPAY).</p>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>TIMUPER SECTION</strong>: Main entry point. Saves NDTE-DATE, sets up calculation context, calls DATER-ROUTINE, restores NDTE-DATE.</li>
+<li><strong>DATER-ROUTINE</strong>: Shared date calculation logic (not detailed here; see referenced programs).</li>
+</ul>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">flowchart LR
+    NUM_DATE & SYS_DATE --> TIMUPER
+    TIMUPER -->|calls| DATER_ROUTINE
+    DATER_ROUTINE -->|returns| ELAPSED-UNITPER & ELAPSED-UNITPER-REM
+    TIMUPER -->|restores| NDTE-DATE
+</div>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><strong>DATER-ROUTINE</strong>: Shared date calculation logic (internal to APIPAY_Inlined.CBL)</li>
+<li><strong>TIMALL, TIM999, TIM360, TIM365, etc.</strong>: Other date calculation routines in the same file</li>
+</ul>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>If either NUM-DATE or SYS-DATE is zero, all outputs are set to zero or spaces.</li>
+<li>The routine is designed to avoid side effects by saving and restoring NDTE-DATE.</li>
+<li>Any errors in DATER-ROUTINE propagate to the outputs.</li>
+</ul>
+<hr />
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid or zero dates: Outputs set to zero/spaces.</li>
+<li>Unexpected changes to NDTE-DATE: Prevented by save/restore logic.</li>
+</ul>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures</strong>: Uses working-storage fields for dates, unit period codes, and results.</li>
+<li><strong>File Handling</strong>: None (pure calculation routine).</li>
+<li><strong>Key Algorithms</strong>: Date difference calculation via DATER-ROUTINE, with context setup for unit period calculations.</li>
+</ul>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by APIPAY and other batch programs for date calculations.</li>
+<li>Can be called wherever elapsed unit periods are needed.</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files. Relies on internal data structures and DATER-ROUTINE.</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    TIMUPER --> DATER-ROUTINE
+</div>
+<hr />
+<h2 id="revision-history">Revision History</h2>
+<ul>
+<li>1993-09-16: Changed to set YRTYPE = 360 for some calculations</li>
+<li>1997-03-17: Changed back to YRTYPE = 999 for monthly calculations</li>
+<li>2017-02-27: Added logic to preserve NDTE-DATE to avoid side effects</li>
+</ul>
+<hr />
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="GET-TIME_Documentation.html">GET-TIME_Documentation.md</a>: For retrieving current system date/time</li>
+<li><a href="APIPAY_Documentation.html">APIPAY_Documentation.md</a>: Main program using TIMUPER</li>
+</ul>
+<hr />
+<p><em>This documentation was generated for wiki use and non-COBOL readers. For questions, see the APIPAY documentation or contact the system maintainer.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

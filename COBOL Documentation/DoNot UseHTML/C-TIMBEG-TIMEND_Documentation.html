@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMBEG and C-TIMEND - Date Processing Initialization and Finalization</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMBEG and C-TIMEND - Date Processing Initialization and Finalization</span>
+        </nav>
+        <main class="content">
+<h1>C-TIMBEG and C-TIMEND - Date Processing Initialization and Finalization</h1>
+<p><strong>Location:</strong> <code>.\C-TIMBEG.cpy</code> and <code>.\C-TIMEND.cpy</code><br />
+<strong>Program ID:</strong> C-TIMBEG and C-TIMEND<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#technical-details">Technical Details</a></li>
+<li><a href="#special-year-type-handling">Special Year Type Handling</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#notes">Notes</a></li>
+</ol>
+<h2>Overview</h2>
+<p><code>C-TIMBEG</code> and <code>C-TIMEND</code> are essential utility sections that serve as the initialization and finalization components for all elapsed time calculation routines in the APIPAY system. These utilities work together to ensure consistent date handling, proper date order, and standardized calculation results across all time-related functions.</p>
+<h2>Purpose</h2>
+<p>These utilities serve multiple critical purposes:</p>
+<h3>C-TIMBEG (Time Calculation Begin)</h3>
+<ul>
+<li>Initialize working storage for time calculations</li>
+<li>Save original date values for restoration</li>
+<li>Convert dates to Julian format for easier calculation</li>
+<li>Ensure proper date ordering (swap if needed)</li>
+<li>Set the sign flag for positive or negative elapsed time</li>
+</ul>
+<h3>C-TIMEND (Time Calculation End)</h3>
+<ul>
+<li>Apply the correct sign to elapsed time results</li>
+<li>Calculate months and remainder days based on year type</li>
+<li>Handle specific year type adjustments (365, 998, etc.)</li>
+<li>Restore original date order if needed</li>
+<li>Standardize output format for all time calculation routines</li>
+</ul>
+<h2>Usage</h2>
+<h3>C-TIMBEG</h3>
+<p><strong>Input:</strong>
+- <code>WS-DATE1</code>: First date (typically start date)
+- <code>WS-DATE2</code>: Second date (typically end date)</p>
+<p><strong>Output:</strong>
+- <code>WS-JUL-1</code>: Julian date for first date
+- <code>WS-JUL-2</code>: Julian date for second date
+- <code>WS-XSIGN</code>: Sign indicator (-1 if dates were swapped, 1 otherwise)</p>
+<h3>C-TIMEND</h3>
+<p><strong>Input:</strong>
+- <code>WS-XDAYS</code>: Raw calculated days
+- <code>WS-XSIGN</code>: Sign indicator
+- <code>TA-YRTYPE</code>: Year type code (365, 998, etc.)
+- <code>WS-JUL-1</code>, <code>WS-JUL-2</code>: Julian dates</p>
+<p><strong>Output:</strong>
+- <code>WS-XMONTHS</code>: Calculated elapsed months
+- <code>WS-XDAYS</code>: Finalized elapsed days (with sign)
+- <code>WS-XREM</code>: Remainder days</p>
+<h3>Typical Usage Pattern</h3>
+<pre><code class="language-cobol">PERFORM C-TIMBEG.
+* Specific time calculation code here
+PERFORM C-TIMEND.
+</code></pre>
+<h2>Technical Details</h2>
+<h3>C-TIMBEG Algorithm</h3>
+<ol>
+<li>Saves original input dates</li>
+<li>Converts both dates to Julian format</li>
+<li>Compares Julian dates</li>
+<li>If first date is later than second date:</li>
+<li>Swaps the dates and Julian values</li>
+<li>Sets sign indicator to -1</li>
+<li>Otherwise sets sign indicator to 1</li>
+<li>Restores original input dates</li>
+</ol>
+<h3>C-TIMEND Algorithm</h3>
+<ol>
+<li>Applies the sign to the calculated days</li>
+<li>Processes based on year type:</li>
+<li>For YRTYPE 998 (Elapsed Unit Periods):<ul>
+<li>Applies sign to months</li>
+<li>Calculates remainder as days - (months × 30)</li>
+</ul>
+</li>
+<li>For other year types:<ul>
+<li>Divides days by 30 to get months and remainder</li>
+</ul>
+</li>
+<li>For YRTYPE 365:</li>
+<li>Recalculates days as the difference between Julian dates</li>
+<li>If dates were swapped (negative sign):</li>
+<li>Restores original date order</li>
+</ol>
+<h2>Special Year Type Handling</h2>
+<p>The system supports multiple year types, each with specific calculation methods:
+- <strong>YRTYPE 365</strong>: Actual calendar days
+- <strong>YRTYPE 998</strong>: Elapsed Unit Periods (30-day periods)
+- <strong>Default</strong>: Standard 30-day month calculations</p>
+<h2>Dependencies</h2>
+<ul>
+<li><code>C-CALL-JUL</code>: Used to convert dates to Julian format</li>
+</ul>
+<h2>Integration Points</h2>
+<p>These utilities are used by all elapsed time calculation routines:
+- <code>C-TIM360-358</code>: 360/358-day calculations
+- <code>C-TIM361</code>: 361-day calculations
+- <code>C-TIM362</code>: 362-day calculations
+- <code>C-TIM365-367</code>: 365/367-day calculations
+- <code>C-TIM999-998</code>: Truth in Lending/Elapsed Unit Period calculations
+- <code>C-TIMALL</code>: All time calculations</p>
+<h2>Notes</h2>
+<ul>
+<li>The utilities ensure consistent behavior across different time calculation methods</li>
+<li>C-TIMBEG was designed to handle cases where dates might be provided in reverse order</li>
+<li>C-TIMEND contains special handling for year type 998 added by JTG on 05/02/97</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

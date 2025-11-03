@@ -1,0 +1,21 @@
+flowchart LR
+    A[Calling Programs] --> B[C-TIMEND]
+    C[C-TIMALL] --> B
+    D[C-ELAPSED-TIME] --> B
+    E[Month-based Calculations] --> B
+    
+    B --> F[Mathematical Operations Only]
+    B --> G[No External Calls]
+    
+    H[Input Processing] --> B
+    I[WS-XDAYS Sign Application] --> B
+    J[Month Calculation] --> B
+    K[Date Order Restoration] --> B
+    
+    style B fill:#4fc3f7
+    style A fill:#ffb74d
+    style C fill:#ffb74d
+    style D fill:#ffb74d
+    style E fill:#ffb74d
+    style F fill:#81c784
+    style G fill:#81c784

@@ -1,0 +1,2263 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.   LONPFZ.
+       DATE-WRITTEN. 012486.
+      ******************************************************************
+      *                    (LP)
+      *  DESCRIPTION:  LOAN PROCESSING
+      *                TRANSACTION UPDATE
+      *                PROGRAM Z - "TP" TRCD ONLY
+      *
+      *=================================================================
+      * REV:
+      *  042995 SLC ADDED PLTYPE LOGIC.
+      *  061495 MJD SET UP TP-USERID NAD TP-POSTTIME.
+      *  062895 MJD ADDED COPY MEMBERS LIBLP/POSTDATE AND POSTDATEW.
+      *             SET TC-USERID, POSTTIME, AND POSTDATE.
+      *             SET TX-USERID, POSTTIME, AND POSTDATE.
+      *             SET TP-USERID, POSTTIME, AND POSTDATE.
+      *  072895 JTG ADDED LOGIC FOR DELSUB-SET ROUTINE
+      *  081195 JTG ADDED LOGIC FOR LPSRCD
+      *  MJD 081195 ADDED GP-FILE FOR LIBLP/LPSRCD :
+      *                   GP-THE-ONLY-SF-SRCD.
+      *  MJD 091895 ADDED DS-DATE LOGIC.
+      *  JTG 092195 CORRECTED UPDATE OF 'TYFILE' DELINQUENCY
+      *  BLL 092895 CORRECTED DS UPDATE, WAS WRITING DS W/DS-DATE BLANK
+      *  MJD 020896 ADDED UPDATE OF DEALER RESERVE FIELDS IN TY-REC.
+      *               (NET GAIN/LOSS AND NEW VOLUME).
+      *  MJD 021296 ADDED UPDATES OF PL TABLE, LOANS SOLD/TRANS/PURCH,
+      *              O2 BALS.
+      *  MJD 071696 ADDED LIBLP/LPUPWK FOR CHANGES IN LIBLP/AGEING
+      *  MJD 071896 ADDED TP-UNITPER-CD AND TP-UNITPER-FREQ
+      *  JTG 073196 ADDED SET OF CX-DT-SEQ FROM DT-SEQ
+      *  JTG 101196 ADDED 'LXE-WORKER' & 'LXE-WORKER2' FOR LPCERN-- A50 VERSION
+      *                   SP-ERNFRMLA 15 & 16, REAL INTEREST BEARINGING METHOD
+      *  JTG 110696 CHANGED TO UPDATE DS-FILE DELINQUENCY
+      *  JTG 011797 CHANGED TO UPDATE (DS) UNPAID CHECK FIGURES
+      *  JTG 022797 ADDED TEMPORARY READ OF SPR, UNTIL LN-SPRCLASS LOGIC
+      *             IS ADDED
+      *  MJD 070297 ADDED DS-DLDISC-VOL AND TY-DLDISC
+      *  BAH 070997 SET LP-REVTRCD, LP-REVSEQNO AND TP-REVTRCD, TP-REVSEQNO
+      *  JTG 081497 ADDED LC-GIFTNET TO USING CALL FOR CL/LEDGER
+      *  JTG 082297 CHANGED TO SET DT-REVERSE-TRCD TO 'TX' ON A REVERSAL
+      *  GLF 090897 REPLACED 'IO' ON GP-FILE WITH GET 'GPENV'
+      *  MJD 091797 REMOVED DELSUB-SET LOGIC; ADDED LPPDUE(W) COPY MEMBERS
+      *  MJD 101797 MOVED WK-UPDATE-BUF TO LP01WK
+      *  BAH 111197 ADDED HOLD-SP1-KEY TO CL/LEDGER LINKAGE CALL
+      *  BAH 111997 SET DS-DLDISC, GOT ELIMINATED ON MJD'S CHANGE 7/02/97
+      *  MJD 032098 ADDED GETENV(W) FOR USE IN LIBLP/POSTDATE
+      *  MJD 051998 REMOVED XY-PASTDUE.
+      *  JTG 061598 ADDED LOGIC TO UPDATE BANKRUPT DELINQUENT STATISTICS
+      *  BAH 062598 CHANGED TP-TILL PIC 9 TO TP-TILLNO PIC X
+      *  JTG 071098 CHANGED COBOL NAME FROM HOLD-LN-DLSCHG TO HOLD-LN-ANTIC-DISC
+      *  MJD 083198 ADDED LOGIC TO COMPUTE YIELD.
+      *  KEC 090498 ADDED 'MOVE LC-LOANTYPE TO LN-LOANTYPE'; REGENCY REVOLVING.
+      *  BAH 091198 ADD BW-FNAME TO CX-REASON, TC-REASON AND CK-REASON
+      *             EAST TENN, PR# 745
+      *  JTG 990112 ADDED SP-LOANCOST-FRMLA AND SP-LOANCOST-AMT, REGENCY #006
+      *  MJD 990420 CHANGED TO INCLUDE/EXCLUDE O2 IN DELINQ BASED
+      *             ON GP-DELINQ-WITH-O2
+      *  JTG 991011 CHANGED SETUP-LINE FOR 'AP' DISPLAY REVOLVING, #47 REGENCY
+      *             AND CHANGED CALL TO CL/LEDGER.C TO PASS LC-REC
+      *  JTG 000407 MODIFIED TO UPDATE UNEARNED STATISTICS, MERCURY #223
+      *  MJD 000410 ADDED UPDATE OF DS-PROCEEDS AND TY-PROCEEDS (MERC PR#223)
+      *  MJD 001016 ADDED UPDATE OF TP-COLLECTOR AND LP-COLLECTOR (BAY PR#1317)
+      *  MG  010201 REMOVED "01 WK-LXE" AND ADDED LIBLP/LPWKLXE.
+      *  GLB 010702 DLR:SUBSTITUTE COPY MEMBER LPCKCL TO CLEAR CK-RECORD
+      *  GLB 010702 DLR:FIX MOVE FROM DL-NUM-->CX-DLNO;TO DL-DLNO-->CX-DL
+      *  BAH 020319 ADDED GP-CREATE-TP-FORMS TO CREATE FORM REQUESTS WHEN
+      *             POSTING A "TP", MIDATL PR# 1757
+      *  GLB 020712 IF REVERSE 'RV' DONT MARK DT-PAID AS 'B'ATCH
+      *  GLB 020712 UPDATE ORIGINAL TRANSFER DT-RECORD WHEN "TP" REVERSE
+      *             NOTE: REALLY FINDING "TX" WHICH CARRIES THE PROCEEDS
+      *  GLB 020726 FIX TO MOVE IN DL-DLNO, NOT DL-DLNUM, TO CK-DLNO, CAUSED
+      *             INVALID DEALER PROBLEM WHEN TRYING TO VOID
+      *  CLS 020814 FIX PROBLEM WITH REVERSALS, IN UPDATE-DTQ-PURCHASED-SEQ
+      *  BLV        MOVE "Y" TO DT-REVERSE & MOVE SPACE TO DT-PAID INSTEAD OF
+      *             "B";  PROBLEM AT UNITED.  THEY WOULD REVERSE TP BUT
+      *             REVERSAL KEPT TRYING TO RELEASE A NEGATIVE AMT
+      *  BAH 030930 WAS NOT CREATING INITIAL KEY OR FORM REQEUST FOR
+      *             FORMS 11 - 20, PAGE 2 OF FORMS SETUP IN SPR, NSA LAURA
+      *   CS 080204 IF GP-I-AM-MIDATL ALLOW INPUT OF RSVPRIN3 & SKIP THE MAINT
+      *             FEE ENTRY. INCREASE TP-BUF, SEND LONPFD,LONPFZ,LONPF8
+      *                                                    MIDATL PR#3136
+      *   CS 081117 ADD TEST GP-INCL-OTH-IN-EARNED-R. IF 'R' EXCLUDE OTHER
+      *             (ANTIC 6) AND MAINTFEE (ANTIC 4) FROM EARNINGS REGACC
+      *                                                       PR#210
+      *   CS 151210 MOVE LN-OWNBR TO LP-BRNO PRIOR TO WRITE OF LP
+      *  BAH 160128 SPLIT OUT LTFILE, PD0003
+      *
+      * KEC 2016.0211 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         FIXED KEYS & RECS FOR FD-REC.
+      *         CHANGED FMNO/FORMNO/NEXTFM/SETFM FROM 3 TO 4 BYTES.
+      *  CS160216 MOVE LN-OWNBR TO LX-BRNO
+      *   CS 160222 REMOVE COPY LPWKLXE, ITS AN EARNINGS COPY MEMBER THAT IS
+      *             PASSED IN LOAN PROCESSING VIA LP01WK USING WK-LX2-REC. 
+      *             REPLACED WK-LX2-REC WITH WK-LXE-REC IN LP01WK 
+      *             MOVED LPWKLXE TO LPWKLXE.NO
+      *             SAVED VERSION LONPFZ.160222
+      *  BLM 150310 FIXED FOR NEW TY DATE FORMAT, INCREASED HOLD-TY-CLASS
+      *             & HOLD-TY-DATE, PD0003
+      *  BLM 150513 FIX FOR NEW DS-DATE FORMAT, FIX DS-UNEARNED, PD0003
+      *  CS 160830 CHANGED TEST ON SAVE-DT-SEQ < 9999 TO < 999, SAVE-DT-SEQ
+      *            IS MOVED TO DT-SEQ WHICH IS ONLY 9(3), CHANGED SAVE-DT-SEQ
+      *            FROM PIC 9(4) TO PIC 9(3)
+      *
+      * KEC 2016.1026 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         REMOVED USING HOLD-TR1-KEY.
+      *         ADDED LIBLP/LPWSTR (NEW) FOR LPWSTR-TR1-KEY (HOLD/SAVE).
+      *
+      * KEC 2017.0105 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *          CHANGED DS-DATE TO DS-DATE-CCYYMM FOR CONSISTENCY
+      *          WITH THE DATE FIELDS IN BY & UD FILE.
+      *
+      * BAH 170619 ACTIVATE 8 DIGIT DATES, PD0006
+      *
+      * KEC 2017.0727 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED HOLD-LP-KEY TO SAVE-LP1-KEY; COULD NOT RENAME TO
+      *         HOLD-LP1-KEY SINCE ALREADY USED.
+      *         CHANGED HOLD-FIRST-LP TO SAVE-FIRST-LP1-KEY.
+      * BAH 171129 FIXED WK-LXE-REC
+      *  CS 180524 CHANGED MOVE OF LOW VALUES TO FILLER2 TO FILLER
+      * BAH 181029 GLOBAL DTFILE
+      * BAH 181115 GLOBAL FMFILE
+      * BAH 181231 GLOBAL LPFILE
+      * BAH 190108 GLOBAL NOFILE
+      * BAH 190116 GLOBAL LXFILE, SPLIT
+      * BAH 190314 MOVED EDIT-FM-INITKEY TO LPWSFM-EDIT-FM-INITKEY 
+      * BAH 20190614 ADDED CLEAR-FM-FILE (LPFMCL) AND SET FM-USERID
+      * BAH 20190625 REMOVED LC-REVOLVING, PT#0153
+      * BLM 20210810 REMOVE TP-CODE, TP-POOLID NO LONGER IN KEY
+      * BAH 20220422 UPDATE TP-ACTIONCD2, SECURITIZATION #1551
+      * BAH 20220803 HARD CODED START
+      * BAH 20231019 CREATE XTRP AND XNO FOR EVERY TRANSACTION IN
+      *              R1/FTP/OUT/PAYS, FOR REPAY #1629
+      * BAH 20231218 CREATE XTRP AND XNO WITH OWNING BRANCH ONLY, IN THE PATH
+      *              FILENAME AND ALSO INSIDE THE FILE. #1629A
+      * BAH 2024.0130 CALL CRNOR2 AND WRITE NOTICE RECORD
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBLP/LPFSWK.CPY".
+       COPY "LIBLP/LPFSREPAYTRP.CPY".
+       COPY "LIBLP/LPFSREPAYNO.CPY".
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBLP/LPFDWK.CPY".
+       COPY "LIBLP/LPFDREPAYTRP.CPY".
+       COPY "LIBLP/LPFDREPAYNO.CPY".
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)LP/LONPFZ.CBL S35 01/30/24-12:56:48 >".
+      **************************************************
+      *     P R O G R A M   W O R K E R S              *
+      **************************************************
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBLP/LP01DL.CPY".
+       COPY "LIBLP/LP01DL_SQL.CPY".
+       COPY "LIBLP/LPWSDL.CPY".
+       COPY "LIBLP/LP01LC.CPY".
+       COPY "LIBLP/LP01LC_SQL.CPY".
+       COPY "LIBLP/LPWSLC.CPY".
+       COPY "LIBLP/LP01LN.CPY".
+       COPY "LIBLP/LP01LN_SQL.CPY".
+       COPY "LIBLP/LPWSLN.CPY".
+       COPY "LIBLP/LP01LP.CPY".
+       COPY "LIBLP/LP01LP_SQL.CPY".
+       COPY "LIBLP/LPWSLP.CPY".
+       COPY "LIBLP/LP01LX.CPY".
+       COPY "LIBLP/LP01LX_SQL.CPY".
+       COPY "LIBLP/LPWSLX.CPY".
+       COPY "LIBLP/LP01LXE.CPY".
+       COPY "LIBLP/LP01LXE_SQL.CPY".
+       COPY "LIBLP/LPWSLXE.CPY".
+       COPY "LIBLP/LP01LXG.CPY".
+       COPY "LIBLP/LP01LXG_SQL.CPY".
+       COPY "LIBLP/LPWSLXG.CPY".
+       COPY "LIBLP/LP01LTI.CPY".
+       COPY "LIBLP/LP01LTI_SQL.CPY".
+       COPY "LIBLP/LPWSLTI.CPY".
+       COPY "LIBLP/LP01LTP.CPY".
+       COPY "LIBLP/LP01LTP_SQL.CPY".
+       COPY "LIBLP/LPWSLTP.CPY".
+       COPY "LIBLP/LP01SP.CPY".
+       COPY "LIBLP/LP01SPA.CPY".
+       COPY "LIBLP/LP01SPB.CPY".
+       COPY "LIBLP/LP01SPC.CPY".
+       COPY "LIBLP/LP01SP_SQL.CPY".
+       COPY "LIBLP/LPWSSP.CPY".
+       COPY "LIBLP/LP01BW.CPY".
+       COPY "LIBLP/LP01BW_SQL.CPY".
+       COPY "LIBLP/LPWSBW.CPY".
+       COPY "LIBLP/LP01TY.CPY".
+       COPY "LIBLP/LP01TY_SQL.CPY".
+       COPY "LIBLP/LPWSTY.CPY".
+       COPY "LIBLP/LP01CX.CPY".
+       COPY "LIBLP/LP01CX_SQL.CPY".
+       COPY "LIBLP/LPWSCX.CPY".
+       COPY "LIBLP/LP01DS.CPY".
+       COPY "LIBLP/LP01DS_SQL.CPY".
+       COPY "LIBLP/LPWSDS.CPY".
+       COPY "LIBLP/LP01DT.CPY".
+       COPY "LIBLP/LP01DT_SQL.CPY".
+       COPY "LIBLP/LPWSDT.CPY".
+       COPY "LIBLP/LP01FM.CPY".
+       COPY "LIBLP/LP01FM_SQL.CPY".
+       COPY "LIBLP/LPWSFM.CPY".
+       COPY "LIBLP/LP01NO.CPY".
+       COPY "LIBLP/LP01NO_SQL.CPY".
+       COPY "LIBLP/LPWSNO.CPY".
+       COPY "LIBLP/LP01CK.CPY".
+       COPY "LIBLP/LP01CK_SQL.CPY".
+       COPY "LIBLP/LPWSCK.CPY".
+       COPY "LIBLP/LP01FD.CPY".
+       COPY "LIBLP/LP01FD_SQL.CPY".
+       COPY "LIBLP/LPWSFD.CPY".
+      *-----------------------------------------------------------------
+       COPY "LIBLP/LP01TRC.CPY".
+       COPY "LIBLP/LP01TRC_SQL.CPY".
+       COPY "LIBLP/LPWSTRC.CPY".
+       COPY "LIBLP/LP01TRP.CPY".
+       COPY "LIBLP/LP01TRP_SQL.CPY".
+       COPY "LIBLP/LPWSTRP.CPY".
+       COPY "LIBLP/LP01TRX.CPY".
+       COPY "LIBLP/LP01TRX_SQL.CPY".
+       COPY "LIBLP/LPWSTRX.CPY".
+       COPY "LIBLP/LPWKPATH.CPY".
+       COPY "LIBLP/LPWSREPAYTRP.CPY".
+       COPY "LIBLP/LPWSREPAYNO.CPY".
+       COPY "LIBEX/EX01XTRP.CPY".
+       COPY "LIBEX/EX01XNO.CPY".
+
+       01  WK-KEY              PIC 9(2)    VALUE 0.
+
+       01  WORKX                       PIC S9(7)V99 COMP.
+
+       01  WK-REASON.
+           03  FILLER          PIC X(13).
+           03  WK-WHO          PIC X(17).
+       01  MSEL-LIST           PIC X(5)     VALUE "MSEL.".
+
+      *********************************************************
+      *   DATA PATH FROM GETENV ON "FIL"
+      *********************************************************
+       01  DATA-PATH             PIC X(35).
+       01  FIL-PATH              REDEFINES DATA-PATH.
+      * USR/DATA/R1/
+           03  FIL-BASE         PIC X(12).
+
+       01  WS-BRACCTNO.
+           03  WS-BRNO     PIC 9(4).
+           03  WS-NUMBER   PIC 9(6).
+
+       01  RV-LP-SEQNO        PIC 9(5)     VALUE 0.
+       01  SAVE-CX1-KEY.
+           03  SAVE-CX-BRNO    PIC 9(4).
+           03  SAVE-CX-TYPE    PIC X(2).
+           03  SAVE-CX-SEQNO   PIC 9(4).
+
+       01  HOLD-TY1-KEY.
+           03  HOLD-TY-BRNO    PIC 9(4).
+           03  HOLD-TY-DATE    PIC 9(8).
+           03  HOLD-TY-CLASS   PIC 9(3).
+       01  HOLD-DS1-KEY.
+           03  HOLD-DS-DATE-CCYYMM    PIC 9(6).
+           03  HOLD-DS-BRANCH         PIC 9(4).
+           03  HOLD-DS-DLNO           PIC 9(4)V99.
+           03  HOLD-DS-CLASS          PIC 9(3).
+
+       01  ORIG-LN-REPOCD            PIC X        VALUE " ".
+           88  ORIG-LN-IS-REPO-AR     VALUE "X" "S".
+           88  ORIG-LN-REPO-ONHAND    VALUE "X".
+           88  ORIG-LN-REPO-REDEEMED  VALUE "V".
+           88  ORIG-LN-REPO-SOLD      VALUE "S".
+           88  ORIG-LN-IS-NOT-REPO    VALUE " " "V".
+       01  REPO-AR-SUB               PIC S9(5) COMP.
+
+       01  HOLD-FROM-LN-CLASS  PIC 9(3).
+       01  HOLD-TO-LN-CLASS    PIC 9(3).
+       01  HOLD-TP-OTHBR-FG    PIC X.
+       01  HOLD-TP-POSTING-BR  PIC 9(4)     COMP-3.
+       01  HOLD-TP-BRNO        PIC 9(4)     COMP-3.
+
+      * HOLD-LP1-KEY ALREADY EXISTS IN LIBLP/LPPFBUF
+       01  SAVE-LP1-KEY         PIC X(17)    VALUE SPACES.
+       01  SAVE-FIRST-LP1-KEY   PIC X(17)    VALUE SPACES.
+
+       01  HOLD-LP-TRCD        PIC XX       VALUE SPACES.
+       01  RV-LP-TRCD          PIC XX       VALUE SPACES.
+       01  SAVE-DT-SEQ         PIC 9(3).
+
+       01  HOLD-DT-UNPAID          PIC X.
+       01  SAVE-DT1-KEY.
+           03  SAVE-DT1-BRNO              PIC 9(4).
+           03  SAVE-DT1-NUM               PIC 9(6).
+           03  SAVE-DT1-DLNO             REDEFINES SAVE-DT1-NUM
+                                          PIC 9(4)V99.
+           03  SAVE-DT1-CLASS             PIC 9(3).
+           03  SAVE-DT1-ACCTNO            PIC 9(8).
+           03  SAVE-DT1-DATE              PIC 9(8).
+           03  SAVE-DT1-SEQ               PIC 9(3).
+       01  SAVE-LP-SEQNO       PIC 9(5)     COMP-3.
+       01  SAVE-TX-LINE        PIC 9(3).
+
+       01  FM-SUB              PIC 9(2).
+
+       01  D-LNNO-LIST         PIC X(13)  VALUE "LNNO SORTKEY.".
+       01  D-LNNO-BUF.
+           03  D-LOAN-NUM      PIC X(16).
+           03  D-LCDESC        PIC X(16).
+
+       01  ORIG-RDSUB          PIC 99       COMP VALUE 0.
+       01  ORIG-CSUB           PIC 99       COMP VALUE 0.
+       01  ORIG-OUTBAL         PIC S9(7)V99 COMP VALUE 0.
+       01  SAVE-OT2BAL         PIC S9(7)V99 COMP VALUE 0.
+
+       01  ELE                 PIC 99               VALUE 0.
+       01  TP-ONE              PIC S9.
+       01  SUB                 PIC 9(6)    COMP-3   VALUE 0.
+       01  WK-SUB              PIC 9       COMP-3   VALUE 0.
+       01  REC-EXISTS          PIC X                VALUE SPACES.
+       01  NON-MEMO-CHGS       PIC 9(6)V99   COMP.
+       01  NOT-OUR-CHGS        PIC 9(6)V99   COMP.
+       01  OUR-CHGS            PIC 9(6)V99   COMP.
+       01  INS-COMM            PIC S9(7)V99  COMP.
+
+
+       COPY "LIBGB/SPPDTHW.CPY".
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/GPENVW.CPY".
+       COPY "LIBLP/LPANTIW.CPY".
+       COPY "LIBLP/LPMDTEW.CPY".
+       COPY "LIBLP/LPSTATW.CPY".
+       COPY "LIBLP/LPCEPPW.CPY".
+       COPY "LIBLP/LPMENUW.CPY".
+       COPY "LIBLP/LPSETTYW.CPY".
+       COPY "LIBGB/DACCESSW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBLP/LPDSCLW.CPY".
+       COPY "LIBGB/AGEINGW.CPY".
+       COPY "LIBLP/LPUPWKW.CPY".
+       COPY "LIBLP/POSTDATEW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBLP/LPPDUEW.CPY".
+       COPY "LIBLP/LPSRCDW.CPY".
+       COPY "LIBLP/LPUPERW.CPY".
+       COPY "LIBLP/LPUERNW.CPY".
+       COPY "LIBLP/LPEADJW.CPY".
+       COPY "LIBLP/SETCTBLW.CPY".
+       COPY "LIBLP/LPREGZW.CPY".
+       COPY "LIBGB/RBACTW.CPY".
+       COPY "LIBLP/LPITRMW.CPY".
+       COPY "LIBLP/LPAPRSW.CPY".
+       COPY "LIBLP/LPAPRZW.CPY".
+       COPY "LIBGB/REBATEW.CPY".
+       COPY "LIBLP/LPCERNW.CPY".
+       COPY "LIBLP/LPAMTSW.CPY".
+       COPY "LIBCL/CRNOR2W.CPY".
+       COPY "LIBLP/LPPOFFW.CPY".
+
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBLP/LONPF_DEF.CPY".
+       COPY "LIBLP/LONPF_WKS.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+       COPY "LIBGB/PRU_LNK.CPY".
+
+       COPY "LIBGB/GETFMW.CPY".
+       COPY "LIBLP/LPPFBUF.CPY".
+       COPY "LIBLP/LPLOANW.CPY".
+
+       SCREEN SECTION.
+       COPY "LIBLP/LONPF_SCN.CPY".
+
+       PROCEDURE DIVISION
+             USING FORM-PATHNAME EXIT-PATHNAME PROG-BUF UPDATE-BUF.
+       DECLARATIVES.
+       DECLARE-ERROR SECTION.
+           USE AFTER ERROR PROCEDURE ON
+                 WK-FILE REPAY-TRP-FILE REPAY-NO-FILE.
+       COPY "LIBGB/DECLARE.CPY".
+           PERFORM CLOSE-TY1-FILE.
+           PERFORM CLOSE-TRX1-FILE.
+           PERFORM CLOSE-TRP1-FILE.
+           PERFORM CLOSE-TRC1-FILE.
+           PERFORM CLOSE-SP1-FILE.
+           PERFORM CLOSE-NO1-FILE.
+           PERFORM CLOSE-LXG1-FILE.
+           PERFORM CLOSE-LTP1-FILE.
+           PERFORM CLOSE-LTI1-FILE.
+           PERFORM CLOSE-LP1-FILE.
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-LC1-FILE.
+           PERFORM CLOSE-FM1-FILE.
+           PERFORM CLOSE-FD1-FILE.
+           PERFORM CLOSE-DT1-FILE.
+           PERFORM CLOSE-DS1-FILE.
+           PERFORM CLOSE-DL1-FILE.
+           PERFORM CLOSE-CX1-FILE.
+           PERFORM CLOSE-CK1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           PERFORM CLOSE-BR-FILE.
+           CLOSE WK-FILE REPAY-TRP-FILE REPAY-NO-FILE.
+       COPY "LIBGB/DECLAR2.CPY".
+
+      **************************************************
+      *     MAIN PROGRAM SECTION
+      **************************************************
+       MAIN-PROGRAM SECTION.
+
+           PERFORM SQL-CONNECT.
+
+      D    STOP MESS.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "LONPF" TO VDU-FORM-NAME.
+
+           PERFORM INITIALIZE-ROUTINE.
+           IF ERRCD NOT = " "
+              IF ERRCD = "Z"
+                 GO TO UPDATE-EXIT
+              ELSE
+                 GO TO END-ROUTINE.
+
+      **************************************************
+      *  FILE UPDATE ROUTINES
+      *  EXAMPLE OF "TP" CODE:
+      *
+      *     IF NORMAL POSTING:
+      *         RV-LP-TRCD   = "  "
+      *         HOLD-LP-TRCD = "TP"
+      *         TP-ONE       = +1
+      *         RV-LP-SEQNO  = 0000
+      *     IF REVERSAL:
+      *         RV-LP-TRCD   = "TP"
+      *         HOLD-LP-TRCD = "TP"
+      *         TP-ONE       = -1
+      *         RV-LP-SEQNO  = LP-SEQNO OF THE "TP"
+      **************************************************
+
+           IF LP-TRCD = "RV"
+              MOVE -1 TO TP-ONE
+              PERFORM REVERSE-LP-RECORDS
+              MOVE LP-TOCL TO HOLD-FROM-LN-CLASS
+              MOVE LP-FROMCL TO HOLD-TO-LN-CLASS
+            ELSE
+              MOVE +1 TO TP-ONE
+              MOVE LP-TRCD TO HOLD-LP-TRCD
+              MOVE LP-FROMCL TO HOLD-FROM-LN-CLASS
+              MOVE LP-TOCL TO HOLD-TO-LN-CLASS.
+      **************************************************
+
+      * CLEAR OUT SERVICED FROM DS-FILE:
+           MOVE TRANS-DATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-YYYYMM.
+           MOVE DATE-YYYYMM TO HOLD-DS-DATE-CCYYMM.
+           MOVE LN-OWNBR TO HOLD-DS-BRANCH.
+           MOVE LN-DLNO TO HOLD-DS-DLNO.
+           MOVE HOLD-FROM-LN-CLASS TO HOLD-DS-CLASS.
+           PERFORM CLEAR-DS1-SERVICE.
+
+      * CLEAR OUT SERVICED FROM TODAYS TOTALS:
+           MOVE LN-OWNBR           TO HOLD-TY-BRNO.
+           MOVE TRANS-DATE         TO HOLD-TY-DATE.
+           MOVE HOLD-FROM-LN-CLASS TO HOLD-TY-CLASS.
+           PERFORM CLEAR-TY-SERVICE.
+
+      * CLEAR OUT SERVICED FROM TR1(TP)-FILE AND DT-FILE.
+           PERFORM UPDATE-TRANS-FILE.
+
+      * CHANGE LOAN TO PURCHASED ACCOUNT:
+           PERFORM UPDATE-LN1-FILE.
+
+           PERFORM UPDATE-NOTICE-FILE.
+
+      * SETUP NEW PURCHASED IN DS-FILE:
+           MOVE TRANS-DATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-YYYYMM.
+           MOVE DATE-YYYYMM TO HOLD-DS-DATE-CCYYMM.
+           MOVE LN-OWNBR    TO HOLD-DS-BRANCH.
+           MOVE LN-DLNO     TO HOLD-DS-DLNO.
+           MOVE HOLD-TO-LN-CLASS TO HOLD-DS-CLASS.
+           PERFORM UPDATE-DS1-FILE.
+
+      * SETUP NEW PURCHASED IN TODAYS TOTALS:
+           MOVE LN-OWNBR         TO HOLD-TY-BRNO.
+           MOVE TRANS-DATE       TO HOLD-TY-DATE.
+           MOVE HOLD-TO-LN-CLASS TO HOLD-TY-CLASS.
+           PERFORM UPDATE-TY1-FILE.
+
+      * SETUP NEW PURCHASED DAILY TRANS RECORD:
+           PERFORM UPDATE-TR1-PURCHASED.
+
+      * SETUP NEW PURCHASED DEALER TRANS RECORD:
+           PERFORM UPDATE-DT1-PURCHASED.
+
+      * GET DEALER RECORD:
+           MOVE LN-DLNO TO DL-DLNO.
+           PERFORM OPEN-DL1-FILE.
+           PERFORM READ-DL1-FILE.
+           PERFORM CLOSE-DL1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+      * GET BORROWER RECORD:
+           MOVE LN-SSNO(1) TO BW-SSNO.
+           PERFORM OPEN-BW1-FILE.
+           PERFORM READ-BW1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+      * SETUP NEW PURCHASED CHECK TRANS RECORD:
+           PERFORM UPDATE-TRC.
+
+      * SETUP NEW PURCHASED TEMP. CHECK RECORD:
+           PERFORM UPDATE-CX1.
+
+      * SETUP NEW PURCHASED CHECK RECORD:
+           PERFORM UPDATE-CK1.
+
+      * SETUP NEW PURCHASED CHECK FORM REQUEST:
+           PERFORM CREATE-FM-RECORD.
+
+      * TEST IF SPR "AUTO-REQ" FORMS SHOULD BE CREATED
+           IF GP-CREATE-TP-FORMS = "Y"
+              PERFORM CREATE-AUTO-REQ-FORMS.
+
+      * FTP/OUT/PAYS/NO.BRNO.NUMBER (DATA WAREHOUSE LAYOUT)
+           IF GP-CREATE-PAY-XTRP-XNO = "Y"
+              PERFORM UPDATE-REPAY-NO-FILE.
+
+           MOVE "U P D A T E    C O M P L E T E " TO MESS.
+           PERFORM SEND-LEGEND.
+       UPDATE-EXIT.
+           MOVE MENU-PROG-FORM(4) TO NEW-PROG-FORM.
+           MOVE "P" TO ERRCD.
+
+           PERFORM FULL-BRIEF-ROUTING.
+
+           PERFORM SAVE-SCREEN.
+           GO TO END-ROUTINE.
+
+      ****************************************
+       INITIALIZE-ROUTINE SECTION.
+      ****************************************
+
+           MOVE USER-PID TO TEMP-PID.
+
+           MOVE SPACES TO ERRCD.
+
+           PERFORM GET-GPENV.
+
+           MOVE BRANCH TO BR-NO.
+           PERFORM OPEN-BR-FILE.
+           PERFORM READ-BR-FILE.
+           PERFORM CLOSE-BR-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+      * INITIALIZE LP-REC:
+           PERFORM RESTORE-SCREEN.
+      * RESTORE-SCREEN ALREADY DOES THIS!
+      *    MOVE WK-LP-REC TO LP-REC.
+      *    MOVE WK-LX-REC TO LX-REC.
+
+      * INITIALIZE LN-REC:
+           PERFORM OPEN-LN1-FILE.
+           PERFORM READ-LN1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+           IF LN-REC NOT = WK-SAVE-REC
+              MOVE " LOAN RECORD HAS BEEN CHANGED" TO MESS
+              PERFORM SEND-MESS
+              MOVE " PLEASE RE-INPUT YOUR CHANGES" TO MESS
+              PERFORM SEND-MESS
+              MOVE "Z" TO ERRCD
+              GO TO INITIALIZE-ROUTINE-EXIT.
+
+      * SETUP FOR REPO PROCESSING:
+           MOVE LN-REPOCD TO ORIG-LN-REPOCD.
+           IF ORIG-LN-IS-REPO-AR
+              IF ORIG-LN-REPO-ONHAND
+                 MOVE 1 TO REPO-AR-SUB
+              ELSE
+                 MOVE 3 TO REPO-AR-SUB.
+
+      * TEMPORARY READ OF SPR, UNTIL LN-SPRCLASS LOGIC IS ADDED: JTG 022797
+           MOVE HOLD-SP1-KEY TO SP1-KEY.
+           IF LP-TRCD = "RV"
+              MOVE LP-FROMCL TO HOLD-TO-LN-CLASS
+            ELSE
+              MOVE LP-TOCL TO HOLD-TO-LN-CLASS.
+           MOVE HOLD-TO-LN-CLASS TO SP-SPRCLASS.
+           PERFORM GET-SP.
+           IF ERRCD NOT = " "
+              GO TO INITIALIZE-ROUTINE-EXIT.
+
+      * ESTABLISH CONTR, RECENCY & PAST DUE:
+           PERFORM ESTABLISH-ORIG-CON-REC.
+           IF ERRCD NOT = " "
+              GO TO INITIALIZE-ROUTINE-EXIT.
+
+       INITIALIZE-ROUTINE-EXIT.
+           EXIT.
+
+      ************************************
+       REVERSE-LP-RECORDS SECTION.
+      ************************************
+           MOVE "REVERSING PAYMENT FILE.................." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-LP1-FILE.
+           PERFORM READ-LP1-FILE.
+           IF IO-FG NOT = 0 OR LP-REV = "Y"
+      *       UNLOCK LP-FILE
+              MOVE " PAYMENT REVERSAL ERROR" TO MESS
+              PERFORM SEND-MESS
+              GO TO IO-ERROR.
+           IF RV-LP-TRCD = SPACES
+              MOVE LP-TRCD TO RV-LP-TRCD HOLD-LP-TRCD
+              MOVE LP-SEQNO TO RV-LP-SEQNO.
+           MOVE "Y" TO LP-REV.
+
+           PERFORM REWRITE-LP1-FILE.
+
+           MOVE "N" TO REV-REBATE.
+           MOVE WK-LP-REC TO LP-REC.
+           PERFORM CLOSE-LP1-FILE.
+
+      ***********************************
+       CLEAR-DS1-SERVICE SECTION.
+      ***********************************
+
+      * CLEAR SERVICE ACCOUNT
+
+           MOVE "CLEARING DEALER SERVICE STATISTICS........." TO MESS.
+           PERFORM SEND-LEGEND.
+           PERFORM UPDATE-DS1-READ-FILE.
+
+           IF LN-PLCD = " "
+              COMPUTE DS-SUMWGTTM = DS-SUMWGTTM -
+                                        (TP-ONE * LN-ORGTERM)
+              COMPUTE DS-SUMWGTAV = DS-SUMWGTAV -
+                                        (TP-ONE * LN-LNAMT)
+              COMPUTE DS-SUMWGTTA =
+                 DS-SUMWGTTA - (LN-ORGTERM * TP-ONE * LN-LNAMT)
+              SUBTRACT TP-ONE FROM DS-OUTSUNIT(1)
+              SUBTRACT LP-INTDUE FROM DS-OUTSAMT(1).
+           IF LN-JDDATE NOT = 0
+              SUBTRACT TP-ONE FROM DS-JDOSUNIT(1)
+              SUBTRACT LP-INTDUE FROM DS-JDOSAMT(1).
+           IF LN-PLCD NOT = " "
+              SUBTRACT TP-ONE FROM DS-PLOSUNIT(1)
+              SUBTRACT LP-INTDUE FROM DS-PLOSAMT(1)
+              ADD TP-ONE TO DS-RCPLUNIT(1)
+              ADD LP-INTDUE TO DS-RCPLAMT(1).
+
+      * DELINQUENCY UPDATE:
+           PERFORM UPDATE-DS1-PRIOR-TFR.
+
+           PERFORM REWRITE-DS1-FILE.
+       EXIT-CLEAR-DS1-SERVICE.
+           PERFORM CLOSE-DS1-FILE.
+
+      ***********************************
+       CLEAR-TY-SERVICE SECTION.
+      ***********************************
+
+      * CLEAR SERVICE ACCOUNT
+
+           MOVE "CLEARING TODAY'S SERVICE TOTALS........" TO MESS.
+           PERFORM SEND-LEGEND.
+           PERFORM UPDATE-TY1-READ-FILE.
+
+      *  CANNOT POST "TS" TO ACCOUNT IN P&L.
+           IF SRCD-NOT-PL
+              COMPUTE TY-SUMWGTTM = TY-SUMWGTTM -
+                                        (TP-ONE * LN-ORGTERM)
+              COMPUTE TY-SUMWGTAV = TY-SUMWGTAV -
+                                        (TP-ONE * LN-LNAMT)
+              COMPUTE TY-SUMWGTTA =
+                 TY-SUMWGTTA - (LN-ORGTERM * TP-ONE * LN-LNAMT)
+              COMPUTE TY-PRINCOL =
+                  TY-PRINCOL + LP-INTDUE - (LN-OT2BAL * TP-ONE)
+              COMPUTE TY-OT2COL = TY-OT2COL + (LN-OT2BAL * TP-ONE)
+              IF ORIG-LN-IS-REPO-AR
+                 SUBTRACT TP-ONE FROM TY-NO-REPO(1 REPO-AR-SUB)
+                 SUBTRACT LP-INTDUE FROM TY-AMT-REPO(1 REPO-AR-SUB)
+                 COMPUTE TY-O2-REPO(1 REPO-AR-SUB) =
+                    TY-O2-REPO(1 REPO-AR-SUB) - (LP-OT2BAL * TP-ONE)
+              ELSE
+                 SUBTRACT TP-ONE FROM TY-NO(1 SRCD)
+                 SUBTRACT LP-INTDUE FROM TY-AMT(1 SRCD)
+                 COMPUTE TY-O2(1 SRCD) =
+                           TY-O2(1 SRCD) - (LP-OT2BAL * TP-ONE).
+
+      * DELINQUENCY UPDATE:
+           PERFORM UPDATE-TY1-PRIOR-TFR.
+
+           PERFORM REWRITE-TY1-FILE.
+           PERFORM CLOSE-TY1-FILE.
+
+      **************************************
+       UPDATE-TRANS-FILE SECTION.
+      **************************************
+
+      * CLEAR SERVICE ACCOUNT
+
+           MOVE 0 TO TP-LINE.
+
+       UPDATE-TR1-OPEN.
+           MOVE "UPDATING DAILY TRANSACTION FILE........." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           MOVE BRANCH   TO HOLD-TP-POSTING-BR.
+           MOVE LN-OWNBR TO HOLD-TP-BRNO.
+           IF HOLD-TP-POSTING-BR = HOLD-TP-BRNO
+              MOVE SPACES TO HOLD-TP-OTHBR-FG
+              PERFORM UPDATE-TR1-FILE
+            ELSE
+              MOVE "G" TO HOLD-TP-OTHBR-FG
+              PERFORM UPDATE-TR1-FILE
+              MOVE LN-OWNBR TO HOLD-TP-POSTING-BR
+              MOVE BRANCH   TO HOLD-TP-BRNO
+              MOVE "C" TO HOLD-TP-OTHBR-FG
+              PERFORM UPDATE-TR1-FILE.
+
+      *----------------------------
+           MOVE "UPDATING LOAN PAYMENT FILE.............." TO MESS.
+           PERFORM SEND-LEGEND.
+       SETUP-LP-SEQ.
+           PERFORM OPEN-LP1-FILE.
+
+           MOVE LP-PATH-OWNBR TO LP-BRNO.
+           MOVE LN-ACCTNO     TO LP-ACCTNO.
+           MOVE 0             TO LP-SEQNO.
+
+           MOVE LP-REC TO WK-LP-REC.
+           MOVE 99999  TO LP-SEQNO.
+
+           MOVE LP-BRNO   TO QLP1-WBEG-BRNO
+                             QLP1-WEND-BRNO.
+           MOVE LP-ACCTNO TO QLP1-WBEG-ACCTNO
+                             QLP1-WEND-ACCTNO.
+           MOVE LP-SEQNO  TO QLP1-WEND-SEQNO.
+           MOVE ALL "0"   TO QLP1-WBEG-SEQNO.
+
+           PERFORM START-LP1-FILE-NOT-GREATER.
+           PERFORM READ-LP1-FILE-PREVIOUS.
+           PERFORM CLOSE-LP1-FILE.
+           IF IO-FG NOT = 0 OR (LP-PATH-OWNBR NOT = LP-BRNO) OR
+                                (LN-ACCTNO NOT = LP-ACCTNO)
+              MOVE LP-PATH-OWNBR TO LP-BRNO
+              MOVE LN-ACCTNO     TO LP-ACCTNO
+              MOVE 0             TO LP-SEQNO.
+           PERFORM OPEN-LP1-FILE.
+       NEXT-AVAIL-SEQ.
+           ADD 1 TO LP-SEQNO.
+           MOVE LP1-KEY TO SAVE-LP1-KEY.
+           PERFORM READ-LP1-FILE.
+           IF IO-FG = 0
+      *       UNLOCK LP-FILE
+              GO TO NEXT-AVAIL-SEQ.
+
+           MOVE WK-LP-REC TO LP-REC.
+           MOVE SAVE-LP1-KEY TO LP1-KEY.
+           PERFORM SET-POSTDATE.
+           MOVE POST-USERID TO LP-USERID.
+           MOVE POST-TIME TO LP-POSTTIME.
+           MOVE POST-DATE TO LP-POSTDATE.
+           MOVE LN-COLLECTOR TO LP-COLLECTOR.
+
+           MOVE RV-LP-TRCD TO LP-REVTRCD.
+           MOVE RV-LP-SEQNO TO LP-REVSEQNO.
+
+           PERFORM WRITE-LP1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+           PERFORM CLOSE-LP1-FILE.
+
+           IF LXG-GLAMT(1) NOT = 0 OR
+              LXG-GLAMT(2) NOT = 0 OR
+              LXG-GLAMT(3) NOT = 0
+                 MOVE LP-BRNO   TO LXG-BRNO
+                 MOVE LP-ACCTNO TO LXG-ACCTNO
+                 MOVE LP-SEQNO  TO LXG-SEQNO
+                 PERFORM OPEN-LXG1-FILE
+                 PERFORM WRITE-LXG1-FILE
+                 PERFORM CLOSE-LXG1-FILE.
+
+           MOVE LP1-KEY  TO SAVE-FIRST-LP1-KEY.
+           MOVE LP-SEQNO TO SAVE-LP-SEQNO.
+           PERFORM UPDATE-DT1-FILE.
+
+      *************************************
+       UPDATE-TR1-FILE SECTION.
+      *************************************
+
+      * CLEAR SERVICE ACCOUNT
+
+           PERFORM OPEN-TRP1-FILE.
+
+           MOVE HOLD-TP-BRNO       TO TP-BRNO.
+           MOVE TRANS-DATE         TO TP-DATE.
+           MOVE HOLD-FROM-LN-CLASS TO TP-CLASS.
+           MOVE LN-ACCTNO          TO TP-ACCTNO.
+       TR-CHECK-EXISTS.
+           ADD 1                   TO TP-LINE.
+
+           MOVE TRP1-KEY TO LPWSTRP-TRP1-KEY.
+           PERFORM READ-TRP1-FILE.
+           IF IO-FG = 0
+      *       UNLOCK TRP-FILE
+              GO TO TR-CHECK-EXISTS.
+
+           PERFORM CLEAR-TRP-FILE.
+           MOVE LPWSTRP-TRP1-KEY TO TRP1-KEY.
+
+           MOVE HOLD-TP-POSTING-BR TO TP-POSTING-BR.
+           MOVE HOLD-TP-OTHBR-FG   TO TP-OTHBR-FG.
+           MOVE LN-LAWCODE         TO TP-LAWCODE.
+           IF LN-JDDATE NOT = 0
+              MOVE "J"             TO TP-JDCD.
+           MOVE LN-PLCD            TO TP-PLCD.
+           MOVE LN-PLTYPE          TO TP-PLTYPE.
+           MOVE LP-SSNO            TO TP-SSNO.
+           MOVE MAKER-CD           TO TP-MAKER.
+           MOVE LP-IBPC            TO TP-IBPC.
+           MOVE LP-TRCD            TO TP-TRCD.
+           IF RV-LP-TRCD NOT = " "
+              MOVE "Y"             TO TP-REV
+              MOVE RV-LP-TRCD      TO TP-TRCD.
+           MOVE LP-REFNO           TO TP-REFNO.
+           MOVE LP-PAYDATE         TO TP-PAYDATE.
+           MOVE LP-PDTH-DATE       TO TP-DUEDATE.
+
+           ADD LP-INTDUE TO TP-TRAMT.
+
+           MOVE LXG-GLNO(1) TO TP-GLNO(1).
+           MOVE LXG-GLNO(2) TO TP-GLNO(2).
+           MOVE LXG-GLNO(3) TO TP-GLNO(3).
+
+           ADD LXG-GLAMT(1) TO TP-GLAMT(1).
+           ADD LXG-GLAMT(2) TO TP-GLAMT(2).
+           ADD LXG-GLAMT(3) TO TP-GLAMT(3).
+
+           PERFORM SET-TP-EARNINGS.
+
+           ADD LP-OTHBAL TO TP-OTHBAL.
+           ADD LP-OT2BAL TO TP-OT2BAL.
+           ADD LP-INTBAL TO TP-INTBAL.
+           ADD LP-LCBAL TO TP-LCBAL.
+           ADD LP-CURBAL TO TP-CURBAL.
+
+           MOVE RV-LP-TRCD TO TP-REVTRCD.
+           MOVE RV-LP-SEQNO TO TP-REVSEQNO.
+
+           MOVE LP-PDTH-DATE TO TP-PDTH-DATE.
+           MOVE LP-TILLNO TO TP-TILLNO.
+           MOVE LP-LCPDTH-DATE TO TP-LCPDTH-DATE.
+           MOVE LN-DLNO TO TP-DLNO.
+           MOVE LP-DLPROC TO TP-DLPROC.
+           MOVE LP-INTPAID TO TP-INTPAID.
+           MOVE LP-NEWSTAT-RATE TO TP-NEWSTAT-RATE.
+
+           MOVE "N" TO TP-SERVACCT.
+           MOVE LN-SALEFIN TO TP-SALEFIN.
+           MOVE LN-LOANTYPE TO TP-LOANTYPE.
+
+           PERFORM SET-POSTDATE.
+           MOVE POST-USERID TO TP-USERID.
+           MOVE POST-TIME TO TP-POSTTIME.
+           MOVE POST-DATE TO TP-POSTDATE.
+           MOVE LN-COLLECTOR TO TP-COLLECTOR.
+
+           MOVE LN-UNITPER-CD   TO TP-UNITPER-CD.
+           MOVE LN-UNITPER-FREQ TO TP-UNITPER-FREQ.
+           MOVE LN-ACTIONCD2    TO TP-ACTIONCD2.
+
+           PERFORM WRITE-TRP1-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+           PERFORM CLOSE-TRP1-FILE.
+
+      * ONLY CREATE XTRP FOR OWNING BRANCH
+
+      * INTERBRANCH OWNING BRANCH (OTHBR-FG "G")
+      * INTERBRANCH POSTING BRANCH (OTHBR-FG "C")
+      * OWNING BRANCH POSTING FOR ITSELF (OTHBR-FG = " ")
+
+      * FTP/OUT/PAYS/TRP.BRNO.NUMBER.SEQ (DATA WAREHOUSE LAYOUT)
+
+           IF GP-CREATE-PAY-XTRP-XNO = "Y" AND
+                                      HOLD-TP-OTHBR-FG NOT = "C"
+              PERFORM UPDATE-REPAY-TRP-FILE.
+
+      *****************************************
+       UPDATE-DT1-FILE SECTION.
+      *****************************************
+
+      * CLEAR SERVICE ACCOUNT
+
+           MOVE "UPDATING DEALER TRANS SERVICED FILE....." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-DT1-FILE.
+           MOVE 1 TO SAVE-DT-SEQ.
+       UPDATE-DT1-SEQ.
+           PERFORM CLEAR-DT-FILE.
+
+           MOVE LN-OWNBR           TO DT-BRNO.
+           MOVE LN-DLNO            TO DT-DLNO.
+           MOVE HOLD-FROM-LN-CLASS TO DT-CLASS.
+           MOVE LP-ACCTNO          TO DT-ACCTNO.
+           MOVE LP-TRDATE          TO DT-DATE.
+           MOVE SAVE-DT-SEQ        TO DT-SEQ.
+
+           MOVE "S" TO DT-TYPE.
+           MOVE LP-SEQNO TO DT-LPSEQNO.
+           MOVE LP-TRCD TO DT-TRCD.
+      *---------------------------------
+           IF RV-LP-TRCD NOT = " "
+              MOVE " " TO DT-PAID
+              MOVE "RV" TO DT-TRCD
+              MOVE "TX" TO DT-REVERSE-TRCD
+              MOVE "Y"  TO DT-REVERSE
+              GO TO UPDATE-DT1-WRITE.
+
+           MOVE "B" TO DT-PAID.
+           MOVE " " TO DT-STATUS.
+
+      *    MOVE HOLD-CKCODE TO DT-PAID.
+      *    IF HOLD-CKCODE = "M" AND HOLD-LN-PROCEEDS > 0
+      *       MOVE HOLD-LN-PROCEEDS TO DT-PAYMENTS
+      *       MOVE HOLD-LN-PROCEEDS TO DT-RELEASED
+      *       MOVE HOLD-CKNO TO DT-CKNO
+      *       MOVE TRANS-DATE TO DT-CKDATE.
+      *    IF HOLD-CKCODE = "S"
+      *       MOVE "R" TO DT-STATUS
+      *       MOVE HOLD-LN-PROCEEDS TO DT-RELEASED.
+
+       UPDATE-DT1-WRITE.
+           PERFORM WRITE-DT1-FILE.
+           IF IO-FG = 0
+              IF RV-LP-TRCD = " "
+                 GO TO EXIT-UPDATE-DT1
+              ELSE
+                 PERFORM UPDATE-ORIGINAL-DT
+                 GO TO EXIT-UPDATE-DT1.
+           IF SAVE-DT-SEQ < 999
+              ADD 1 TO SAVE-DT-SEQ
+              GO TO UPDATE-DT1-SEQ.
+           MOVE "DEALER TRANSACTION = 9999, REC NOT CREATED !" TO MESS.
+           PERFORM SEND-MESS.
+
+       EXIT-UPDATE-DT1.
+           PERFORM CLOSE-DT1-FILE.
+
+
+      ***************************************
+       UPDATE-ORIGINAL-DT SECTION.
+      ***************************************
+
+      * FIND ORIGINAL (LAST) "TP" (REALLY LOOKING FOR "TX")
+      * SET REVERSE FLAGS
+           MOVE SPACES TO HOLD-DT-UNPAID.
+
+           MOVE "UPDATING DEALER TRANSACTION FILE........" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           IF RV-LP-TRCD NOT  = "TP"
+              GO TO EXIT-UPDATE-ORIGINAL-DT.
+
+           MOVE 0            TO SAVE-DT1-BRNO.
+           MOVE 0            TO SAVE-DT1-DLNO.
+           MOVE 0            TO SAVE-DT1-CLASS.
+           MOVE 0            TO SAVE-DT1-ACCTNO.
+
+           MOVE DT-PATH-OWNBR TO DT-BRNO
+                                 QDT1-WBEG-BRNO
+                                 QDT1-WEND-BRNO.
+           MOVE LN-DLNO       TO DT-DLNO.
+           MOVE DT-NUM        TO QDT1-WBEG-NUM
+                                 QDT1-WEND-NUM.
+           MOVE LN-CLASS      TO DT-CLASS
+                                 QDT1-WBEG-CLASS
+                                 QDT1-WEND-CLASS.
+           MOVE LN-ACCTNO     TO DT-ACCTNO
+                                 QDT1-WBEG-ACCTNO
+                                 QDT1-WEND-ACCTNO.
+           MOVE 19000101      TO DT-DATE SQL-DATE-YYYYMMDD
+           PERFORM SQL-SET-DATE.
+           MOVE SQL-DATE-YYYY-MM-DD TO QDT1-WBEG-DATE.
+           MOVE EXT-JULIAN-END TO SQL-DATE-YYYYMMDD.
+           PERFORM SQL-SET-DATE.
+           MOVE SQL-DATE-YYYY-MM-DD TO QDT1-WEND-DATE.
+           MOVE 0             TO DT-SEQ
+                                 QDT1-WBEG-SEQ.
+           MOVE ALL "9"       TO QDT1-WEND-SEQ.
+
+           PERFORM START-DT1-FILE.
+       FIND-ORIGINAL-DT-NEXT.
+           PERFORM READ-DT1-FILE-NEXT.
+           IF (IO-FG = 9) OR (DT-BRNO NOT = DT-PATH-OWNBR) 
+              GO TO FINISH-UPDATE-ORIGINAL-DT.
+
+           IF DT-DLNO NOT = LN-DLNO
+              GO TO FINISH-UPDATE-ORIGINAL-DT.
+           IF DT-ACCTNO NOT = LN-ACCTNO
+              GO TO FINISH-UPDATE-ORIGINAL-DT.
+
+           IF DT-TRCD NOT = "TX"
+              GO TO FIND-ORIGINAL-DT-NEXT.
+
+           MOVE DT1-KEY TO SAVE-DT1-KEY.
+           GO TO FIND-ORIGINAL-DT-NEXT.
+
+       FINISH-UPDATE-ORIGINAL-DT.
+           IF SAVE-DT1-DLNO = 0
+              GO TO EXIT-UPDATE-ORIGINAL-DT.
+
+           MOVE SAVE-DT1-KEY TO DT1-KEY.
+           PERFORM READ-DT1-FILE.
+           MOVE DT-UNPAID TO HOLD-DT-UNPAID.
+           MOVE "Y" TO DT-REVERSE.
+
+           PERFORM REWRITE-DT1-FILE.
+       EXIT-UPDATE-ORIGINAL-DT.
+      *    PERFORM CLOSE-DT1-FILE.
+           EXIT.
+
+      **************************************
+       UPDATE-LN1-FILE SECTION.
+      **************************************
+
+      * SETUP PURCHASED ACCOUNT
+
+           MOVE "UPDATING LOAN MASTER FILE..............." TO MESS.
+           PERFORM SEND-LEGEND.
+
+      * READ NEW LOAN CLASS:
+           IF RV-LP-TRCD NOT = " "
+              MOVE HOLD-FROM-LN-CLASS TO LC-CODE
+            ELSE
+              MOVE HOLD-TO-LN-CLASS TO LC-CODE.
+
+           PERFORM OPEN-LC1-FILE.
+           PERFORM READ-LC1-FILE.
+           PERFORM CLOSE-LC1-FILE.
+           IF IO-FG NOT = 0
+              MOVE " NEW LOAN CLASS RECORD DELETED" TO MESS
+              PERFORM SEND-MESS
+              GO TO IO-ERROR.
+
+      * READ LOAN RECORD:
+           PERFORM READ-LN1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+           MOVE LC-SMALLOAN TO LN-SMALLOAN.
+           MOVE LC-SALEFIN  TO LN-SALEFIN.
+           MOVE LC-SERVACCT TO LN-SERVACCT.
+           MOVE LC-LOANTYPE TO LN-LOANTYPE.
+           MOVE LC-GIFTNET  TO LN-GIFTNET.
+           MOVE LC-CODE     TO LN-CLASS
+                               LN-SPRCLASS.
+
+      * TEST FOR REVERSAL:
+           IF RV-LP-TRCD NOT = " "
+              MOVE 0 TO LN-ANTICERN(1) LN-ANTICERN(2) LN-ANTICERN(3)
+                        LN-ANTICERN(4) LN-ANTICERN(5) LN-ANTICERN(6)
+                        LN-ANTICADJ(1) LN-ANTICADJ(2) LN-ANTICADJ(3)
+                        LN-ANTICADJ(4) LN-ANTICADJ(5) LN-ANTICADJ(6)
+                        LN-UFERN(1) LN-UFERN(2) LN-UFERN(3)
+                        LN-UFERN(4) LN-UFERN(5) LN-UFERN(6)
+                        LN-ACCERN(1) LN-ACCERN(2) LN-ACCERN(3)
+                        LN-ACCERN(4) LN-ACCERN(5) LN-ACCERN(6)
+              MOVE " " TO LN-MIDSTREAM
+              GO TO END-UPDATE-LN1-FILE.
+
+      * NORMAL TRANSFER TO PURCHASE:
+           MOVE LP-TRDATE TO LN-PURDATE.
+           MOVE LN-CURBAL TO LN-PURBAL
+                             LN-ORIGPURAMT
+                             LN-SUM-ORIGPURAMT.
+           MOVE HOLD-LN-DLRVPRIN(1) TO LN-DLRVPRIN(1).
+           MOVE HOLD-LN-DLRVPRIN(2) TO LN-DLRVPRIN(2).
+           MOVE HOLD-LN-DLRVPRIN(3) TO LN-DLRVPRIN(3).
+           MOVE HOLD-LN-ANTIC-DISC TO LN-DLDISC.
+           MOVE HOLD-LN-PROCEEDS TO LN-PROCEEDS.
+           MOVE HOLD-LN-RECOURSE TO LN-DLRECOURSE.
+           MOVE HOLD-LN-PARTRCAMT TO LN-DLPARTRCAMT.
+           MOVE HOLD-LN-ANTIC-INT TO LN-ANTICERN(1).
+           MOVE HOLD-LN-ANTIC-SC TO LN-ANTICERN(3).
+           MOVE HOLD-LN-ANTIC-MF TO LN-ANTICERN(4).
+           MOVE HOLD-LN-ANTIC-DISC TO LN-ANTICERN(5).
+
+      *---------------------------------------------------
+      *    COMPUTE LOAN COSTS FOR AMORTIZATION
+      *    NOTE:
+      *          THIS HAS BEEN STARRED OUT SINCE ASSOCIATED
+      *          COSTS FROM A PURCHASE ARE REALIZED
+      *          DIFFERENTLY
+      *                         PER JIM R.
+      *---------------------------------------------------
+      *    IF SP-LNCOST-FRMLA NOT = "D"
+      *       MOVE LN-LNAMT      TO LNCOST-LNAMT
+      *       MOVE LN-DLPARVHELD TO LNCOST-DLPARVHELD
+      *       PERFORM COMPUTE-LOANCOST
+      *       MOVE LNCOST-LOANCOST TO LN-ANTICERN(6).
+      *---------------------------------------------------
+
+           MOVE LN-ANTICERN(1) TO WK-ANTICERN(1).
+           MOVE LN-ANTICERN(2) TO WK-ANTICERN(2).
+           MOVE LN-ANTICERN(3) TO WK-ANTICERN(3).
+           MOVE LN-ANTICERN(4) TO WK-ANTICERN(4).
+           MOVE LN-ANTICERN(5) TO WK-ANTICERN(5).
+           MOVE LN-ANTICERN(6) TO WK-ANTICERN(6).
+           PERFORM ADJUST-ANTICERN.
+           MOVE WK-ANTICERN(1) TO LN-ANTICERN(1).
+           MOVE WK-ANTICERN(2) TO LN-ANTICERN(2).
+           MOVE WK-ANTICERN(3) TO LN-ANTICERN(3).
+           MOVE WK-ANTICERN(4) TO LN-ANTICERN(4).
+           MOVE WK-ANTICERN(5) TO LN-ANTICERN(5).
+           MOVE WK-ANTICERN(6) TO LN-ANTICERN(6).
+      * SET ANTICIPATED EARNINGS:
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE LN-1STPYDATE   TO CEPP1-DATE.
+           MOVE PDTH-DATE-FULL TO CEPP2-DATE.
+           PERFORM CONTRACTUAL-ELAPSED-PAYPER.
+           SUBTRACT CEPP-PERIODS FROM LN-ORGTERM
+                                  GIVING LN-ANTICTERM.
+
+      ****************************************
+      *    GET CORRECT YIELD RATES
+      ****************************************
+           PERFORM COMPUTE-YIELD.
+           MOVE APR-APR TO LN-YLDRATE.
+
+           MOVE "Y" TO LN-MIDSTREAM.
+       END-UPDATE-LN1-FILE.
+           PERFORM REWRITE-LN1-FILE.
+           PERFORM CLOSE-LN1-FILE.
+
+      **************************************
+       UPDATE-DS1-FILE SECTION.
+      **************************************
+
+      * SETUP PURCHASED ACCOUNT
+
+           MOVE "UPDATING DEALER STATISTICS FILE........." TO MESS.
+           PERFORM SEND-LEGEND.
+           PERFORM UPDATE-DS1-READ-FILE.
+
+      * UPDATE UNPAID CHECK FIGURES:
+           IF HOLD-CKCODE NOT = "M"
+              COMPUTE DS-UNPAIDCK =
+                  DS-UNPAIDCK + (HOLD-LN-PROCEEDS * TP-ONE).
+
+      * UPDATE RECOURSE FIGURES:
+           IF LN-DLRECOURSE = "F"
+              MOVE 1 TO SUB
+            ELSE
+              IF LN-DLRECOURSE = "P"
+                 MOVE 2 TO SUB
+               ELSE
+                 IF LN-DLRECOURSE = "N"
+                    MOVE 3 TO SUB
+                  ELSE
+                    MOVE 0 TO SUB.
+
+           IF SUB = 2
+              COMPUTE DS-RCOURSE-AMT(SUB) = DS-RCOURSE-AMT(SUB) +
+                          HOLD-LN-PARTRCAMT * TP-ONE
+            ELSE
+              ADD LP-INTDUE TO DS-RCOURSE-AMT(SUB).
+           ADD TP-ONE TO DS-RCOURSE-UNITS(SUB).
+
+      * UPDATE WEIGHTED AVERAGES
+      *          OTHER PURCHASES
+      *            AND CURRENT BALANCES:
+
+           IF LN-PLCD = " "
+              COMPUTE DS-SUMWGTTM = DS-SUMWGTTM +
+                            (LN-ORGTERM * TP-ONE)
+              COMPUTE DS-SUMWGTAV = DS-SUMWGTAV +
+                            (LN-LNAMT * TP-ONE)
+              COMPUTE DS-SUMWGTTA = DS-SUMWGTTA +
+                            (LN-ORGTERM * LN-LNAMT * TP-ONE)
+              ADD LP-INTDUE TO DS-OUTSAMT(1)
+              ADD TP-ONE    TO DS-OUTSUNIT(1)
+            ELSE
+              ADD LP-INTDUE TO DS-PLOSAMT(1)
+              ADD TP-ONE    TO DS-PLOSUNIT(1).
+           IF LN-JDDATE NOT = 0
+              ADD LP-INTDUE TO DS-JDOSAMT(1)
+              ADD TP-ONE    TO DS-JDOSUNIT(1).
+
+           ADD LP-INTDUE TO DS-OPURAMT(1) DS-OPURAMT(2).
+           ADD TP-ONE    TO DS-OPURUNIT(1) DS-OPURUNIT(2).
+
+      * UPDATE DEALER RESERVES:
+           COMPUTE DS-DLRVPRIN(1) =
+                      DS-DLRVPRIN(1) + (TP-ONE * HOLD-LN-DLRVPRIN(1)).
+           COMPUTE DS-DLRVPRIN(2) =
+                      DS-DLRVPRIN(2) + (TP-ONE * HOLD-LN-DLRVPRIN(2)).
+           COMPUTE DS-DLRVPRIN(3)=
+                      DS-DLRVPRIN(3) + (TP-ONE * HOLD-LN-DLRVPRIN(3)).
+
+           COMPUTE DS-DLDISC = DS-DLDISC + (TP-ONE * HOLD-LN-ANTIC-DISC).
+           COMPUTE DS-DLDISC-VOL(1) =
+                      DS-DLDISC-VOL(1) + (TP-ONE * HOLD-LN-ANTIC-DISC).
+           COMPUTE DS-DLDISC-VOL(2) =
+                      DS-DLDISC-VOL(2) + (TP-ONE * HOLD-LN-ANTIC-DISC).
+
+      * UPDATE UNEARNED STATISTICS NET AND VOLUME
+           IF GP-UNEARNED-STATS = "Y"
+              COMPUTE WORKX = HOLD-LN-PROCEEDS * TP-ONE
+              ADD WORKX TO DS-PROCEEDS (1)
+                           DS-PROCEEDS (2)
+              COMPUTE WORKX = HOLD-LN-ANTIC-INT * TP-ONE
+              ADD WORKX TO DS-UNEARNED-AMT(1 1 1)
+                           DS-UNEARNED-AMT(1 2 1)
+                           DS-UNEARNED-AMT(2 2 1)
+              COMPUTE WORKX = LN-ANTICERN(2) * TP-ONE
+              ADD WORKX TO DS-UNEARNED-AMT(1 1 2)
+                           DS-UNEARNED-AMT(1 2 2)
+                           DS-UNEARNED-AMT(2 2 2)
+              COMPUTE WORKX = HOLD-LN-ANTIC-SC * TP-ONE
+              ADD WORKX TO DS-UNEARNED-AMT(1 1 3)
+                           DS-UNEARNED-AMT(1 2 3)
+                           DS-UNEARNED-AMT(2 2 3)
+              IF NOT(GP-INCL-OTH-IN-EARNED-R)
+                 COMPUTE WORKX = HOLD-LN-ANTIC-MF * TP-ONE
+                 ADD WORKX TO DS-UNEARNED-AMT(1 1 4)
+                              DS-UNEARNED-AMT(1 2 4)
+                              DS-UNEARNED-AMT(2 2 4)
+              END-IF
+              COMPUTE WORKX = HOLD-LN-ANTIC-DISC * TP-ONE
+              ADD WORKX TO DS-UNEARNED-AMT(1 1 5)
+                           DS-UNEARNED-AMT(1 2 5)
+                           DS-UNEARNED-AMT(2 2 5)
+              IF NOT (GP-INCL-OTH-IN-EARNED-N OR
+                                          GP-INCL-OTH-IN-EARNED-R)
+                 COMPUTE WORKX = LN-ANTICERN(6) * TP-ONE
+                 ADD WORKX TO DS-UNEARNED-AMT(1 1 6)
+                              DS-UNEARNED-AMT(1 2 6)
+                              DS-UNEARNED-AMT(2 2 6).
+
+      * DELINQUENCY UPDATE:
+           PERFORM ESTABLISH-AFTER-CON-REC.
+           PERFORM UPDATE-DS1-AFTER-TFR.
+
+       DS1-REWRITE.
+           PERFORM REWRITE-DS1-FILE.
+           PERFORM CLOSE-DS1-FILE.
+
+      ***************************************
+       UPDATE-TR1-PURCHASED SECTION.
+      ***************************************
+
+      * SETUP NEW SERVICE ACCOUNT
+
+           MOVE "UPDATING DAILY TRANSFER TRANS FILE" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-TRX1-FILE.
+           MOVE 1 TO SAVE-TX-LINE.
+       UPDATE-TR1-PURCHASED-NEXT.
+           PERFORM CLEAR-TRX-FILE.
+
+           MOVE BRANCH           TO TX-BRNO.
+           MOVE TRANS-DATE       TO TX-DATE.
+           MOVE HOLD-TO-LN-CLASS TO TX-CLASS.
+           MOVE LN-ACCTNO        TO TX-ACCTNO.
+           MOVE LN-LAWCODE       TO TX-LAWCODE.
+           MOVE SAVE-TX-LINE     TO TX-LINE.
+
+           MOVE LN-LOANTYPE TO TX-LOANTYPE.
+           MOVE LN-LOANDATE TO TX-LOANDATE.
+           MOVE LN-PURCD    TO TX-PURCD.
+           MOVE LN-SRCD     TO TX-SRCD.
+           MOVE LN-COLLCD   TO TX-COLLCD.
+           MOVE LN-ORGTERM  TO TX-ORGTERM.
+           MOVE LN-DLRECOURSE TO TX-DLRECOURSE.
+           MOVE LN-ANTICTERM  TO TX-ANTICTERM.
+           MOVE LN-INSURED  TO TX-INSURED.
+           MOVE LN-DLNO     TO TX-DLNO.
+           MOVE "N"         TO TX-SERVACCT.
+           COMPUTE TX-LNAMT = LN-SUM-LNAMT * TP-ONE.
+           COMPUTE TX-FINCHG = LN-SUM-FINCHG * TP-ONE.
+           COMPUTE TX-DLRVPRIN(1) = LN-DLRVPRIN(1) * TP-ONE.
+           COMPUTE TX-DLRVPRIN(2) = LN-DLRVPRIN(2) * TP-ONE.
+           COMPUTE TX-DLRVPRIN(3) = LN-DLRVPRIN(3) * TP-ONE.
+           COMPUTE TX-DLDISC = LN-DLDISC * TP-ONE.
+           COMPUTE TX-PROCEEDS = LN-PROCEEDS * TP-ONE.
+           COMPUTE TX-DLPARTRCAMT = LN-DLPARTRCAMT * TP-ONE.
+           IF RV-LP-TRCD  = " "
+              COMPUTE TX-ANTICERN(1) = LN-ANTICERN(1) * TP-ONE
+              COMPUTE TX-ANTICERN(2) = LN-ANTICERN(2) * TP-ONE
+              COMPUTE TX-ANTICERN(3) = LN-ANTICERN(3) * TP-ONE
+              COMPUTE TX-ANTICERN(4) = LN-ANTICERN(4) * TP-ONE
+              COMPUTE TX-ANTICERN(5) = LN-ANTICERN(5) * TP-ONE
+              COMPUTE TX-ANTICERN(6) = LN-ANTICERN(6) * TP-ONE
+              COMPUTE TX-ANTICERN(7) = LN-ANTICERN(7) * TP-ONE
+              COMPUTE TX-ANTICERN(8) = LN-ANTICERN(8) * TP-ONE
+              COMPUTE TX-ANTICERN(9) = LN-ANTICERN(9) * TP-ONE
+              COMPUTE TX-ANTICERN(10) = LN-ANTICERN(10) * TP-ONE
+           ELSE
+              COMPUTE TX-ANTICERN(1) = HOLD-LN-ANTIC-INT * TP-ONE
+              COMPUTE TX-ANTICERN(2) = LN-ANTICERN(2) * TP-ONE
+              COMPUTE TX-ANTICERN(3) = HOLD-LN-ANTIC-SC * TP-ONE
+              COMPUTE TX-ANTICERN(4) = HOLD-LN-ANTIC-MF * TP-ONE
+              COMPUTE TX-ANTICERN(5) = HOLD-LN-ANTIC-DISC * TP-ONE
+              COMPUTE TX-ANTICERN(6) = LN-ANTICERN(6) * TP-ONE
+              COMPUTE TX-ANTICERN(7) = LN-ANTICERN(7) * TP-ONE
+              COMPUTE TX-ANTICERN(8) = LN-ANTICERN(8) * TP-ONE
+              COMPUTE TX-ANTICERN(9) = LN-ANTICERN(9) * TP-ONE
+              COMPUTE TX-ANTICERN(10) = LN-ANTICERN(10) * TP-ONE.
+           COMPUTE TX-PURBAL = LN-PURBAL * TP-ONE.
+           COMPUTE TX-MAINTFEE = LN-SUM-MAINTFEE * TP-ONE.
+           COMPUTE TX-SERCHG = LN-SUM-SERCHG * TP-ONE.
+           COMPUTE TX-EXTCHG = LN-SUM-EXTCHG * TP-ONE.
+           COMPUTE TX-INTCHG = LN-SUM-INTCHG * TP-ONE.
+           MOVE LP-INTDUE TO TX-TFRBAL.
+           MOVE 1 TO SUB.
+       UPDATE-TR1-PURCHASED-BORR.
+           IF SUB NOT > 4
+              MOVE LN-SSNO(SUB) TO TX-SSNO(SUB)
+              MOVE LN-MAKERCD(SUB) TO TX-MAKERCD(SUB).
+      *    IF SUB NOT > 5
+      *       MOVE 0 TO TX-INSCOMP(SUB)
+      *       MOVE 0 TO TX-INSPREM(SUB)
+      *       MOVE 0 TO TX-INSTERM(SUB) TX-INSCOMM(SUB)
+      *       MOVE SPACES TO TX-INSOURS(SUB).
+      *    IF SUB NOT > 10
+      *       MOVE 0 TO TX-FEEAMT(SUB).
+           IF SUB < 10
+              ADD 1 TO SUB
+              GO TO UPDATE-TR1-PURCHASED-BORR.
+
+           PERFORM SET-POSTDATE.
+           MOVE POST-USERID TO TX-USERID.
+           MOVE POST-TIME TO TX-POSTTIME.
+           MOVE POST-DATE TO TX-POSTDATE.
+
+           PERFORM WRITE-TRX1-FILE.
+           IF IO-FG = 0
+              GO TO EXIT-UPDATE-TR1-PURCHASED.
+
+           IF SAVE-TX-LINE < 999
+              ADD 1 TO SAVE-TX-LINE
+              GO TO UPDATE-TR1-PURCHASED-NEXT.
+
+           MOVE "TRANSACTION SEQ = 999, REC NOT CREATED !" TO MESS.
+           PERFORM SEND-MESS.
+       EXIT-UPDATE-TR1-PURCHASED.
+           PERFORM CLOSE-TRX1-FILE.
+
+      ***********************************
+      *    UPDATE DEALER TRANS FILE
+      ***********************************
+       UPDATE-DT1-PURCHASED SECTION.
+
+      * SETUP NEW SERVICE ACCOUNT
+
+           MOVE "UPDATING DEALER TRANS SERVICE FILE........" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-DT1-FILE.
+           MOVE 1 TO SAVE-DT-SEQ.
+       UPDATE-DT1-PURCHASED-SEQ.
+           PERFORM CLEAR-DT-FILE.
+
+           MOVE LN-OWNBR         TO DT-BRNO.
+           MOVE LN-DLNO          TO DT-DLNO.
+           MOVE HOLD-TO-LN-CLASS TO DT-CLASS.
+           MOVE LN-ACCTNO        TO DT-ACCTNO.
+           MOVE TRANS-DATE       TO DT-DATE.
+           MOVE SAVE-DT-SEQ      TO DT-SEQ.
+
+           MOVE "P" TO DT-TYPE.
+           MOVE SAVE-LP-SEQNO TO DT-LPSEQNO.
+           MOVE "TX" TO DT-TRCD.
+           COMPUTE DT-DLRVPRIN(1) = HOLD-LN-DLRVPRIN(1) * TP-ONE.
+           COMPUTE DT-DLRVPRIN(2) = HOLD-LN-DLRVPRIN(2) * TP-ONE.
+           COMPUTE DT-DLRVPRIN(3) = HOLD-LN-DLRVPRIN(3) * TP-ONE.
+           COMPUTE DT-PROCEEDS = HOLD-LN-PROCEEDS * TP-ONE.
+           IF RV-LP-TRCD NOT = " "
+              MOVE " " TO DT-PAID
+              MOVE "RV" TO DT-TRCD
+              MOVE "TX" TO DT-REVERSE-TRCD
+              MOVE "Y" TO DT-REVERSE
+              GO TO UPDATE-DT1-PURCHASED-WRITE.
+
+           MOVE HOLD-CKCODE TO DT-PAID.
+           IF HOLD-CKCODE = "M" AND HOLD-LN-PROCEEDS > 0
+              MOVE HOLD-LN-PROCEEDS TO DT-PAYMENTS
+              MOVE HOLD-LN-PROCEEDS TO DT-RELEASED
+              MOVE HOLD-CKNO TO DT-CKNO
+              MOVE TRANS-DATE TO DT-CKDATE.
+           IF HOLD-CKCODE = "S"
+              MOVE "R" TO DT-STATUS
+              MOVE HOLD-LN-PROCEEDS TO DT-RELEASED.
+
+       UPDATE-DT1-PURCHASED-WRITE.
+           PERFORM WRITE-DT1-FILE.
+           IF IO-FG = 0
+              GO TO EXIT-UPDATE-DT1-PURCHASED.
+           IF SAVE-DT-SEQ < 9999
+              ADD 1 TO SAVE-DT-SEQ
+              GO TO UPDATE-DT1-PURCHASED-SEQ.
+           MOVE "DEALER TRANSACTION = 9999, REC NOT CREATED !" TO MESS.
+           PERFORM SEND-MESS.
+       EXIT-UPDATE-DT1-PURCHASED.
+           PERFORM CLOSE-DT1-FILE.
+
+      ***********************************
+       UPDATE-CX1 SECTION.
+      ***********************************
+           IF HOLD-CKCODE NOT = "S" OR
+               RV-LP-TRCD NOT = " "
+               GO TO EXIT-UPDATE-CX1.
+
+           MOVE "UPDATING CHECK REQUEST FILE............." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-CX1-FILE.
+           MOVE BRANCH TO SAVE-CX-BRNO.
+           MOVE "DL"   TO SAVE-CX-TYPE.
+           MOVE 1      TO SAVE-CX-SEQNO.
+
+           PERFORM CLEAR-CX-FILE.
+
+           MOVE HOLD-LN-PROCEEDS TO CX-AMT.
+           MOVE DL-NAME TO CX-PAYEE.
+           MOVE DL-ADR1 TO CX-ADR1.
+           MOVE DL-ADR2 TO CX-ADR2.
+           MOVE DL-CITY TO CX-CITY.
+           MOVE DL-STATE TO CX-STATE.
+           MOVE DL-ZIP TO CX-ZIP.
+           MOVE LN-ACCTNO TO CX-REF.
+           MOVE "SA PURCHASE: " TO WK-REASON.
+           STRING BW-LNAME", ",BW-FNAME DELIMITED BY "   " INTO WK-WHO.
+           MOVE WK-REASON TO CX-REASON.
+           MOVE LN-CLASS TO CX-CLASS.
+           MOVE LN-ACCTNO TO CX-ACCTNO.
+           MOVE HOLD-CKCODE TO CX-PAID.
+           MOVE "FZ" TO CX-PGM.
+           MOVE SAVE-DT-SEQ TO CX-DT-SEQ.
+           MOVE HOLD-FREE1 TO CX-FREE1.
+           MOVE HOLD-FREE2 TO CX-FREE2.
+           MOVE DL-DLNO TO CX-DLNO.
+           MOVE TRANS-DATE TO CX-DATE.
+       CREATE-CX-TEMP.
+           MOVE SAVE-CX1-KEY TO CX1-KEY.
+           PERFORM WRITE-CX1-FILE.
+           IF IO-FG = 0
+              GO TO EXIT-UPDATE-CX1.
+
+           IF SAVE-CX-SEQNO < 9999
+              ADD 1 TO SAVE-CX-SEQNO
+              GO TO CREATE-CX-TEMP.
+           MOVE "REQUEST # = 9999.  REQUEST NOT CREATED!" TO MESS.
+           PERFORM SEND-MESS.
+       EXIT-UPDATE-CX1.
+           PERFORM CLOSE-CX1-FILE.
+
+      ***********************************
+       UPDATE-TRC SECTION.
+      ***********************************
+           IF HOLD-CKCODE NOT = "M" OR RV-LP-TRCD NOT = " "
+              GO TO EXIT-UPDATE-TRC.
+
+           IF HOLD-LN-PROCEEDS NOT > 0
+              GO TO EXIT-UPDATE-TRC.
+
+           MOVE "UPDATE CHECK REGISTER................." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-TRC1-FILE.
+       UPDATE-NEXT-TRC.
+           PERFORM CLEAR-TRC-FILE.
+
+           MOVE BRANCH     TO TC-BRNO.
+           MOVE TRANS-DATE TO TC-KEY-DATE.
+           MOVE HOLD-CKNO  TO TC-CKNO.
+           MOVE LN-CLASS   TO TC-CLASS.
+           MOVE 0          TO TC-SEQ.
+
+           MOVE "DL"             TO TC-TYPE.
+           MOVE TRANS-DATE       TO TC-DATE.
+           MOVE HOLD-LN-PROCEEDS TO TC-AMT.
+           MOVE LN-ACCTNO        TO TC-REF.
+           MOVE DL-NAME          TO TC-PAYEE.
+           MOVE "SA PURCHASE: "  TO WK-REASON.
+           STRING BW-LNAME", ",BW-FNAME DELIMITED BY "   " INTO WK-WHO.
+           MOVE WK-REASON        TO TC-REASON.
+           MOVE LN-ACCTNO        TO TC-ACCTNO.
+           MOVE HOLD-CKCODE      TO TC-PAID.
+           MOVE "FZ" TO TC-PGM.
+           MOVE 0 TO TC-GLNO(1) TC-GLNO(2) TC-GLNO(3) TC-GLNO(4)
+                  TC-GLNO(5) TC-GLAMT(1) TC-GLAMT(2) TC-GLAMT(3)
+                  TC-GLAMT(4) TC-GLAMT(5).
+
+           PERFORM SET-POSTDATE.
+           MOVE POST-USERID TO TC-USERID.
+           MOVE POST-TIME TO TC-POSTTIME.
+           MOVE POST-DATE TO TC-POSTDATE.
+
+           PERFORM WRITE-TRC1-FILE.
+           IF IO-FG = 0
+              GO TO EXIT-UPDATE-TRC.
+
+           MOVE "CHECK REGISTER NOT UPDATED!" TO MESS.
+           PERFORM SEND-MESS.
+       EXIT-UPDATE-TRC.
+           EXIT.
+
+      ***********************************
+       UPDATE-CK1 SECTION.
+      ***********************************
+           IF HOLD-CKCODE NOT = "M" OR
+               RV-LP-TRCD NOT = " "
+               GO TO EXIT-UPDATE-CK1.
+
+           IF HOLD-LN-PROCEEDS NOT > 0
+              GO TO EXIT-UPDATE-CK1.
+
+           PERFORM OPEN-CK1-FILE.
+
+           PERFORM CLEAR-CK-FILE.
+
+           MOVE BRANCH TO CK-BRNO.
+           MOVE HOLD-CKNO TO CK-NO.
+           MOVE "DL" TO CK-TYPE.
+           MOVE TRANS-DATE TO CK-DATE.
+           MOVE HOLD-LN-PROCEEDS TO CK-AMT.
+           MOVE DL-NAME TO CK-PAYEE.
+           MOVE LN-ACCTNO TO CK-REF.
+           MOVE "SA PURCHASE: " TO WK-REASON.
+           STRING BW-LNAME", ",BW-FNAME DELIMITED BY "   " INTO WK-WHO.
+           MOVE WK-REASON TO CK-REASON.
+           MOVE LN-CLASS TO CK-CLASS.
+           MOVE DL-DLNO TO CK-DLNO.
+           MOVE HOLD-CKCODE TO CK-PAID.
+           MOVE "FZ" TO CK-PGM.
+           MOVE LN-ACCTNO TO CK-ACCTNO.
+           MOVE HOLD-FREE1 TO CK-FREE1.
+           MOVE HOLD-FREE2 TO CK-FREE2.
+           PERFORM WRITE-CK1-FILE.
+           IF IO-FG = 0
+             GO TO EXIT-UPDATE-CK1.
+
+           MOVE "CHECK RECORD NOT CREATED!" TO MESS.
+           PERFORM SEND-MESS.
+       EXIT-UPDATE-CK1.
+           EXIT.
+
+      *********************************
+       CREATE-FM-RECORD SECTION.
+      *********************************
+
+           IF HOLD-CKCODE NOT = "S"
+            OR SP-PRFORM(2) = 0
+             OR RV-LP-TRCD NOT = " "
+                GO TO CREATE-FM-RECORD-EXIT.
+
+           PERFORM OPEN-FD1-FILE.
+           MOVE SP-PRFORM(2) TO FD-FMNO.
+           PERFORM READ-FD1-FILE.
+           PERFORM CLOSE-FD1-FILE.
+           IF IO-FG NOT = 0
+              GO TO CREATE-FM-RECORD-EXIT.
+
+           PERFORM OPEN-FM1-FILE.
+
+           MOVE FM-PATH-OWNBR TO FM-BRNO.
+
+           MOVE SPACES        TO LPWSFM-EDIT-FM-INITKEY.
+           MOVE SAVE-CX-BRNO  TO LPWSFM-EDIT-FM-BRNO.
+           MOVE SAVE-CX-TYPE  TO LPWSFM-EDIT-FM-TYPE.
+           MOVE SAVE-CX-SEQNO TO LPWSFM-EDIT-FM-SEQNO.
+           MOVE FD-FMNO       TO LPWSFM-EDIT-FM-CKFMNO FM-FMNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+
+           PERFORM READ-FM1-FILE.
+
+           PERFORM CLEAR-FM-FILE.
+
+           MOVE FM-PATH-OWNBR          TO FM-BRNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+           MOVE FD-FMNO                TO FM-FMNO.
+
+           MOVE SPACES             TO FM-PRINT.
+           MOVE 0                  TO FM-STMT-COUNTER.
+           MOVE TRANS-DATE         TO FM-TRDATE.
+           MOVE EXT-CONAME-USER-ID TO FM-USERID.
+           IF IO-FG = 0
+              PERFORM REWRITE-FM1-FILE
+           ELSE
+              PERFORM WRITE-FM1-FILE
+              IF IO-FG NOT = 0
+                 GO TO IO-ERROR.
+
+           PERFORM CLOSE-FM1-FILE.
+       CREATE-FM-RECORD-EXIT.
+           EXIT.
+
+      **************************************
+       CREATE-AUTO-REQ-FORMS SECTION.
+      **************************************
+           MOVE 0 TO FM-SUB.
+           PERFORM OPEN-FD1-FILE.
+           PERFORM OPEN-FM1-FILE.
+
+       CREATE-AUTO-FM.
+           ADD 1 TO FM-SUB.
+           IF FM-SUB > 20
+              GO TO EXIT-CREATE-AUTO-REQ-FORMS.
+
+      * DONT CREATE CHECKS OR RECEIPTS
+           IF SP-PRFORM(FM-SUB) = 0 OR FM-SUB = 2 OR FM-SUB = 4
+              GO TO CREATE-AUTO-FM.
+
+           IF SP-PRFLAG(FM-SUB) NOT = "Y"
+              GO TO CREATE-AUTO-FM.
+
+           MOVE SP-PRFORM(FM-SUB) TO FD-FMNO.
+           PERFORM READ-FD1-FILE.
+           IF IO-FG NOT = 0
+              GO TO CREATE-AUTO-FM.
+
+           MOVE FM-PATH-OWNBR          TO FM-BRNO.
+           MOVE SPACES                 TO LPWSFM-EDIT-FM-INITKEY.
+           MOVE LN-ACCTNO              TO LPWSFM-EDIT-FM-ACCTNO.
+           MOVE FD-FMNO                TO LPWSFM-EDIT-FM-FORMNO
+                                          FM-FMNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+
+           PERFORM READ-FM1-FILE.
+
+           PERFORM CLEAR-FM-FILE.
+
+           MOVE FM-PATH-OWNBR          TO FM-BRNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+           MOVE FD-FMNO                TO FM-FMNO.
+
+           MOVE BW-ZIP             TO FM-ZIP.
+           MOVE SPACES             TO FM-PRINT.
+           MOVE 0                  TO FM-STMT-COUNTER.
+           MOVE TRANS-DATE         TO FM-TRDATE.
+           MOVE EXT-CONAME-USER-ID TO FM-USERID.
+           IF IO-FG = 0
+              PERFORM REWRITE-FM1-FILE
+           ELSE
+              PERFORM WRITE-FM1-FILE
+              IF IO-FG NOT = 0
+                 GO TO IO-ERROR.
+
+           GO TO CREATE-AUTO-FM.
+
+       EXIT-CREATE-AUTO-REQ-FORMS.
+           PERFORM CLOSE-FD1-FILE.
+           PERFORM CLOSE-FM1-FILE.
+
+      ******************************************
+       UPDATE-DS1-READ-FILE SECTION.
+      ******************************************
+           PERFORM OPEN-DS1-FILE.
+           MOVE "N" TO REC-EXISTS.
+
+       UPDATE-DS1-READ-EXISTS.
+           MOVE HOLD-DS1-KEY TO DS1-KEY.
+           PERFORM READ-DS1-FILE.
+           IF IO-FG = 0
+              GO TO UPDATE-DS1-READ-EXIT.
+           IF REC-EXISTS = "Y"
+              GO TO IO-ERROR.
+           MOVE "Y" TO REC-EXISTS.
+           PERFORM CLEAR-DS-FILE.
+           MOVE HOLD-DS1-KEY TO DS1-KEY.
+
+           PERFORM WRITE-DS1-FILE.
+           IF IO-FG = 9 AND E-CODE NOT = "22"
+              GO TO IO-ERROR.
+           GO TO UPDATE-DS1-READ-EXISTS.
+
+       UPDATE-DS1-READ-EXIT.
+           EXIT.
+
+      ***********************************
+       UPDATE-TY1-READ-FILE SECTION.
+      ***********************************
+           PERFORM OPEN-TY1-FILE.
+           MOVE "N" TO REC-EXISTS.
+       UPDATE-TY1-READ-EXISTS.
+           MOVE HOLD-TY1-KEY TO TY1-KEY.
+           PERFORM READ-TY1-FILE.
+           IF IO-FG = 0
+              GO TO UPDATE-TY1-READ-SRCD.
+           IF REC-EXISTS = "Y"
+              GO TO IO-ERROR.
+
+           MOVE "Y" TO REC-EXISTS.
+           PERFORM CLEAR-TY-FILE.
+           MOVE HOLD-TY1-KEY TO TY1-KEY.
+           PERFORM WRITE-TY1-FILE.
+           IF IO-FG = 9 AND E-CODE NOT = "22"
+              GO TO IO-ERROR.
+           GO TO UPDATE-TY1-READ-EXISTS.
+
+       UPDATE-TY1-READ-SRCD.
+           PERFORM GET-SRCD-SUB.
+      *     MOVE SRCD TO SUB.
+
+       UPDATE-TY1-READ-EXIT.
+           EXIT.
+
+      ***********************************
+       UPDATE-TY1-FILE SECTION.
+      ***********************************
+
+      * SETUP NEW PURCHASED ACCOUNT
+
+           MOVE "UPDATING TODAY'S TOTAL FILE............." TO MESS.
+           PERFORM SEND-LEGEND.
+           PERFORM UPDATE-TY1-READ-FILE.
+
+      *  CANNOT POST "TS" TO ACCOUNT IN P&L
+           IF SRCD-NOT-PL
+              COMPUTE TY-SUMWGTTM = TY-SUMWGTTM +
+                            (LN-ORGTERM * TP-ONE)
+              COMPUTE TY-SUMWGTAV = TY-SUMWGTAV +
+                            (LN-LNAMT * TP-ONE)
+              COMPUTE TY-SUMWGTTA = TY-SUMWGTTA +
+                            (LN-ORGTERM * LN-LNAMT * TP-ONE)
+              IF ORIG-LN-IS-REPO-AR
+                 ADD LP-INTDUE TO TY-AMT-REPO(1 REPO-AR-SUB)
+                                  TY-AMT-REPO(2 REPO-AR-SUB)
+                 ADD TP-ONE TO TY-NO-REPO(1 REPO-AR-SUB)
+                               TY-NO-REPO(2 REPO-AR-SUB)
+                 COMPUTE TY-O2-REPO(1 REPO-AR-SUB) =
+                     TY-O2-REPO(1 REPO-AR-SUB) + (LP-OT2BAL * TP-ONE)
+              ELSE
+                 ADD LP-INTDUE TO TY-AMT(1 SRCD) TY-AMT(2 SRCD)
+                 ADD TP-ONE TO TY-NO(1 SRCD) TY-NO(2 SRCD)
+                 COMPUTE TY-O2(1 SRCD) =
+                           TY-O2(1 SRCD) + (LP-OT2BAL * TP-ONE).
+
+           ADD TP-ONE TO TY-NO-PURCH.
+           ADD LP-INTDUE TO TY-AMT-PURCH.
+
+           IF RV-LP-TRCD = " "
+              IF HOLD-CKCODE = "M" AND HOLD-LN-PROCEEDS > 0
+                 ADD HOLD-LN-PROCEEDS TO TY-CKWRITTEN(2).
+
+      * UPDATE DEALER RESERVES:
+           COMPUTE TY-DLRVPRIN(1 1) =
+                      TY-DLRVPRIN(1 1) + (TP-ONE * HOLD-LN-DLRVPRIN(1)).
+           COMPUTE TY-DLRVPRIN(1 2) =
+                      TY-DLRVPRIN(1 2) + (TP-ONE * HOLD-LN-DLRVPRIN(2)).
+           COMPUTE TY-DLRVPRIN(1 3) =
+                      TY-DLRVPRIN(1 3) + (TP-ONE * HOLD-LN-DLRVPRIN(3)).
+
+           COMPUTE TY-DLRVPRIN(2 1) =
+                      TY-DLRVPRIN(2 1) + (TP-ONE * HOLD-LN-DLRVPRIN(1)).
+           COMPUTE TY-DLRVPRIN(2 2) =
+                      TY-DLRVPRIN(2 2) + (TP-ONE * HOLD-LN-DLRVPRIN(2)).
+           COMPUTE TY-DLRVPRIN(2 3) =
+                      TY-DLRVPRIN(2 3) + (TP-ONE * HOLD-LN-DLRVPRIN(3)).
+
+
+           COMPUTE TY-DLDISC =
+                      TY-DLDISC + (TP-ONE * HOLD-LN-ANTIC-DISC).
+
+      * UPDATE UNEARNED STATISTICS NET AND VOLUME
+           IF GP-UNEARNED-STATS = "Y"
+              COMPUTE WORKX = HOLD-LN-PROCEEDS * TP-ONE
+              ADD WORKX TO TY-PROCEEDS
+              COMPUTE WORKX = HOLD-LN-ANTIC-INT * TP-ONE
+              ADD WORKX TO TY-UNEARNED-AMT(1 1)
+                           TY-UNEARNED-AMT(2 1)
+              COMPUTE WORKX = LN-ANTICERN(2) * TP-ONE
+              ADD WORKX TO TY-UNEARNED-AMT(1 2)
+                           TY-UNEARNED-AMT(2 2)
+              COMPUTE WORKX = HOLD-LN-ANTIC-SC * TP-ONE
+              ADD WORKX TO TY-UNEARNED-AMT(1 3)
+                           TY-UNEARNED-AMT(2 3)
+              IF NOT(GP-INCL-OTH-IN-EARNED-R)
+                 COMPUTE WORKX = HOLD-LN-ANTIC-MF * TP-ONE
+                 ADD WORKX TO TY-UNEARNED-AMT(1 4)
+                           TY-UNEARNED-AMT(2 4)
+              END-IF
+              COMPUTE WORKX = HOLD-LN-ANTIC-DISC * TP-ONE
+              ADD WORKX TO TY-UNEARNED-AMT(1 5)
+                           TY-UNEARNED-AMT(2 5)
+              IF NOT(GP-INCL-OTH-IN-EARNED-N OR
+                                        GP-INCL-OTH-IN-EARNED-R)
+                 COMPUTE WORKX = LN-ANTICERN(6) * TP-ONE
+                 ADD WORKX TO TY-UNEARNED-AMT(1 6)
+                              TY-UNEARNED-AMT(2 6).
+
+      * DELINQUENCY UPDATE:
+           PERFORM ESTABLISH-AFTER-CON-REC.
+           PERFORM UPDATE-TY1-AFTER-TFR.
+
+           PERFORM REWRITE-TY1-FILE.
+           PERFORM CLOSE-TY1-FILE.
+
+      *************************************************************
+       ESTABLISH-ORIG-CON-REC SECTION.
+      *************************************************************
+
+      * SETUP OUTBAL WORKER FOR UPDATE OF STATS
+
+           IF GP-DELINQ-WITH-O2 = "Y"
+              MOVE LN-CURBAL TO ORIG-OUTBAL
+           ELSE
+              SUBTRACT LN-OT2BAL FROM LN-CURBAL GIVING ORIG-OUTBAL.
+
+           MOVE TRANS-DATE TO AGEING-DATE.
+           PERFORM COMPUTE-CONTRACTUAL.
+           PERFORM COMPUTE-RECENCY.
+
+           MOVE CSUB TO ORIG-CSUB.
+           MOVE RDSUB TO ORIG-RDSUB.
+
+       ESTABLISH-ORIG-CON-REC-EXIT.
+           EXIT.
+
+      *******************************************
+       UPDATE-TY1-PRIOR-TFR SECTION.
+      *******************************************
+
+      * UPDATE TODAYS TOTALS FOR PRIOR TO TRANSFER STATUS
+
+      * SETUP OT2BAL WORKER FOR UPDATE OF STATS
+           IF GP-DELINQ-WITH-O2 = "Y"
+              MOVE 0 TO SAVE-OT2BAL
+           ELSE
+              MOVE LN-OT2BAL TO SAVE-OT2BAL.
+
+      * NORMAL DELINQUENCY:
+           IF LN-PLCD = " " AND ORIG-LN-IS-NOT-REPO
+              SUBTRACT TP-ONE FROM TY-UNITS(1 ORIG-RDSUB)
+                                   TY-UNITS(2 ORIG-CSUB)
+              COMPUTE TY-OUTBAL(1 ORIG-RDSUB) =
+                   TY-OUTBAL(1 ORIG-RDSUB)
+                        - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+              COMPUTE TY-OUTBAL(2 ORIG-CSUB) =
+                   TY-OUTBAL(2 ORIG-CSUB)
+                        - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+      * BANKRUPT DELINQUENCY:
+              IF LN-BNKRPTDATE NOT = 0
+                 SUBTRACT TP-ONE FROM TY-UNITS-BNKRPT(1 ORIG-RDSUB)
+                                      TY-UNITS-BNKRPT(2 ORIG-CSUB)
+                 COMPUTE TY-OUTBAL-BNKRPT(1 ORIG-RDSUB) =
+                      TY-OUTBAL-BNKRPT(1 ORIG-RDSUB)
+                           - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+                 COMPUTE TY-OUTBAL-BNKRPT(2 ORIG-CSUB) =
+                      TY-OUTBAL-BNKRPT(2 ORIG-CSUB)
+                           - LP-INTDUE + (SAVE-OT2BAL * TP-ONE).
+
+      *******************************************
+       UPDATE-DS1-PRIOR-TFR SECTION.
+      *******************************************
+
+      * UPDATE DEALER STATISTICS FOR PRIOR TO TRANSFER STATUS
+
+      * SETUP OT2BAL WORKER FOR UPDATE OF STATS
+           IF GP-DELINQ-WITH-O2 = "Y"
+              MOVE 0 TO SAVE-OT2BAL
+           ELSE
+              MOVE LN-OT2BAL TO SAVE-OT2BAL.
+
+           IF LN-PLCD = " " AND ORIG-LN-IS-NOT-REPO
+      * NORMAL DELINQUENCY:
+              SUBTRACT TP-ONE FROM DS-UNITS(DSNOW 1 ORIG-RDSUB)
+                                   DS-UNITS(DSNOW 2 ORIG-CSUB)
+              COMPUTE DS-OUTBAL(DSNOW 1 ORIG-RDSUB) =
+                   DS-OUTBAL(DSNOW 1 ORIG-RDSUB)
+                        - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+              COMPUTE DS-OUTBAL(DSNOW 2 ORIG-CSUB) =
+                   DS-OUTBAL(DSNOW 2 ORIG-CSUB)
+                        - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+      * BANKRUPT DELINQUENCY:
+              IF LN-BNKRPTDATE NOT = 0
+                 SUBTRACT TP-ONE
+                       FROM DS-UNITS-BNKRPT(DSNOW 1 ORIG-RDSUB)
+                            DS-UNITS-BNKRPT(DSNOW 2 ORIG-CSUB)
+                 COMPUTE DS-OUTBAL-BNKRPT(DSNOW 1 ORIG-RDSUB) =
+                      DS-OUTBAL-BNKRPT(DSNOW 1 ORIG-RDSUB)
+                           - LP-INTDUE + (SAVE-OT2BAL * TP-ONE)
+                 COMPUTE DS-OUTBAL-BNKRPT(DSNOW 2 ORIG-CSUB) =
+                      DS-OUTBAL-BNKRPT(DSNOW 2 ORIG-CSUB)
+                           - LP-INTDUE + (SAVE-OT2BAL * TP-ONE).
+
+      *************************************************************
+       ESTABLISH-AFTER-CON-REC SECTION.
+      *************************************************************
+           MOVE TRANS-DATE TO AGEING-DATE.
+           PERFORM COMPUTE-CONTRACTUAL.
+           PERFORM COMPUTE-RECENCY.
+
+      *******************************************
+       UPDATE-TY1-AFTER-TFR SECTION.
+      *******************************************
+           MOVE "UPDATING TODAY'S DELINQ TOTAL FILE........" TO MESS.
+           PERFORM SEND-LEGEND.
+
+      * SETUP OT2BAL WORKER FOR UPDATE OF STATS
+           IF GP-DELINQ-WITH-O2 = "Y"
+              MOVE 0 TO SAVE-OT2BAL
+           ELSE
+              MOVE LN-OT2BAL TO SAVE-OT2BAL.
+
+           IF LN-PLCD = " " AND ORIG-LN-IS-NOT-REPO
+      * NORMAL DELINQUENCY:
+              ADD TP-ONE TO TY-UNITS(1 RDSUB)
+                            TY-UNITS(2 CSUB)
+              COMPUTE TY-OUTBAL(1 RDSUB) =
+                   TY-OUTBAL(1 RDSUB)
+                        + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+              COMPUTE TY-OUTBAL(2 CSUB) =
+                   TY-OUTBAL(2 CSUB)
+                        + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+      * BANKRUPT DELINQUENCY:
+              IF LN-BNKRPTDATE NOT = 0
+                 ADD TP-ONE TO TY-UNITS-BNKRPT(1 RDSUB)
+                               TY-UNITS-BNKRPT(2 CSUB)
+                 COMPUTE TY-OUTBAL-BNKRPT(1 RDSUB) =
+                      TY-OUTBAL-BNKRPT(1 RDSUB)
+                           + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+                 COMPUTE TY-OUTBAL-BNKRPT(2 CSUB) =
+                      TY-OUTBAL-BNKRPT(2 CSUB)
+                           + LP-INTDUE - (SAVE-OT2BAL * TP-ONE).
+
+       UPDATE-TY1-AFTER-TFR-EXIT.
+           EXIT.
+
+      *******************************************
+       UPDATE-DS1-AFTER-TFR SECTION.
+      *******************************************
+           MOVE "UPDATING DEALER STAT'S DELINQ TOTAL FILE..." TO MESS.
+           PERFORM SEND-LEGEND.
+
+      * SETUP OT2BAL WORKER FOR UPDATE OF STATS
+           IF GP-DELINQ-WITH-O2 = "Y"
+              MOVE 0 TO SAVE-OT2BAL
+           ELSE
+              MOVE LN-OT2BAL TO SAVE-OT2BAL.
+
+           IF LN-PLCD = " " AND ORIG-LN-IS-NOT-REPO
+      * NORMAL DELINQUENCY:
+              ADD TP-ONE TO DS-UNITS(DSNOW 1 RDSUB)
+                            DS-UNITS(DSNOW 2 CSUB)
+              COMPUTE DS-OUTBAL(DSNOW 1 RDSUB) =
+                   DS-OUTBAL(DSNOW 1 RDSUB)
+                        + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+              COMPUTE DS-OUTBAL(DSNOW 2 CSUB) =
+                   DS-OUTBAL(DSNOW 2 CSUB)
+                        + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+      * BANKRUPT DELINQUENCY:
+              IF LN-BNKRPTDATE NOT = 0
+                 ADD TP-ONE TO DS-UNITS-BNKRPT(DSNOW 1 RDSUB)
+                               DS-UNITS-BNKRPT(DSNOW 2 CSUB)
+                 COMPUTE DS-OUTBAL-BNKRPT(DSNOW 1 RDSUB) =
+                      DS-OUTBAL-BNKRPT(DSNOW 1 RDSUB)
+                           + LP-INTDUE - (SAVE-OT2BAL * TP-ONE)
+                 COMPUTE DS-OUTBAL-BNKRPT(DSNOW 2 CSUB) =
+                      DS-OUTBAL-BNKRPT(DSNOW 2 CSUB)
+                           + LP-INTDUE - (SAVE-OT2BAL * TP-ONE).
+
+       UPDATE-DS1-AFTER-TFR-EXIT.
+           EXIT.
+
+      ***********************************************
+       UPDATE-NOTICE-FILE SECTION.
+      ***********************************************
+           PERFORM OPEN-NO1-FILE.
+           MOVE LN-OWNBR  TO NO-BRNO.
+           MOVE LN-ACCTNO TO NO-ACCTNO CRNOR2-ACCTNO.
+           PERFORM READ-NO1-FILE.
+
+           MOVE TRANS-DATE    TO CRNOR2-SYSDATE.
+           MOVE "CL/CRNOR2"    TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH CRNOR2-LINK NO-REC
+                                 POFF-WORKERS LN-REC.
+           CANCEL FORM-PROGX.
+
+           MOVE LN-OWNBR  TO NO-BRNO.
+           MOVE LN-ACCTNO TO NO-ACCTNO.
+           IF IO-FG = 0
+              PERFORM REWRITE-NO1-FILE
+           ELSE
+              PERFORM WRITE-NO1-FILE.
+
+           PERFORM CLOSE-NO1-FILE.
+       EXIT-UPDATE-NOTICE-FILE.
+           EXIT.
+
+      *************************************
+       SAVE-SCREEN SECTION.
+      *************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+           MOVE ELE     TO WK-ELE.
+           MOVE LN-REC  TO WK-SAVE-RECORD.
+           MOVE LP-REC  TO WK-LP-REC.
+           MOVE LX-REC  TO WK-LX-REC.
+           MOVE LXE-REC TO WK-LXE-REC.
+           MOVE LXG-REC TO WK-LXG-REC.
+           PERFORM REWRITE-WK-FILE.
+       EXIT-SAVE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+      *************************************
+       RESTORE-SCREEN SECTION.
+      *************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF NEW-FORM NOT = OLD-FORM
+              MOVE OLD-PROG-FORM TO WK-OLD-PROG-FORM
+              MOVE NEW-PROG-FORM TO OLD-PROG-FORM.
+           IF IO-FG = 0
+              GO TO RESTORE-CLEAR.
+
+           MOVE SPACES TO WK-SAVE-RECORD.
+           MOVE 0 TO WK-ELE.
+           PERFORM WRITE-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+           GO TO EXIT-RESTORE-SCREEN.
+       RESTORE-CLEAR.
+           MOVE WK-SAVE-RECORD TO LN-REC.
+           MOVE WK-LP-REC      TO LP-REC.
+           MOVE WK-LX-REC      TO LX-REC.
+           MOVE WK-LXE-REC     TO LXE-REC.
+           MOVE WK-LXG-REC     TO LXG-REC.
+           MOVE 0              TO WK-ELE.
+           PERFORM REWRITE-WK-FILE.
+       EXIT-RESTORE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+       COPY "LIBLP/UPDATEREPAYTRP.CPY".
+       COPY "LIBLP/UPDATEREPAYNO.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBLP/LPANTI.CPY".
+       COPY "LIBLP/LPMDTE.CPY".
+       COPY "LIBLP/LPCEPP.CPY".
+       COPY "LIBGB/SPPDTH.CPY".
+       COPY "LIBLP/LPSTAT.CPY".
+       COPY "LIBGB/AGEING.CPY".
+       COPY "LIBGB/GPENV.CPY".
+       COPY "LIBLP/LPUPWK.CPY".
+       COPY "LIBLP/POSTDATE.CPY".
+       COPY "LIBLP/LPPDUE.CPY".
+       COPY "LIBLP/LPSRCD.CPY".
+       COPY "LIBLP/YIELDLN.CPY".
+       COPY "LIBLP/OURSLN.CPY".
+       COPY "LIBLP/LPUPER.CPY".
+       COPY "LIBLP/LPUERN.CPY".
+       COPY "LIBLP/LPEADJ.CPY".
+       COPY "LIBLP/SETCTBL.CPY".
+       COPY "LIBLP/LPREGZ.CPY".
+       COPY "LIBGB/RBACT.CPY".
+       COPY "LIBLP/LPITRM.CPY".
+       COPY "LIBLP/LPAPRS.CPY".
+       COPY "LIBLP/LPAPRZ.CPY".
+       COPY "LIBGB/REBATE.CPY".
+       COPY "LIBLP/LPCERN.CPY".
+       COPY "LIBLP/LPAMTS.CPY".
+
+
+      **************************************************************************
+       SETUP-LINK-INFO SECTION.
+      **************************************************************************
+           MOVE LONPF-HELP--FILE TO HELP-LINK-FILE.
+           MOVE LONPF-HELP--DIR TO HELP-LINK-DIR.
+
+      **************************************************************************
+       VDU-CONVERT-FIELD SECTION.
+      **************************************************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBLP/LONPF_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      *************************************
+       MISCELLANEOUS-ROUTINES SECTION.
+      *************************************
+       COPY "LIBGB/GETENV.CPY".
+       COPY "LIBGB/DACCESS.CPY".
+       COPY "LIBGB/SYSTEM.CPY".
+       FORM-RESET.
+       GET-SP.
+           PERFORM OPEN-SP1-FILE.
+           PERFORM READ-SP1-FILE.
+           PERFORM CLOSE-SP1-FILE.
+           IF IO-FG = 9
+              MOVE " INVALID STATE PARAMETER RECORD" TO MESS
+              PERFORM SEND-MESS
+              MOVE "X" TO ERRCD.
+       SET-TP-EARNINGS.
+           MOVE LN-EARN-ORDER(1) TO WK-SUB.
+           IF WK-SUB > 3
+      *       MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(1)
+              MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(1)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(1).
+
+           MOVE LN-EARN-ORDER(2) TO WK-SUB.
+           IF WK-SUB > 3
+      *       MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(2)
+              MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(2)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(2).
+
+           MOVE LN-EARN-ORDER(3) TO WK-SUB.
+           IF WK-SUB > 3
+      *      MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(3)
+             MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(3)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(3).
+
+           MOVE LN-EARN-ORDER(4) TO WK-SUB.
+           IF WK-SUB > 3
+      *       MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(4)
+              MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(4)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(4).
+
+           MOVE LN-EARN-ORDER(5) TO WK-SUB.
+           IF WK-SUB > 3
+      *       MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(5)
+              MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(5)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(5).
+
+           MOVE LN-EARN-ORDER(6) TO WK-SUB.
+           IF WK-SUB > 3
+      *       MOVE WK-LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(6)
+              MOVE LXE-EARN(WK-SUB - 3) TO TP-EARNINGS(6)
+           ELSE
+              MOVE LP-EARNED(WK-SUB) TO TP-EARNINGS(6).
+
+       SEND-LEGEND.
+           MOVE MESS TO WR-BUF.
+           MOVE MSEL-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+       FULL-BRIEF-ROUTING.
+           IF FULL-DISPLAY = "B"
+              MOVE 0 TO NEW-PROG-SUB
+              MOVE 2 TO ROUTE-CD
+            ELSE
+              MOVE 1 TO NEW-PROG-SUB
+              PERFORM SET-NEW-LOAN-NO
+              MOVE D-LNNO-BUF TO WR-BUF
+              MOVE D-LNNO-LIST TO WR-LIST
+              PERFORM CALL-WRFORM.
+       SET-NEW-LOAN-NO.
+           MOVE " " TO D-LNNO-BUF.
+           PERFORM LPSTAT-DISPLAY.
+           MOVE LPS-DISPLAY-LNNO TO D-LOAN-NUM.
+           MOVE LC-DESC TO D-LCDESC.
+       CLEAR-H05.
+           MOVE "H05." TO MSEL-LIST.
+           MOVE " " TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "MSEL." TO MSEL-LIST.
+
+      /*******************************************
+      *     I N P U T  /  O U T P U T            *
+      ********************************************
+       COPY "LIBLP/LPFMCL.CPY".
+       COPY "LIBLP/LPCKCL.CPY".
+       COPY "LIBLP/LPCXCL.CPY".
+       COPY "LIBLP/LPDSCL.CPY".
+       COPY "LIBLP/LPDTCL.CPY".
+       COPY "LIBLP/LPTYCL.CPY".
+       COPY "LIBLP/LPTRXCL.CPY".
+       COPY "LIBLP/LPTRPCL.CPY".
+       COPY "LIBLP/LPTRCCL.CPY".
+
+      ***********************************************
+       IO-ROUTINES SECTION.
+      ***********************************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBLP/LPTYGS_SQL.CPY".
+       COPY "LIBLP/LPTRXGS_SQL.CPY".
+       COPY "LIBLP/LPTRPGS_SQL.CPY".
+       COPY "LIBLP/LPTRCGS_SQL.CPY".
+       COPY "LIBLP/LPSPGS_SQL.CPY".
+       COPY "LIBLP/LPNOGS_SQL.CPY".
+       COPY "LIBLP/LPLXGGS_SQL.CPY".
+       COPY "LIBLP/LPLTPGS_SQL.CPY".
+       COPY "LIBLP/LPLTIGS_SQL.CPY".
+       COPY "LIBLP/LPLPGS_SQL.CPY".
+       COPY "LIBLP/LPLNGS_SQL.CPY".
+       COPY "LIBLP/LPLCGS_SQL.CPY".
+       COPY "LIBLP/LPFMGS_SQL.CPY".
+       COPY "LIBLP/LPFDGS_SQL.CPY".
+       COPY "LIBLP/LPDTGS_SQL.CPY".
+       COPY "LIBLP/LPDSGS_SQL.CPY".
+       COPY "LIBLP/LPDLGS_SQL.CPY".
+       COPY "LIBLP/LPCXGS_SQL.CPY".
+       COPY "LIBLP/LPCKGS_SQL.CPY".
+       COPY "LIBLP/LPBWGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBLP/LPLC1RN.CPY".
+       COPY "LIBLP/LPLN1IN.CPY".
+       COPY "LIBLP/LPLP1IN.CPY".
+       COPY "LIBLP/LPLXG1IN.CPY".
+       COPY "LIBLP/LPLTP1RN.CPY".
+       COPY "LIBLP/LPLTI1RN.CPY".
+       COPY "LIBLP/LPSP1RN.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBLP/LPTY1IN.CPY".
+       COPY "LIBLP/LPDS1IN.CPY".
+       COPY "LIBLP/LPWKI.CPY".
+       COPY "LIBLP/LPTRP1IN.CPY".
+       COPY "LIBLP/LPTRC1IN.CPY".
+       COPY "LIBLP/LPTRX1IN.CPY".
+       COPY "LIBLP/LPDT1IN.CPY".
+       COPY "LIBLP/LPFM1IN.CPY".
+       COPY "LIBLP/LPNO1IN.CPY".
+       COPY "LIBLP/LPCK1IN.CPY".
+       COPY "LIBLP/LPDL1RN.CPY".
+       COPY "LIBLP/LPBW1RN.CPY".
+       COPY "LIBLP/LPCX1IN.CPY".
+       COPY "LIBLP/LPFD1RN.CPY".
+       COPY "LIBLP/LPREPAYTRPI.CPY".
+       COPY "LIBLP/LPREPAYNOI.CPY".
+
+       COPY "LIBGB/FERRORS.CPY".
+           MOVE "E" TO ERRCD.
+       END-ROUTINE.
+           PERFORM CLOSE-FILES.
+       EXIT-PROG.
+       STOP-RUN.
+           EXIT PROGRAM.

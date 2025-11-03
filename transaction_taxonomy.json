@@ -1,0 +1,1158 @@
+[
+  {
+    "id": "TX_A1",
+    "tx_code": "A1",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPW9",
+      "LONPWA"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "THE",
+      "PIC",
+      "UNTIL",
+      "GB-FILE",
+      "ERROR",
+      "UPDATED",
+      "IN",
+      "OF",
+      "YET"
+    ],
+    "description": "WARNING * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING *",
+    "narrative": "Transaction code 'A1'. is implemented in programs: LONPW9, LONPWA. Accesses data files: THE, PIC, UNTIL and 6 more files. Purpose: WARNING * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING *.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_A2",
+    "tx_code": "A2",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "BAH 20220420 ADDED CDTYPE \"A2\" FOR ACTIONCODE 2 SECURITIZATION #1551",
+    "narrative": "Transaction code 'A2'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: BAH 20220420 ADDED CDTYPE \"A2\" FOR ACTIONCODE 2 SECURITIZATION #1551.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_AC",
+    "tx_code": "AC",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'AC'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_AT",
+    "tx_code": "AT",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'AT'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_BD",
+    "tx_code": "BD",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF2",
+      "CHBANK"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "IT",
+      "THE",
+      "NEW",
+      "GB-FILE",
+      "BACK",
+      "ADDITION",
+      "ERROR",
+      "NOTICE",
+      "TRP",
+      "TO",
+      "TRAILER",
+      "A",
+      "IN",
+      "OF",
+      "OPTION",
+      "IF"
+    ],
+    "description": "REVERSED BK, BUT WERENT ALLOWED TO ACCESS TRAILER, SO CHANGE      *             TO GP-BK-PRIOR-TO-POSTING NOT = \"Y\" AND THE LN-BNKRPTDATE =",
+    "narrative": "Transaction code 'BD'. is implemented in programs: LONPF2, CHBANK. Accesses data files: IT, THE, NEW and 13 more files. Purpose: REVERSED BK, BUT WERENT ALLOWED TO ACCESS TRAILER, SO CHANGE      *             TO GP-BK-PRIOR-TO-POSTING NOT = \"Y\" AND THE LN-BNKRPTDATE =.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_BK",
+    "tx_code": "BK",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "GPMAN3",
+      "LONPF2"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "IT",
+      "THE",
+      "NEW",
+      "GB-FILE",
+      "BACK",
+      "ADDITION",
+      "ERROR",
+      "NOTICE",
+      "TRP",
+      "TO",
+      "TRAILER",
+      "A",
+      "IN",
+      "OF"
+    ],
+    "description": "JTG 040722 CREATED NEW TRCD 'ZX' WHAT WORKS LIKE 'SX'     CENTRIX #2314",
+    "narrative": "Transaction code 'BK'. is implemented in programs: GPMAN3, LONPF2. Accesses data files: IT, THE, NEW and 11 more files. Purpose: JTG 040722 CREATED NEW TRCD 'ZX' WHAT WORKS LIKE 'SX'     CENTRIX #2314.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_BR",
+    "tx_code": "BR",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'BR'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_BS",
+    "tx_code": "BS",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 990729 ADDED CD-RO-NUM TO PROVIDE AN ALPHA KEY RE: CD-RO-CODE",
+    "narrative": "Transaction code 'BS'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 990729 ADDED CD-RO-NUM TO PROVIDE AN ALPHA KEY RE: CD-RO-CODE.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_BW",
+    "tx_code": "BW",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "=================================================================",
+    "narrative": "Transaction code 'BW'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: =================================================================.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_CH",
+    "tx_code": "CH",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'CH'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_CL",
+    "tx_code": "CL",
+    "entry_menu": "CLMENU",
+    "menu_description": "Client Menu",
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'CL'. accessed via Client Menu. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_CN",
+    "tx_code": "CN",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDBMAN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "OR",
+      "RESCHEDULES",
+      "MOVE"
+    ],
+    "description": "=================================================================",
+    "narrative": "Transaction code 'CN'. is implemented in programs: CDBMAN. Accesses data files: OR, RESCHEDULES, MOVE. Purpose: =================================================================.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_CO",
+    "tx_code": "CO",
+    "entry_menu": "COMENU",
+    "menu_description": "Company Menu",
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'CO'. accessed via Company Menu. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_DF",
+    "tx_code": "DF",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "[CTMAIN] CT - COUNTY TAX PERCENTS CODES (KENTUCKY)",
+    "narrative": "Transaction code 'DF'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: [CTMAIN] CT - COUNTY TAX PERCENTS CODES (KENTUCKY).",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_EA",
+    "tx_code": "EA",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'EA'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_F1",
+    "tx_code": "F1",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPG3"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "CURRENT"
+    ],
+    "description": "MJD 052297 ALLOW USER TO CHANGE TYPE OF ADDON WITHOUT REENTERING",
+    "narrative": "Transaction code 'F1'. is implemented in programs: LONPG3. Accesses data files: CURRENT. Purpose: MJD 052297 ALLOW USER TO CHANGE TYPE OF ADDON WITHOUT REENTERING.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_FC",
+    "tx_code": "FC",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'FC'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_FU",
+    "tx_code": "FU",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'FU'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_FZ",
+    "tx_code": "FZ",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021210 CORRECTED SIZE OF FBR-7X                         REGACC #0006",
+    "narrative": "Transaction code 'FZ'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021210 CORRECTED SIZE OF FBR-7X                         REGACC #0006.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_ID",
+    "tx_code": "ID",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021210 CORRECTED SIZE OF FBR-7X                         REGACC #0006",
+    "narrative": "Transaction code 'ID'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021210 CORRECTED SIZE OF FBR-7X                         REGACC #0006.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_IF",
+    "tx_code": "IF",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF1"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "DOES",
+      "GIFILE",
+      "OFF",
+      "A",
+      "OF",
+      "TRANSFER"
+    ],
+    "description": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+    "narrative": "Transaction code 'IF'. is implemented in programs: LONPF1. Accesses data files: DOES, GIFILE, OFF and 3 more files. Purpose: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_JT",
+    "tx_code": "JT",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'JT'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_LC",
+    "tx_code": "LC",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'LC'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_LN",
+    "tx_code": "LN",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPW9",
+      "LONPWA"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "THE",
+      "PIC",
+      "UNTIL",
+      "GB-FILE",
+      "ERROR",
+      "UPDATED",
+      "IN",
+      "OF",
+      "YET"
+    ],
+    "description": "************************************************************************",
+    "narrative": "Transaction code 'LN'. is implemented in programs: LONPW9, LONPWA. Accesses data files: THE, PIC, UNTIL and 6 more files. Purpose: ************************************************************************.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_LO",
+    "tx_code": "LO",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'LO'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_LS",
+    "tx_code": "LS",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'LS'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_LV",
+    "tx_code": "LV",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'LV'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_NW",
+    "tx_code": "NW",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPJ2"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "FOR",
+      "THE",
+      "DEBIT",
+      "NOTICE",
+      "BI",
+      "IN",
+      "OF",
+      "ALL"
+    ],
+    "description": "GLB 011127 BAD 'IF' STATEMENT TESTING \"NW\" \"PU\" DT-RECORDS-DIDNT MATTER",
+    "narrative": "Transaction code 'NW'. is implemented in programs: LONPJ2. Accesses data files: FOR, THE, DEBIT and 5 more files. Purpose: GLB 011127 BAD 'IF' STATEMENT TESTING \"NW\" \"PU\" DT-RECORDS-DIDNT MATTER.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_OF",
+    "tx_code": "OF",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "DEFI01",
+      "FEUNR1",
+      "ICUNR1",
+      "ICUNR2",
+      "ICUNR3",
+      "REBC01",
+      "FXPYTD",
+      "EMCASH",
+      "EMPORG",
+      "EMTRR2",
+      "EMTRRG",
+      "GLDIST",
+      "LONIF1",
+      "LONPF1",
+      "LONPF2",
+      "LONPF8",
+      "LONPFC",
+      "LONPW9",
+      "DTLIST",
+      "ACHCRE",
+      "PRENOT",
+      "MBUNR1A",
+      "MBUNR1C",
+      "MBUNR1H",
+      "RZTRR2",
+      "RZTRRG",
+      "RVLINE"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ICUNR2-FILE",
+      "THE",
+      "ICUNR1-FILE",
+      "ICUNR3-FILE",
+      "ICUNR1-REC",
+      "DETAIL",
+      "ICUNR2-REC",
+      "GLEXT-REC",
+      "ERROR",
+      "GI-FILE",
+      "ICUNR3-REC",
+      "IF",
+      "OF"
+    ],
+    "description": "LNFILE.LN_POCD IN ('**', '*U') AND FORMAT(LNFILE.LN_POFFDATE,'YYYYMM') = @PASS_POFFDATE_CHK)",
+    "narrative": "Transaction code 'OF'. is implemented in programs: DEFI01, FEUNR1, ICUNR1 and 24 more. Accesses data files: ICUNR2-FILE, THE, ICUNR1-FILE and 10 more files. Purpose: LNFILE.LN_POCD IN ('**', '*U') AND FORMAT(LNFILE.LN_POFFDATE,'YYYYMM') = @PASS_POFFDATE_CHK).",
+    "program_count": 27,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_OP",
+    "tx_code": "OP",
+    "entry_menu": "OPMENU",
+    "menu_description": "Operations Menu",
+    "programs": [
+      "LONPW9",
+      "LONPWA"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "THE",
+      "PIC",
+      "UNTIL",
+      "GB-FILE",
+      "ERROR",
+      "UPDATED",
+      "IN",
+      "OF",
+      "YET"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'OP'. accessed via Operations Menu. is implemented in programs: LONPW9, LONPWA. Accesses data files: THE, PIC, UNTIL and 6 more files. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_OR",
+    "tx_code": "OR",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'OR'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PC",
+    "tx_code": "PC",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 990729 ADDED CD-RO-NUM TO PROVIDE AN ALPHA KEY RE: CD-RO-CODE",
+    "narrative": "Transaction code 'PC'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 990729 ADDED CD-RO-NUM TO PROVIDE AN ALPHA KEY RE: CD-RO-CODE.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PH",
+    "tx_code": "PH",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "HAD TO USE FLOATING BECAUSE I AM NOT EXITING THE MENU, NEEDS TO GO",
+    "narrative": "Transaction code 'PH'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: HAD TO USE FLOATING BECAUSE I AM NOT EXITING THE MENU, NEEDS TO GO.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PL",
+    "tx_code": "PL",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "CS 070417 ADDED CD-BR-POST-TRCD AND ALSO FIXED CD-BR-PAYOFF-FG, WOULD",
+    "narrative": "Transaction code 'PL'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: CS 070417 ADDED CD-BR-POST-TRCD AND ALSO FIXED CD-BR-PAYOFF-FG, WOULD.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PO",
+    "tx_code": "PO",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES",
+    "narrative": "Transaction code 'PO'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021011 ADDED NEW CODE FILE TYPE 'BR' - BATCH PAYMENT REFERENCE CODES.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PS",
+    "tx_code": "PS",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "CS 090925 ADDED CD-RE-ACTIVITY-REQUIRED FOR RESULT CODES PR#255 REGACC",
+    "narrative": "Transaction code 'PS'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: CS 090925 ADDED CD-RE-ACTIVITY-REQUIRED FOR RESULT CODES PR#255 REGACC.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PU",
+    "tx_code": "PU",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "BAH 20220420 ADDED CDTYPE \"A2\" FOR ACTIONCODE 2 SECURITIZATION #1551",
+    "narrative": "Transaction code 'PU'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: BAH 20220420 ADDED CDTYPE \"A2\" FOR ACTIONCODE 2 SECURITIZATION #1551.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PX",
+    "tx_code": "PX",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "*****************************************************************",
+    "narrative": "Transaction code 'PX'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: *****************************************************************.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_PY",
+    "tx_code": "PY",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF2"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "IT",
+      "THE",
+      "NEW",
+      "GB-FILE",
+      "BACK",
+      "ADDITION",
+      "ERROR",
+      "NOTICE",
+      "TRP",
+      "TO",
+      "TRAILER",
+      "A",
+      "IN",
+      "OF"
+    ],
+    "description": "*************************************************************************",
+    "narrative": "Transaction code 'PY'. is implemented in programs: LONPF2. Accesses data files: IT, THE, NEW and 11 more files. Purpose: *************************************************************************.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_R1",
+    "tx_code": "R1",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPFB"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "POSTING"
+    ],
+    "description": "JTG 010503 CORRECTED BUG IN REBATE-GET-INS-AMT, ROUTINE WAS NOT TESTING",
+    "narrative": "Transaction code 'R1'. is implemented in programs: LONPFB. Accesses data files: POSTING. Purpose: JTG 010503 CORRECTED BUG IN REBATE-GET-INS-AMT, ROUTINE WAS NOT TESTING.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_RC",
+    "tx_code": "RC",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "CS 090925 ADDED CD-RE-ACTIVITY-REQUIRED FOR RESULT CODES PR#255 REGACC",
+    "narrative": "Transaction code 'RC'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: CS 090925 ADDED CD-RE-ACTIVITY-REQUIRED FOR RESULT CODES PR#255 REGACC.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_RE",
+    "tx_code": "RE",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF1",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "DOES",
+      "OR",
+      "ROUTINES",
+      "GIFILE",
+      "OFF",
+      "A",
+      "OF",
+      "TRANSFER"
+    ],
+    "description": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -",
+    "narrative": "Transaction code 'RE'. is implemented in programs: LONPF1, CDMAIN. Accesses data files: DOES, OR, ROUTINES and 5 more files. Purpose: - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_SR",
+    "tx_code": "SR",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "FORM-PROG WILL CREATE THE /USR/TMP WITH CORRECT PROGRAM NAME INSTEAD",
+    "narrative": "Transaction code 'SR'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: FORM-PROG WILL CREATE THE /USR/TMP WITH CORRECT PROGRAM NAME INSTEAD.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_SS",
+    "tx_code": "SS",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPFC"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "POSTING",
+      "THE",
+      "GB-FILE",
+      "ERROR",
+      "IN"
+    ],
+    "description": "*************************************************************************",
+    "narrative": "Transaction code 'SS'. is implemented in programs: LONPFC. Accesses data files: POSTING, THE, GB-FILE and 2 more files. Purpose: *************************************************************************.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_SU",
+    "tx_code": "SU",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPW9",
+      "LONPWA"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "THE",
+      "PIC",
+      "UNTIL",
+      "GB-FILE",
+      "ERROR",
+      "UPDATED",
+      "IN",
+      "OF",
+      "YET"
+    ],
+    "description": "CS 090715 MOVED TEST ON LN-INTPDTH-DATE > POSTING DATE BECAUSE IBPC-TEST",
+    "narrative": "Transaction code 'SU'. is implemented in programs: LONPW9, LONPWA. Accesses data files: THE, PIC, UNTIL and 6 more files. Purpose: CS 090715 MOVED TEST ON LN-INTPDTH-DATE > POSTING DATE BECAUSE IBPC-TEST.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_SV",
+    "tx_code": "SV",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF2"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "IT",
+      "THE",
+      "NEW",
+      "GB-FILE",
+      "BACK",
+      "ADDITION",
+      "ERROR",
+      "NOTICE",
+      "TRP",
+      "TO",
+      "TRAILER",
+      "A",
+      "IN",
+      "OF"
+    ],
+    "description": "JTG 990222 CHANGED TO SET LP-PAYDATE = TO REVERSED LP-RECORD'S PAYDATE:",
+    "narrative": "Transaction code 'SV'. is implemented in programs: LONPF2. Accesses data files: IT, THE, NEW and 11 more files. Purpose: JTG 990222 CHANGED TO SET LP-PAYDATE = TO REVERSED LP-RECORD'S PAYDATE:.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_TO",
+    "tx_code": "TO",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPF8"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "IN",
+      "OF",
+      "THE",
+      "POSTING"
+    ],
+    "description": "CORRECTED TO ONLY SET IT FOR THE REVERSED PAYOFF TRANSACTION      *             LP-TRCD 'PO' AND NOT FOR REBATES OR ANY PRIOR PAYMENT",
+    "narrative": "Transaction code 'TO'. is implemented in programs: LONPF8. Accesses data files: IN, OF, THE and 1 more files. Purpose: CORRECTED TO ONLY SET IT FOR THE REVERSED PAYOFF TRANSACTION      *             LP-TRCD 'PO' AND NOT FOR REBATES OR ANY PRIOR PAYMENT.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_TP",
+    "tx_code": "TP",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "LONPFZ"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "OF",
+      "NEW",
+      "NOTICE",
+      "LOAN"
+    ],
+    "description": "JTG 071098 CHANGED COBOL NAME FROM HOLD-LN-DLSCHG TO HOLD-LN-ANTIC-DISC",
+    "narrative": "Transaction code 'TP'. is implemented in programs: LONPFZ. Accesses data files: OF, NEW, NOTICE and 1 more files. Purpose: JTG 071098 CHANGED COBOL NAME FROM HOLD-LN-DLSCHG TO HOLD-LN-ANTIC-DISC.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_TS",
+    "tx_code": "TS",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDLIST",
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "JTG 021114 ADDED ENTRY OF CD-BR-LC-FG                       REGACC #0006",
+    "narrative": "Transaction code 'TS'. is implemented in programs: CDLIST, CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: JTG 021114 ADDED ENTRY OF CD-BR-LC-FG                       REGACC #0006.",
+    "program_count": 2,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_UW",
+    "tx_code": "UW",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "=================================================================",
+    "narrative": "Transaction code 'UW'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: =================================================================.",
+    "program_count": 1,
+    "workflow_depth": 0
+  },
+  {
+    "id": "TX_XL",
+    "tx_code": "XL",
+    "entry_menu": null,
+    "menu_description": null,
+    "programs": [
+      "CDMAIN"
+    ],
+    "workflow_programs": [],
+    "screens": [],
+    "files": [
+      "ROUTINES",
+      "OF",
+      "OR"
+    ],
+    "description": "=================================================================",
+    "narrative": "Transaction code 'XL'. is implemented in programs: CDMAIN. Accesses data files: ROUTINES, OF, OR. Purpose: =================================================================.",
+    "program_count": 1,
+    "workflow_depth": 0
+  }
+]

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSWK2I
+           SELECT WK2-FILE ASSIGN WK2PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY WK2-KEY
+                  FILE STATUS FILE-STAT.

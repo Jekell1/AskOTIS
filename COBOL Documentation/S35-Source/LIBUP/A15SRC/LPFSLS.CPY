@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSLS
+           SELECT LS-FILE ASSIGN TO LS-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LS1-KEY
+                  FILE STATUS FILE-STAT.

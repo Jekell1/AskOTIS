@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGB/GBFSRC
+           SELECT RC-FILE ASSIGN TO RC-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY RC1-KEY
+                  ALTERNATE RECORD KEY RC2-KEY
+                  FILE STATUS FILE-STAT.

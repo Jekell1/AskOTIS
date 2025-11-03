@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCR-HALF-MONTHS Program Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCR-HALF-MONTHS Program Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-incr-half-months-program-documentation">C-INCR-HALF-MONTHS Program Documentation</h1>
+<p><strong>Location:</strong> APIPAY/APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-INCR-HALF-MONTHS<br />
+<strong>Date Written:</strong> See source comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>C-INCR-HALF-MONTHS increments a date by a number of half-months. It uses C-INCR-MONTHS for full months and adjusts days for half-month increments, handling both positive and negative increments.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Date increment by half-months</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>NDTE-DATE</code>: Date to increment (CCYYMMDD)</li>
+<li><code>WS-UP-WORK</code>: Number of half-months to increment</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>NDTE-DATE</code>: Incremented date (CCYYMMDD)</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    A[Start] --> B[Divide Half-Months]
+    B --> C[PERFORM C-INCR-MONTHS]
+    C --> D[Adjust Days for Half-Month]
+    D --> E[Update NDTE Fields]
+    E --> F[End]
+</div>
+<h3 id="detailed-flow">Detailed Flow</h3>
+<div class="mermaid">%% Mermaid Flowchart: C-INCR-HALF-MONTHS Detailed Flow
+graph TD
+    Start([Start])
+    SaveDay["Save NDTE-DD-S"]
+    Divide["Divide WS-UP-WORK by 2"]
+    IncrMonths["PERFORM C-INCR-MONTHS"]
+    Mod2["Check remainder"]
+    IfMod2["If remainder > 0"]
+    DayAdj["Adjust days for half-month"]
+    UpdateFields["Update NDTE fields"]
+    End([End])
+
+    Start --> SaveDay --> Divide --> IncrMonths --> Mod2
+    Mod2 -- Yes --> IfMod2 --> DayAdj --> UpdateFields --> End
+    Mod2 -- No --> UpdateFields --> End
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-INCR-HALF-MONTHS Batch Timeline
+    section Initialization
+    Save Day :done, a1, 2025-07-31, 1d
+    section Calculation
+    Divide Half-Months :a2, after a1, 1d
+    Increment Months :a3, after a2, 1d
+    Adjust Days :a4, after a3, 1d
+    Update NDTE Fields :a5, after a4, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-INCR-HALF-MONTHS</strong>: Divides half-months, calls C-INCR-MONTHS, and adjusts days for half-month increments.</li>
+<li><strong>C-INCR-MONTHS</strong>: Handles full month increments.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    NDTE_DATE --> WS_NDTE_DD_S
+    WS_UP_WORK --> WS_DIV_RESULT
+    WS_DIV_RESULT --> C_INCR_MONTHS
+    WS_MOD_2 --> Day_Adjustment
+    NDTE_DD --> NDTE_DATE
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>C-INCR-MONTHS (internal)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>Handles positive and negative increments</li>
+<li>Adjusts for day overflow/underflow</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates day fields after adjustment</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid input date</li>
+<li>Day out of range after adjustment</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses working-storage fields</li>
+<li>No external file I/O</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by routines requiring half-month arithmetic</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; uses internal paragraphs</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    C-INCR-HALF-MONTHS --> C-INCR-MONTHS
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

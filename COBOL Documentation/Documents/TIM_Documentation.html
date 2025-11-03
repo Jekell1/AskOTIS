@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIM - 365-Day Year Timing Calculations</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIM - 365-Day Year Timing Calculations</span>
+        </nav>
+        <main class="content">
+<h1 id="tim-365-day-year-timing-calculations">TIM - 365-Day Year Timing Calculations</h1>
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> TIM<br />
+<strong>Date Written:</strong> Legacy system (pre-2000)</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<h2 id="program-overview">Program Overview</h2>
+<p>TIM is a COBOL-based utility for standard 365-day year timing calculations. It is used to calculate elapsed time between dates using a standard year model, typically for financial and business applications. TIM is a wrapper for the comprehensive TIMALL routine, providing a simple interface for the most common timing calculation method.</p>
+<p><strong>Key Features:</strong>
+- Standard 365-day year calculations
+- Delegates to TIMALL for core logic
+- Simple interface for business/financial use
+- Robust error handling</p>
+<hr />
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li><strong>Elapsed Time Calculation</strong>: Computes days, months, and remaining days between two dates using a 365-day year.</li>
+</ul>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NUM-DATE</td>
+<td>Numeric</td>
+<td>From date in YYYYMMDD format</td>
+</tr>
+<tr>
+<td>SYS-DATE</td>
+<td>Numeric</td>
+<td>To date in YYYYMMDD format</td>
+</tr>
+<tr>
+<td>(others)</td>
+<td>Various</td>
+<td>Inherited from TIMALL interface</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ELAPSED-DAYS</td>
+<td>Numeric</td>
+<td>Number of days between dates</td>
+</tr>
+<tr>
+<td>ELAPSED-MONTHS</td>
+<td>Numeric</td>
+<td>Number of months between dates</td>
+</tr>
+<tr>
+<td>ELAPSED-REM</td>
+<td>Numeric</td>
+<td>Remaining days after month calculation</td>
+</tr>
+<tr>
+<td>ELAPSED-RESULTS</td>
+<td>Char</td>
+<td>Comparison result indicators</td>
+</tr>
+<tr>
+<td>(others)</td>
+<td>Various</td>
+<td>Provided by TIMALL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="business-analyst-flow-for-tim-usage-in-ibpc-test">Business Analyst Flow for TIM Usage in IBPC-TEST</h3>
+<p>The <code>TIM</code> utility is used in a multi-step business process to determine account and payment status—such as expiration, acceleration, reduction, and special flags. The logic involves multiple date comparisons and status evaluations, with <code>TIM</code> called at each decision point.</p>
+<hr />
+<h3 id="step-by-step-business-flow">Step-by-Step Business Flow:</h3>
+<ol>
+<li><strong>Initialize Status Flags</strong> – Clear <code>IBPC-STAT</code>, <code>IBPC-STAT-2</code>, and <code>IBPC-EXPIRED-FLAG</code>.</li>
+<li><strong>Calculate Expiration Date</strong> – Call <code>EXPIRATION-DATE-CALCULATION</code>.</li>
+<li><strong>Compare Dates</strong> – Set <code>NUM-DATE</code> and <code>SYS-DATE</code>, then call <code>TIM</code> to compute <code>ELAPSED-DAYS</code>.</li>
+<li><strong>Set Expired Status</strong> – If payment is past expiration, set <code>IBPC-STAT</code> and <code>IBPC-STAT-2</code> to <code>'E'</code>.</li>
+<li><strong>Complex Expiration Logic</strong> – If expired and formulas/flags apply, set <code>IBPC-EXPIRED-FLAG</code> to <code>'E'</code>.</li>
+<li><strong>Status-Specific Checks</strong> – For <code>Judgment</code>, <code>Accelerated</code>, or <code>Reduced</code> statuses, update fields based on <code>ELAPSED-DAYS</code>.</li>
+<li><strong>Interest-Bearing / Precompute</strong> – Set <code>IBPC-FG</code> to <code>'I'</code> or <code>'P'</code> depending on business rules.</li>
+<li><strong>Finalize Status</strong> – Use all calculated flags and logic to determine final <code>IBPC-FG</code>.</li>
+</ol>
+<hr />
+<div class="mermaid">flowchart TD
+    Start([Start: IBPC-TEST]) --> Init[Clear IBPC-STAT, IBPC-STAT-2, IBPC-EXPIRED-FLAG]
+    Init --> ExpDate[PERFORM EXPIRATION-DATE-CALCULATION]
+    ExpDate --> SetDates1[Set NUM-DATE and SYS-DATE for expiration comparison]
+    SetDates1 --> CallTIM1[PERFORM TIM]
+    CallTIM1 --> CheckExpired{Is ELAPSED-DAYS > 0?}
+    CheckExpired -- Yes --> SetE[Set IBPC-STAT and IBPC-STAT-2 to 'E']
+    CheckExpired -- No --> FurtherChecks
+    SetE --> FurtherChecks
+    FurtherChecks --> LastPay[Set NUM-DATE to LN-DATE-PAID-LAST or LN-INTDATE]
+    LastPay --> CallTIM2[PERFORM TIM]
+    CallTIM2 --> ExpiredLogic{Complex Expiration Logic?}
+    ExpiredLogic -- Expired --> SetExpiredFlag[Set IBPC-EXPIRED-FLAG to 'E']
+    ExpiredLogic -- Not Expired --> StatusChecks
+    StatusChecks --> Judgement[If Judgment: Set dates, PERFORM TIM]
+    Judgement --> UpdateJ[Update IBPC-STAT/IBPC-STAT-2]
+    StatusChecks --> Accelerated[If Accelerated: Set dates, PERFORM TIM]
+    Accelerated --> UpdateA[Update IBPC-STAT/IBPC-STAT-2]
+    StatusChecks --> Reduced[If Reduced: Set dates, PERFORM TIM]
+    Reduced --> UpdateR[Update IBPC-STAT/IBPC-STAT-2]
+    UpdateJ --> InterestCheck[If Interest-Bearing: set IBPC-FG to 'I']
+    UpdateA --> InterestCheck
+    UpdateR --> InterestCheck
+    InterestCheck --> Precompute[If Precompute: set IBPC-FG to 'P']
+    Precompute --> FinalStatus[Determine final IBPC-FG]
+    FinalStatus --> End([End])
+</div>
+<p><strong>Detailed Step-by-Step Flow:</strong></p>
+<ol>
+<li><strong>Set Inputs:</strong> The calling program assigns values to <code>NUM-DATE</code> and <code>SYS-DATE</code> (e.g., payment date, expiration date).</li>
+<li><strong>Enter TIM SECTION:</strong> Control passes to the TIM SECTION.</li>
+<li><strong>Set Year Type:</strong> TIM sets <code>ELAPSED-YRTYPE</code> to 365 for standard calculations.</li>
+<li><strong>Call TIMALL:</strong> TIM calls the TIMALL routine for all timing calculations.</li>
+<li><strong>DATER-ROUTINE:</strong> TIMALL invokes DATER-ROUTINE for core date arithmetic.</li>
+<li><strong>Populate Results:</strong> TIMALL updates <code>ELAPSED-DAYS</code>, <code>ELAPSED-MONTHS</code>, and related fields.</li>
+<li><strong>Business Logic:</strong> The calling program uses these results to set flags, make decisions, or perform further checks (possibly looping back to set new dates and call TIM again).</li>
+<li><strong>End:</strong> Results are available for downstream processing.</li>
+</ol>
+<hr />
+<h3 id="complex-expiration-logic">Complex Expiration Logic</h3>
+<p>The following diagram and explanation describe the business logic for calculating the expiration date of a loan or account, as implemented in the COBOL system. This logic is invoked as part of the broader timing and status determination process.</p>
+<p><strong>Expiration Date Calculation Flow:</strong></p>
+<div class="mermaid">
+flowchart TD
+    ExpStart([Start: Begin Expiration Date Calculation]) --> ExpCheck{SP-EXPD-FRMLA A or B?}
+    ExpCheck -- Yes --> SetFlag[Set MDTE-FLAG = Y]
+    ExpCheck -- No --> SkipFlag[Skip MDTE-FLAG]
+
+    SetFlag --> ExpBCheck{SP-EXPD-FRMLA B?}
+    ExpBCheck -- Yes --> SetDCFlag[Set MDTE-DC-FLAG = Y]
+    ExpBCheck -- No --> SkipDCFlag[Skip MDTE-DC-FLAG]
+
+    SetDCFlag --> MergeToMat
+    SkipDCFlag --> MergeToMat
+    SkipFlag --> MergeToMat
+
+    MergeToMat --> DoMat[Perform MATURITY-DATE-CALCULATION]
+    DoMat --> MoveNDTE[Move MDTE-DATE to NDTE-DATE]
+    MoveNDTE --> SetMonths[Move SP-EXPD-MONTHS to NDTE-HOLD]
+    SetMonths --> IncMonths[Perform INCREMENT-MONTHS]
+    IncMonths --> DaysCheck{SP-EXPD-DAYS != 0?}
+    DaysCheck -- Yes --> SetDays[Move SP-EXPD-DAYS to NDTE-HOLD]
+    DaysCheck -- No --> SkipDays[Skip INCREMENT-DAYS]
+
+    SetDays --> IncDays[Perform INCREMENT-DAYS]
+    IncDays --> MoveXDTE[Move NDTE-DATE to XDTE-DATE]
+    SkipDays --> MoveXDTE
+
+    MoveXDTE --> ExpEnd([End: Expiration Date Calculated])
+</div>
+<p><strong>Explanation:</strong>
+- Checks if a special expiration formula applies (SP-EXPD-FRMLA).
+- Sets flags to control how the maturity date is calculated.
+- Performs the maturity date calculation, then adds any extra months and days as specified.
+- The final expiration date is output as XDTE-DATE.</p>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    Input(NUM-DATE, SYS-DATE) --> TIM(TIM Utility)
+    TIM --> TIMALL(TIMALL Engine)
+    TIMALL --> Output(ELAPSED-DAYS, ELAPSED-MONTHS, ELAPSED-REM)
+    Output --> Caller(Results to Caller)
+</div>
+<hr />
+<h2 id="batch-processing-timeline">Batch Processing Timeline</h2>
+<ol>
+<li>Load input records with date fields</li>
+<li>PERFORM TIM for each record</li>
+<li>Use ELAPSED-DAYS, ELAPSED-MONTHS, etc. for downstream processing</li>
+<li>Optionally use other timing utilities for special year types</li>
+</ol>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>TIM SECTION</strong>: Entry point, sets ELAPSED-YRTYPE to 365</li>
+<li><strong>PERFORM TIMALL</strong>: Delegates to comprehensive timing engine</li>
+<li><strong>Result Propagation</strong>: All results from TIMALL are available to the caller</li>
+<li><strong>Return</strong>: Passes results back to caller</li>
+</ul>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><strong>TIMALL</strong>: Comprehensive timing calculation engine</li>
+<li><strong>DATER-ROUTINE</strong>: Core date processing (via TIMALL)</li>
+</ul>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li><strong>Input Validation</strong>: NUM-DATE and SYS-DATE must be valid YYYYMMDD dates</li>
+<li><strong>Year Type</strong>: ELAPSED-YRTYPE must be set to 365</li>
+<li><strong>Error Flags</strong>: Set if invalid input or calculation error</li>
+<li><strong>Leap Year Handling</strong>: Typically ignored or handled separately</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li><strong>APIPAY_Inlined.CBL</strong>: Main source file containing TIM logic</li>
+<li><strong>TIMALL.cpy</strong>: Copybook for timing calculation logic</li>
+<li><strong>DATER-ROUTINE.cpy</strong>: Copybook for date processing</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    A(Calling Program) --> B(TIM)
+    B --> C(TIMALL)
+    C --> D(DATER-ROUTINE)
+    D --> E(Year-Type Calculations)
+    E --> F(Return)
+</div>
+<hr />
+<!-- Additional original sections preserved below for reference and completeness -->
+
+<h2 id="purpose-and-description">Purpose and Description</h2>
+<p>TIM is a simple wrapper utility that provides standard 365-day year calculations by configuring and calling the comprehensive TIMALL routine. It represents the most common timing calculation method used in financial and business applications.</p>
+<h3 id="key-responsibilities">Key Responsibilities</h3>
+<ol>
+<li><strong>Year Type Configuration</strong> - Set elapsed year type to 365 days</li>
+<li><strong>TIMALL Integration</strong> - Delegate processing to comprehensive timing engine</li>
+<li><strong>Standard Calendar</strong> - Provide standard Gregorian calendar calculations</li>
+<li><strong>Simple Interface</strong> - Offer streamlined access to common timing functionality</li>
+</ol>
+<h3 id="365-day-year-model">365-Day Year Model</h3>
+<p>The TIM utility uses a standard 365-day year calculation method:
+- <strong>Year Length</strong>: 365 days (standard non-leap year)
+- <strong>Month Handling</strong>: Standard calendar months with actual day counts
+- <strong>Leap Year Treatment</strong>: Typically ignored or handled separately
+- <strong>Calculation Basis</strong>: Most common financial calculation method</p>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="input-parameters_1">Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - From date in YYYYMMDD format</li>
+<li><strong>SYS-DATE</strong> - To date in YYYYMMDD format</li>
+<li>All other parameters inherited from TIMALL interface</li>
+</ul>
+<h3 id="output-parameters">Output Parameters</h3>
+<ul>
+<li><strong>ELAPSED-DAYS</strong> - Number of days between dates</li>
+<li><strong>ELAPSED-MONTHS</strong> - Number of months between dates</li>
+<li><strong>ELAPSED-REM</strong> - Remaining days after month calculation</li>
+<li><strong>ELAPSED-RESULTS</strong> - Comparison result indicators</li>
+<li>All other outputs provided by TIMALL</li>
+</ul>
+<h3 id="processing-logic">Processing Logic</h3>
+<p>
+<div class="diagram-container">
+    <h4 class="diagram-title">TIM Main Flow</h4>
+    <div class="mermaid">
+graph TD
+    A[Start: TIM SECTION] --> B[Set ELAPSED-YRTYPE to 365]
+    B --> C[Call TIMALL]
+    C --> D[TIMALL Processing with 365-Day Year]
+    D --> E[Calculate Elapsed Days]
+    E --> F[Calculate Elapsed Months]
+    F --> G[Calculate Remaining Days]
+    G --> H[Set Result Indicators]
+    H --> I[Return to Caller]
+    
+    J[Results Available:]
+    J --> K[ELAPSED-DAYS]
+    J --> L[ELAPSED-MONTHS]  
+    J --> M[ELAPSED-REM]
+    J --> N[ELAPSED-RESULTS]
+    
+    style A fill:#e1f5fe
+    style I fill:#e8f5e8
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    </div>
+</div></p>
+<h4 id="core-implementation">Core Implementation</h4>
+<pre><code class="language-cobol">TIM SECTION.
+    MOVE 365 TO ELAPSED-YRTYPE.
+    PERFORM TIMALL.
+</code></pre>
+<h3 id="algorithm-steps">Algorithm Steps</h3>
+<ol>
+<li><strong>Year Type Setup</strong></li>
+<li>
+<p>Sets ELAPSED-YRTYPE to 365 to specify standard year calculations</p>
+</li>
+<li>
+<p><strong>Delegate Processing</strong></p>
+</li>
+<li>Calls TIMALL which performs all actual timing calculations</li>
+<li>
+<p>TIMALL uses the 365-day year type for its internal algorithms</p>
+</li>
+<li>
+<p><strong>Result Propagation</strong></p>
+</li>
+<li>All results generated by TIMALL are available to caller</li>
+<li>No additional processing or result modification</li>
+</ol>
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="called-by">Called By</h3>
+<ul>
+<li><strong>Payment calculations</strong> - Standard monthly payment computations</li>
+<li><strong>Interest calculations</strong> - Standard interest accrual periods</li>
+<li><strong>Aging analysis</strong> - Account aging using standard calendar</li>
+<li><strong>Report generation</strong> - Standard time period reporting</li>
+<li><strong>General date arithmetic</strong> - Common business date calculations</li>
+</ul>
+<h3 id="calls-to">Calls To</h3>
+<ul>
+<li><strong>TIMALL</strong> - Comprehensive timing calculation engine</li>
+<li><strong>DATER-ROUTINE</strong> - Core date processing (through TIMALL)</li>
+</ul>
+<h3 id="usage-context">Usage Context</h3>
+<p>TIM is used when standard calendar calculations are needed without special year-type considerations:
+- Most common business calculations
+- Standard financial reporting
+- General-purpose date arithmetic
+- Non-specialized timing requirements</p>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-elapsed-time-calculation">Basic Elapsed Time Calculation</h3>
+<pre><code class="language-cobol">MOVE 20240101 TO NUM-DATE     * January 1, 2024
+MOVE 20240401 TO SYS-DATE     * April 1, 2024  
+PERFORM TIM
+* Results available in ELAPSED-DAYS, ELAPSED-MONTHS, etc.
+DISPLAY &quot;Days elapsed: &quot; ELAPSED-DAYS
+DISPLAY &quot;Months elapsed: &quot; ELAPSED-MONTHS
+</code></pre>
+<h3 id="payment-period-calculation">Payment Period Calculation</h3>
+<pre><code class="language-cobol">MOVE LOAN-START-DATE TO NUM-DATE
+MOVE CURRENT-DATE TO SYS-DATE
+PERFORM TIM
+IF ELAPSED-MONTHS &gt;= PAYMENT-GRACE-PERIOD
+    * ...
+</code></pre>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+      ***********************************************
+      *  SP-LCFRMLA = N   (MERCURY, NV)
+      ***********************************************
+       LCAP-N SECTION.
+
+      * SETUP LATE CHARGES PAID INCLUSIVE OF
+      * ANY SHORTAGES PAID TODAY.
+
+       LCAP-N-DATE-CHK.
+
+      * VERIFY DATES FOR ASSESSMENT
+           PERFORM LCAP-MDTE-CHK.
+           IF ELAPSED-DAYS NOT > 0
+              GO TO LCAP-N-EXIT.
+
+      * FOR THIS CODE, STOP ASSESSING WHEN LATE CHARGES
+      * ARE BROUGHT UP TODATE
+           IF LCAP-LPTRCD = "AL"
+              PERFORM LCAP-ASSESS-CHK
+              IF LCAS-ASSESS NOT = "Y"
+                 GO TO LCAP-N-EXIT.
+           PERFORM LCAP-ASSESS-CHK.
+           IF (LCAS-ASSESS NOT = "Y")
+                     OR (LCAP-TRAMT < LCAP-AMTNEEDED)
+              GO TO LCAP-N-RETRY.
+
+      * LCHG-LATE INITIALIZED FOR SP-LCTYPE = "C" OR "J",
+      * WHERE LATE CHG IS BASED ON % OF LATE PMT:
+           MOVE LCAP-AMTNEEDED TO LCHG-LATE.
+           MOVE LCAP-LCPDTH-DATE TO LCHG-LCPDTH-DATE.
+           PERFORM LCAP-CALC-TEST.
+
+      * IF TRAMT INSUFFICIENT TO COVER CHARGE, OWING IS FOUND:
+           IF LCAP-TRAMT < LCHG-CHARGE
+              SUBTRACT LCAP-TRAMT FROM LCHG-CHARGE GIVING LCAP-OWE
+              ADD LCAP-TRAMT TO LCAP-APP
+              PERFORM LCAP-UPD-LCPD
+              GO TO LCAP-N-EXIT.
+
+      * OTHERWISE, TAKE LATE CHARGE AND (ATTEMPT) PMT RECEIPT:
+           ADD LCHG-CHARGE TO LCAP-APP.
+           PERFORM LCAP-UPD-LCPD.
+
+      * REDUCE TRANSACTION AMOUNT BY PAYMENT:
+       LCAP-N-PMT.
+           SUBTRACT LCAP-AMTNEEDED FROM LCAP-TRAMT.
+           MOVE LN-REGPYAMT TO LCAP-AMTNEEDED
+                               LCHG-CURPAY.
+           GO TO LCAP-N-DATE-CHK.
+
+       LCAP-N-RETRY.
+           IF LCAP-TRAMT > LCAP-AMTNEEDED
+              PERFORM LCAP-UPD-LCPD
+              GO TO LCAP-N-PMT.
+
+      * TEST TO SEE IF THE SHORTAGE IS NOT GREATER
+      * THAN THE DELINQUINCY FACTOR, SETUP IN STATE PARAMETERS.
+      *
+           COMPUTE LCAP-WRK2 = LCAP-AMTNEEDED - LCAP-TRAMT.
+           IF LCAP-WRK2 < LCAP-DELFAC
+              PERFORM LCAP-UPD-LCPD.
+
+       LCAP-N-EXIT.
+           EXIT.
+
+      **************************************************************
+      *   SP-LCFRML = P    INDIANA   LATE CHARGE FORMULA (PRIN ONLY)
+      *                    PACESETTERS
+      *
+      *   NOTE:
+      *        LCAP-PARTIALS (HOLDS LCAP-CURDUE AT EXIT)
+      *        LCAP-LCPAID   (HOLDS LCAP-CURDATE AT EXIT)
+      **************************************************************

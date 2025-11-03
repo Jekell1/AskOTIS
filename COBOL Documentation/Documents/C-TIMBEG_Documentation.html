@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMBEG - COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMBEG - COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-timbeg-cobol-utility-documentation">C-TIMBEG - COBOL Utility Documentation</h1>
+<p><strong>Location:</strong> .\APIPAY\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-TIMBEG<br />
+<strong>Written:</strong> [See source comments]</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p>C-TIMBEG is a COBOL utility section that sets up date values for elapsed time calculations. It reverses date order if necessary, converts dates to Julian format, and prepares all required fields for subsequent time routines. This ensures accurate calculations for loan and batch processing.</p>
+<hr />
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Date initialization</li>
+<li>Julian date conversion</li>
+<li>Date order reversal</li>
+</ul>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>NUM-DATE</li>
+<li>SYS-DATE</li>
+<li>WS-DATE1</li>
+<li>WS-DATE2</li>
+</ul>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>SV-NUM-DATE</li>
+<li>SV-SYS-DATE</li>
+<li>WS-JUL-1</li>
+<li>WS-JUL-2</li>
+<li>WS-XSIGN</li>
+</ul>
+<hr />
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    Start([Start]) --> MoveDates[Move NUM-DATE/SYS-DATE]
+    MoveDates --> ConvertJulian1[Convert WS-DATE1 to Julian]
+    ConvertJulian1 --> ConvertJulian2[Convert WS-DATE2 to Julian]
+    ConvertJulian2 --> CheckOrder[Check Date Order]
+    CheckOrder --> ReverseIfNeeded[Reverse Dates If Needed]
+    ReverseIfNeeded --> SetSign[Set Sign]
+    SetSign --> End([End])
+</div>
+<hr />
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-TIMBEG Initialization Timeline
+    dateFormat  YYYY-MM-DD
+    section Steps
+    Move Dates         :done, 2025-07-31, 0.1h
+    Convert to Julian  :active, 2025-07-31, 0.1h
+    Reverse If Needed  : 2025-07-31, 0.1h
+    Set Sign           : 2025-07-31, 0.05h
+</div>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>Move NUM-DATE/SYS-DATE:</strong> Copies input dates to working storage.</li>
+<li><strong>Convert WS-DATE1/WS-DATE2 to Julian:</strong> Converts both dates to Julian format.</li>
+<li><strong>Check Date Order:</strong> Compares Julian dates to determine order.</li>
+<li><strong>Reverse Dates If Needed:</strong> Swaps dates if necessary.</li>
+<li><strong>Set Sign:</strong> Sets sign for elapsed time calculations.</li>
+</ul>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    NUM-DATE --> SV-NUM-DATE
+    SYS-DATE --> SV-SYS-DATE
+    WS-DATE1 --> WS-JUL-1
+    WS-DATE2 --> WS-JUL-2
+    WS-JUL-1 --> CheckOrder
+    WS-JUL-2 --> CheckOrder
+    CheckOrder --> WS-XSIGN
+</div>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a>: Julian date conversion utility</li>
+<li><a href="APIPAY_Documentation.html">APIPAY</a>: Main batch payment processor</li>
+</ul>
+<hr />
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<div class="mermaid">graph TD
+    ErrorDetected([Error Detected]) --> LogError[Log Error]
+    LogError --> End([End])
+</div>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates date formats</li>
+<li>Handles reversal logic</li>
+<li>Logs errors if dates are invalid</li>
+</ul>
+<hr />
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid date format</li>
+<li>NUM-DATE after SYS-DATE</li>
+</ul>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures:</strong> NUM-DATE, SYS-DATE, WS-DATE1, WS-DATE2, SV-NUM-DATE, SV-SYS-DATE, WS-JUL-1, WS-JUL-2, WS-XSIGN</li>
+<li><strong>File Handling:</strong> None</li>
+<li><strong>Key Algorithms:</strong> Date reversal, Julian conversion</li>
+</ul>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by elapsed time routines in APIPAY</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>Input: NUM-DATE, SYS-DATE, WS-DATE1, WS-DATE2</li>
+<li>Output: SV-NUM-DATE, SV-SYS-DATE, WS-JUL-1, WS-JUL-2, WS-XSIGN</li>
+<li>Copybooks: None</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    MAIN --> C-TIMBEG
+    C-TIMBEG --> C-CALL-JUL
+</div>
+<hr />
+<p><em>For further details, see the APIPAY documentation and embedded diagrams.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

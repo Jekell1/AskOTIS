@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-WEEKDAY - Day of Week Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-WEEKDAY - Day of Week Calculator</span>
+        </nav>
+        <main class="content">
+<h1>C-WEEKDAY - Day of Week Calculator</h1>
+<p><strong>Location:</strong> <code>.\C-WEEKDAY.cpy</code><br />
+<strong>Program ID:</strong> C-WEEKDAY<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-parameters">Output Parameters</a></li>
+<li><a href="#technical-details">Technical Details</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>C-WEEKDAY</strong> is a utility that determines the day of the week for any given date. It converts the input date to Julian format and uses modular arithmetic to calculate the day of the week, returning a numeric value from 1 (Sunday) to 7 (Saturday).</p>
+<h2>Input Parameters</h2>
+<ul>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Input date in YYYYMMDD format</li>
+</ul>
+<h2>Output Fields</h2>
+<ul>
+<li><strong>DAY--OF-WEEK</strong> (PIC 9): Day of week (1=Sunday, 2=Monday, ..., 7=Saturday)</li>
+</ul>
+<h2>Processing Logic</h2>
+<ol>
+<li>Convert NUM-DATE to Julian date</li>
+<li>Add 1 to Julian date for proper day alignment</li>
+<li>Divide by 7 and use remainder to determine day of week</li>
+<li>Add 1 to remainder to get 1-7 range</li>
+</ol>
+<h2>Referenced Programs</h2>
+<ul>
+<li><strong>C-CALL-JUL</strong> - Converts calendar date to Julian date</li>
+</ul>
+<h2>Technical Implementation</h2>
+<pre><code class="language-cobol">MOVE NUM-DATE TO P-DATE-IN
+PERFORM C-CALL-JUL
+MOVE P-JULIAN-DATE TO WS-JUL-WK
+COMPUTE WS-JUL = WS-JUL-WK + 1
+DIVIDE WS-JUL BY 7 GIVING WS-DIV-RESULT REMAINDER WS-MOD-7
+COMPUTE DAY--OF-WEEK = WS-MOD-7 + 1
+</code></pre>
+<p>This utility is essential for business rules that depend on the day of the week, such as payment processing schedules and loan servicing operations.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

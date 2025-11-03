@@ -1,0 +1,336 @@
+      **************************************************
+       INTEREST-DUE-PENALTY SECTION.
+      **************************************************
+
+      * SPRING FINANCE PRE-PAYOFF PENALTY:
+      * IF PAYOFF IS PRIOR TO MATURITY TAKE PENALTY:
+      
+           IF SP-RBSPOPT1(7) NOT = 5
+              GO TO INTEREST-DUE-PENALTY-21.
+
+           IF INDU-LPTRCD NOT = "PO"
+              GO TO INTEREST-DUE-PENALTY-EXIT.
+
+           PERFORM MATURITY-DATE-CALCULATION.
+           MOVE INDU-DATE-2 TO NUM-DATE.
+           MOVE MDTE-DATE TO SYS-DATE.
+           PERFORM TIM.
+           IF ELAPSED-DAYS NOT > 0
+              GO TO INTEREST-DUE-PENALTY-EXIT.
+
+           PERFORM LOAN-CALCULATIONS.
+           IF FINANCED-AMOUNT < 2000.01
+              ADD 20.00 TO INDU-INTEREST
+           ELSE
+              IF FINANCED-AMOUNT < 5000.01
+                 COMPUTE INDU-INTEREST ROUNDED =
+                     INDU-INTEREST + FINANCED-AMOUNT * .01
+              ELSE
+                 ADD 100.00 TO INDU-INTEREST.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+       INTEREST-DUE-PENALTY-21.
+
+      * THRIFT INVESTMENT CORP.
+
+           IF SP-RBSPOPT1(7) NOT = 21
+              GO TO INTEREST-DUE-PENALTY-MS.
+
+           IF INDU-LPTRCD NOT = "PO"
+              GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * IF PREPAID WITHIN 12 MONTHS AFTER THE FIRST PAYMENT IS
+      * IS DUE, YOU CAN CHARGE A PRE-PAYMENT PENALTY.
+
+           MOVE LN-ORIG-1STPYDATE TO NUM-DATE.
+           MOVE INDU-DATE-2 TO SYS-DATE
+           PERFORM TIM365
+           IF ELAPSED-MONTHS NOT < 12
+              GO TO INTEREST-DUE-PENALTY-EXIT.
+
+           IF INDU-ASSESS-PENALTY = "N"
+              MOVE SPACES TO INDU-ASSESS-PENALTY
+              GO TO NO-PENALTY-21.
+
+           PERFORM LOAN-CALCULATIONS.
+           IF FINANCED-AMOUNT < 2000.01
+              ADD 20.00 TO INDU-INTEREST
+           ELSE
+              IF FINANCED-AMOUNT < 5000.01
+                 COMPUTE INDU-INTEREST ROUNDED =
+                     INDU-INTEREST + FINANCED-AMOUNT * .01
+              ELSE
+                 ADD 100.00 TO INDU-INTEREST.
+
+           MOVE "N" TO INDU-ASSESS-PENALTY.
+
+       NO-PENALTY-21.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+       INTEREST-DUE-PENALTY-MS.
+           IF SP-RBREDUC(7) NOT = 9999.01
+              GO TO INTEREST-DUE-PENALTY-NV.
+
+      * 07/02/2018 MOVED A01-MS-PENALTY OUT OF REBATEW AND INTO LPRATEW AS
+      *            INDU-A01-PENALTY, REMOVED CLEAR OF REB-MS-PENALTY
+      *    MOVE 0 TO INDU-PENALTY A01-MS-PENALTY REB-MS-PENALTY.
+
+           MOVE 0 TO INDU-PENALTY INDU-A01-PENALTY.
+
+           IF NOT (INDU-LPTRCD = "PO" OR "PA")
+              GO TO INTEREST-DUE-PENALTY-NV.
+
+           IF INDU-ASSESS-PENALTY = "N"
+              MOVE SPACES TO INDU-ASSESS-PENALTY
+              GO TO NO-PENALTY-MS.
+
+      * TEST IF WITHIN 5 YEARS
+           MOVE LN-LOANDATE TO NUM-DATE
+           MOVE INDU-DATE-2 TO SYS-DATE
+           PERFORM TIM360
+           IF ELAPSED-MONTHS < 0 OR > 60
+              GO TO INTEREST-DUE-PENALTY-NV.
+
+           IF ELAPSED-REM > 0
+              ADD 1 TO ELAPSED-MONTHS.
+
+           MOVE ELAPSED-MONTHS TO INDU-A01-ELAPSED-MO.
+           MOVE INDU-DATE-2    TO INDU-A01-PAYDATE.
+           MOVE 0              TO INDU-COMMON-REBATE.
+           MOVE "CL/REBA01"    TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH INDU-COMMON LN-REC LTI-REC.
+           CANCEL FORM-PROGX.
+
+           MOVE INDU-A01-PENALTY TO INDU-PENALTY.
+
+           COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                         + INDU-PENALTY.
+
+           MOVE "N" TO INDU-ASSESS-PENALTY.
+
+       NO-PENALTY-MS.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * NEVADA PRE-PAYOFF PENALTY, MERCURY ACTION SPRDER = 09:
+      * IF PAYOFF IS PRIOR TO MATURITY TAKE $25.00 PENALTY:
+      
+       INTEREST-DUE-PENALTY-NV.
+           IF SP-RBREDUC(7) NOT = 9999.02
+              GO TO INTEREST-DUE-PENALTY-OH.
+
+           IF INDU-LPTRCD = "PO"
+              PERFORM MATURITY-DATE-CALCULATION
+              MOVE MDTE-DATE TO NUM-DATE
+              MOVE INDU-DATE-2 TO SYS-DATE
+              IF SYS-DATE < NUM-DATE
+                 ADD 25.00 TO INDU-INTEREST.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * OHIO PRE-PAYOFF PENALTY, REGENCY:
+      *    IF PREPAID WITHIN 5 YEARS AND NOT RENEWED
+      *       CHARGE PENALTY OF 1% OF AMOUNT FINANCED
+      
+       INTEREST-DUE-PENALTY-OH.
+           IF SP-RBSPOPT1(7) NOT = 16
+              GO TO INTEREST-DUE-PENALTY-GA.
+
+           IF INDU-LPTRCD = "PO"
+              IF INDU-ASSESS-PENALTY = "N"
+                MOVE SPACES TO INDU-ASSESS-PENALTY
+                GO TO NO-PENALTY-OH.
+
+           IF INDU-LPTRCD = "PO"
+                MOVE LN-LOANDATE TO NUM-DATE
+                MOVE INDU-DATE-2 TO SYS-DATE
+                PERFORM TIM360
+                IF ELAPSED-DAYS NOT > 1800
+                  PERFORM LOAN-CALCULATIONS
+                  COMPUTE INDU-INTEREST ROUNDED =
+                      INDU-INTEREST + ( FINANCED-AMOUNT * 0.01 )
+                MOVE "N"   TO INDU-ASSESS-PENALTY.
+       NO-PENALTY-OH.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * GEORGIA PRE-PAYOFF PENALTY, NEW SOUTH (REAL ESTATE)
+      * IF PAYOFF IS PRIOR TO 4TH YEAR TAKE PENALTY:
+      
+       INTEREST-DUE-PENALTY-GA.
+           IF SP-RBREDUC(7) NOT = 9999.03
+              GO TO INTEREST-DUE-PENALTY-WI.
+
+           IF INDU-LPTRCD = "PO"
+              IF INDU-ASSESS-PENALTY = "N"
+                 MOVE SPACES TO INDU-ASSESS-PENALTY
+                 MOVE HOLD-INDU-PENALTY TO INDU-PENALTY
+                 MOVE 0 TO HOLD-INDU-PENALTY
+                 GO TO NO-PENALTY-GA.
+
+           MOVE 0 TO INDU-PENALTY HOLD-INDU-PENALTY.
+           IF INDU-LPTRCD = "PO"
+              MOVE LN-LOANDATE TO NUM-DATE
+              MOVE INDU-DATE-2 TO SYS-DATE
+              PERFORM TIM360
+              IF ELAPSED-MONTHS < 12
+                 COMPUTE INDU-PENALTY ROUNDED =
+                                      (INDU-CURBAL * 0.05)
+              ELSE
+              IF ELAPSED-MONTHS < 24
+                 COMPUTE INDU-PENALTY ROUNDED =
+                                      (INDU-CURBAL * 0.04)
+              ELSE
+              IF ELAPSED-MONTHS < 36
+                 COMPUTE INDU-PENALTY ROUNDED =
+                                      (INDU-CURBAL * 0.02).
+
+           COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                         + INDU-PENALTY.
+
+           MOVE "N" TO INDU-ASSESS-PENALTY.
+           MOVE INDU-PENALTY TO HOLD-INDU-PENALTY.
+       NO-PENALTY-GA.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * WISCONSIN PRE-PAYOFF PENALTY, WISCONSIN FINANCE (IB REAL ESTATE)
+      * IF PAYOFF IS PRIOR TO 4TH YEAR TAKE PENALTY:
+      
+       INTEREST-DUE-PENALTY-WI.
+           IF SP-RBREDUC(7) NOT = 9999.04
+              GO TO INTEREST-DUE-PENALTY-NEWS.
+
+           IF INDU-LPTRCD = "PO"
+      * CALL SUBPROGRAM TO DETERMINE PENALTY:
+              MOVE "X"         TO INDU-COMMON-RTNCD
+              MOVE 0           TO INDU-A02-PENALTY
+              MOVE INDU-DATE-2 TO INDU-A02-PAYDATE
+              MOVE "CL/REBA02" TO FORM-NAM
+              CALL FORM-PROGX USING FORM-PATH INDU-COMMON LN-REC SP-REC
+              CANCEL FORM-PROGX
+              IF INDU-COMMON-RTNCD = " "
+                 COMPUTE INDU-INTEREST ROUNDED =
+                      INDU-INTEREST + INDU-A02-PENALTY
+                 MOVE INDU-A02-PENALTY TO INDU-PENALTY.
+
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * NEW SOUTH PRE-PAYOFF PENALTY, WISCONSIN FINANCE  ($75.00 FLAT)
+      * IF PAYOFF OS PAID OFF ANY TIME PRIOR TO THE LAST THREE MONTHS OF
+      *    THE LOAN
+      *
+      * NOTE: IN CALCULATING THE 3 MONTHS, THE LOANS ORIGINAL MATURITY DATE
+      *       IS USED WITHOUT REGARD FOR DEFERMENTS OR ADDONS.
+      
+       INTEREST-DUE-PENALTY-NEWS.
+           IF SP-RBREDUC(7) NOT = 9999.05
+              GO TO INTEREST-DUE-PENALTY-NC.
+
+           IF INDU-LPTRCD = "PO"
+      * CALCULATE ORIGINAL MATURITY DATE
+              MOVE "Y" TO MDTE-FLAG
+                          MDTE-ORGTERM-FG
+              PERFORM MATURITY-DATE-CALCULATION
+      * CALCULATE DATE 3 MONTHS PRIOR TO MATURITY DATE
+              MOVE MDTE-DATE TO NDTE-DATE
+              MOVE -3        TO NDTE-HOLD
+              PERFORM INCREMENT-MONTHS
+      * TEST PAYOFF DATE < MATURITY - 3 MONTHS
+      *   IF PAYOFF OCCURS MORE THAN 3 MONTHS FROM MATURITY
+      *   THEN ADD A FLAT RATE OF $75.00 AS A PREPAYMENT PENALTY
+              MOVE NDTE-DATE TO NUM-DATE
+              MOVE RATE-DATE TO SYS-DATE
+              IF SYS-DATE NOT > NUM-DATE
+                 MOVE 75.00 TO INDU-PENALTY
+                 COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                               + INDU-PENALTY.
+
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+      * NORTH CAROLINA, PRE-PAYOFF PENALTY, CAROLINA FINANCE  (10% OR $25.00)
+      * IF PAID OFF ANY TIME PRIOR TO MATURITY OF THE LOAN
+      *
+      * NOTE: THE LOANS ORIGINAL MATURITY DATE
+      *       IS USED WITHOUT REGARD FOR DEFERMENTS OR ADDONS.
+      
+       INTEREST-DUE-PENALTY-NC.
+           IF SP-RBREDUC(7) NOT = 9999.06
+              GO TO INTEREST-DUE-PENALTY-25.
+
+      * CALCULATE ORIGINAL MATURITY DATE
+      
+           IF INDU-LPTRCD = "PO"
+              MOVE "Y" TO MDTE-FLAG
+                          MDTE-ORGTERM-FG
+              PERFORM MATURITY-DATE-CALCULATION
+              MOVE MDTE-DATE TO NUM-DATE
+              MOVE INDU-DATE-2 TO SYS-DATE
+              IF SYS-DATE < NUM-DATE
+                 COMPUTE INDU-PENALTY ROUNDED =
+                    (INDU-CURBAL * .10)
+                 IF INDU-PENALTY > 25.00
+                    MOVE 25.00 TO INDU-PENALTY
+                 END-IF
+                 COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                               + INDU-PENALTY.
+
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+
+      * OHIO STATE PREPAYMENT PENALTY (EFF 01-JAN-2007)
+      *
+      * IF ORIG PRIN <= 75K
+      *    PENALTY IS 1% OF LOAN NET BAL IF PAID < 5 YEARS FROM LOAN DATE
+      * IF ORIG PRIN  > 75K
+      *    IF PAID <=1 YEAR FROM LOAN DATE
+      *       PENALTY IS 2% OF LOAN NET BAL
+      *    IF PAID > 1  AND <= 2 YEARS FROM LOAN DATE
+      *       PENALTY IS 1% OF LOAN NET BAL
+      *    IF PAID > 2 YEARS FROM LOAN DATE
+      *       NO PENALTY
+      *
+      * NOTES:
+      *    PENALTY IS NOT CHARGED ON RENEWALS.
+      *    PENALTY IS ADDED TO THE INTEREST DUE ON PAYOFF.
+      
+       INTEREST-DUE-PENALTY-25.
+           IF SP-RBSPOPT1(7) NOT = 25
+              GO TO INTEREST-DUE-PENALTY-EXIT.
+
+           IF INDU-LPTRCD = "PO"
+              IF INDU-ASSESS-PENALTY ="N"
+                 MOVE SPACES TO INDU-ASSESS-PENALTY
+                 GO TO NO-PENALTY-25.
+
+           IF INDU-LPTRCD = "PO"
+              PERFORM LOAN-CALCULATIONS
+              IF FINANCED-AMOUNT <= 75000
+                 MOVE LN-LOANDATE TO NUM-DATE
+                 MOVE RATE-DATE TO SYS-DATE
+                 PERFORM TIM360
+                 IF ELAPSED-DAYS NOT > 1800
+                    COMPUTE INDU-PENALTY = ( LN-CURBAL * 0.01 )
+                    COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                                  + INDU-PENALTY
+                 END-IF
+              ELSE
+                 MOVE LN-LOANDATE TO NUM-DATE
+                 MOVE RATE-DATE TO SYS-DATE
+                 PERFORM TIM360
+                 IF ELAPSED-DAYS NOT > 360
+                    COMPUTE INDU-PENALTY = ( LN-CURBAL * 0.02 )
+                    COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                                  + INDU-PENALTY
+                 ELSE IF ELAPSED-DAYS > 360 AND NOT > 720
+                    COMPUTE INDU-PENALTY = ( LN-CURBAL * 0.01 )
+                    COMPUTE INDU-INTEREST ROUNDED = INDU-INTEREST
+                                                  + INDU-PENALTY
+                 ELSE
+                    MOVE 0 TO INDU-PENALTY.
+
+           MOVE "N" TO INDU-ASSESS-PENALTY.
+
+       NO-PENALTY-25.
+           GO TO INTEREST-DUE-PENALTY-EXIT.
+
+       INTEREST-DUE-PENALTY-EXIT.
+           EXIT.
+
+      ****************************************************

@@ -1,0 +1,1388 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      LONPF3.
+       DATE-WRITTEN.    021784.
+      **************************************************************************
+      *  DIR :  LP
+      *  DESC:  LOAN PROCESSING
+      *         CHANGE SELECTED LOAN FIELDS
+      *         CREATE/MOD/DELETE FORM REQUESTS
+      *         DISPLAY TRCD CHOICES
+      * REV:
+      *  KEC 083195 ADDED LIBLP/LPNOCL
+      *  MJD 092195 ADDED LIBLP/LPTRCD2.CMD. IF IN INTER-BRANCH POSTING,
+      *             THE F3 TRANSACTION CODES WINDOW WILL DISPLAY VALID
+      *             OPTIONS.
+      *  071696 BAH ADDED TEST OF GP-ALLOW-MORE-COLLECT TO ALLOW MORE THAN
+      *             ONE COLLECTION TYPE FORM REQUEST, PR # E128
+      *  MJD 071696 ADDED LIBLP/LPUPWK FOR CHANGES IN LIBLP/AGEING
+      *  GLF 050797 ADDED COPY MEMBERS: SETCTBLW AND SETCTBL
+      *  MJD 051597 ADDED LPPOF2 COPY MEMBER (PREVIOUSLY WAS PART OF LPPOFF)
+      *  JTG 072897 ADDED LPWDEL/W  MERCURY #E135
+      *  GLF 090897 REPLACED 'IO' ON GP-FILE WITH GET 'GPENV'
+      *  GLF 101097 ADDED CTRL 'N'
+      *  GLF 101697 ADDED COPY MEMBER: LIBLP/LPPDUE LIBLP/LPPDUEW
+      *  MJD 101797 MOVED WK-UPDATE-BUF TO LP01WK
+      *  JTG 111197 ADDED LOGIC FOR LIBLP/DEFPOL RE: BR-NODEF-1ST-X-MONTHS #167
+      *  BAH 060998 ADDED DISPLAY OF 'BK' BANKRUPTCY FOR MERCURY, E#174
+      *  JTG 081198 CORRECTED DISPLAY INTENSITY OF CODE PROMPT
+      *  GLF 110698 MADE MEMO DATE 2000 COMPATIBLE
+      *  GLF 032299 ADD TEST TO VERIFY IF ACTION CODE ENTRY IS VALID IF
+      *             GP-ACTIONCD-VERIFY = "Y"
+      *  GLF 040199 ADD PASSWORD IF PROMISE 1 OR 2 > 30 FROM TODAY, #832,FFG
+      *  BAH 990831 PASSWORD CHANGING ACTION CODE, TFC, PR# 39
+      *  BAH 000719 ADDED "AH" TO F3-TRAN CODES, PL# 292
+      *  BAH 000901 IF GP-ACTIONCD-VERIFY WAS "Y", YOU COULD NOT SPACE OUT THE
+      *             ACTIONCD, TOOK CODE FROM SPINQ1.CX...JUDY/MIDWEST
+      *  BAH 011210 ADDED SET OF LN-PROMID FOR LAST 3 CHAR OF LOGIN WHO SET THE
+      *             PROMISE TO PAY, REGACC PR# 1662
+      *  BAH 020125 ADDED PASSWORD FOR CHANGING A PROMISE DATE BEFORE THAT DATE
+      *             IS REACHED, REGACC PR# 1720
+      *  BLV 030207 IF I-AM-REGACC, CREATE COLLECTOR JOURNAL RECORD IF NEW
+      *             PROMISE DATE IS ENTERED, REGACC PR# 1751
+      *  BAH 020507 ADDED SET OF LN-PROMDAYS-PASTDUE FOR REGACC PR# 1783
+      *  BAH 020516 ADDED TEST OF FD-SMARTPORT = "E" FOR CREATING ALL FORM
+      *             REQUESTS IN THE CORPORATE BRNO AND THEN THEY WILL PRINT
+      *             THEM INTO AN ASCII FILE EXTRACT, REGACC PR# 1800
+      *  BAH 020812 ADDED LOAN MEMO FOR CHANGING LN-MESSAGE, MULLEN PR# 1858
+      *  BLV 020924 ADDED WINDOW FOR REGIONAL ACCEPTANCE TO ENTER ACTIVITY
+      *             CODE IF PROMISE TO PAY, REGACC PR# 4
+      *  BAH 021011 ADDED "IN" TO LPTRCD.CMD, INSURANCE LOSS REGACC #0007
+      *  BAH 021231 ADDED ALL MISSING TRCD'S TO LPTRCD.CMD PER KRUSE
+      *  BLV 030213 ADD UPDATE OF CJ-QUEUE, THEY WANT THE QUEUE ID FROM
+      *             CQ IF ACCOUNT IS IN THE QUEUE, REGACC PR# 0023
+      *  BAH 030408 UPDATE NEW TRIAD COLLECTION TRAILER FIELDS IF CJ UPDATED
+      *             WITH ACTIVITY OF RPB, RPE, RPI, RPO OR RPR (T6)
+      *             REGACC PR# 26
+      *  BLV 030414 FIXED PROBLEM FROM PR# 4 (9/24/02), ADDED WINDOW FOR
+      *             ACTIVITY CODE ENTRY, BUT WAS STILL FORCING "RPC" TO
+      *             CJ-ACTIVITY-CD!
+      *  BAH 040310 ADDED "LMM" AND "LMP" TO RIGHT-PARTY-CONTACT LIST OF
+      *             RESULT CODES, REGACC PR# 52
+      *  BAH 040318 CHANGE ABOVE INCORRECT, THESE ARE RESULT CODES.
+      *  BAH 040726 DO NOT ALLOW FORM REQUESTS TO ANY CONFIDENTIAL ACCOUNT OR
+      *             BORROWER, PR# 2343, ALL CUSTOMERS
+      *  BAH 050114 DO NOT ALLOW FORM REQUESTS IF PRIMARY ADR1,CITY,STATE,
+      *             OR ZIP ARE SPACES, GP-DENY-FORM-NO-ADDRESS, REGACC PR# 94
+      *  BAH 050811 WHEN GP-HIDE-FIRST-5-SSNO = Y, THIS PROGRAM DOES A FLDVAL
+      *             TO GET VALUE OF SSNO INSTEAD OF USING BORROWER-KEY. DOES IT
+      *             THIS WAY IN CASE YOU ARE POSTING FOR COMAKER. CHANGED TO
+      *             USE BORROWER-KEY , BECAUSE THE SOC FIELD IS XXX-XX-1234
+      *              REGACC PR# 109
+      *  BAH 050922 ADDED FD-VALID-BRANCH TO TEST IF USER BRANCH IS ALLOWED TO
+      *             REQUEST SPECIFIC FORMS, LENDMARK PR# 2579
+      *  BAH 051206 ADDED ACCESS TO COLLECTOR ID FIELD FROM F3 ACTION CODE
+      *             LENDMARK PR# 2652
+      *  BAH 070402 PASSWORD CHANGING LN-ACTIONCD IF IS "NIVR", SOAUTO PR#2949
+      *  BAH 070417 ONLY CREATE CJ FOR REGACC IF NEW PROMDATE IS NOT ZERO,
+      *             ORIGINAL REQUEST WAS PR# 1751, REGACC PR# 170
+      *   CS 070625 PASSWORD ENTERING PROMISE DATE > GP-MAX-PROMISE-DAYS
+      *                                                   TRITON PR#2992
+      *  BAH 071127 TEST LAST 3 OF USERID FOR REQUIRING PW-PROM-SEQ PASSWORD
+      *             REGACC PR# 192
+      *  BAH 090806 ADDED GP-USE-MIN-FORM-SENT-DAYS AND FD-MIN-FORM-SENT-DAYS
+      *             FOR TO RESTRICT SENDING COLLECTION FORM WITHIN X DAYS FROM
+      *             LN-LASTCFORMDATE, REGACC PR# 251
+      * BAH 091002 ADDED FD-SKIP-BAD-ADR TO TEST PRIMARY MAKER ONLY IF BAD
+      *            ADDRESS FLAG SET, DO NOT CREATE FORM REQUEST REGACC PR# 256
+      *  CS 110228 ADDED FD-SKIP-BAD-ADR 'M' FOR MODERN, IF FD-SKIP-BAD-ADR = 'M
+      *            AND ACCT IS IN CEASE&DESIST STATUS (LOOP THRU LN-STATUSFLAGS
+      *            FOR 'C', DONT ALLOW THIS FORM   MODERN PR#3720
+      * BLM 120725 IF CREATING A FORM REQUEST, VERIFY USER LOGIN LETTER TO
+      *            FD-SECURITY-PROFILE & DON'T ALLOW IF LOGIN LETTER IS
+      *            GREATER THAN FD-SECURITY-PROFILE, REGACC PR# 316
+      * BAH 121105 ADD "CND " AND "LGL " TO THE "NIVR" PASSWORD, SOAUTO PR#4146
+      * BAH 130326 ADDED CHECK OF FD-TRAILER-REC AND FTFILE, REGACC PR# 335
+      * BAH 140814 ADDED TEST FOR LPSMNU IN HELP
+      * BAH 150716 ADD "BKD " TO THE "NIVR" PASSWORD, SOAUTO PR#4792
+      * BLM 150923 ADD ABILITY TO PASSWORLD SPECIFIC ACTION CODES, USE "SP"
+      *            FOR DIR, "AC-" FOLLOWING BY ACTION CODE IN PROGRAM NAME,
+      *            0 FOR OPTION.  WORLD PR# 1108
+      * BLM 151030 IF PASSWORD FAILS WHEN CHANGING ACTION CODE, DISPLAY
+      *            ORIGINAL ACTION CODE, WORLD PR# 1108B
+      *
+      * KEC 2016.0119 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         FIXED KEYS & RECS FOR FD-REC.
+      *         ADDED NEW FDB-FILE; WAS IN FD-FILE.
+      *         REMOVED FT-FILE; MERGED INTO FD-FILE.
+      *
+      *  BAH 160128 SPLIT OUT LTFILE, PD0003
+      *
+      * KEC 2016.0211 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         FIXED KEYS & RECS FOR FD-REC.
+      *         CHANGED FMNO/FORMNO/NEXTFM/SETFM FROM 3 TO 4 BYTES.
+      * BAH 160218 EXPANDED LM-REC ADDED LM-BRNO, PD0003
+      *
+      * KEC 2016.0309 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED CD-ACTION???? TO BE CD-ACTION-????.
+      *         CHANGED CD-AC-RE-REC TO BE SPLIT INTO CD-AT-REC &
+      *         CD-RE-REC.  FIELDS CD-??-ACTIONCD, CD-??-MEMO-REQUIRED,
+      *         CD-??-SUPERVISOR-ONLY ARE IDENTICAL (LOCATION, NAME,
+      *         SIZE) IN SITUATIONS WERE NOT SURE WHICH TYPE CD-REC
+      *         WAS READ.
+      *
+      * KEC 2016.0325 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED CDSCAN-WINDOW-BUF TO HAVE MATCHING CD1-KEY
+      *         LAYOUTS (FOR EACH CODE TYPE; CD-TYPE).
+      *         CDSCAN-CD1-KEY IS THE NEW (PRIMARY) WITH REDEFINES OF
+      *         CDSCAN-??-KEY (NEW).
+      *
+      * KEC 2016.0914 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         SET LR-BRNO USING LN-OWNBR.
+      *
+      * BAH 161031 FIXED FD-TEST-WHICH-STATE
+      *
+      * KEC 2017.0119 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *          CHANGED FD-SMARTPORT TO FD-OPTION [88 LEVELS].
+      *
+      * BAH 170615 ACTIVATE 8 DIGIT DATES, PD0006
+      * BAH 181115 GLOBAL FMFILE
+      * BAH 190116 GLOBAL LXFILE, WK-LXE-REC AND WK-LSG-REC
+      *  CS 190206 COMMENT AWFILE, REPLACE WITH LPCPAW
+      *  CS 190308 CQFILE IS DETAIL QUEUE, CQSFILE IS SUMMARY, NO REASON FOR
+      *            CQ-TYPE, REMOVED FROM LAYOUT. IF READING CQ, ITS A DETAIL
+      *            RECORD
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      *     S T O P
+      * DO NOT REMOVE CQ-TYPE COMMENT UNTIL ALL TESTING DONE, THE TYPE
+      * IS A CLUE AS TO WHAT TYPE OF RECORD YOU NEED, ESPECIALLY IN PROGRAMS
+      * THAT OPEN CQ AND CQS
+      *%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      * BAH 190312 MOVED FM-BRNO2 INTO LPWSFM-EDIT-FM-INITKEY TO REMOVE THE
+      *            REDEFINE IN THE FM-REC
+      * BAH 20190614 ADDED CLEAR-FM-FILE (LPFMCL) AND SET FM-USERID
+      * BAH 20190709 REMOVED GP-LR-TRAILER-TRIAD, PT0151 
+      * BAH 20190710 ADDED SPCJCL, FUTURE FIELDS WERE NOT CLEARED!
+      * BAH 20190922 REMOVED ACCESS-CALL FMFILE
+      * BAH 20200702 REMOVED CLOSE-BR-FILE #TST001
+      * BAH 2022.0314 REMOVED EXT-SPANISH-FORMS AND ALL MX FORMS
+      * BAH 2024.0201 REMOVED NOTICE FOR A FORM REQUEST
+      * BAH 2025.0313 REMOVED NOTICE COPY MEMBERS S35Q-176
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBLP/LPFSWK.CPY".
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBLP/LPFDWK.CPY".
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)LP/LONPF3.CBL S35 02/01/24-09:02:16 >".
+      **************************************************
+      *     P R O G R A M   W O R K E R S              *
+      **************************************************
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBGB/GB01GR.CPY".
+       COPY "LIBGB/GB01GR_SQL.CPY".
+       COPY "LIBGB/GBWSGR.CPY".
+       COPY "LIBLP/LP01LN.CPY".
+       COPY "LIBLP/LP01LN_SQL.CPY".
+       COPY "LIBLP/LPWSLN.CPY".
+       COPY "LIBLP/LP01SP.CPY".
+       COPY "LIBLP/LP01SPA.CPY".
+       COPY "LIBLP/LP01SPB.CPY".
+       COPY "LIBLP/LP01SPC.CPY".
+       COPY "LIBLP/LP01SP_SQL.CPY".
+       COPY "LIBLP/LPWSSP.CPY".
+       COPY "LIBLP/LP01BW.CPY".
+       COPY "LIBLP/LP01BW_SQL.CPY".
+       COPY "LIBLP/LPWSBW.CPY".
+       COPY "LIBLP/LP01LM.CPY".
+       COPY "LIBLP/LP01LM_SQL.CPY".
+       COPY "LIBLP/LPWSLM.CPY".
+       COPY "LIBLP/LP01FD.CPY".
+       COPY "LIBLP/LP01FD_SQL.CPY".
+       COPY "LIBLP/LPWSFD.CPY".
+       COPY "LIBLP/LP01FM.CPY".
+       COPY "LIBLP/LP01FM_SQL.CPY".
+       COPY "LIBLP/LPWSFM.CPY".
+      *COPY "LIBLP/LP01NO.CPY".
+      *COPY "LIBLP/LP01NO_SQL.CPY".
+      *COPY "LIBLP/LPWSNO.CPY".
+       COPY "LIBLP/LP01LTP.CPY".
+       COPY "LIBLP/LP01LTP_SQL.CPY".
+       COPY "LIBLP/LPWSLTP.CPY".
+       COPY "LIBLP/LP01CD.CPY".
+       COPY "LIBLP/LP01CD_SQL.CPY".
+       COPY "LIBLP/LPWSCD.CPY".
+       COPY "LIBLP/LP01CDB.CPY".
+       COPY "LIBLP/LP01CDB_SQL.CPY".
+       COPY "LIBLP/LPWSCDB.CPY".
+       01  WK-IFN              PIC X(2)    VALUE "WK".
+
+       01  WK-KEY              PIC 9(2)     VALUE 0.
+       01  S1                  PIC 99       VALUE 0.
+       01  MSEL-LIST           PIC X(5)     VALUE "MSEL.".
+       01  MOD-FM-TYPE         PIC X(4)     VALUE " ".
+       01  MOD-FM-KEY REDEFINES MOD-FM-TYPE
+                               PIC 9(4).
+       01  HOLD-LN-PROMDATE    PIC 9(8)     VALUE 0.
+       01  ORIG-LN-PROMDATE    PIC 9(8)     VALUE 0.
+       01  HOLD-LN-PROMID      PIC X(3)     VALUE SPACES.
+       01  HOLD-1STFILE        PIC 9(2)     COMP-3.
+       01  HOLD-FMTYPE         PIC X.
+
+       01  HOLD-FD-OPTION              PIC X(1).
+           88  HOLD-FD-OPTION-CUSTMT       VALUE "C".
+           88  HOLD-FD-OPTION-EXTRACTION   VALUE "E".
+           88  HOLD-FD-OPTION-STANDARD     VALUE "N" " ".
+           88  HOLD-FD-OPTION-PCL-LASER    VALUE "P".
+           88  HOLD-FD-OPTION-PST-LASER    VALUE "T".
+           88  HOLD-FD-OPTION-SMARTPORT    VALUE "Y".
+           88  HOLD-FD-OPTION-VALID        VALUE "C" "E" "N"
+                                                 "P" "T" "Y".
+
+       01  HOLD-LN-MESSAGE     PIC X(30)    VALUE " ".
+       01  HOLD-TRCD-MESS      PIC X(40)    VALUE " ".
+       01  HOLD-LN-ACTION      PIC X(4)     VALUE " ".
+       01  TEST-ACTIONCD       PIC X(4)     VALUE " ".
+       01  HOLD-LN-COLLECTOR   PIC X(3)     VALUE " ".
+       01  HOLD-LM-MEMO-TYPE   PIC XX       VALUE " ".
+       01  HOLD-LM-MEMO        PIC X(60)    VALUE " ".
+       01  MEMO-AREA.
+           03  FILLER          PIC X(4)  VALUE "OLD ".
+           03  MEMO-DESCRIPT   PIC X(14).
+           03  FILLER          PIC X     VALUE " ".
+           03  MEMO-ORG-CHAR   PIC X(30).
+           03  FILLER          PIC X     VALUE " ".
+           03  MEMO-USERID     PIC X(10).
+
+       01  TEST-STATE          PIC X(2).
+       01  CASE-BUF            PIC X(3).
+       01  ELE                 PIC 99       VALUE 0.
+       01  Y-OR-N              PIC X(6) VALUE SPACES.
+       01  ACTION              VALUE SPACES.
+           03  FILLER          PIC X(2).
+           03  SEL-FMNO        PIC 9(4).
+           03  SEL-FMNOX REDEFINES SEL-FMNO.
+               05  FILLER      PIC X(3).
+               05  CHNOX       PIC X.
+
+       01  LINE-LIST.
+           03  FILLER          PIC X(4) VALUE
+           "LN1 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL8 F21 GD8 F22 GA8 F23 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL9 F31 GD9 F32 GA9 F33 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL0 F41 GD0 F42 GA0 F43 ".
+           03  FILLER           PIC X(32)    VALUE
+           "GL1 F51 GD1 F52 GA1 F53 GL2 F61 ".
+           03  FILLER           PIC X(40)    VALUE
+           "GD2 F62 GA2 F63 GL3 F71 GD3 F72 GA3 F73 ".
+           03  FILLER           PIC X(24)    VALUE
+           "GL4 F81 GD4 F82 GA4 F83.".
+
+       COPY "LIBWI/CDBSCNW.CPY".
+       COPY "LIBLP/LPTRCD_CMD.CPY".
+       COPY "LIBLP/LPTRCD2_CMD.CPY".
+       COPY "LIBLP/LPWKPATH.CPY".
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBWI/FDSCANW.CPY".
+       COPY "LIBWI/CDSCANW.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/SPPDTHW.CPY".
+       COPY "LIBLP/LPMDTEW.CPY".
+       COPY "LIBLP/LPMENUW.CPY".
+       COPY "LIBLP/LPPDUEW.CPY".
+       COPY "LIBCL/CLMENUW_EXT.CPY".
+       COPY "LIBGB/ACCESSW.CPY".
+       COPY "LIBGB/GRWORKW.CPY".
+       COPY "LIBGB/GPENVW.CPY".
+       COPY "LIBGB/PASSWDW.CPY".
+       78  PROM30-SEQ1         VALUE 0.
+       78  ACTIONCD-SEQ        VALUE 1.
+      * SKIPPED SOME, WANTED TO STAY CONSISTENT WITH OTHER PROMISE PASSWORDS
+      * IN SPINQ1
+       78  PRIOR-PROM-SEQ      VALUE 5.
+       78  COLLECTOR-SEQ       VALUE 6.
+       78  NIVR-SEQ            VALUE 7.
+
+       78  PROM-GPMAX-SEQ      VALUE 8.
+      * SKIPPED 9 CAUSE SPINQ1.CX HAD IT, WANTED F3,S4 AND INQ1 ALL THE SAME
+       78  FD-MIN-DAYS-SEQ     VALUE 10.
+
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBLP/LONPF_DEF.CPY".
+       COPY "LIBLP/LPSMNU_DEF.CPY".
+       COPY "LIBLP/LPLNMU_DEF.CPY".
+       COPY "LIBLP/LPCAMU_DEF.CPY".
+       COPY "LIBLP/LPVDMU_DEF.CPY".
+       COPY "LIBWI/DLRVNO_DEF.CPY".
+       COPY "LIBWI/CONTYN_DEF.CPY".
+       COPY "LIBWI/P4P5_DEF.CPY".
+       COPY "LIBLP/LONPF_WKS.CPY".
+       COPY "LIBLP/LPSMNU_WKS.CPY".
+       COPY "LIBLP/LPLNMU_WKS.CPY".
+       COPY "LIBLP/LPCAMU_WKS.CPY".
+       COPY "LIBLP/LPVDMU_WKS.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+
+      /*************************************************
+      *   C O N T R O L   M O D U L E                  *
+      **************************************************
+       COPY "LIBGB/GETFMW.CPY".
+       COPY "LIBLP/LPLOANW.CPY".
+       COPY "LIBLP/LPPFBUF.CPY".
+
+       SCREEN SECTION.
+       COPY "LIBLP/LONPF_SCN.CPY".
+       COPY "LIBLP/LPSMNU_SCN.CPY".
+       COPY "LIBLP/LPLNMU_SCN.CPY".
+       COPY "LIBLP/LPCAMU_SCN.CPY".
+       COPY "LIBLP/LPVDMU_SCN.CPY".
+
+       PROCEDURE DIVISION
+             USING FORM-PATHNAME EXIT-PATHNAME PROG-BUF UPDATE-BUF.
+       DECLARATIVES.
+       DECLARE-ERROR SECTION.
+           USE AFTER ERROR PROCEDURE ON
+               WK-FILE.
+       COPY "LIBGB/DECLARE.CPY".
+           PERFORM CLOSE-SP1-FILE.
+           PERFORM CLOSE-LTP1-FILE.
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-LM1-FILE.
+           PERFORM CLOSE-FM1-FILE.
+           PERFORM CLOSE-FD1-FILE.
+           PERFORM CLOSE-CDB1-FILE.
+           PERFORM CLOSE-CD1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           PERFORM CLOSE-GR1-FILE.
+           PERFORM CLOSE-BR-FILE.
+           CLOSE WK-FILE.
+       COPY "LIBGB/DECLAR2.CPY".
+
+      **************************************************
+      *      P R O G R A M   C O N T R O L             *
+      **************************************************
+       MAIN-PROGRAM SECTION.
+
+           PERFORM SQL-CONNECT.
+
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "LONPF" TO VDU-FORM-NAME.
+      D    STOP MESS.
+
+           IF INTERRUPT-FG = "Y"
+              MOVE " " TO VDU-WIMENU-SELECTION
+           ELSE
+              MOVE "C" TO VDU-WIMENU-SELECTION.
+
+           MOVE "F" TO VDU-CLMENU-SELECTION.
+
+           MOVE USER-PID TO TEMP-PID.
+
+           IF ROUTE-CD = 4
+              PERFORM TRCD-DISPLAY
+              GO TO END-PROGRAM.
+
+           IF ROUTE-CD NOT = 5
+              GO TO ROUTE-ERROR.
+
+           PERFORM RESTORE-SCREEN.
+           MOVE WK-SAVE-REC TO LN-REC.
+
+      * ALLOW CNTRL 'N' INTERRUPT:
+           MOVE "WI/MAKERS" TO VDU-CTRL-N-PROG.
+
+           PERFORM OPEN-SP1-FILE.
+           MOVE LN-ORGST TO SP-ORGST.
+           MOVE LN-SPRCLASS TO SP-SPRCLASS.
+           MOVE LN-SUBCLASS TO SP-SUBCLASS.
+           MOVE LN-LAWCODE TO SP-LAWCODE.
+           PERFORM READ-SP1-FILE.
+           PERFORM CLOSE-SP1-FILE.
+           IF IO-FG = 9
+              MOVE "STATE PARAMETER RECORD MISSING" TO MESS
+              PERFORM SEND-MESS
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+
+      * LEAVE BRANCH FILE OPEN
+           MOVE LN-OWNBR TO BR-NO.
+           PERFORM OPEN-BR-FILE.
+           PERFORM READ-BR-FILE.
+           IF IO-FG = 9
+              MOVE "OWNING BRANCH MISSING " TO MESS
+              PERFORM SEND-MESS
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+
+           PERFORM GET-GPENV.
+
+           MOVE BORROWER-KEY TO BW-SSNO.
+           PERFORM OPEN-BW1-FILE.
+           PERFORM READ-BW1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           IF IO-FG NOT = 0
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+
+           IF BORROWER-KEY = LN-SSNO(1)
+              MOVE LN-MAKERCD(1) TO MAKER-CD
+              GO TO LOAN-CHANGE-PARA.
+           IF BORROWER-KEY = LN-SSNO(2)
+              MOVE LN-MAKERCD(2) TO MAKER-CD
+              GO TO LOAN-CHANGE-PARA.
+           IF BORROWER-KEY = LN-SSNO(3)
+              MOVE LN-MAKERCD(3) TO MAKER-CD
+              GO TO LOAN-CHANGE-PARA.
+           IF BORROWER-KEY = LN-SSNO(4)
+              MOVE LN-MAKERCD(4) TO MAKER-CD
+              GO TO LOAN-CHANGE-PARA.
+
+       LOAN-CHANGE-PARA.
+           PERFORM LOAN-CHANGES-ROUTINE.
+           GO TO END-PROGRAM.
+
+       ROUTE-ERROR.
+           MOVE "ERROR IN ROUTE-CD" TO MESS.
+           PERFORM SEND-MESS.
+           MOVE "X" TO ERRCD.
+           GO TO END-ROUTINE.
+       END-PROGRAM.
+           MOVE "SEL." TO MESS.
+           PERFORM RESET-MESS.
+           PERFORM RETURN-VALUES.
+           GO TO END-ROUTINE.
+
+      ***********************************
+       LOAN-CHANGES-ROUTINE SECTION.
+      ***********************************
+           MOVE LN-MESSAGE   TO HOLD-LN-MESSAGE.
+           MOVE LN-PROMDATE  TO HOLD-LN-PROMDATE ORIG-LN-PROMDATE.
+           MOVE LN-PROMID    TO HOLD-LN-PROMID.
+           MOVE LN-ACTIONCD  TO HOLD-LN-ACTION.
+           MOVE LN-COLLECTOR TO HOLD-LN-COLLECTOR.
+       LOAN-CHANGES-RTN.
+           MOVE
+           "F1-EXIT,1-MSG,2-PROMISE,3-ACTION,4-FORM,5-MEMO,U-UPD:"
+                                                       TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E RA060SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              GO TO RESET-LN-MESSAGE.
+           IF VDUSTATUS NOT = "00"
+              GO TO LOAN-CHANGES-RTN.
+
+           MOVE VDUBUF TO ACTION.
+           IF CHNOX = "U"
+              GO TO LOAN-CHANGES-UPDATE.
+
+           MOVE "F1-RESET FIELD" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           IF CHNOX = "1"
+              PERFORM MODIFY-MESSAGE-ROUTINE
+           ELSE IF CHNOX = "2"
+              PERFORM MODIFY-PROMISED-ROUTINE
+           ELSE IF CHNOX = "3"
+              PERFORM MODIFY-ACTION-ROUTINE
+           ELSE IF CHNOX = "4"
+              MOVE " " TO MOD-FM-TYPE
+              PERFORM MODIFY-FORMS-ROUTINE
+           ELSE IF CHNOX = "5"
+              PERFORM MODIFY-MEMO-ROUTINE.
+
+           GO TO LOAN-CHANGES-RTN.
+
+       LOAN-CHANGES-UPDATE.
+           MOVE "UPDATING.............." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           PERFORM OPEN-LN1-FILE.
+           PERFORM READ-LN1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+      * SET DAYS PAST DUE AT TIME PROMISE IS TAKEN FOR REGACC
+      * ONLY SET IT WHEN YOU ARE CHANGING THE DATE, NOT JUST RETURNING
+      * THRU IT....
+           IF HOLD-LN-PROMDATE NOT = LN-PROMDATE
+              IF HOLD-LN-PROMDATE = 0
+                 MOVE 0 TO LN-PROMDAYS-PASTDUE
+              ELSE
+                 MOVE TRANS-DATE TO PDUE-TODAY-DATE
+                 MOVE LN-1STPYDATE TO PDUE-1STPYDATE
+                 PERFORM PAST-DUE-DAYS-CALCULATION
+                 MOVE PDUE-DAYS TO LN-PROMDAYS-PASTDUE.
+
+           IF HOLD-LN-MESSAGE NOT = LN-MESSAGE
+              IF BR-CHANGE-MEMO = "Y"
+                 MOVE EXT-CONAME-USER-ID TO MEMO-USERID
+                 MOVE "FLASH MESSAGE:" TO MEMO-DESCRIPT
+                 MOVE LN-MESSAGE TO MEMO-ORG-CHAR
+                 MOVE MEMO-AREA TO LM-MEMO
+                 MOVE "S" TO HOLD-LM-MEMO-TYPE
+                 PERFORM WRITE-MEMO-LINE.
+
+           MOVE HOLD-LN-MESSAGE   TO LN-MESSAGE.
+           MOVE HOLD-LN-PROMDATE  TO LN-PROMDATE.
+           MOVE HOLD-LN-PROMID    TO LN-PROMID.
+           MOVE HOLD-LN-ACTION    TO LN-ACTIONCD.
+           MOVE HOLD-LN-COLLECTOR TO LN-COLLECTOR.
+
+           PERFORM REWRITE-LN1-FILE.
+           PERFORM CLOSE-LN1-FILE.
+
+           IF HOLD-LM-MEMO NOT = " "
+              MOVE HOLD-LM-MEMO TO LM-MEMO
+              MOVE " " TO HOLD-LM-MEMO-TYPE
+              PERFORM WRITE-MEMO-LINE.
+           PERFORM RESET-LM-MEMO.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEED TO RESET FM-PATH-OVERIDE BECAUSE HOLD-FD-OPTION MAY
+      *    CHANGE MULTIPLE TIMES.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE SPACES                     TO FM-PATH-OVERRIDE.
+           IF ( HOLD-FD-OPTION-EXTRACTION )
+              PERFORM GET-FM-PATH.
+
+           PERFORM OPEN-FM1-FILE.
+
+           IF MOD-FM-TYPE = SPACES
+              GO TO LOAN-CHANGES-EXIT.
+           IF MOD-FM-TYPE = "DEL"
+              GO TO FORM-DEL-PRIOR-RECS.
+           IF HOLD-FMTYPE NOT = "C"
+              GO TO FORM-FM1-CREATE.
+           IF ( HOLD-FD-OPTION-EXTRACTION )
+              GO TO FORM-FM1-CREATE.
+
+       FORM-DEL-PRIOR-RECS.
+
+      *****************************************
+      * DELETE COLLECTION FORM/NOTICE REQUESTS:
+      *****************************************
+
+      * ONLY DELETE THEM IF THE GP FLAG IS NOT SET, OR YOU TYPED "DELETE"
+           IF MOD-FM-TYPE NOT = "DEL" AND GP-ALLOW-MORE-COLLECT = "Y"
+              GO TO FORM-FM1-CREATE.
+
+           MOVE SPACES             TO LPWSFM-EDIT-FM-INITKEY.
+           MOVE LN-ACCTNO          TO LPWSFM-EDIT-FM-ACCTNO.
+           MOVE 0                  TO LPWSFM-EDIT-FM-FORMNO.
+
+           MOVE FM-PATH-OWNBR          TO FM-BRNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+           MOVE 0                      TO FM-FMNO.
+
+           PERFORM START-FM1-FILE.
+       FORM-FM1-DELETE.
+           PERFORM READ-FM1-FILE-NEXT.
+           IF IO-FG NOT = 0 OR (FM-BRNO NOT = FM-PATH-OWNBR)
+              GO TO FORM-FM1-CREATE.
+
+      *    UNLOCK FM-FILE.
+           MOVE FM-INITKEY TO LPWSFM-EDIT-FM-INITKEY.
+           IF (LPWSFM-EDIT-FM-ACCTNO NOT = LN-ACCTNO)
+              GO TO FORM-FM1-CREATE.
+
+           MOVE FM-FMNO TO FD-FMNO.
+           PERFORM OPEN-FD1-FILE.
+           PERFORM READ-FD1-FILE.
+           PERFORM CLOSE-FD1-FILE.
+           IF IO-FG NOT = 0
+              GO TO FORM-FM1-DELETE.
+           IF FD-FMTYPE NOT = "C"
+              GO TO FORM-FM1-DELETE.
+
+           PERFORM READ-FM1-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+           PERFORM DELETE-FM1-FILE.
+
+           GO TO FORM-FM1-DELETE.
+
+      **********************************************
+      * CREATE NEW FORM REQUEST:
+      **********************************************
+       FORM-FM1-CREATE.
+           IF MOD-FM-TYPE = "DEL"
+              GO TO LOAN-CHANGES-EXIT.
+
+           PERFORM CLEAR-FM-FILE.
+
+           MOVE SPACES TO LPWSFM-EDIT-FM-INITKEY.
+
+           MOVE LN-ACCTNO          TO LPWSFM-EDIT-FM-ACCTNO.
+           MOVE MOD-FM-KEY         TO LPWSFM-EDIT-FM-FORMNO.
+           IF ( HOLD-FD-OPTION-EXTRACTION )
+              MOVE LN-OWNBR        TO LPWSFM-EDIT-FM-BRNO2.
+
+           MOVE FM-PATH-OWNBR          TO FM-BRNO.
+           MOVE LPWSFM-EDIT-FM-INITKEY TO FM-INITKEY.
+           MOVE MOD-FM-KEY             TO FM-FMNO.
+
+           MOVE BW-ZIP             TO FM-ZIP.
+           MOVE 0                  TO FM-STMT-COUNTER.
+           MOVE TRANS-DATE         TO FM-TRDATE.
+           MOVE EXT-CONAME-USER-ID TO FM-USERID.
+
+           PERFORM WRITE-FM1-FILE.
+           IF ( IO-BAD                    ) AND
+              ( HOLD-FD-OPTION-EXTRACTION )
+              PERFORM REWRITE-FM1-FILE.
+
+           IF IO-FG = 9 AND E-CODE NOT = "22"
+              GO TO IO-ERROR.
+      *    PLACE ALL RESETS HERE THRU LOAN-CHANGES-EXIT
+       RESET-LN-MESSAGE.
+           MOVE "S  A300MESSAGE." TO VDU.
+           MOVE LN-MESSAGE TO HOLD-LN-MESSAGE VDUBUF.
+           PERFORM SCREENIO.
+       RESET-LN-PROMISED.
+           MOVE "S  8080H05." TO VDU.
+           MOVE LN-PROMDATE TO HOLD-LN-PROMDATE VDU-DATE-YYYYMMDD.
+           MOVE LN-PROMID TO HOLD-LN-PROMID.
+           PERFORM SCREENIO.
+       RESET-LN-ACTION.
+           MOVE "S  A040H20." TO VDU.
+           MOVE LN-ACTIONCD TO HOLD-LN-ACTION VDUBUF.
+           PERFORM SCREENIO.
+       RESET-LN-COLLECTOR.
+           MOVE "S  A030COLCTCD." TO VDU.
+           MOVE LN-COLLECTOR TO HOLD-LN-COLLECTOR VDUBUF.
+           PERFORM SCREENIO.
+       RESET-LM-MEMO.
+           MOVE " " TO HOLD-LM-MEMO.
+           MOVE "MEMODESC." TO MESS.
+           MOVE MESS TO WR-LIST.
+           MOVE SPACES TO WR-BUF.
+           PERFORM CALL-WRFORM.
+       LOAN-CHANGES-EXIT.
+           PERFORM CLOSE-FM1-FILE.
+      *    PERFORM CLOSE-NO1-FILE.
+
+      ******************************************
+       GET-FM-PATH SECTION.
+      ******************************************
+
+      * IF FORM IS AN "E" EXTRACTION TYPE FORM (FD-OPTION), THEN
+      * PUT THE CORPORATE BRNO PATH IN THE FM-PATH, SO ALL FORM REQUESTS
+      * ARE CREATED IN THE HOME OFFICE, THEN WHEN THEY GO "PRINT" THEM ALL
+      * IT WILL CREATE AN ASCII FILE
+
+           IF GP-CORP-BRNO = 0
+              GO TO EXIT-GET-FM-PATH.
+
+           MOVE GP-CORP-BRNO TO BR-NO.
+           PERFORM READ-BR-FILE.
+           IF IO-FG = 9
+              GO TO END-GET-FM-PATH.
+
+           MOVE EXT-FILPATH-BASE           TO FM-ALL-BASE.
+           MOVE BR-MACHINE                 TO FM-ALL-MACHINE.
+           MOVE BR-DATA-PATH               TO FM-ALL-DATA.
+           MOVE FM-ALL-PATH                TO FM-PATH.
+           MOVE "Y"                        TO FM-PATH-OVERRIDE.
+
+       END-GET-FM-PATH.
+      * GET ORIGINAL BRANCH BACK
+           MOVE LN-OWNBR TO BR-NO.
+           PERFORM READ-BR-FILE.
+
+       EXIT-GET-FM-PATH.
+           EXIT.
+
+      **********************************************
+       MODIFY-MESSAGE-ROUTINE SECTION.
+      **********************************************
+       MODIFY-MESSAGE-ENTRY.
+           MOVE "E  A300MESSAGE." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              PERFORM RESET-LN-MESSAGE
+              GO TO MODIFY-MESSAGE-EXIT.
+           IF VDUSTATUS NOT = "00"
+              GO TO MODIFY-MESSAGE-ENTRY.
+           MOVE VDUBUF TO HOLD-LN-MESSAGE.
+       MODIFY-MESSAGE-EXIT.
+           EXIT.
+
+      ********************************************************
+       WRITE-MEMO-LINE SECTION.
+      ********************************************************
+           PERFORM OPEN-LM1-FILE.
+
+           MOVE LN-OWNBR  TO LM-BRNO.
+           MOVE LN-ACCTNO TO LM-ACCTNO.
+           SUBTRACT TRANS-DATE FROM 99999999 GIVING LM-DATE.
+           MOVE 1 TO LM-SEQ.
+      * LM-MEMO SET UP ABOVE
+           MOVE HOLD-LM-MEMO-TYPE TO LM-MEMO-TYPE.
+       WRITE-MEMO-AGAIN.
+           PERFORM WRITE-LM1-FILE.
+           IF IO-FG NOT = 0
+              IF LM-SEQ NOT = 999
+                 ADD 1 TO LM-SEQ
+                 GO TO WRITE-MEMO-AGAIN
+              ELSE
+                 MOVE "MAXIMUM LINES FOR DAY ALREADY CREATED"
+                                               TO MESS
+                 PERFORM SEND-MESS.
+           PERFORM CLOSE-LM1-FILE.
+
+      *****************************************
+       MODIFY-MEMO-ROUTINE SECTION.
+      *****************************************
+       MODIFY-MEMO-ENTRY.
+           MOVE "F1, ENTER DATED MEMO LINE:" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E  A600MEMODESC." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              PERFORM RESET-LM-MEMO
+              GO TO MODIFY-MEMO-EXIT.
+           IF VDUSTATUS NOT = "00"
+              GO TO MODIFY-MEMO-ENTRY.
+           MOVE VDUBUF TO HOLD-LM-MEMO.
+       MODIFY-MEMO-EXIT.
+           EXIT.
+
+      *****************************************
+       MODIFY-PROMISED-ROUTINE SECTION.
+      *****************************************
+       MODIFY-PROMISED-ENTRY.
+           IF LN-PROMDATE NOT = 0
+              MOVE LPLOAN-USER-NAME TO CASE-BUF
+              CALL "C$TOUPPER" USING CASE-BUF, VALUE 3
+              IF TRANS-DATE NOT > LN-PROMDATE
+                 MOVE PRIOR-PROM-SEQ TO PASSWDW-SEQ
+                 MOVE "FOR PRIOR TO PROMISE DATE" TO PASSWDW-PROMPT2
+                 PERFORM VERIFY-PASSWORD
+                 IF PASSWDW-STAT NOT = "OK"
+                    GO TO MODIFY-PROMISED-EXIT.
+
+           MOVE "F1, ENTER FIRST PROMISED DATE:" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "ERNM060H05." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              PERFORM RESET-LN-PROMISED
+              GO TO MODIFY-PROMISED-EXIT.
+           IF VDUSTATUS NOT = "00"
+              GO TO MODIFY-PROMISED-ENTRY.
+           MOVE VDU-DATE-YYYYMMDD TO HOLD-LN-PROMDATE SYS-DATE.
+           MOVE LPLOAN-USER-NAME TO CASE-BUF.
+           CALL "C$TOUPPER" USING CASE-BUF, VALUE 3.
+           MOVE CASE-BUF TO HOLD-LN-PROMID.
+           MOVE TRANS-DATE TO NUM-DATE.
+           PERFORM TIM.
+           IF ELAPSED-DAYS > 30
+              MOVE PROM30-SEQ1 TO PASSWDW-SEQ
+              MOVE "FOR > 30 DAYS PROMISE DATE" TO PASSWDW-PROMPT2
+              PERFORM VERIFY-PASSWORD
+              IF PASSWDW-STAT NOT = "OK"
+                 MOVE "CANNOT BE MORE THAN 30 DAYS FROM TODAYS DATE"
+                       TO MESS
+                 PERFORM SEND-MESS
+                 GO TO MODIFY-PROMISED-ENTRY.
+
+           IF GP-MAX-PROMISE-DAYS NOT = ZERO
+              IF ELAPSED-DAYS > GP-MAX-PROMISE-DAYS
+                 MOVE PROM-GPMAX-SEQ TO PASSWDW-SEQ
+                 MOVE SPACES TO MESS
+              STRING
+                "FOR PROMISE > THAN " GP-MAX-PROMISE-DAYS " DAYS"
+                 DELIMITED BY "  " INTO  PASSWDW-PROMPT2
+                 PERFORM PASSWORD-MUST-EXIST
+                 IF PASSWDW-STAT NOT = "OK"
+                   MOVE SPACES TO MESS
+                   STRING
+              "CANNOT BE MORE THAN " GP-MAX-PROMISE-DAYS
+                                         "  DAYS FROM TODAY"
+                                     DELIMITED BY "   " INTO MESS
+                 PERFORM SEND-MESS
+                 GO TO MODIFY-PROMISED-ENTRY.
+
+       MODIFY-PROMISED-EXIT.
+           EXIT.
+
+      ********************************
+       MODIFY-ACTION-ROUTINE SECTION.
+      ********************************
+       MODIFY-ACTION-ENTRY.
+           IF LN-ACTIONCD = "NIVR" OR "CND " OR "LGL " OR "BKD "
+              MOVE NIVR-SEQ TO PASSWDW-SEQ
+              MOVE "TO CHANGE THE EXISTING ACTIONCD" TO PASSWDW-PROMPT2
+              PERFORM VERIFY-PASSWORD
+              IF PASSWDW-STAT NOT = "OK"
+                 GO TO MODIFY-ACTION-EXIT.
+
+           MOVE "F1-CANCEL, F6-SCAN, ENTER NEW ACTION CD" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E  A040H20." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "1<"
+              MOVE "AC"   TO CDSCAN-TYPE
+              MOVE SPACES TO CDSCAN-CODE
+              PERFORM CODE-SCAN
+              IF IO-FG NOT = 0
+                 GO TO MODIFY-ACTION-ENTRY
+              ELSE
+                 MOVE "S  A040H20." TO VDU
+                 MOVE CDSCAN-CODE TO VDUBUF
+                 PERFORM SCREENIO
+                 MOVE "00" TO VDUSTATUS
+                 MOVE CDSCAN-CODE TO VDUBUF.
+           IF VDUSTATUS = "10"
+              PERFORM RESET-LN-ACTION
+              GO TO MODIFY-ACTION-EXIT.
+           IF VDUSTATUS NOT = "00"
+              GO TO MODIFY-ACTION-ENTRY.
+           IF VDUBUF NOT = LN-ACTIONCD
+              MOVE ACTIONCD-SEQ TO PASSWDW-SEQ
+              MOVE "TO CHANGE THE ACTIONCD" TO PASSWDW-PROMPT2
+              PERFORM VERIFY-PASSWORD
+              IF PASSWDW-STAT NOT = "OK"
+                 GO TO MODIFY-ACTION-ENTRY.
+           IF VDUBUF NOT = LN-ACTIONCD
+              IF LN-ACTIONCD NOT = " "
+                 MOVE "TO CHANGE ACTION CODE OF &&&&" TO PASSWDW-PROMPT2
+                 MOVE LN-ACTIONCD TO TEST-ACTIONCD
+                 PERFORM VERIFY-ACTIONCD-PASSWORD
+                 IF PASSWDW-STAT NOT = "OK"
+                    MOVE "S  A040H20." TO VDU
+                    MOVE LN-ACTIONCD TO VDUBUF
+                    PERFORM SCREENIO
+                    GO TO MODIFY-ACTION-ENTRY.
+           IF VDUBUF NOT = LN-ACTIONCD
+              IF VDUBUF NOT = " "
+                 MOVE "TO USE ACTION CODE OF &&&&" TO PASSWDW-PROMPT2
+                 MOVE VDUBUF TO TEST-ACTIONCD
+                 PERFORM VERIFY-ACTIONCD-PASSWORD
+                 IF PASSWDW-STAT NOT = "OK"
+                    MOVE "S  A040H20." TO VDU
+                    MOVE LN-ACTIONCD TO VDUBUF
+                    PERFORM SCREENIO
+                    GO TO MODIFY-ACTION-ENTRY.
+           MOVE VDUBUF TO HOLD-LN-ACTION.
+           IF GP-ACTIONCD-VERIFY = "Y" OR " "
+              IF HOLD-LN-ACTION NOT = " "
+                 MOVE HOLD-LN-ACTION TO CD-AT-ACTIONCD
+                 MOVE "AC"           TO CD-TYPE
+                 MOVE CD-AT-ACTIONCD TO CD-CODE
+                 PERFORM OPEN-CD1-FILE
+                 PERFORM READ-CD1-FILE
+                 PERFORM CLOSE-CD1-FILE
+                 IF IO-FG = 9
+                    MOVE "INVALID ACTION CODE" TO MESS
+                    PERFORM SEND-MESS
+                    GO TO MODIFY-ACTION-ENTRY.
+
+       MODIFY-COLLECTOR-ENTRY.
+           MOVE "F1-CANCEL, F6-SCAN, ENTER NEW COLLECTOR ID" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E  A030COLCTCD." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "1<"
+              MOVE "CN"   TO CDBSCN-TYPE
+              MOVE SPACES TO CDBSCN-CODE
+              IF BR-GLOBAL-QUEUE = "Y"
+                 MOVE 0 TO CDBSCN-BRANCH
+              ELSE
+                 MOVE BR-NO TO CDBSCN-BRANCH
+              END-IF
+              PERFORM COLLECTOR-CODE-SCAN
+              IF IO-FG NOT = 0
+                 GO TO MODIFY-COLLECTOR-ENTRY
+              ELSE
+                 MOVE "S  A030COLCTCD." TO VDU
+                 MOVE CDBSCN-CODE TO VDUBUF
+                 PERFORM SCREENIO
+                 MOVE "00" TO VDUSTATUS
+                 MOVE CDBSCN-CODE TO VDUBUF.
+           IF VDUSTATUS = "10"
+              PERFORM RESET-LN-COLLECTOR
+              GO TO MODIFY-ACTION-EXIT.
+           IF VDUSTATUS = "1U"
+              GO TO MODIFY-ACTION-ENTRY.
+           IF VDUSTATUS NOT = "00"
+              GO TO MODIFY-COLLECTOR-ENTRY.
+           IF VDUBUF NOT = LN-COLLECTOR
+              MOVE COLLECTOR-SEQ TO PASSWDW-SEQ
+              MOVE "TO CHANGE THE COLLECTOR" TO PASSWDW-PROMPT2
+              PERFORM VERIFY-PASSWORD
+              IF PASSWDW-STAT NOT = "OK"
+                 PERFORM RESET-LN-COLLECTOR
+                 GO TO MODIFY-COLLECTOR-ENTRY.
+           MOVE VDUBUF TO HOLD-LN-COLLECTOR.
+
+      * DONT VERIFY UNLESS USING COLLECTOR QUEUE
+           IF BR-COLLECTOR-QUEUE = "Y"
+              IF HOLD-LN-COLLECTOR NOT = " "
+                 MOVE "CN"              TO CDB-TYPE
+                 MOVE HOLD-LN-COLLECTOR TO CDB-CODE
+                 IF BR-GLOBAL-QUEUE = "Y"
+                    MOVE 0 TO CDB-BRANCH
+                 ELSE
+                    MOVE BR-NO TO CDB-BRANCH
+                 END-IF
+                 PERFORM OPEN-CDB1-FILE
+                 PERFORM READ-CDB1-FILE
+                 PERFORM CLOSE-CDB1-FILE
+                 IF IO-FG = 9
+                    MOVE "INVALID COLLECTOR CODE" TO MESS
+                    PERFORM SEND-MESS
+                    GO TO MODIFY-COLLECTOR-ENTRY.
+
+       MODIFY-ACTION-EXIT.
+           EXIT.
+
+      ********************************************************
+       MODIFY-FORMS-ROUTINE SECTION.
+      ********************************************************
+       MODIFY-FORMS.
+           MOVE 0 TO HOLD-1STFILE.
+           MOVE " " TO HOLD-FMTYPE HOLD-FD-OPTION.
+
+           IF LN-CONFIDENTCD = "Y" OR BW-CONFIDENTIAL = "Y"
+              MOVE "NOT ALLOWED - ACCOUNT CONFIDENTIAL" TO MESS
+              PERFORM SEND-MESS
+              GO TO MODIFY-FORMS-EXIT.
+
+      * REGACC PR# 94, 1/14/2005
+           IF GP-DENY-FORM-NO-ADDRESS = "Y"
+              IF BW-ADR1 = SPACES OR
+                  BW-CITY = SPACES OR
+                   BW-STATE = SPACES OR
+                    BW-ZIP = SPACES
+                 MOVE "NOT ALLOWED - ADDRESS INCOMPLETE" TO MESS
+                 PERFORM SEND-MESS
+                 GO TO MODIFY-FORMS-EXIT.
+
+
+           MOVE "F1-CANCEL, 'DELETE', F6-SCAN, ENTER NEW FORM #"
+                                                       TO MESS.
+           PERFORM SEND-LEGEND.
+
+       MODIFY-FORMS-ENTRY.
+           MOVE "E RA060SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              GO TO MODIFY-FORMS-EXIT.
+           IF VDUSTATUS = "1<"
+              PERFORM FORM-SCAN
+              IF IO-FG NOT = 0
+                 GO TO MODIFY-FORMS-ENTRY
+              ELSE
+                 NEXT SENTENCE
+           ELSE
+              IF VDUSTATUS NOT = "00"
+                 GO TO MODIFY-FORMS-ENTRY
+              ELSE
+                 MOVE VDUBUF TO ACTION.
+           IF ACTION = "DELETE"
+              MOVE ACTION TO MOD-FM-TYPE
+              GO TO MODIFY-FORMS-EXIT.
+
+           INSPECT ACTION REPLACING ALL SPACES BY ZEROS.
+           IF SEL-FMNO NOT NUMERIC
+              GO TO MODIFY-FORMS-ENTRY.
+           IF SEL-FMNO = 0
+              GO TO MODIFY-FORMS-ENTRY.
+
+           MOVE SEL-FMNO TO FD-FMNO.
+           PERFORM OPEN-FD1-FILE.
+           PERFORM READ-FD1-FILE.
+           PERFORM CLOSE-FD1-FILE.
+           IF IO-FG NOT = 0
+              GO TO MODIFY-FORMS-ENTRY.
+
+           IF FD-SECURITY-PROFILE NOT = " "
+              IF LPLOAN-USER-LETTER1 > FD-SECURITY-PROFILE
+                 MOVE "YOU ARE NOT AUTHORIZED TO REQUEST THIS FORM."
+                    TO MESS
+                 PERFORM SEND-MESS
+                 GO TO MODIFY-FORMS-ENTRY.
+
+           IF FD-VALID-BRANCH NOT = SPACES
+              IF FD-VALID-BRANCH NUMERIC
+                 IF LPLOAN-USER-BRANCH NOT = FD-VALID-BRANCH
+                    MOVE "NOT A VALID BRANCH" TO MESS
+                    PERFORM SEND-MESS
+                    GO TO MODIFY-FORMS-ENTRY
+                 ELSE
+                    NEXT SENTENCE
+              ELSE
+                 MOVE FD-VALID-BRANCH TO GR-ID
+                 PERFORM OPEN-GR1-FILE
+                 PERFORM SEARCH-GR-INIT
+                 MOVE LPLOAN-USER-BRANCH TO WGR-SRESULT
+                 PERFORM SEARCH-GR-VERIFY
+                 IF WGR-ERR > 0
+                    MOVE "NOT A VALID BRANCH" TO MESS
+                    PERFORM SEND-MESS
+                    GO TO MODIFY-FORMS-ENTRY.
+
+      * NEW FLAG TO CHECK IF STATE IS ALLOWED TO REQUEST THIS FORM
+           PERFORM CHECK-STATE-ALLOWED.
+           IF NOT ( STAT-GOOD )
+              MOVE "STATE NOT ALLOWED TO REQUEST" TO MESS
+              PERFORM SEND-MESS
+              GO TO MODIFY-FORMS-ENTRY.
+
+      * GP FLAG TO USE THE DOC DESIGN MINIMUM DAYS SINCE LAST FORM SENT
+           IF GP-USE-MIN-FORM-SENT-DAYS = "Y"
+              IF FD-FMTYPE = "C" 
+                 IF FD-MIN-FORM-SENT-DAYS NOT = 0 AND NOT = 99
+                    IF LN-LASTCFORMDATE NOT = 0
+                       MOVE LN-LASTCFORMDATE TO NUM-DATE
+                       MOVE TRANS-DATE TO SYS-DATE
+                       PERFORM TIM
+                       IF ELAPSED-DAYS NOT > FD-MIN-FORM-SENT-DAYS
+                          MOVE "MINIMUM DAYS NOT MET" TO MESS
+                          PERFORM SEND-MESS
+                          MOVE FD-MIN-DAYS-SEQ TO PASSWDW-SEQ
+                          MOVE "FOR PRIOR TO MINIMUM DAYS" TO
+                                                      PASSWDW-PROMPT2
+                          PERFORM VERIFY-PASSWORD
+                          IF PASSWDW-STAT NOT = "OK"
+                             GO TO MODIFY-FORMS-ENTRY.
+
+      * REGACC PR# 256 10/2/2009 PREVENT LETTER REQUESTED IF PRIMARY
+      *   MAKER HAS THE BAD ADDRESS FLAG SET
+           IF FD-SKIP-BAD-ADR = "Y"
+      * ONLY TEST BAD ADDRESS FLAG IF PRIMARY BORROWER
+              IF BW-SSNO = LN-SSNO(1)
+                 IF BW-BAD-ADR-FG = "Y"
+                    MOVE "BAD ADDRESS, CAN NOT CREATE REQUEST" TO MESS
+                    PERFORM SEND-MESS
+                    GO TO MODIFY-FORMS-ENTRY.
+
+
+           MOVE FD-1STFILE TO HOLD-1STFILE.
+           MOVE FD-FMTYPE TO HOLD-FMTYPE.
+           MOVE FD-OPTION TO HOLD-FD-OPTION.
+           IF HOLD-FMTYPE NOT = "C"
+              PERFORM FORM-NOT-COLLECTIONS
+              IF Y-OR-N NOT = "     Y"
+                 GO TO MODIFY-FORMS.
+
+           MOVE SEL-FMNO TO MOD-FM-KEY.
+       MODIFY-FORMS-EXIT.
+           EXIT.
+
+      ******************************************
+       CHECK-STATE-ALLOWED SECTION.
+      ******************************************
+
+           IF FD-TEST-WHICH-STATE = "B"
+              MOVE BW-STATE TO TEST-STATE
+           ELSE
+           IF FD-TEST-WHICH-STATE = "L"
+              MOVE LN-ORGST TO TEST-STATE
+           ELSE
+              GO TO EXIT-CHECK-STATE-ALLOWED.
+
+      * TEST DEFAULT TO BAD, NOT ALLOWED
+      * SET TO GOOD IF STATE IS FOUND IN TABLE
+           MOVE STAT---BAD TO STAT.
+           PERFORM VARYING S1 FROM 1 BY 1 UNTIL S1 > 50
+           IF FD-STATE(S1) = TEST-STATE
+              MOVE 50 TO S1
+              MOVE STAT---GOOD TO STAT
+           END-IF
+           END-PERFORM.
+
+       EXIT-CHECK-STATE-ALLOWED.
+           EXIT.
+
+      ******************************************
+       FORM-SCAN SECTION.
+      ******************************************
+           MOVE 0   TO FDSCAN-KEY.
+           MOVE "C" TO FDSCAN-FMTYPE.
+           MOVE "S" TO FDSCAN-ALLOW-CHG.
+           MOVE "WI/FDSCAN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH FDSCAN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF FDSCAN-STATUS NOT = "00" OR FDSCAN-KEY = " "
+               MOVE 9 TO IO-FG
+               GO TO EXIT-FORM-SCAN.
+           MOVE "S  A060SEL." TO VDU.
+           MOVE FDSCAN-KEY-ALP TO VDUBUF.
+           PERFORM SCREENIO.
+           MOVE "00" TO VDUSTATUS.
+           MOVE FDSCAN-KEY-ALP TO SEL-FMNOX.
+
+       EXIT-FORM-SCAN.
+           EXIT.
+
+      ************************************
+       COLLECTOR-CODE-SCAN SECTION.
+      ************************************
+           MOVE 0 TO IO-FG.
+           MOVE 1 TO CDBSCN-BEGIN-X.
+           MOVE 8 TO CDBSCN-BEGIN-Y.
+
+           MOVE "WI/CDBSCN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH CDBSCN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF ( CDBSCN-STATUS NOT = "00"        ) OR
+              ((CDBSCN-TYPE = "CN") AND (CDBSCN-CODE = SPACES))
+              MOVE 9 TO IO-FG.
+
+       EXIT-COLLECTOR-CODE-SCAN.
+           EXIT.
+
+      ********************
+       CODE-SCAN SECTION.
+      ********************
+           MOVE 0 TO IO-FG.
+           MOVE 1 TO CDSCAN-BEGIN-X.
+           MOVE 8 TO CDSCAN-BEGIN-Y.
+
+           MOVE "WI/CDSCAN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH CDSCAN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF ( CDSCAN-STATUS NOT = "00"        ) OR
+              ((CDSCAN-TYPE = "AC") AND (CDSCAN-CODE = SPACES))
+              MOVE 9 TO IO-FG.
+
+       EXIT-CODE-SCAN.
+           EXIT.
+
+      **********************************************
+       FORM-NOT-COLLECTIONS SECTION.
+      **********************************************
+       FORM-NOT-COLL.
+           MOVE SPACES TO Y-OR-N.
+           MOVE "FORM NOT COLLECTIONS TYPE, CONTINUE (Y/N)?" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E RA060SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS NOT = "00"
+              GO TO FORM-NOT-COLL.
+           MOVE VDUBUF TO Y-OR-N.
+           IF Y-OR-N NOT = "     Y" AND NOT =  "     N"
+               AND NOT = "Y     " AND NOT =  "N     "
+              GO TO FORM-NOT-COLL.
+           MOVE SPACES TO MESS.
+           PERFORM SEND-LEGEND.
+
+      *************************************
+       SAVE-SCREEN SECTION.
+      *************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+           MOVE ELE TO WK-ELE.
+           MOVE LN-REC TO WK-SAVE-RECORD.
+           PERFORM REWRITE-WK-FILE.
+       EXIT-SAVE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+      *************************************
+       RESTORE-SCREEN SECTION.
+      *************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF NEW-FORM NOT = OLD-FORM
+              MOVE OLD-PROG-FORM TO WK-OLD-PROG-FORM
+              MOVE NEW-PROG-FORM TO OLD-PROG-FORM.
+           IF IO-FG = 0
+              GO TO RESTORE-CLEAR.
+
+           MOVE SPACES TO WK-SAVE-RECORD.
+           MOVE 0 TO WK-ELE.
+           PERFORM WRITE-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+           GO TO EXIT-RESTORE-SCREEN.
+       RESTORE-CLEAR.
+           MOVE WK-SAVE-RECORD TO LN-REC.
+           MOVE 0 TO WK-ELE.
+           PERFORM REWRITE-WK-FILE.
+       EXIT-RESTORE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+      ********************************************************
+       TRCD-DISPLAY SECTION.
+      ********************************************************
+       TRCD-PAGE1.
+           MOVE "PMPT1:S PMPT2:S PMPT3:S PMPT4:S PMPT5:S" TO MESS.
+           IF PATH-MACHINE NOT = " "
+              MOVE TRCD2-LINE TO WR-BUF
+              MOVE MESS TO WR-LIST
+              PERFORM CALL-WRFORM
+              MOVE TRCD2-BUF TO WR-BUF
+              MOVE LINE-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+              MOVE "           F7-DONE" TO HOLD-TRCD-MESS
+           ELSE
+              MOVE TRCD-LINE TO WR-BUF
+              MOVE MESS TO WR-LIST
+              PERFORM CALL-WRFORM
+              MOVE TRCD-BUF TO WR-BUF
+              MOVE LINE-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+              MOVE "<ENTER> - NEXT PAGE, F7-DONE" TO HOLD-TRCD-MESS.
+
+       TRCD-ASK.
+           MOVE "S  A040MSEL." TO VDU.
+           MOVE HOLD-TRCD-MESS TO VDUBUF.
+           PERFORM SCREENIO.
+           MOVE "E RA000SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS NOT = "1>"
+              IF PATH-MACHINE NOT = " "
+                 GO TO TRCD-PAGE1
+              ELSE
+                 MOVE TRCD-BUF2 TO WR-BUF
+                 MOVE LINE-LIST TO WR-LIST
+                 PERFORM CALL-WRFORM
+                 MOVE "S  A040MSEL." TO VDU
+                 MOVE "<ENTER> - NEXT PAGE, F7-DONE" TO VDUBUF
+                 PERFORM SCREENIO
+                 MOVE "E RA000SEL." TO VDU
+                 PERFORM SCREENIO
+                 IF VDUSTATUS NOT = "1>"
+                    GO TO TRCD-PAGE1.
+
+      *******************************************************
+       VERIFY-PASSWORD SECTION.
+      *******************************************************
+           MOVE " " TO PASSWDW-STAT.
+           MOVE "LONPF3" TO PASSWDW-PGM.
+           MOVE "PLEASE ENTER THE PASSWORD," TO PASSWDW-PROMPT1.
+           MOVE "CL/PASSWD" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH PASSWDW-BUF.
+           CANCEL FORM-PROGX.
+
+      *******************************************************
+       PASSWORD-MUST-EXIST SECTION.
+      *******************************************************
+           MOVE "EX" TO PASSWDW-STAT.
+           MOVE "LONPF3" TO PASSWDW-PGM.
+           MOVE "PLEASE ENTER THE PASSWORD" TO PASSWDW-PROMPT1
+           MOVE "CL/PASSWD" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH PASSWDW-BUF.
+           CANCEL FORM-PROGX.
+
+      *******************************************************
+       VERIFY-ACTIONCD-PASSWORD SECTION.
+      *******************************************************
+           MOVE " " TO PASSWDW-STAT.
+           MOVE "AC-&&&&" TO PASSWDW-PGM.
+           INSPECT PASSWDW-PGM REPLACING FIRST "&&&&" BY
+                                              TEST-ACTIONCD.
+           MOVE 0 TO PASSWDW-SEQ.
+           MOVE "PLEASE ENTER THE PASSWORD " TO PASSWDW-PROMPT1.
+           INSPECT PASSWDW-PROMPT2 REPLACING FIRST "&&&&" BY
+                                             TEST-ACTIONCD.
+           MOVE "CL/PASSWD" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH PASSWDW-BUF.
+           CANCEL FORM-PROGX.
+       EXIT-VERIFY-ACTIONCD-PASSWORD.
+           EXIT.
+
+
+      **********************************************
+       SETUP-LINK-INFO SECTION.
+      **********************************************
+           IF VDU-FORM-NAME = "LPSMNU"
+              MOVE LPSMNU-HELP--FILE TO HELP-LINK-FILE
+              MOVE LPSMNU-HELP--DIR  TO HELP-LINK-DIR
+           ELSE
+              MOVE LONPF-HELP--FILE TO HELP-LINK-FILE
+              MOVE LONPF-HELP--DIR TO HELP-LINK-DIR.
+
+      **********************************************
+       VDU-CONVERT-FIELD SECTION.
+      **********************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBLP/LONPF_EVA.CPY".
+              COPY "LIBLP/LPSMNU_EVA.CPY".
+              COPY "LIBLP/LPLNMU_EVA.CPY".
+              COPY "LIBLP/LPCAMU_EVA.CPY".
+              COPY "LIBLP/LPVDMU_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      *************************************
+       MISCELLANEOUS-ROUTINES SECTION.
+      *************************************
+       COPY "LIBGB/ACCESS.CPY".
+       FORM-RESET.
+       SEND-LEGEND.
+           MOVE MESS TO WR-BUF.
+           MOVE MSEL-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+       RETURN-VALUES.
+           MOVE MENU-PROG-FORM(4) TO NEW-PROG-FORM.
+           MOVE 1 TO NEW-PROG-SUB.
+           MOVE "P" TO ERRCD.
+           IF ROUTE-CD NOT = 4
+              MOVE SPACES TO WK-LP-REC WK-LX-REC WK-LXE-REC WK-LXG-REC
+              PERFORM SAVE-SCREEN.
+
+       COPY "LIBGB/GPENV.CPY".
+       COPY "LIBLP/LPPDUE.CPY".
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/SPPDTH.CPY".
+       COPY "LIBLP/LPMDTE.CPY".
+       COPY "LIBGB/GRSERCH.CPY".
+       COPY "LIBLP/LPFMCL.CPY".
+
+      *************************************
+       IO-ROUTINES SECTION.
+      *************************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBLP/LPSPGS_SQL.CPY".
+      *COPY "LIBLP/LPNOGS_SQL.CPY".
+       COPY "LIBLP/LPLTPGS_SQL.CPY".
+       COPY "LIBLP/LPLNGS_SQL.CPY".
+       COPY "LIBLP/LPLMGS_SQL.CPY".
+       COPY "LIBLP/LPFMGS_SQL.CPY".
+       COPY "LIBLP/LPFDGS_SQL.CPY".
+       COPY "LIBLP/LPCDBGS_SQL.CPY".
+       COPY "LIBLP/LPCDGS_SQL.CPY".
+       COPY "LIBLP/LPBWGS_SQL.CPY".
+       COPY "LIBGB/GBGRGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBGB/GBGR1RN.CPY".
+       COPY "LIBLP/LPLN1IN.CPY".
+       COPY "LIBLP/LPSP1RN.CPY".
+       COPY "LIBLP/LPBW1RN.CPY".
+       COPY "LIBLP/LPLM1IN.CPY".
+       COPY "LIBLP/LPWKI.CPY".
+       COPY "LIBLP/LPFD1RN.CPY".
+       COPY "LIBLP/LPFM1IN.CPY".
+      *COPY "LIBLP/LPNO1IN.CPY".
+       COPY "LIBLP/LPLTP1RN.CPY".
+       COPY "LIBLP/LPCD1RN.CPY".
+       COPY "LIBLP/LPCDB1RN.CPY".
+       COPY "LIBGB/FERRORS.CPY".
+           MOVE "E" TO ERRCD.
+
+       END-ROUTINE.
+           PERFORM CLOSE-FILES.
+       EXIT-PROG.
+       STOP-RUN.
+           EXIT PROGRAM.

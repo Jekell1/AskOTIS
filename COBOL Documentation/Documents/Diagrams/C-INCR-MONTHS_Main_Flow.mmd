@@ -1,0 +1,56 @@
+flowchart TD
+    A[Start C-INCR-MONTHS] --> B[Initialize Variables]
+    B --> C[Calculate Year/Month Components]
+    C --> D[DIVIDE WS-UP-WORK BY 12]
+    D --> E[GIVING WS-DIV-RESULT REMAINDER WS-MOD-12]
+    
+    E --> F[Apply Month Increment]
+    F --> G[ADD WS-MOD-12 TO WS-NDTE-MM-S]
+    G --> H[ADD WS-DIV-RESULT TO WS-NDTE-CCYY-S]
+    
+    H --> I[Check Month Boundaries]
+    I --> J{WS-NDTE-MM-S < 1?}
+    J -->|Yes| K[Month Underflow]
+    J -->|No| L{WS-NDTE-MM-S > 12?}
+    
+    K --> M[ADD 12 TO WS-NDTE-MM-S]
+    M --> N[ADD -1 TO WS-NDTE-CCYY-S]
+    N --> O[Prepare for Validation]
+    
+    L -->|Yes| P[Month Overflow]
+    L -->|No| O
+    
+    P --> Q[ADD -12 TO WS-NDTE-MM-S]
+    Q --> R[ADD 1 TO WS-NDTE-CCYY-S]
+    R --> O
+    
+    O --> S[Validate Day Component]
+    S --> T{WS-NDTE-DD-S > 99?}
+    T -->|Yes| U[MOVE 99 TO NDTE-DD]
+    T -->|No| V[MOVE WS-NDTE-DD-S TO NDTE-DD]
+    
+    U --> W[Prepare NEWDATE Call]
+    V --> W
+    W --> X[MOVE WS-NDTE-CCYY-S TO NDTE-CCYY]
+    X --> Y[MOVE WS-NDTE-MM-S TO NDTE-MM]
+    Y --> Z[MOVE "N" TO DATER-ACTION-CODE]
+    
+    Z --> AA[Call C-CALL-NEWDATE]
+    AA --> BB[Validate Date Combination]
+    BB --> CC[Adjust Invalid Date Combinations]
+    CC --> DD[Update Working Variables]
+    
+    DD --> EE[MOVE NDTE-CCYY TO WS-NDTE-CCYY-S]
+    EE --> FF[MOVE NDTE-MM TO WS-NDTE-MM-S]
+    FF --> GG[MOVE NDTE-DD TO WS-NDTE-DD-S]
+    
+    GG --> HH[End C-INCR-MONTHS]
+    
+    style A fill:#e1f5fe
+    style HH fill:#c8e6c9
+    style J fill:#fff3e0
+    style L fill:#fff3e0
+    style T fill:#fff3e0
+    style K fill:#fff8e1
+    style P fill:#fff8e1
+    style AA fill:#e8f5e8

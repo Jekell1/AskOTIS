@@ -1,0 +1,14 @@
+{
+  "file_info": {
+    "file_id": "using_test001",
+    "path": "S35-Source/CL/ICUNR1.CBL",
+    "program_id": "ICUNR1",
+    "format": "free",
+    "procedure_using": null
+  },
+  "linkage_items": [],
+  "parameter_xrefs": {
+    "param_in": [],
+    "param_out": []
+  }
+}

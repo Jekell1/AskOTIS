@@ -1,0 +1,33 @@
+{
+  "total_entries": 26212,
+  "total_screens": 1589,
+  "modules": {
+    "AM": 264,
+    "AP": 493,
+    "BC": 32,
+    "CV": 16,
+    "FX": 1004,
+    "GB": 4651,
+    "GL": 659,
+    "LP": 6347,
+    "LS": 281,
+    "MN": 4119,
+    "NP": 564,
+    "SP": 5927,
+    "UP": 170,
+    "WI": 1685
+  },
+  "field_types": {
+    "system": 1630,
+    "numeric_position": 7629,
+    "other": 16819,
+    "program_field": 100,
+    "keyed_field": 20,
+    "selection": 14
+  },
+  "avg_help_length": 397.46368075690526,
+  "fields_with_validation": 18,
+  "fields_with_scan": 10,
+  "required_fields": 1895,
+  "optional_fields": 430
+}

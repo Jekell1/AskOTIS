@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXLTA
+           SELECT XLTA-FILE ASSIGN TO XLTA-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLTA-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPEN-BW1-FILE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">OPEN-BW1-FILE</span>
+        </nav>
+        <main class="content">
+<h1 id="open-bw1-file">OPEN-BW1-FILE</h1>
+<p><strong>Location:</strong> APIPAY/APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> August 5, 2025<br />
+<strong>Program ID:</strong> OPEN-BW1-FILE<br />
+<strong>Date Written:</strong> See source comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p><code>OPEN-BW1-FILE</code> opens the BW1 work file, which is used for temporary or intermediate data storage during batch processing. This file is essential for managing work-in-progress records.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Not transaction-based; supports all batch operations requiring BW1 work file access.</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>None directly; uses system configuration for file path.</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>None directly; makes the BW1 file available for batch operations.</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    A[Start] --> B[Assign BW1 file path]
+    B --> C[Open BW1 file]
+    C --> D[Check file status]
+    D --> E[Return to caller]
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+title OPEN-BW1-FILE Timeline
+section File Operations
+Assign Path      :done, a1, 2025-08-05, 1m
+Open File        :done, a2, after a1, 1m
+Check Status     :done, a3, after a2, 1m
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li>Assigns the file path for the BW1 work file.</li>
+<li>Opens the file using COBOL's SELECT/ASSIGN and OPEN statements.</li>
+<li>Checks the file status code to ensure the file is available.</li>
+<li>Returns control to the calling routine.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    Input[System Config] --> Path[BW1 File Path]
+    Path --> Open[OPEN Statement]
+    Open --> Status[File Status]
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>None</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>If the file cannot be opened, sets a file status code and returns an error to the caller.</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates file status after OPEN.</li>
+<li>Handles file not found or access denied errors.</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>File not found</li>
+<li>Access denied</li>
+<li>File already open</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses COBOL SELECT/ASSIGN and OPEN statements.</li>
+<li>File status checked after OPEN.</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by APIPAY and other routines requiring temporary work file storage.</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>BW1 work file (see source for path)</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    OPEN-BW1-FILE --> [Return to caller]
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

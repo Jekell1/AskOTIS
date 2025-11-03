@@ -1,0 +1,157 @@
+      *================================================================*
+      * END COPYBOOK: LIBGB\TIMEIO.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBGB\GPENV.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBGB/GPENV
+      ******************************************************************
+      *                    (GPENV)
+      *   GLOBAL PARAMETER RECORD ENVIRONMENT
+      *
+      *   COPY : GPENVW
+      ******************************************************************
+      *   DO *NOT* ADD ANY TYPE OF COMP FIELDS TO GP-REC (KEY 1);
+      *   SET ENVIRONMENT (GB/SETENV) WILL NOT WORK WITH IT.
+      *   LOOK AT THE SHARED DRIVE FOR 'COBOL_SET_ENV_COMP.DOCX 
+      *   FOR MORE INFORMATION.                     BH & KC 2017-1004
+      ******************************************************************
+      * REV:
+      ******************************************************************
+       GET-GPENV SECTION.
+           ACCEPT GP-REC FROM ENVIRONMENT "GPENV".
+      *================================================================*
+      * END COPYBOOK: LIBGB\GPENV.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBGB\DATER.CPY                           *
+      *================================================================*
+      ****************************************************************
+      * COPYMEMBER: LIBGB/DATER
+      *
+      * DESC: WILL ACCEPT DATES IN THE 8 DIGIT FORMAT IN WITH
+      *       EITHER  "00MMDDYY" FORMAT OR "CCYYMMDD" FORMAT
+      *
+      *  INPUT: SYS-DATE, NUM-DATE AND NDTE-DATE ARE 9(8).
+      *
+      *  OUTPUT: OUTPUT DATE FORMAT WILL MATCH THAT OF THE INPUT FORMAT.
+      *          IF INPUT = "00MMDDYY" THEN OUTPUT WILL BE "00MMDDYY".
+      *          IF INPUT = "CCYYMMDD" THEN OUTPUT WILL BE "CCYYMMDD".
+      *
+      *=================================================================
+      * NOTE: THE MOVE OF NUMERIC FIELDS WORKS DIFFERENTLY BETWEEN
+      *       COMP AND NON-COMP FIELDS.
+      *       IF MOVING A NON-COMP FIELD (SOURCE) TO ANOTHER FIELD
+      *       WILL CAUSE THE FOLLOWING:
+      *          MOVE SOURCE TO NON-COMP. [RESULT IS SPACES]
+      *          MOVE SOURCE TO COMP-3.   [RESULT IS ZEROES]
+      *          MOVE SOURCE TO COMP-6.   [RESULT IS ZEROES]
+      *       WITHIN A 'MOVE' STATEMENT, THE CONVERSION ROUTINE FOR
+      *       COMPRESSION OF THE 'MOVE' DOES A VERIFICATION WHICH MOVES
+      *       ZEROES TO NON-NUMERIC FIELDS.  THIS WAS FOUND IN DEBUG
+      *       WITHIN CONVERT-MMDDYY-TO-YYYYMMDD SECTION WHICH
+      *       DATE-MMDDYY WAS SPACES GIVING A RESULT OF "2000    ".
+      *       BETH & JAY DECIDED NOT TO ALTER THE ROUTINE BUT TO ADD A
+      *       NUMERIC CHECK IN THE PROGRAM BEFORE CALLING TO
+      *       CONVERT-MMDDYY-TO-YYYYMMDD.
+      *       SEE BT-PAYDATE IN SP/BPREF AS EXAMPLE.      JAY 2017-1113
+      *
+      **************************************************************************
+      *
+      * MJD 130130 REPLACED "C" CALLS WITH VERYAND COBOL VERSIONS OF
+      *            PARADATA DATE ROUTINES.   THIS IS AN INTERNAL
+      *            CHANGE, THE WAY IN WHICH WE CALL AND USE THE
+      *            DATE ROUTINES REMAINS UNCHANGED.
+      *            ADDED A FEW INITIALZE  XXXX TO MAKE OUTPUT
+      *            MATCH A15.   IN EACH CASE THE FIELD CLEARED WAS NOT
+      *            PART OF THE OUTPUT SET FOR THAT FUNCTION. VERYANT
+      *            USED THEM INTERNALLY FOR CALCULATIONS.
+      * MJD 130212 REMOVED THE INITIALIZE STATEMENTS I ADDED.
+      *            WHILE THESE WERE NOT PART OF THE OUTPUT I WAS
+      *            AFFECTING OUTSIDE CALCULATIONS THAT USED THEM.
+      * MJD 130313 ADDED LOGIC FROM VERYANT TO CORRECT AN ISSUE WITH
+      *            ELASED TIME AND LEAP YEARS.
+      * BAH 130507 DO NOT CLEAR OR INITIALIZE OR ZERO JULIAN-DATE
+      *             REBATE COPY MEMBER EXPECTS BACK SPACES OR COMPILED DEFAULT
+      * MJD 130509 ADDED WS-JUL-WK TO REPLACE JULIAN-DATE FOR INTERNAL
+      *            CALCULATIONS. EDWIN (VERYANT) WAS USING JULIAN-DATE FROM
+      *            BUFFER AND WE DO NOT WANT TO CHANGE THE VALUE UNLESS
+      *            IT IS ACTUALLY PART OF THE INPUT/OUTPUT OF THE ROUTINE
+      *            CALLED.
+      * MJD 130514 IN C-DATE-COMPARE DO NOT CONVERT TO JULIAN
+      *            IF NUM-DATE AND/OR SYS-DATE ARE ZERO.
+      *            ZERO DATES WERE CAUSING AN INDEX OUT OF BOUNDS ERROR.
+      * MJD 131004 ADDED TEST OF 4 DIGIT YEAR WHEN PERFORMING ELAPSED
+      *            TIME ROUTINES.  PROBLEMS AROSE WHEN SPANNING CENTURY DATES
+      *            NEW CODE USES WS-DATE1-YYYY AND WS-DATE2-YYYY. ADDED NEW
+      *            SECTION TO SET THESE DATES: C-SET-WS-DATE-YYYY
+      *            EXPANDED WS-NDTE-YY-S TO 4 DIGITS
+      *            MADE CORRECTIONS FOR SWING DATE IN INCREMENT-MONTHS
+      *  MJD 140124 ADDED LOGIC TO ALTER ELAPSED RESULTS WHEN ZERO DATES
+      *             ARE USED TO MATCH RESULTS GENERATEDIN A15 (C-DATE-COMPARE).
+      *         IN A15:
+      *            IF SYS-DATE = 0
+      *              IF NUM-YR < 50 THEN ELAPSED-RESULTS = "L"  FOR ALL MM/DD
+      *              IF NUM-YR >= 50 THAN ELAPSED RESULTS = "G" FOR ALL MM/DD
+      *              IF NUM-DATE = 123199 THEN ELAPSED RESULTS = "E"
+      *              IF NUM-DATE = 0 THEN ELAPSED RESULTS = "E"
+      *
+      *            IF NUM-DATE = 0
+      *              IF SYS-YY < 50 THEN ELAPSED-RESULTS = "G" FOR ALL MM/DD
+      *              IF SYS-YY >= 50 THAN ELAPSED RESULTS = "L" FOR ALL MM/DD
+      *              IF SYS-DATE = 123199 THEN ELAPSED RESULTS = "E"
+      *              IF SYS-DATE = 0 THEN ELAPSED RESULTS = "E"
+      *  MJD 140507 ADDED TEST OF VALID MONTH AND DAY TO BEGINNING OF
+      *              C-DATE-TEST (TSTDAT)
+      *  MJD 141014 REMOVED UNUSED PARA NAMES IN SECTIONS WHERE
+      *              "EXIT SECTION" WAS BEING USED.  ATTEMPTING TO
+      *              DEBUG A STACK OVERFLOW ERROE.
+      *  MJD 141015 MADE ALL PARAGRAPHS SECTIONS.  REMOVED "EXIT SECTION"
+      *             AND REPLACED WITH JUST EXIT WHERE NEEDED.
+      *  MJD 1500123 CHANGE C-INCR-DAYS TO SV AND RESTORE NUM/SYS-DATE
+      *              UPON ENTRY/EXIT
+      *  MJD 160614 REMOVED DATER-STAT, NO LONGER NEEDED.
+      *  BLM 170201 ADDED CONVERT-YYYYMMDD-TO-MMDDYYYY SECTION:
+      *             WAS ADDED TO DATER BUT NOT DATER8
+      *  MJD 170202 FIXED BUG IN LEAP-YEAR CALCULATION, REPLACED
+      *             ND-WS-NDTE-CCYY WITH LEAP-YEAR-CCYY. FIELD WAS BEING
+      *             SET BUT CODE WITHIN THE SECTION WAS MISSED.
+      *             PER BARBS REQUEST CHANGED CMPDAT TO PERFORM A
+      *             STRAIGHT <,>,= COMPARISON BETWEEN SYS-DATE AND NUM-DATE.
+      *  MJD 170207 REMOVED C-SET-WS-DATE-YYYY AND REFERENCES TO WS-DATE1-YYYY
+      *             AND WS-DATE2-YYYY AS THEY ARE NO LONGER USED AFTER HAVE
+      *             BEEN REPLACED WITH WS-DATE1-CCYY AND WS-DATE2-CCYY.
+      *  BLM 170213 ADD CONVERT-ALPDATE-TO-YYYYMMDD
+      *  BLM 170309 BROUGHT OVER FROM A39, CAME FROM DATER8 WITH A
+      *             FEW TWEAKS, PD0006
+      *   CS 170315 ADD BACK CONVERT-MMDDYY-TO-YYYYMM 
+      *  BLM 180312 FIXED CONVERT-ALPDATE-TO-YYMMDD, WAS CONVERTING TO
+      *             DATE-MMDDYY INSTEAD OF DATE-YYMMDD 
+      *
+      *  JKC 200612 COMMENTED OUT THE USAGE OF YYYMMDD SINCE NO LONGER
+      *             USED; IT WAS A15 FORMAT.
+      *
+      * JKC 20240113 COMMENT OUT JULIAN-BEG, JULIAN-END, JULIAN-CC;
+      *              THEY ARE NOW EXTERNAL FIELDS POPULATED IN
+      *              GB/SETENV SO TO WE CAN MORE EASILY CHANGE
+      *              'SLIDING CENTURY WINDOW' IN THE FUTURE.
+      * BAH 2024.0313 CHANGED 010101 TO 19000101 
+      *       MOVE 19000101 TO WS-DATE1 WS-DATE2 WS-DATE1W WS-DATE2W
+      * BAH 2024.0808 S35Q-105 ADDED BRIAN'S FIX FOR YEAR TYPE 365/367
+      *               INVOLVING LEAP YEARS. WAS NOT MATCHING A15 C-CODE.
+      *               ELAPSED DAYS WERE NOT MATCHING CAUSING REBATES TO
+      *               BE OFF AND NOT IN FAVOR OF THE CUSTOMER.
+      *
+      ****************************************************************
+      *
+      * NOTE:
+      * COMMENTED OUT FOR TESTING IN UT/TSTDTR8.CBL
+      * PROGRAM USED IT'S OUN DATER-ROUTINE SO IT CAN PERFORM
+      * VARIABLE CAPTURES BEFORE AND AFTER FOR WRITING TO DETAIL LINE.
+       
+      *********************************************************
+        DATER-ROUTINE  SECTION.
+      *********************************************************
+            PERFORM C-DATER-MAIN.
+
+      *********************************************************

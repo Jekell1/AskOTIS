@@ -1,0 +1,2315 @@
+       IDENTIFICATION   DIVISION.
+       PROGRAM-ID.        BPREF.
+       DATE-WRITTEN.  2002/10/15.
+      **************************************************************************
+      *
+      *                   ( SP/BPREF )
+      *
+      *                  FROM PAYMENT REFERENCE CODE
+      *
+      *     DESCRIPTION:  BREAK OUT THE GLOBAL BATCH FILE
+      *                   INTO EACH INDIVIDUAL BRANCH FILE
+      *
+      *      NOTE: BANKRUPT AND CHARGEOFF FILE IS TAB DELIMITED
+      *
+      *            IF RUNNING IN BATCH, SP/BPREF IS FIRST STEP, THEN
+      *            YOU NEED ANOTHER STEP SP/REFUPD TO ACTUALLY POST
+      *            THE TRANSACTION. REFUPD CALLS LONPW9 WHICH CALLS
+      *            LONPFC & LONPF2
+      *
+      * MULTI-REFCDS ARE USED FOR POSTING E-COMPLISH PAYMENTS
+      *   (CUDBT, CUACH,PHDBT, PHACH)
+      *
+      * "RV" REVERSALS WILL ONLY REVERSE IF THE LAST TRANSACTION ON THE
+      *      ACCOUNT IS AN ACH BATCH PAYMENT.
+      *
+      * REV.
+      * JTG 021015 *     * COPIED FROM BPBKB4.C                     REGACC #0006
+      * JTG 021114 ADDED TEST FOR CD-BR-FILE-TYPE = "LC" WHICH INDICATES
+      *            THIS IS NOT A VALID BATCH PAYMENT REFCD FOR PROCESSING
+      *            BUT ONLY USED FOR TESTING IF LATE CHARGES WILL BE
+      *            ASSESED RE: CD-BR-LC-FG                          REGACC #0006
+      * JTG 021216 CHANGED TO TRUNCATE CD-BR-FILE-NAME TO 5 CHARCTERS
+      *            EX. CCFILE TO CCFIL                              REGACC #0006
+      * JTG 030321 REMOVED BT-BATCH-NO & BT-SEQNO FROM RECORD FORMAT
+      *            FIELDS WERE NOT BEING USED                       JTG-JR
+      * BLF 051107 ADDED REFCD TO INPUT FILE (NO CHANGE TO RECORD SIZE, JUST
+      *            USED FILLER IN BTFILE) & UPDATE BT-REFCD TO BP-REFCD.
+      *            NOTE, THIS IS THE INTERNAL, TRUE REFCD SUCH AS CCARD,
+      *            LBOX, MGRAM WHICH WILL NOW BE ALL INCLUDED IN THE SAME
+      *            FILE.  FILE WILL BE A DUMMY REFCD TYPE SUCH AS "MULTI"
+      *            WHICH WILL BE PART OF THE BPFILE PATHNAME, BUT THE
+      *            INTERNAL REFCD (BP-REFCD) WILL BE USED TO READ THE
+      *            CODE FILE IN THE UPDATE (LONPW9) TO GET THE FLAGS &
+      *            THIS REFCD WILL UPDATE TO THE LP & TR FILES & GET
+      *            USED FOR THE GL IN EOD.  RECACC PR# 107
+      * BLF 051107 ALSO ADDED VALIDITY CHECK OF BT-REFCD WITH TOTALS FOR
+      *            RECORDS REJECTED FOR INVALID REFCDS.  ALSO ADDED
+      *            WORK FILE TO TOTAL COUNTS & AMTS BY REFCD SINCE SEVERAL
+      *            DIFFERENT REFCDS WILL BE INCLUDED IN THE SAME FILE.
+      * BLF 051118 FIXED ROUTINE THAT CREATES SPOOL DIRECTORY TO CHECK
+      *            FOR PRIOR RUNS IN THE DIRECTORY & INCREMENT STEP # SO
+      *            PRIOR REPORTS ARE NOT WIPED OUT.  HAD TO CHANGE THE
+      *            PATH OF THE SPOOL NAME FROM FULL TO RELATIVE BECAUSE FULL
+      *            PATH WAS LONGER THAN ACCESS-BUF. THE OLD REPORT NAME WAS:
+      *            /USR/DATA/R1/XXXX/EO/REFMMDDYY/0010BPREF AND EACH FILE
+      *            RUN ON THE SAME DAY WOULD WIPE OUT THE PREVIOUS REPORT.
+      *            NOW THE NEW REPORT NAMES WON'T WIPE OUT:
+      *            /USR/DATA/R1/XXXX/EO/REFMMDDYY/0001BPREF
+      *            /USR/DATA/R1/XXXX/EO/REFMMDDYY/0002BPREF, ETC.
+      * BLF 060227 ADD EXITPROG LOGIC SO THIS PROGRAM MAY BE CALLED FROM
+      *            EPMENU AS WELL AS BPMEN2, LENDMARK PR# 2711
+      * BLF 070212 TOOK "MELLON BANK" OUT OF DESC OF TRAILER RECORD
+      * BLF 070301 ADDED PAYOFF ROUTINE.  IF SELECTED REFNO HAS "Y" IN
+      *            CD-BR-PAYOFF-FG, ROUTINE IN INITIALIZATION WILL READ
+      *            THROUGH BTFILE, COMPUTING PAYOFF AMT AND UPDATING TO
+      *            BT-AMT, REWRITING BT-REC & UPDATING BT TRAILER.
+      *            REGACC PR# 160
+      * BLF 070411 BARB & CINDY.  POST AUCTION SALES (SS) THROUGH BATCH.
+      *            QUOTING REGACC PR# 168
+      *  CS 070418 ADDED TEST ON CD-BR-POST-SS-TRCD, INSTEAD OF POSTING A
+      *            'PA' POST AN 'SS' REGACC PR#168
+      * BLF 070419 REMOVE EXTRA "/" FROM EX-SPOOL PATHNAME - FOR SOME
+      *            REASON PATH WORKED AS ../../GA0001//EO/REF041907, NOW
+      *            IT WILL BE CORRECT:   ../../GA0001/EO/REF041907
+      * BLF 070521 BARB & CINDY - FIXED BT-REC, RECORD REDEF WAS 4 BYTES SHORT
+      *            AFTER AUCTION CHANGES, OOPS
+      * BLF 070521 BARB & CINDY - CHANGE INITIALIZATION ROUTINE GETTING
+      *            PAYOFF AMTS, DON'T REQUIRE TRAILER RECORD, PROBLEMS AT
+      *            REGIONAL, REGACC PR# 160
+      * BLM 081006 CHANGED REPORT NAME IN REF SPOOL DIRECTORY FROM LOTSBP TO
+      *            BPREF - SOMEHOW THIS GOT CHANGED ACCIDENTALLY WHEN I WAS
+      *            WORKING ON WORLD INSURANCE CLAIM BATCH!
+      *  CS 081029 ALLOW DEFERMENT CODES "DF - D9" PR#219 REGACC
+      *  CS 090428 MOVED TEST ON HOLD-CD-BR-POST-SS-TRCD =Y & ACCOUNT NOT IN
+      *            REPO STATUS TO LONPW9. BASICALLY THE EXCEPTIONS WRITTEN
+      *            HERE ARE BECAUSE A BP RECORD CANNOT BE WRITTEN PR#244REGIONAL
+      * BLM 100127 IF GP-I-AM-REGMGM, MOVE BT-PAYDATE TO BP-PAYDATE, NEED
+      *            CLAIM DATE FOR ASSURANT
+      * BLM 110812 WAS ACCEPTING TODAYS-DATE FROM DATE, SO YOU COULD NOT SET
+      *            SYSDATE_YYMMDD FOR TESTING.  CHANGED TO USE SYSDATE WHICH
+      *            AFFECTS BATCH DATE IN BP-PATH, SUPPORT PR# 3850
+      * BLM 130326 IF I-AM-SOAUTO, MOVE BT-PAYDATE TO BP-PAYDATE,
+      *            SOAUTO PR# 4236
+      * BLM 131216 IF I-AM-BLACKHAWK, MOVE BT-PAYDATE TO BP-PAYDATE,
+      *            BLACKHAWK PR# 4414
+      * BLM 140317 IF I-AM-MIDATL, ALLOW ENTRY OF TRANS-DATE.  READ BT & CHECK
+      *            THAT ALL BRANCHES IN BT ARE OPEN FOR TRDATE.  IF SO, THEN
+      *            BATCH FILE IN LOCAL ED WILL BE CREATED WITH SELECTED
+      *            TRDATE.  SO, EG, END OF MONTH, LEAVE DATE OPEN, NEXT
+      *            MORNING PROCESS REST OF PMTS FROM BANK. MIDATL PR# 4501
+      * BLM 140325 CHANGED TO ALWAYS MOVE BT-PAYDATE TO BP-PAYDATE; USED TO
+      *            DO THIS ONLY IF REGMGM, SOAUTO OR BLACKHAWK. NOTE, THERE
+      *            IS A CHECK IN LONPW9 TO USE TRANS-DATE IF BP-PAYDATE
+      *            IS 202020, 020202, OR 0.  SUPPORT PL# 842
+      * BLM 140328 FIX TO PRINT BT-PAYDATE ON DETAIL LINE UNLESS IT IS 202020,
+      *            020202, OR 0, THEN PRINT TODAYS DATE.  SUPPORT PL# 842A
+      *  CS 140603 REPLACED MKDIR-CMD WITH C$MAKEDIR
+      *
+      * KEC 2015.1125 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         FIXED RC-TRANS-DATE FROM YYYMMDD TO CCYYMMDD.
+      *
+      *  BAH 160203 SPLIT OUT LTFILE, PD0003
+      *
+      * KEC 2016.0325 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED CDSCAN-WINDOW-BUF TO HAVE MATCHING CD1-KEY
+      *         LAYOUTS (FOR EACH CODE TYPE; CD-TYPE).
+      *         CDSCAN-CD1-KEY IS THE NEW (PRIMARY) WITH REDEFINES OF
+      *         CDSCAN-??-KEY (NEW).
+      * BLM 160414 ADDED DUP-FILE, USES DGST COMMAND TO COMPARE SELECTED BTFILE
+      *            TO FILES WITH SAME REF CODE IN DONE, AND ABORTS IF FILE
+      *            IS THE SAME AS A RECENTLY UPDATED ONE, SUPPORT PR# 5048
+      * BLM 160420 ALLOW CD-BR-FILE-TYPE OF "B" FOR BANKRUPT, WILL BE
+      *            A TAB-DELIMITED FILE.  ADD UPDATE OF BANKRUPT CASE#
+      *            AND STATUS, WORLD PR# 1151
+      * BLM 160518 CHANGE TO JUST OPEN BPFILE TO IO, NOT OUTPUT.  BTFILE IS
+      *            EXPECTED IN BR# ORDER, WHEN BR# CHANGES, IT TOTALS BRANCH &
+      *            OPENS OUTPUT BP FOR NEW BRANCH.  SO IF BRANCHES ARE OUT OF
+      *            ORDER, BP RECORDS MAY BE LOST.  SO JUST OPEN TO IO IN CASE
+      *            THE FILE ISN'T IN ORDER WE WON'T LOSE RECORDS. WORLD PR# 1151
+      * BLM 160621 IF BT-TRCD = "RE", MOVE BT-TRCD TO BP-TRCD (SO IT
+      *            WILL BE "RE", NOT "PA", REGACC PR# 382
+      * BLM 160622 ADDED BP-SEQNO TO BP KEY SO WE CAN HAVE MORE THAN 1
+      *            PAYMENT FOR A LOAN, PD0003
+      * BLM 160728 ALLOW BT-AMT TO BE NEGATIVE, MUST HAVE "-" IN 1ST 
+      *            BYTE OF AMT & NEW FLAG, BT-ALLOW-NEGATIVE, MUST BE
+      *            "Y", REGACC PR# 382
+      * BLM 161019 FIX WRITE OF BP-FILE FOR BP-SEQNO
+      *  CS 170213 IF BT-TRCD = "O2", MOVE BT-TRCD TO BP-TRCD PR#5239 SOAUTO
+      * BLM 170425 ACTIVATE 8 DIGIT DATES
+      * BLM 170530 FIX TO RUN IN BATCH PROCESSING OR EOCRON.  IF RUN IN BATCH
+      *            WILL CREATE A LOG IN EO/REFMMDDYY/0000LOG. WILL USE 2ND
+      *            BATCH DATE AS TRANS DATE. WORLD PR# 1246
+      * BLM 170613 DON'T XFER QUEUE-LIST UNLESS ROUTE-BUF = "00"
+      * BLM 170626 FIX TRANS-DATE NOT BEING SET, WORLD PR# 1246
+      *  CS 170629 ADDED "RP" TO TEST WHERE BT-TRCD IS MOVED TO BP-TRCD
+      *            NEEDED FOR INDIANA FIX PR#1253 WORLD
+      *
+      * KEC 2017.0912 {PR#01246} WORLD <A30> [JAY CISZEWSKI]
+      *          WHEN ADDING THIS PR# TO A30, I NOTICED THAT A COPY
+      *          MEMBER WAS NOT PROPERLY SETUP.  TO FIX IT I DID:
+      *          - COPIED LIBLP/LPBP.CPY TO ../SV/LPBP.NO
+      *          - MOVED  LIBLP/LPBP.CPY TO LIBLP/LPBP_CMD.CPY
+      *          - EDITED LIBLP/LPBP_CMD.CPY TO LOWERCASE WHEN NEEDED
+      *  CS 171018 CHANGED REF-LOG-SPOOL-DIR FROM X(25) TO X(32)
+      *
+      * KEC 2017.1113 {PR#00000} PARADATA <A30> [JAY CISZEWSKI] 
+      *         ADDED CHECK OF BT-PAYDATE BEING NUMERIC BEFORE MOVING
+      *         IT TO BP-PAYDATE.  IT WAS CAUSING ISSUES IN A30 &
+      *         CONVERT-MMDDYY-TO-YYYYMMDD ROUTINE SINCE IT WAS SPACES
+      *         THUS COMING OUT GIVING A OUTPUT OF "2000   ".
+      * BAH 181004 GLOBAL BWFILE, L2G
+      * BAH 181212 GLOBAL LNFILE, L2G
+      *  CS 190807 FIXED PRINT OF DATE IN DETAIL LINE, WAS PRING YY/MM/DD
+      * BAH 20191002 REMOVED ACCESS-CALL LNFILE
+      * CS 20201008 ADD BT-FROZEN-OVERRIDE. IF BT-FROZEN-OVERRIDE SET TO "Y",
+      *             WILL OVERRRIDE LN-ACCT-FROZEN AND ALLOW POSTING PR#1465
+      * BAH 20210205 DO NOT ALLOW CD-BR-FILE-TYPE "C", UMC DEBIT CARD PR#1490
+      * BLM 20220323 ADD LOGIC FOR FILE TYPE OF "P", PL'S, WORLD PR# 1548
+      * BLM 20220707 IF BT-TRCD = "RV" MOVE "RV" TO BP-TRCD INSTEAD OF "PA",
+      *              WORLD PR# 1557
+      * BAH 20220818 REMOVED GLOBRD, READ GB-FILE INSTEAD
+      * BAH 20220921 CREATED A DETAIL-LINE-NO-LOAN TO PRINT WHEN AN "INVALID
+      *              REFCD" IS FOUND AS THE LOAN IS NEVER READ #1557
+      *              ONLY PRINT LAST 4 OF SSNO
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBGB/GBFSPR.CPY".
+      * ALLOTMENT BATCH TAPE FILE
+           SELECT BT-FILE ASSIGN TO BT-PATH
+                          ORGANIZATION LINE SEQUENTIAL
+                          ACCESS SEQUENTIAL
+                          LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                          FILE STATUS FILE-STAT.
+       COPY "LIBLP/LPFSBP.CPY".
+       COPY "LIBGB/GBFSWKI.CPY".
+      * WORK FILE TO CHECK FOR DUPS
+           SELECT DUP-FILE ASSIGN TO DUP-PATH
+                          ORGANIZATION LINE SEQUENTIAL
+                          FILE STATUS FILE-STAT.
+           SELECT REF-LOG-FILE ASSIGN REF-LOG-PATH
+                             ORGANIZATION LINE SEQUENTIAL
+                             ACCESS SEQUENTIAL
+                             FILE STATUS FILE-STAT.
+      *-----------------------------------------------------------------
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBGB/GBFDPR.CPY".
+      ***************************************************
+      *    MAGNETIC BATCH PROCESSING FILE
+      *        (  MELLON BANK VERSION  )
+      *
+      * RECORD SIZE: 80 BYTES
+
+      *  BT-TYPE = "D" = DETAIL RECORD
+      *            "T" = TRAILER RECORD
+      *
+      ***************************************************
+      $XFD  FILE=BTFILE
+       FD  BT-FILE
+           RECORD IS VARYING IN SIZE FROM 10 TO 200 CHARACTERS
+           LABEL RECORDS ARE STANDARD.
+       01  BT-REC.
+           03  BT-TYPE                   PIC X(01).
+           03  BT-REC-AREA               PIC X(199).
+           03  BT-REC-DATA REDEFINES BT-REC-AREA.
+               05  BT-BRANCH             PIC 9(04).
+               05  BT-BRANCHX REDEFINES BT-BRANCH
+                                         PIC X(04).
+               05  BT-ACCTNO             PIC 9(06).
+               05  BT-ACCTNOX REDEFINES BT-ACCTNO
+                                         PIC X(06).
+               05  BT-AMT                PIC 9(08)V9(02).
+               05  FILLER REDEFINES BT-AMT.
+                   07  BT-SIGN           PIC X.
+                   07  BT-AMT2           PIC 9(07)V9(02).
+               05  BT-SIGNED-AMT REDEFINES BT-AMT
+                                         PIC S9(08)V9(02).
+               05  BT-REFCD              PIC X(05).
+               05  BT-PAYDATE            PIC 9(06).
+               05  BT-PAYDATEX REDEFINES BT-PAYDATE
+                                         PIC X(06).
+               05  BT-AUCTION-FEES       PIC 9(08)V9(02).
+               05  BT-AUCTION-NAME       PIC X(30).
+               05  BT-TRCD               PIC X(2).
+               05  BT-IGNORE-DEFPOL      PIC X.
+               05  BT-ALLOW-ZERO-DF      PIC X.
+               05  BT-ALLOW-NEGATIVE     PIC X.
+               05  BT-FROZEN-OVERRIDE    PIC X.
+               05  FILLER                PIC X(122).
+           03  BT-REC-TRAILER REDEFINES BT-REC-AREA.
+               05  BT-REC-COUNT          PIC 9(10).
+               05  BT-TOTAL-AMOUNT       PIC 9(10)V9(02).
+               05  FILLER                PIC X(177).
+
+       COPY "LIBLP/LPFDBP.CPY".
+       FD  WK-FILE
+           LABEL RECORDS ARE STANDARD.
+       01  WK-REC.
+           03  WK-KEY.
+               05  WK-BRNO           PIC 9(5).
+               05  WK-REFCD          PIC X(5).
+           03  WK-AMT                PIC S9(9)V99 COMP.
+           03  WK-COUNT              PIC S9(6)    COMP.
+      ******************************************************************
+      * DUP-FILE, WORK FILE TO CHECK FOR DUPLICATE FILE THAT MAY HAVE
+      * RECENTLY UPDATE & COPIED IN AGAIN BY MISTAKE
+      ******************************************************************
+       FD  DUP-FILE
+           LABEL RECORDS ARE STANDARD.
+       01  DUP-DONE-REC.
+           03  FILLER                PIC X(5).
+           03  DUP-DONE-FILEPATH.
+               05  FILLER                PIC X(21).
+               05  DUP-DONE-FILENAME.
+                   07  FILLER            PIC X(5).
+                   07  DUP-DONE-MM       PIC 99.
+                   07  DUP-DONE-DD       PIC 99.
+                   07  DUP-DONE-BATCH    PIC 999.
+           03  FILLER                PIC X(3).
+           03  DUP-DONE-DGST         PIC X(40).
+       01  DUP-BT-REC.
+           03  FILLER                PIC X(21).
+           03  DUP-BT-FILENAME       PIC X(6).
+           03  FILLER                PIC X(3).
+           03  DUP-BT-DGST           PIC X(40).
+           03  FILLER                PIC X(11).
+
+      **************************************************
+      *  REFCODE BATCH LOG FILE                      *
+      **************************************************
+       FD  REF-LOG-FILE
+           LABEL RECORDS ARE STANDARD.
+       01  REF-LOG-REC.
+           03  REF-LOG-TIME      PIC X(8).
+           03  FILLER            PIC X.
+           03  REF-LOG-USERID    PIC X(9).
+           03  FILLER            PIC X.
+           03  REF-LOG-PROMPT1   PIC X(5).
+           03  REF-LOG-REFCD     PIC X(7).
+           03  REF-LOG-PROMPT2   PIC X(5).
+           03  REF-LOG-BATCH     PIC 9(3).
+           03  FILLER            PIC X.
+           03  REF-LOG-MSG       PIC X(40).
+
+
+
+      ******************************************************************
+      *
+      *    W O R K I N G - S T O R A G E - S E C T I O N
+      *
+      ******************************************************************
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(36) VALUE
+           "@(#)SP/BPREF S35 04/29/25-13:45:22 >".
+
+      ******************************************************************
+      *
+      *     P R O G R A M - W O R K E R S
+      *
+      ******************************************************************
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBGB/GB01GB.CPY".
+       COPY "LIBGB/GB01GB_SQL.CPY".
+       COPY "LIBGB/GBWSGB.CPY".
+       COPY "LIBLP/LP01BW.CPY".
+       COPY "LIBLP/LP01BW_SQL.CPY".
+       COPY "LIBLP/LPWSBW.CPY".
+       COPY "LIBLP/LP01CD.CPY".
+       COPY "LIBLP/LP01CD_SQL.CPY".
+       COPY "LIBLP/LPWSCD.CPY".
+       COPY "LIBLP/LP01LN.CPY".
+       COPY "LIBLP/LP01LN_SQL.CPY".
+       COPY "LIBLP/LPWSLN.CPY".
+       COPY "LIBGB/GB01GP.CPY".
+       COPY "LIBGB/GB01GP_SQL.CPY".
+       COPY "LIBGB/GBWSGP.CPY".
+       COPY "LIBLP/LP01SP.CPY".
+       COPY "LIBLP/LP01SPA.CPY".
+       COPY "LIBLP/LP01SPB.CPY".
+       COPY "LIBLP/LP01SPC.CPY".
+       COPY "LIBLP/LP01SP_SQL.CPY".
+       COPY "LIBLP/LPWSSP.CPY".
+       COPY "LIBLP/LP01LTI.CPY".
+       COPY "LIBLP/LP01LTI_SQL.CPY".
+       COPY "LIBLP/LPWSLTI.CPY".
+       COPY "LIBLP/LP01LTP.CPY".
+       COPY "LIBLP/LP01LTP_SQL.CPY".
+       COPY "LIBLP/LPWSLTP.CPY".
+       01  WK-IFN                  PIC XX VALUE "WK".
+      *********************************************************
+
+      *    /USR/DATA/R1/ED/CCFILE
+       01  BT-PATH.
+           03  BT-PATH-BASE                   PIC X(09).
+           03  FILLER                         PIC X(01) VALUE "/".
+           03  BT-PATH-DISPLAY.
+               05  BT-PATH-MACHINE            PIC X(02).
+               05  FILLER                     PIC X(4) VALUE "/ED/".
+               05  BT-PATH-BATCH-NAME         PIC X(6).
+       01  BT-PATH-SHORT                 REDEFINES BT-PATH.
+           03  BT-PATH-SHORT-NAME        PIC X(21).
+           03  FILLER                    PIC X(01).
+
+      *    /USR/DATA/R1/XX####/ED/B####MMDD???REFCD
+       01  LOCAL-PATH.
+           03  LOCAL-PATH-BASE              PIC X(09).
+           03  FILLER                       PIC X(01) VALUE "/".
+           03  LOCAL-PATH-MACHINE           PIC X(02).
+           03  FILLER                       PIC X(01) VALUE "/".
+           03  LOCAL-PATH-DATA              PIC X(06).
+           03  FILLER                       PIC X(01) VALUE "/".
+           03  LOCAL-PATH-DISPLAY.
+               05  FILLER                   PIC X(04) VALUE "ED/B".
+               05  LOCAL-PATH-BRANCH.
+                   07  LOCAL-PATH-BRANCH-NO PIC 9(04).
+               05  LOCAL-PATH-DATE-BATCH-REF.
+                   07  LOCAL-PATH-DATE      PIC 9(04).
+                   07  LOCAL-PATH-BATCH     PIC 9(03).
+                   07  LOCAL-PATH-REFCD     PIC X(05).
+       01  DUP-PATH                   PIC X(25).
+       01  FIL-PATH.
+           03  FIL-PATH-BASE          PIC X(11).
+           03  FILLER                 PIC X(7).
+
+       01  REF-LOG-PATH.
+           03  REF-LOG-SPOOL-DIR      PIC X(32).
+           03  REF-LOG-PATHNAME.
+               05  FILLER             PIC X(10) VALUE
+                   "/0000LOG".
+
+       01  FILE-INFO.
+          03  FILE-SIZE                    PIC X(8).
+          03  FILE-SIZEN REDEFINES FILE-SIZE PIC 9(8).
+          03  FILE-DATE                    PIC 9(8).
+          03  FILE-TIME                    PIC 9(8).
+
+      *-----------------------------------------------------------------
+       01  PR-IFN               PIC X(02) VALUE "PR".
+       01  BP1-IFN              PIC X(03) VALUE "BP1".
+
+       78  WS_QUOTE                       VALUE X'22'.
+
+      ******************************************************************
+      *     S C R E E N   F I E L D S
+      ******************************************************************
+       COPY "LIBGB/EOBUF_EXT.CPY".
+           03  REFCD           PIC X(5).
+           03  TRANS-DATE      PIC 9(8).
+           03  FILLER REDEFINES TRANS-DATE.
+               05  TRANS-CC    PIC 99.
+               05  TRANS-YY    PIC 99.
+               05  TRANS-MM    PIC 99.
+               05  TRANS-DD    PIC 99.
+
+       01  VERSION-CONTROL     PIC X VALUE "A".
+
+      *=================================================================
+      *
+      *    L I N E - W O R K E R S
+      *
+      *=================================================================
+       01  LN-FEED         PIC 9(02)  VALUE 0.
+       01  LN-COUNT        PIC 9(03)  VALUE 99.
+       01  PAGE-NUMBER         PIC 9(04)  VALUE 0.
+
+      *=================================================================
+      *
+      *    M I S C - W O R K E R S
+      *
+      *=================================================================
+       01  GRAND-TOTAL-FG       PIC X(01)      VALUE "N".
+       01  SAVE-TOTAL-COUNT     PIC 9(6)       VALUE 0.
+       01  FIRST-TIME           PIC X(01)      VALUE "Y".
+       01  MESS-LIST            PIC X(05)      VALUE "MESS.".
+       01  MESS-BUF.
+           03  FILLER           PIC X(41) VALUE
+           "BATCH BRANCH FILE CREATE IN PROGRESS.....".
+           03  MESS-BR          PIC 9(04) VALUE 0.
+
+       01  NAME-WORKER          PIC X(34).
+       01  FIRST-NAME           PIC X(16).
+       01  DUP-FG               PIC X VALUE "N".
+       01  SAVE-BT-DGST         PIC X(40) VALUE SPACES.
+       01  DUP-CHECK-DATE       PIC 9(8).
+
+       01  BATCH-NO             PIC 9(03).
+       01  BATCH-DATE           PIC 9(04).
+       01  FILLER REDEFINES BATCH-DATE.
+           03  BATCH-MM         PIC 9(02).
+           03  BATCH-DD         PIC 9(02).
+
+       01  DUP-FLAG             PIC X     VALUE "N".
+       01  BT-BNKRPT-FIELDS.
+           03  BT-BNKRPT-BRNO        PIC 9(4).
+           03  BT-BNKRPT-BRNOX REDEFINES BT-BNKRPT-BRNO
+                                     PIC X(04).
+           03  BT-BNKRPT-ACCTNO      PIC 9(06).
+           03  BT-BNKRPT-ACCTNOX REDEFINES BT-BNKRPT-ACCTNO
+                                     PIC X(06).
+           03  BT-BNKRPT-REFCD       PIC X(05).
+           03  BT-BNKRPT-PAYDATE     PIC 9(06).
+           03  BT-BNKRPT-PAYDATEX REDEFINES BT-BNKRPT-PAYDATE
+                                     PIC X(06).
+           03  BT-BNKRPT-TRCD        PIC X(2).
+           03  BT-BNKRPT-CASE-NO     PIC X(9).
+           03  BT-BNKRPT-STAT        PIC X.
+       01  BT-PL-FIELDS.
+           03  BT-PL-BRNO            PIC 9(4).
+           03  BT-PL-BRNOX REDEFINES BT-PL-BRNO
+                                     PIC X(04).
+           03  BT-PL-ACCTNO          PIC 9(06).
+           03  BT-PL-ACCTNOX REDEFINES BT-PL-ACCTNO
+                                     PIC X(06).
+           03  BT-PL-REFCD           PIC X(05).
+           03  BT-PL-PAYDATE         PIC 9(06).
+           03  BT-PL-PAYDATEX REDEFINES BT-PL-PAYDATE
+                                         PIC X(06).
+           03  BT-PL-TRCD            PIC X(2).
+           03  BT-PL-REASON          PIC XX.
+      *-----------------------------------------------------------------
+      *TOTAL COUNTS 1=BRANCH, 2=GRAND TOTALS
+      *-----------------------------------------------------------------
+       01  TOTAL-READ           OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-READ       OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-OM             OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-OM         OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-SKIP           OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-SKIP       OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-DUPS           OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-DUP        OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-ZERO           OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-ZERO       OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-BADREF         OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMT-BADREF     OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-BADFEES        OCCURS 2 PIC  9(9)     VALUE 0.
+       01  TOTAL-AMT-BADFEES    OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-BADPROCEEDS    OCCURS 2 PIC  9(9)     VALUE 0.
+       01  TOTAL-AMT-BADPROCEEDS OCCURS 2 PIC S9(09)V99 VALUE 0.
+
+       01  TOTAL-RECORDS        OCCURS 2 PIC  9(09)    VALUE 0.
+       01  TOTAL-AMOUNT         OCCURS 2 PIC S9(09)V99 VALUE 0.
+       01  TOTAL-PAYOFF-RECS             PIC  9(09)    VALUE 0.
+       01  TOTAL-PAYOFF-AMOUNT           PIC S9(09)V99 VALUE 0.
+
+       01  HOLD-BRANCH          PIC 9(05) VALUE 10000.
+       01  HOLD-REFCD-BR        PIC 9(05) VALUE 0.
+       01  PO-DATE              PIC 9(8).
+       01  HOLD-BATCH-MULTIPLE-REFCDS
+                                PIC X VALUE " ".
+       01  HOLD-CD-BR-PAYOFF-FG PIC X VALUE "N".
+       01  HOLD-CD-BR-POST-SS-TRCD PIC X VALUE "N".
+       01  HOLD-BP-REC          PIC X(BP-SIZE).
+       01  HOLD-BP-SEQNO        PIC 99.
+
+       01  HOLD-ACCTNO          PIC 9(8).
+
+      *-----------------------------------------------------------------
+      * SPOOL DIRECTORY/FILENAME FOR EXCEPTION REPORT
+      *-----------------------------------------------------------------
+       01  EX-SPOOL.
+           03  EX-SPOOL-BASE          PIC X(09).
+           03  FILLER                 PIC X(01)   VALUE "/".
+           03  EX-SPOOL-MACHINE       PIC X(02).
+           03  FILLER                 PIC X(01)  VALUE "/".
+           03  EX-SPOOL-DATA-PATH     PIC X(6).
+           03  FILLER                 PIC X(04)  VALUE "/EO/".
+           03  EX-SPOOL-PCODE         PIC X(03)  VALUE "REF".
+           03  EX-SPOOL-DATE          PIC 9(06).
+           03  EX-SPOOL-FILE.
+               05  FILLER             PIC X(01).
+               05  EX-SPOOL-STEP      PIC 9(04).
+               05  EX-SPOOL-NAME      PIC X(06).
+               05  EX-SPOOL-SUF       PIC X(02).
+
+       01  STEP-COUNT             PIC 9999 VALUE 1.
+
+       01  ERRCD            PIC X(01).
+       01  DGST-COMMAND.
+           03  DGST-CMD1          PIC X(16) VALUE
+           "FOR I IN `LS -T ".
+           03  FILLER             PIC X     VALUE "/".
+           03  DGST-CMD-BASE      PIC X(11).
+           03  FILLER             PIC X(4)  VALUE "/ED/".
+           03  DGST-DONE-PATH.
+               05  DGST-DONE-DIR  PIC X(5)  VALUE "DONE/". 
+               05  DGST-DONE-FILE PIC X(5).
+               05  DGST-DONE-STAR PIC X.
+           03  DGST-BT-FILENAME   PIC X(11) REDEFINES DGST-DONE-PATH.
+           03  DGST-CMD2          PIC X(29) VALUE
+           " `; DO OPENSSL DGST -SHA1 $I ".
+           03  FILLER             PIC X(4)  VALUE " >> ".
+           03  DGST-DUP-FILEPATH  PIC X(25).
+           03  DGST-CMD3          PIC X(5)  VALUE
+           ";DONE".
+
+       01  DGST-BT-VALUE          PIC X(40).
+      *=================================================================
+      *
+      *    P R I N T - B U F F E R S
+      *
+      *=================================================================
+       01  HEAD1.
+           03  H-DATE             PIC X(08)   VALUE " ".
+           03  FILLER             PIC X(02)   VALUE " ".
+           03  H-HR               PIC 9(02)   VALUE 0.
+           03  FILLER             PIC X(01)   VALUE ":".
+           03  H-MIN              PIC 9(02)   VALUE 0.
+           03  FILLER             PIC X(16)   VALUE " ".
+           03  H-NAME             PIC X(40)   VALUE " ".
+           03  FILLER             PIC X(21)   VALUE " ".
+           03  FILLER             PIC X(30)   VALUE " ".
+           03  FILLER             PIC X(05)   VALUE "PAGE ".
+           03  H-PAGE-NO          PIC ZZZZ9.
+
+      *-----------------------------------------------------------------
+       01  HEAD2.
+           03  FILLER             PIC X(10)   VALUE "USER ID:".
+           03  H-USERID           PIC X(10).
+           03  FILLER             PIC X(11)   VALUE " ".
+           03  FILLER             PIC X(38)   VALUE
+               " - BATCH PAYMENTS FOR REFERENCE CODE: ".
+           03  H-TITLE-REFCD      PIC X(5).
+           03  FILLER             PIC X(2)    VALUE " -".
+           03  FILLER             PIC X(11)   VALUE " ".
+           03  H-TITLE-PAYOFF     PIC X(12)   VALUE SPACES.
+
+      *-----------------------------------------------------------------
+       01  HEAD3.
+           03  FILLER             PIC X(31)   VALUE " ".
+           03  FILLER             PIC X(22)   VALUE
+               "   BRANCH BATCH FILE: ".
+           03  H-TITLE-LOCAL      PIC X(23).
+
+      *-----------------------------------------------------------------
+       01  HEAD4.
+           03  FILLER             PIC X(33)   VALUE
+               "REFCD NAME                       ".
+
+           03  FILLER             PIC X(49)   VALUE
+               "   AMOUNT                         ACCOUNT #      ".
+           03  FILLER             PIC X(50)   VALUE
+               "   DATE       BRNO MESSAGE                        ".
+
+
+       01  HEAD4-REGACC.
+           03  FILLER             PIC X(33)   VALUE
+               "REFCD NAME                       ".
+
+           03  FILLER             PIC X(49)   VALUE
+               "   AMOUNT        FEE SSNO         ACCOUNT #      ".
+           03  FILLER             PIC X(50)   VALUE
+               "   DATE       BRNO MESSAGE                        ".
+
+
+
+      *=================================================================
+      *
+      *    D E T A I L - L I N E
+      *
+      *=================================================================
+       01  DETAIL-LINE                   PIC X(132) VALUE SPACES.
+       01  D-LINE1 REDEFINES DETAIL-LINE.
+           03  D-REFCD                   PIC X(05).
+           03  FILLER                    PIC X(01).
+           03  D-NAME                    PIC X(25).
+           03  FILLER                    PIC X(01).
+           03  D-AMOUNT                  PIC Z(06)9.99-.
+           03  D-AUCTION-FEES            PIC Z(06)9.99.
+           03  D-AUCTION-FEES-X REDEFINES D-AUCTION-FEES
+                                         PIC X(10).
+           03  FILLER                    PIC X(1).
+           03  D-SSNO                    PIC 999/99/9999.
+           03  D-SSNOZ REDEFINES D-SSNO.
+               05  D-SOC1      PIC X(3).
+               05  FILLER      PIC X.
+               05  D-SOC2      PIC XX.
+               05  FILLER      PIC X.
+               05  D-SOC3      PIC X(4).
+           03  FILLER                    PIC X(01).
+           03  D-DUP                     PIC X(01).
+           03  D-ACCTNO                  PIC X(17).
+           03  FILLER    REDEFINES D-ACCTNO.
+               05  FILLER                PIC Z(04).
+               05  D-ACCTNO1             PIC Z(06).
+               05  D-SLASH               PIC X(01).
+               05  D-ACCTNO2             PIC Z(06).
+           03  FILLER                    PIC X(01).
+           03  D-DATE                    PIC 99/99/99.
+           03  FILLER                    PIC X(01).
+           03  D-BRANCH                  PIC Z(06).
+           03  FILLER                    PIC X(01).
+           03  D-MESS                    PIC X(32).
+       01  D-LINE2 REDEFINES DETAIL-LINE.
+           03  D-TOT-PROMPT              PIC X(15).
+           03  FILLER                    PIC X(2).
+           03  D-TOT-NUMBER              PIC Z(10).
+           03  FILLER                    PIC X(02).
+           03  D-TOT-AMOUNT              PIC Z(10).99.
+           03  FILLER                    PIC X(04).
+           03  D-TOT-MESSAGE             PIC X(56).
+
+      ******************************************************************
+      *
+      *     C O P Y - L I B R A R Y - W O R K E R S
+      *
+      ******************************************************************
+       COPY "LIBWI/CDSCANW.CPY".
+       COPY "LIBLP/LPBP_CMD.CPY".
+       COPY "LIBLP/LPBPPATH.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/ACCESSW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBGB/DACCESSW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/MKTEMPW_CMD.CPY".
+       COPY "LIBGB/GETPRW.CPY".
+       COPY "LIBLP/LPPOFFW.CPY".
+       COPY "LIBLP/ADDONSPRW.CPY".
+       COPY "LIBLP/LPRATEW.CPY".
+       COPY "LIBGB/REBATEW.CPY".
+       COPY "LIBLP/LPLCAPW.CPY".
+       COPY "LIBLP/LPIBPCW.CPY".
+       COPY "LIBLP/LPAPRSW.CPY".
+       COPY "LIBLP/LPMDTEW.CPY".
+       COPY "LIBLP/LPXDTEW.CPY".
+       COPY "LIBLP/LPSCHDW.CPY".
+       COPY "LIBLP/LPITRMW.CPY".
+       COPY "LIBLP/LPAMTSW.CPY".
+       COPY "LIBLP/LPAPRZW.CPY".
+       COPY "LIBLP/LPUPERW.CPY".
+       COPY "LIBLP/LPLCASW.CPY".
+       COPY "LIBLP/LPLCHGW.CPY".
+       COPY "LIBLP/SETCTBLW.CPY".
+       COPY "LIBLP/LPUPWKW.CPY".
+       COPY "LIBGB/RBACTW.CPY".
+       COPY "LIBGB/SPPDTHW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBSP/BPREF_DEF.CPY".
+       COPY "LIBSP/BPREF_WKS.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+       COPY "LIBGB/PRU_LNK.CPY".
+
+       COPY "LIBGB/GETFMW.CPY".
+       SCREEN SECTION.
+       COPY "LIBSP/BPREF_SCN.CPY".
+
+       PROCEDURE DIVISION
+            USING FORM-PATHNAME EXIT-PATHNAME.
+       DECLARATIVES.
+       DECLARE-ERROR SECTION.
+            USE AFTER ERROR PROCEDURE ON
+               BT-FILE PR-FILE BP-FILE
+               WK-FILE DUP-FILE REF-LOG-FILE.
+       COPY "LIBGB/DECLRP.CPY".
+           PERFORM CLOSE-SP1-FILE.
+           PERFORM CLOSE-LTP1-FILE.
+           PERFORM CLOSE-LTI1-FILE.
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-CD1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           PERFORM CLOSE-GP-FILE.
+           PERFORM CLOSE-BR-FILE.
+           PERFORM CLOSE-GB-FILE.
+           PERFORM CLOSE-PR-FILE.
+           CLOSE
+               BT-FILE BP-FILE WK-FILE
+               DUP-FILE REF-LOG-FILE.
+       COPY "LIBGB/DECLRP2.CPY".
+
+      ******************************************************************
+      *
+      *    M A I N - M O D U L E
+      *
+      ******************************************************************
+       MAIN-MODULE SECTION.
+           PERFORM SQL-CONNECT.
+       COPY "LIBGB/CHKSEC.CPY".
+      D    STOP MESS.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+
+           MOVE "BPREF" TO VDU-FORM-NAME FORM-PROG.
+
+       MAIN-ROUTINE.
+
+           PERFORM INITIALIZATION.
+           IF ERRCD NOT = " "
+              GO TO END-PROGRAM.
+
+           IF CD-BR-PAYOFF-FG = "Y"
+              PERFORM COMPUTE-PAYOFF-AMTS.
+
+       NEXT-BT.
+           MOVE SPACES TO BT-REC.
+
+           PERFORM READ-BT-FILE.
+           IF IO-FG = 9 OR BT-REC(1:1) = X'1A'
+              GO TO END-ROUTINE.
+
+           IF CD-BR-FILE-TYPE = "B"
+              PERFORM UNSTRING-BANKRUPT-BT.
+
+           IF CD-BR-FILE-TYPE = "P"
+              PERFORM UNSTRING-PL-BT
+      * SKIP BLANK LINES IN THE FILE
+              IF BT-TRCD = SPACES 
+                 GO TO NEXT-BT.
+
+      * CHECK RECORD TYPE:  "D" = DETAIL | "T" = TRAILER
+      
+           IF BT-TYPE NOT = "D"
+              PERFORM DETAIL-LINE-PROCESS
+              GO TO NEXT-BT.
+
+           IF BT-SIGN = "-"
+              COMPUTE BT-SIGNED-AMT = BT-AMT * -1
+           ELSE
+              COMPUTE BT-SIGNED-AMT = BT-AMT * 1.
+
+      * GET BRANCH FILE FOR EACH NEW BRANCH
+      
+           IF BT-BRANCH NOT = HOLD-BRANCH
+              MOVE BT-BRANCH TO MESS-BR
+              PERFORM SEND-LEGEND
+              PERFORM GET-BR
+              IF IO-FG NOT = 0
+                 MOVE "NO BRANCH RECORD FOUND" TO D-MESS
+                 PERFORM DETAIL-LINE-PROCESS
+                 ADD 1 TO TOTAL-SKIP(1) TOTAL-READ(1)
+                          TOTAL-SKIP(2) TOTAL-READ(2)
+                 ADD BT-SIGNED-AMT TO TOTAL-AMT-SKIP(1)
+                                      TOTAL-AMT-READ(1)
+                                      TOTAL-AMT-SKIP(2)
+                                      TOTAL-AMT-READ(2)
+                 GO TO NEXT-BT
+              END-IF
+      * IF BRANCH IS NOT ON THIS MACHINE DON'T BOTHER PRINTING ON
+      * EXCEPTION, IT WILL SHOW UP ON THE OTHER MACHINES REPORT
+              IF BR-MACHINE NOT = EXT-FILPATH-MACHINE
+                 ADD 1 TO TOTAL-OM(1) TOTAL-READ(1)
+                          TOTAL-OM(2) TOTAL-READ(2)
+                 ADD BT-SIGNED-AMT TO TOTAL-AMT-OM(1)
+                                      TOTAL-AMT-READ(1)
+                                      TOTAL-AMT-OM(2)
+                                      TOTAL-AMT-READ(2)
+                 GO TO NEXT-BT
+              END-IF
+      * SETUP BRANCH FILE PATHS
+              MOVE EXT-FILPATH-BASE TO FILPATH-BASE
+              MOVE BR-MACHINE       TO FILPATH-MACHINE
+              MOVE BR-DATA-PATH     TO FILPATH-DATA
+              MOVE "B"   TO LN-PATH-OVERRIDE
+                            BW-PATH-OVERRIDE.
+
+           IF HOLD-BATCH-MULTIPLE-REFCDS = "Y"
+              MOVE "BR"     TO CD-TYPE
+              MOVE BT-REFCD TO CD-CODE
+              PERFORM READ-CD1-FILE
+              IF (IO-BAD ) OR (CD-BR-FILE-TYPE = "LC" OR "C")
+                 PERFORM DETAIL-LINE-NO-LOAN
+                 ADD 1 TO TOTAL-BADREF(1) TOTAL-BADREF(2)
+                 ADD BT-SIGNED-AMT TO TOTAL-AMT-BADREF(1)
+                                      TOTAL-AMT-BADREF(2)
+                 GO TO NEXT-BT.
+
+           IF FIRST-TIME = "Y"
+              MOVE BT-BRANCH TO HOLD-BRANCH
+              PERFORM CREATE-BP-FILE.
+
+           IF BT-BRANCH NOT = HOLD-BRANCH
+              PERFORM WRITE-BP-TRAILER
+              PERFORM CLOSE-BP1-FILE
+              PERFORM TOTAL-ROUTINE
+              MOVE BT-BRANCH TO HOLD-BRANCH
+              PERFORM CREATE-BP-FILE.
+
+           ADD 1 TO TOTAL-RECORDS(1) TOTAL-RECORDS(2)
+                    TOTAL-READ(1)    TOTAL-READ(2).
+           ADD BT-SIGNED-AMT TO TOTAL-AMOUNT(1)
+                                TOTAL-AMOUNT(2)
+                                TOTAL-AMT-READ(1)
+                                TOTAL-AMT-READ(2).
+
+      * GET ACCOUNT INFO NOT SUPPLIED IN BTFILE (NAME & SSNO)
+      
+           PERFORM OPEN-LN1-FILE.
+           PERFORM OPEN-BW1-FILE.
+
+           MOVE BT-ACCTNO TO LN-ACCTNO.
+           PERFORM READ-LN1-FILE.
+
+           MOVE LN-SSNO(1)   TO BW-SSNO.
+           PERFORM PROCESS-BORROWER.
+
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+
+      * VALID ACCOUNT NUMBER
+      
+           IF BT-ACCTNO NOT = 0
+              MOVE BT-ACCTNO TO HOLD-ACCTNO
+              PERFORM WRITE-BP-RECORDS
+              PERFORM UPDATE-REFCD-TOTALS
+           ELSE
+              PERFORM WRITE-ZERO-RECORD
+              MOVE "ZERO ACCOUNT #    " TO D-MESS
+              PERFORM DETAIL-LINE-PROCESS
+              ADD 1 TO TOTAL-ZERO(1) TOTAL-ZERO(2)
+              ADD BT-SIGNED-AMT TO TOTAL-AMT-ZERO(1)
+                                   TOTAL-AMT-ZERO(2).
+
+      * PRINT CREATED STATUS IN EXCEPTION REPORT
+      
+           IF DUP-FLAG = "Y"
+              MOVE "DUPLICATE ACCOUNT NO" TO D-MESS
+           ELSE
+              IF HOLD-CD-BR-PAYOFF-FG = "Y"
+                 MOVE "CREATED BP WITH PAYOFF AMT!" TO D-MESS
+              ELSE
+                 MOVE "CREATED BP" TO D-MESS.
+
+           PERFORM DETAIL-LINE-PROCESS.
+
+           MOVE "N" TO FIRST-TIME.
+           GO TO NEXT-BT.
+
+       END-ROUTINE.
+      D    STOP MESS.
+           IF TOTAL-RECORDS(1) NOT = 0
+              PERFORM WRITE-BP-TRAILER.
+
+           PERFORM CLOSE-BP1-FILE.
+           PERFORM CLOSE-BR-FILE.
+
+           MOVE "Y" TO GRAND-TOTAL-FG.
+           PERFORM TOTAL-ROUTINE.
+
+      * RENAME BTFILE TO BTFILE{BATCH DATE}{BATCH NO}
+      * LONPW1 HAS BEEN CHANGED TO GET THE GLOBAL BATCH DATE/NO HERE
+      *        "/USR/DATA/R1/ED/CCFILE  /USR/DATA/R1/ED/CCFIL"
+      
+           MOVE SPACES TO SYSTEM-BUF.
+           MOVE BT-PATH-SHORT-NAME TO MESS.
+           INSPECT MESS REPLACING FIRST "  "   BY "+ ".
+           INSPECT MESS REPLACING FIRST "+   " BY BATCH-DATE.
+           INSPECT MESS REPLACING FIRST "  "   BY "+ ".
+           INSPECT MESS REPLACING FIRST "+  "  BY BATCH-NO.
+           STRING MV-CMD
+                  " "
+                  BT-PATH
+                  " "
+                  MESS
+                  DELIMITED BY SIZE INTO SYSTEM-BUF.
+           PERFORM SYSTEM-CALL.
+
+           IF EXT-ROUTE-BUF = "70"
+              MOVE "BREAKOUT BATCH &&& COMPLETED ###### RECS"
+                 TO REF-LOG-MSG
+              INSPECT REF-LOG-MSG REPLACING FIRST "&&&" BY
+                                                   EXT-EOBUF-PCODE
+              INSPECT REF-LOG-MSG REPLACING FIRST "######"
+                                               BY SAVE-TOTAL-COUNT
+              PERFORM CREATE-LOG.
+
+           GO TO END-PROGRAM.
+
+      ******************************************************************
+       UNSTRING-BANKRUPT-BT SECTION.
+      ******************************************************************
+
+      * IF FILE TYPE IS B, INPUT FILE WILL BE TAB-DELIMITED WITH
+      * WITH BANKRUPT STATUS & CASE NUMBER, SO NEED TO UNSTRING TO
+      * WORKING STORAGE FIELDS, THEN MOVE BACK TO FIELDS IN FIXED
+      * LENGTH BT FORMAT
+
+           UNSTRING BT-REC DELIMITED BY X"09" INTO
+              BT-BNKRPT-TRCD
+              BT-BNKRPT-REFCD
+              BT-BNKRPT-BRNO
+              BT-BNKRPT-ACCTNO
+              BT-BNKRPT-PAYDATE
+              BT-BNKRPT-CASE-NO
+              BT-BNKRPT-STAT.
+           CALL "C$JUSTIFY" USING BT-BNKRPT-BRNO "R".
+           CALL "C$JUSTIFY" USING BT-BNKRPT-ACCTNO "R".
+           CALL "C$JUSTIFY" USING BT-BNKRPT-PAYDATE "R".
+           INSPECT BT-BNKRPT-BRNOX    REPLACING ALL " " BY "0".
+           INSPECT BT-BNKRPT-ACCTNOX  REPLACING ALL " " BY "0".
+           INSPECT BT-BNKRPT-PAYDATEX REPLACING ALL " " BY "0".
+           MOVE BT-BNKRPT-TRCD     TO BT-TRCD.
+           MOVE BT-BNKRPT-REFCD    TO BT-REFCD.
+           MOVE BT-BNKRPT-BRNO     TO BT-BRANCH.
+           MOVE BT-BNKRPT-ACCTNO   TO BT-ACCTNO.
+           MOVE BT-BNKRPT-PAYDATE  TO BT-PAYDATE.
+           MOVE "D" TO BT-TYPE.
+           MOVE 0   TO BT-AMT
+                       BT-AUCTION-FEES.
+
+      ******************************************************************
+       UNSTRING-PL-BT SECTION.
+      ******************************************************************
+
+      * IF FILE TYPE IS P, INPUT FILE WILL BE TAB-DELIMITED WITH
+      * WITH PL REASON SO NEED TO UNSTRING TO WORKING STORAGE FIELDS
+      * THEN MOVE BACK TO FIELDS IN FIXED LENGTH BT FORMAT
+
+           UNSTRING BT-REC DELIMITED BY X"09" INTO
+              BT-PL-TRCD
+              BT-PL-REFCD
+              BT-PL-BRNO
+              BT-PL-ACCTNO
+              BT-PL-PAYDATE
+              BT-PL-REASON.
+           CALL "C$JUSTIFY" USING BT-PL-BRNO "R".
+           CALL "C$JUSTIFY" USING BT-PL-ACCTNO "R".
+           CALL "C$JUSTIFY" USING BT-PL-PAYDATE "R".
+           INSPECT BT-PL-BRNOX    REPLACING ALL " " BY "0".
+           INSPECT BT-PL-ACCTNOX  REPLACING ALL " " BY "0".
+           INSPECT BT-PL-PAYDATEX REPLACING ALL " " BY "0".
+           MOVE BT-PL-TRCD     TO BT-TRCD.
+           MOVE BT-PL-REFCD    TO BT-REFCD.
+           MOVE BT-PL-BRNO     TO BT-BRANCH.
+           MOVE BT-PL-ACCTNO   TO BT-ACCTNO.
+           MOVE BT-PL-PAYDATE  TO BT-PAYDATE.
+           MOVE "D" TO BT-TYPE.
+           MOVE 0   TO BT-AMT
+                       BT-AUCTION-FEES.
+
+      ******************************************************************
+       CREATE-BP-FILE SECTION.
+      ******************************************************************
+
+      *  /USR/DATA/R1/XX####/ED/B####MMDD???REFCD    LOCAL-PATH
+
+           MOVE EXT-FILPATH-BASE TO FILPATH-BASE       BP-ALL-BASE.
+           MOVE BR-MACHINE       TO FILPATH-MACHINE    BP-ALL-MACHINE.
+           MOVE BR-DATA-PATH     TO FILPATH-DATA       BP-ALL-DATA.
+
+           MOVE "B"  TO BP-PATH-OVERRIDE.
+
+           MOVE BR-NO         TO BP-ALL-BRANCH.
+           MOVE BATCH-DATE    TO BP-ALL-DATE.
+           MOVE BATCH-NO      TO BP-ALL-BATCH-NO.
+           MOVE REFCD         TO BP-ALL-REFCD.
+
+           MOVE BP-ALL-PATH TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT NOT = "00"
+              PERFORM OPEN-BP1-FILE-OUTPUT
+              PERFORM CLOSE-BP1-FILE.
+
+           PERFORM OPEN-BP1-FILE.
+
+      ******************************************************************
+       WRITE-BP-RECORDS SECTION.
+      ******************************************************************
+           MOVE SPACES       TO BP-REC.
+           MOVE "N"          TO DUP-FLAG.
+           MOVE LN-ACCTNO    TO BP-LNNO.
+           MOVE 1            TO BP-SEQNO.
+           MOVE LN-SSNO(1)   TO BP-SSNO
+           IF CD-BR-FILE-TYPE = "B"
+              MOVE BT-BNKRPT-TRCD    TO BP-TRCD
+              MOVE BT-BNKRPT-CASE-NO TO BP-BNKRPT-CASE-NO
+              MOVE BT-BNKRPT-STAT TO BP-BNKRPT-STATUS
+           ELSE IF CD-BR-FILE-TYPE = "P"
+              MOVE BT-PL-TRCD    TO BP-TRCD
+              MOVE BT-PL-REASON  TO BP-PL-REASON
+           ELSE
+              MOVE "PA"       TO BP-TRCD.
+           MOVE 4             TO BP-SIGN.
+           MOVE BT-SIGNED-AMT TO BP-TRAMT.
+           MOVE BT-REFCD      TO BP-REFCD.
+
+      *=================================================================
+      * CHANGED 3/25/14 TO ALWAYS MOVE IN BT-PAYDATE, PL# 842
+      * THERE'S A CHECK IN W9 TO USE TRANS DATE IF BP-PAYDATE IS
+      * 202020, 020202, OR 0:
+      *-----------------------------------------------------------------
+      *    HAVE TO CHECK IF BT-PAYDATE IS NOT NUMERIC BEFORE DOING
+      *    CONVERT-MMDDYY-TO-YYYYMMDD ROUTINE.  BT-PAYDATE IS AT TIMES
+      *    SPACES WHICH IS AN ISSUE WITHIN CONVERT-MMDDYY-TO-YYYYMMDD.
+      *    IN A15, MOVING BT-PAYDATE TO BP-PAYDATE WORKED BECAUSE
+      *    BP-PAYDATE WAS COMP-6 (SOURCE IS A NON-COMP SPACE FIELD):
+      *       MOVE SOURCE TO NON-COMP. (RESULT IS SPACES)
+      *       MOVE SOURCE TO COMP-3. (RESULT IS ZEROES)
+      *       MOVE SOURCE TO COMP-6. (RESULT IS ZEROES)
+      *    WITHIN A MOVE STATEMENT, THE CONVERSION ROUTINE OF THE 'MOVE'
+      *    DOES A VERIFICATION WHICH MOVES ZEROES TO NON-NUMERIC FIELDS.
+      *                                              CS & JAY 2017-1113
+      *=================================================================
+           IF ( BT-PAYDATE NOT NUMERIC)
+              MOVE ZEROES                  TO BT-PAYDATE   BP-PAYDATE
+           ELSE
+              MOVE BT-PAYDATE              TO DATE-MMDDYY
+              PERFORM CONVERT-MMDDYY-TO-YYYYMMDD
+              MOVE DATE-YYYYMMDD           TO BP-PAYDATE.
+
+           IF HOLD-CD-BR-POST-SS-TRCD = "Y"
+              MOVE "SS"            TO BP-TRCD
+              MOVE BT-PAYDATE      TO DATE-MMDDYY
+              PERFORM CONVERT-MMDDYY-TO-YYYYMMDD
+              MOVE DATE-YYYYMMDD   TO BP-PAYDATE
+              MOVE BT-AUCTION-FEES TO BP-AUCTION-FEES
+              MOVE BT-AUCTION-NAME TO BP-AUCTION-NAME
+           ELSE
+              MOVE 0               TO BP-AUCTION-FEES
+              MOVE SPACES          TO BP-AUCTION-NAME.
+
+           IF BT-TRCD = "DF" OR "D2" OR "D3" OR "D4" OR "D5"
+                             OR "D6" OR "D7" OR "D8" OR "D9"
+                             OR "RE" OR "O2" OR "RP"
+              MOVE BT-TRCD TO BP-TRCD.
+           IF BT-TRCD = "RV"
+              MOVE BT-TRCD TO BP-TRCD.
+
+           MOVE BT-IGNORE-DEFPOL   TO BP-IGNORE-DEFPOL.
+           MOVE BT-ALLOW-ZERO-DF   TO BP-ALLOW-ZERO-DF.
+           MOVE BT-ALLOW-NEGATIVE  TO BP-ALLOW-NEGATIVE.
+           MOVE BT-FROZEN-OVERRIDE TO BP-FROZEN-OVERRIDE.
+
+           PERFORM WRITE-THE-BP-RECORD.
+
+      ******************************************************************
+       WRITE-THE-BP-RECORD SECTION.
+      ******************************************************************
+           MOVE BP-REC TO HOLD-BP-REC.
+           MOVE 1 TO HOLD-BP-SEQNO.
+       TRY-TO-WRITE-BP.
+           MOVE HOLD-BP-REC TO BP-REC.
+           MOVE HOLD-BP-SEQNO TO BP-SEQNO.
+           PERFORM WRITE-BP1-FILE.
+           IF IO-FG NOT = 0
+              IF E-CODE NOT = "22"
+                 GO TO IO-ERROR
+              ELSE
+                 IF HOLD-BP-SEQNO < 99
+                    ADD 1 TO HOLD-BP-SEQNO
+                    GO TO TRY-TO-WRITE-BP
+                 ELSE
+                    GO TO IO-ERROR.
+           IF BP-SEQNO > 1
+              MOVE "Y" TO DUP-FLAG
+              ADD 1 TO TOTAL-DUPS(1) TOTAL-DUPS(2)
+              ADD BT-SIGNED-AMT TO TOTAL-AMT-DUP(1)
+                                   TOTAL-AMT-DUP(2).
+
+      ******************************************************************
+       WRITE-BP-TRAILER SECTION.
+      ******************************************************************
+           MOVE SPACES           TO BP-REC.
+           MOVE 0                TO BP-LNNO.
+           MOVE 1                TO BP-SEQNO.
+           MOVE "M"              TO BP-TYPE.
+           MOVE TOTAL-RECORDS(1) TO BP-TOTAL-COUNT.
+           MOVE TOTAL-AMOUNT(1)  TO BP-TOTAL-AMOUNT.
+           PERFORM WRITE-BP1-FILE.
+           IF IO-FG NOT = 0
+              GO TO IO-ERROR.
+
+      ******************************************************************
+       WRITE-ZERO-RECORD SECTION.
+      ******************************************************************
+           MOVE 99999999 TO BP-LNNO.
+           MOVE 1        TO BP-SEQNO.
+           PERFORM READ-BP1-FILE.
+           IF IO-FG = 0
+              ADD BT-SIGNED-AMT TO BP-TRAMT
+              PERFORM REWRITE-BP1-FILE
+           ELSE
+              MOVE SPACES   TO BP-REC
+              MOVE 99999999 TO BP-LNNO
+              MOVE 1        TO BP-SEQNO
+              MOVE 0        TO BP-SSNO
+              MOVE BT-SIGNED-AMT   TO BP-TRAMT
+              MOVE BT-REFCD TO BP-REFCD
+              PERFORM WRITE-BP1-FILE.
+
+      ******************************************************************
+       UPDATE-REFCD-TOTALS SECTION.
+      ******************************************************************
+
+      * UPDATE TOTALS BY REFCD BY BRANCH & GRAND (WK-BRNO = 10000)
+
+           MOVE BT-BRANCH TO WK-BRNO.
+           MOVE BT-REFCD TO WK-REFCD.
+           PERFORM READ-WK-FILE.
+           IF IO-BAD
+              MOVE BT-BRANCH TO WK-BRNO
+              MOVE BT-REFCD TO WK-REFCD
+              MOVE 0 TO WK-AMT WK-COUNT
+              PERFORM WRITE-WK-FILE
+                 IF IO-BAD
+                    GO TO EXIT-UPDATE-REFCD-TOTALS.
+           ADD BT-SIGNED-AMT TO WK-AMT.
+           ADD 1 TO WK-COUNT.
+           PERFORM REWRITE-WK-FILE.
+
+           MOVE 10000 TO WK-BRNO.
+           MOVE BT-REFCD TO WK-REFCD.
+           PERFORM READ-WK-FILE.
+           IF IO-BAD
+              MOVE BT-BRANCH TO WK-BRNO
+              MOVE BT-REFCD TO WK-REFCD
+              MOVE 0 TO WK-AMT WK-COUNT
+              PERFORM WRITE-WK-FILE
+                 IF IO-BAD
+                    GO TO EXIT-UPDATE-REFCD-TOTALS.
+           ADD BT-SIGNED-AMT TO WK-AMT.
+           ADD 1 TO WK-COUNT.
+           PERFORM REWRITE-WK-FILE.
+       EXIT-UPDATE-REFCD-TOTALS.
+           EXIT.
+
+      ******************************************************************
+       TOTAL-ROUTINE SECTION.
+      ******************************************************************
+           MOVE "TOTAL BP'S CREATED  :" TO DETAIL-LINE.
+           SUBTRACT TOTAL-DUPS(1) TOTAL-ZERO(1)
+               FROM TOTAL-RECORDS(1) GIVING D-ACCTNO1.
+           SUBTRACT TOTAL-AMT-DUP(1) TOTAL-AMT-ZERO(1)
+               FROM TOTAL-AMOUNT(1) GIVING D-AMOUNT.
+           MOVE 3                       TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "TOTAL DUP ACCTNO'S  :" TO DETAIL-LINE.
+           MOVE TOTAL-DUPS(1)           TO D-ACCTNO1.
+           MOVE TOTAL-AMT-DUP(1)        TO D-AMOUNT.
+           MOVE 1                       TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "TOTAL ZERO ACCTNO'S :" TO DETAIL-LINE.
+           MOVE TOTAL-ZERO(1)           TO D-ACCTNO1.
+           MOVE TOTAL-AMT-ZERO(1)       TO D-AMOUNT.
+           MOVE 1                       TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "TOTAL ACCTS SKIPPED :" TO DETAIL-LINE.
+           MOVE TOTAL-SKIP(1)           TO D-ACCTNO1.
+           MOVE TOTAL-AMT-SKIP(1)       TO D-AMOUNT.
+           MOVE 1                       TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           IF TOTAL-OM(1) NOT = 0
+              MOVE "TOTAL ON OTHER MACH :" TO DETAIL-LINE
+              MOVE TOTAL-OM(1)             TO D-ACCTNO1
+              MOVE TOTAL-AMT-OM(1)         TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF TOTAL-BADREF(1) NOT = 0
+              MOVE "TOTAL INVALID REFCD :" TO DETAIL-LINE
+              MOVE TOTAL-BADREF(1)         TO D-ACCTNO1
+              MOVE TOTAL-AMT-BADREF(1)     TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF TOTAL-BADFEES(1) NOT = ZERO
+              MOVE "TOTAL 0 AUCTION FEES"  TO DETAIL-LINE
+              MOVE TOTAL-BADFEES(1)        TO D-ACCTNO1
+              MOVE TOTAL-AMT-BADFEES(1)    TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE.
+
+           IF TOTAL-BADPROCEEDS(1) NOT = ZERO
+              MOVE "TOTAL 0 PROCEEDS"      TO DETAIL-LINE
+              MOVE TOTAL-BADPROCEEDS(1)    TO D-ACCTNO1
+              MOVE TOTAL-AMT-BADPROCEEDS(1) TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "TOTAL RECORDS READ :" TO DETAIL-LINE.
+           MOVE TOTAL-READ(1)          TO D-ACCTNO1.
+           MOVE TOTAL-AMT-READ(1)      TO D-AMOUNT.
+           MOVE 2                      TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE HOLD-BRANCH TO HOLD-REFCD-BR.
+           PERFORM PRINT-REFCD-TOTALS.
+
+           IF GRAND-TOTAL-FG = "Y"
+              MOVE "GRAND TOTALS" TO DETAIL-LINE
+              MOVE 3              TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "TOTAL BP'S CREATED  :" TO DETAIL-LINE
+              SUBTRACT TOTAL-DUPS(2) TOTAL-ZERO(2)
+                  FROM TOTAL-RECORDS(2) GIVING D-ACCTNO1
+              SUBTRACT TOTAL-AMT-DUP(2) TOTAL-AMT-ZERO(2)
+                  FROM TOTAL-AMOUNT(2) GIVING D-AMOUNT
+              MOVE 2                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "TOTAL DUP ACCTNO'S  :" TO DETAIL-LINE
+              MOVE TOTAL-DUPS(2)           TO D-ACCTNO1
+              MOVE TOTAL-AMT-DUP(2)        TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "TOTAL ZERO ACCTNO'S :" TO DETAIL-LINE
+              MOVE TOTAL-ZERO(2)           TO D-ACCTNO1
+              MOVE TOTAL-AMT-ZERO(2)       TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              MOVE "TOTAL ACCTS SKIPPED :" TO DETAIL-LINE
+              MOVE TOTAL-SKIP(2)           TO D-ACCTNO1
+              MOVE TOTAL-AMT-SKIP(2)       TO D-AMOUNT
+              MOVE 1                       TO LN-FEED
+              PERFORM WRITE-DETAIL-LINE
+              IF TOTAL-OM(2) NOT = 0
+                 MOVE "TOTAL ON OTHER MACH :" TO DETAIL-LINE
+                 MOVE TOTAL-OM(2)             TO D-ACCTNO1
+                 MOVE TOTAL-AMT-OM(2)         TO D-AMOUNT
+                 MOVE 1                       TO LN-FEED
+                 PERFORM WRITE-DETAIL-LINE
+              END-IF
+              IF TOTAL-BADREF(2) NOT = 0
+                 MOVE "TOTAL INVALID REFCD :" TO DETAIL-LINE
+                 MOVE TOTAL-BADREF(2)         TO D-ACCTNO1
+                 MOVE TOTAL-AMT-BADREF(2)     TO D-AMOUNT
+                 MOVE 1                       TO LN-FEED
+                 PERFORM WRITE-DETAIL-LINE
+              END-IF
+              IF TOTAL-BADFEES(2) NOT = ZEROS
+                 MOVE "TOTAL 0 FEES        :" TO DETAIL-LINE
+                 MOVE TOTAL-BADFEES(2)        TO D-ACCTNO1
+                 MOVE TOTAL-AMT-BADFEES(2)    TO D-AMOUNT
+                 MOVE 1                       TO LN-FEED
+                 PERFORM WRITE-DETAIL-LINE
+              END-IF
+              IF TOTAL-BADPROCEEDS(2) NOT = ZEROS
+                 MOVE "TOTAL 0 PROCEEDS    :" TO DETAIL-LINE
+                 MOVE TOTAL-BADPROCEEDS(2)      TO D-ACCTNO1
+                 MOVE TOTAL-AMT-BADPROCEEDS(2)  TO D-AMOUNT
+                 MOVE 1                       TO LN-FEED
+                 PERFORM WRITE-DETAIL-LINE.
+
+           MOVE "TOTAL RECORDS READ :" TO DETAIL-LINE.
+           MOVE TOTAL-READ(2)          TO D-ACCTNO1.
+           MOVE TOTAL-AMT-READ(2)      TO D-AMOUNT.
+           MOVE 2                      TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+           MOVE 10000 TO HOLD-REFCD-BR.
+           PERFORM PRINT-REFCD-TOTALS.
+
+           MOVE 0  TO TOTAL-RECORDS(1) TOTAL-AMOUNT(1)
+                      TOTAL-DUPS(1)    TOTAL-AMT-DUP(1)
+                      TOTAL-ZERO(1)    TOTAL-AMT-ZERO(1)
+                      TOTAL-SKIP(1)    TOTAL-AMT-SKIP(1)
+                      TOTAL-OM(1)      TOTAL-AMT-OM(1)
+                      TOTAL-READ(1)    TOTAL-AMT-READ(1)
+                      TOTAL-BADREF(1)  TOTAL-AMT-BADREF(1).
+           MOVE 99 TO LN-COUNT.
+
+      ******************************************************************
+       PRINT-REFCD-TOTALS SECTION.
+      ******************************************************************
+           MOVE HOLD-REFCD-BR TO WK-BRNO.
+           MOVE SPACES TO WK-REFCD.
+           PERFORM START-WK-FILE.
+       NEXT-REFCD-TOTAL.
+           PERFORM READ-WK-FILE-NEXT.
+           IF IO-BAD
+              GO TO EXIT-PRINT-REFCD-TOTALS.
+           IF WK-BRNO NOT = HOLD-REFCD-BR
+              GO TO EXIT-PRINT-REFCD-TOTALS.
+           MOVE "TOTAL REFCD &&&&&   :" TO DETAIL-LINE.
+           INSPECT DETAIL-LINE REPLACING FIRST "&&&&&" BY WK-REFCD.
+           MOVE WK-COUNT                TO D-ACCTNO1.
+           MOVE WK-AMT                  TO D-AMOUNT.
+           MOVE 1                       TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+           GO TO NEXT-REFCD-TOTAL.
+
+       EXIT-PRINT-REFCD-TOTALS.
+           EXIT.
+
+      ******************************************************************
+       INITIALIZATION SECTION.
+      ******************************************************************
+           MOVE 0 TO Q-POS.
+           MOVE 0 TO C-POS.
+           MOVE 0 TO P-POS.
+           MOVE "V" TO Q-BUF.
+           MOVE "1" TO C-BUF.
+           MOVE "00" TO P-BUF.
+       COPY "LIBGB/EOINIT.CPY".
+
+           MOVE EXT-CONAME-SYSDATE TO ALP-DATE.
+           PERFORM CONVERT-ALPDATE-TO-YYYYMMDD.
+           MOVE DATE-YYYYMMDD TO TRANS-DATE.
+
+           MOVE EXT-CONAME-USER-ID  TO H-USERID.
+
+      * CREATE SPOOL DIRECTORY AND OPEN SPOOL FILE IN 'EO'
+      
+           IF (EXT-ROUTE-BUF = "00" OR "70")
+              PERFORM CREATE-SPOOL-DIR
+              IF ERRCD NOT = " "
+                 GO TO ENDIT
+              END-IF
+              MOVE EX-SPOOL TO PRU-FILE.
+
+           MOVE TRANS-MM TO BATCH-MM.
+           MOVE TRANS-DD TO BATCH-DD.
+
+           IF EXT-ROUTE-BUF NOT = "70"
+              GO TO FIX-NEXT-BATCH.
+
+           MOVE PRU-FILE TO REF-LOG-SPOOL-DIR.
+
+           MOVE "BEGIN BREAKOUT FOR BATCH &&&" TO REF-LOG-MSG.
+           INSPECT REF-LOG-MSG REPLACING FIRST "&&&" BY
+                                              EXT-EOBUF-PCODE.
+           PERFORM CREATE-LOG.
+
+           PERFORM OPEN-CD1-FILE.
+           MOVE "BR"   TO CD-TYPE.
+           MOVE REFCD  TO CD-CODE
+                          H-TITLE-REFCD.
+           PERFORM READ-CD1-FILE.
+           IF (IO-BAD) OR (CD-BR-FILE-TYPE = "LC" OR "C")
+              MOVE "REF CODE &&&&& NOT ON FILE, ABORTED" TO REF-LOG-MSG
+              INSPECT REF-LOG-MSG REPLACING FIRST "&&&&&" BY REFCD
+              PERFORM CREATE-LOG
+              GO TO ENDIT
+           ELSE
+              MOVE CD-BR-MULTIPLE-REFCDS TO HOLD-BATCH-MULTIPLE-REFCDS
+              MOVE CD-BR-PAYOFF-FG       TO HOLD-CD-BR-PAYOFF-FG
+              MOVE CD-BR-POST-SS-TRCD    TO HOLD-CD-BR-POST-SS-TRCD.
+
+      * SETUP BT-PATH:
+           MOVE EXT-FILPATH-BASE     TO BT-PATH-BASE.
+           MOVE EXT-FILPATH-MACHINE  TO BT-PATH-MACHINE.
+           MOVE CD-BR-FILE-NAME      TO BT-PATH-BATCH-NAME.
+
+      * CHECK THAT THE GLOBAL BATCH FILE IS THERE
+      
+           MOVE BT-PATH TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT NOT = "00"
+              MOVE "GLOBAL BATCH &&&&&&&&&&&&&&& NOT FOUND!"
+                                                    TO REF-LOG-MSG
+              INSPECT REF-LOG-MSG REPLACING FIRST
+                       "&&&&&&&&&&&&&&&&&&&&&&" BY BT-PATH
+              PERFORM CREATE-LOG
+              GO TO ENDIT.
+
+      * FIX NEXT BATCH NUMBER FROM GPFILE IF INVALID
+      
+       FIX-NEXT-BATCH.
+           PERFORM OPEN-GP-FILE.
+           MOVE 1 TO GP-KEY.
+           PERFORM READ-GP-FILE.
+           IF NOT GP-REFCD-NEXT-BATCH-VALID
+              MOVE GP-REFCD-NEXT-BATCH-START TO GP-REFCD-NEXT-BATCH.
+           PERFORM REWRITE-GP-FILE.
+
+           IF EXT-ROUTE-BUF = "00"
+              MOVE "SNNN030BATCHID." TO VDU
+              MOVE GP-REFCD-NEXT-BATCH TO VDUNUM0
+                                          BATCH-NO
+              PERFORM SCREENIO
+           ELSE
+              MOVE GP-REFCD-NEXT-BATCH TO BATCH-NO.
+
+      * SET UP LOCAL BRANCH BATCH FILE PATH
+      *    /USR/DATA/R1/XX####/ED/B####MMDD???REFCD
+      
+           MOVE EXT-FILPATH-BASE    TO LOCAL-PATH-BASE.
+           MOVE EXT-FILPATH-MACHINE TO LOCAL-PATH-MACHINE.
+           MOVE EXT-FILPATH-DATA    TO LOCAL-PATH-DATA.
+           MOVE "####"              TO LOCAL-PATH-BRANCH.
+           MOVE BATCH-DATE          TO LOCAL-PATH-DATE.
+           MOVE BATCH-NO            TO LOCAL-PATH-BATCH.
+           MOVE CD-CODE             TO LOCAL-PATH-REFCD.
+           MOVE "S  A200LOCALFILE."  TO VDU.
+           MOVE LOCAL-PATH-DISPLAY   TO VDUBUF
+                                        H-TITLE-LOCAL.
+           IF EXT-ROUTE-BUF = "00" OR "40" OR "50"
+              PERFORM SCREENIO.
+
+           MOVE "S  A050REFCDALP."   TO VDU.
+           MOVE CD-CODE              TO VDUBUF.
+           IF EXT-ROUTE-BUF = "00" OR "40" OR "50"
+              PERFORM SCREENIO.
+
+           MOVE "S  A050BFREFCD."    TO VDU.
+           MOVE CD-CODE              TO VDUBUF.
+           IF EXT-ROUTE-BUF = "00" OR "40" OR "50"
+              PERFORM SCREENIO.
+
+      * CHECK THAT NO B####MMDD???REFCD FILES EXIST
+      *  /$REL/SH/BPLIST_REF.SH
+      
+           MOVE "REL" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           MOVE GETENV-BUF TO LIST-REF-REL LIST-REF-REL2.
+           CALL "C$TOLOWER" USING LIST-REF-EC, VALUE 3.
+           CALL "C$TOLOWER" USING LIST-REF-SHELL, VALUE 14.
+           MOVE LOCAL-PATH-DATE   TO LIST-REF-DATE.
+           MOVE LOCAL-PATH-REFCD  TO LIST-REF-REFCD.
+           MOVE EXT-FILPATH-FIL TO LIST-REF-DATA.
+           MOVE LIST-REF-CMD      TO SYSTEM-BUF.
+           PERFORM SYSTEM-CALL.
+
+           MOVE LIST-PATH TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT = "00"
+              IF EXT-ROUTE-BUF = "00"
+                 MOVE "BRANCH BATCH FILES EXIST FOR TODAY !!!" TO MESS
+                 PERFORM SEND-MESS
+                 GO TO ENDIT
+              ELSE
+                 MOVE "BRANCH BATCH FILES EXIST FOR TODAY!"
+                    TO REF-LOG-MSG
+                 PERFORM CREATE-LOG
+                 GO TO ENDIT.
+
+           PERFORM CHECK-FOR-DUPS.
+           IF DUP-FG = "Y"
+              IF EXT-ROUTE-BUF = "00"
+                 MOVE "DUPLICATE FILE, BATCH #&&&, DATE: @@/$$!" TO MESS
+                 INSPECT MESS REPLACING FIRST "&&&" BY DUP-DONE-BATCH
+                 INSPECT MESS REPLACING FIRST "@@" BY DUP-DONE-MM
+                 INSPECT MESS REPLACING FIRST "$$" BY DUP-DONE-DD
+                 PERFORM SEND-MESS
+                 GO TO ENDIT
+              ELSE
+                 MOVE "DUPLICATE FILE, BATCH #&&&, DATE: @@/$$!"
+                                                       TO REF-LOG-MSG
+                 INSPECT REF-LOG-MSG REPLACING FIRST "&&&"
+                                                    BY DUP-DONE-BATCH
+                 INSPECT REF-LOG-MSG REPLACING FIRST "@@" 
+                                                    BY DUP-DONE-MM
+                 INSPECT REF-LOG-MSG REPLACING FIRST "$$"
+                                                    BY DUP-DONE-DD
+                 PERFORM CREATE-LOG
+                 GO TO ENDIT.
+
+       SKIP-FILES-EXIST-CHECK.
+           MOVE " " TO ERRCD.
+
+           MOVE "BATCH BRANCH FILE CREATE IN PROGRESS....." TO MESS-BUF.
+
+           PERFORM OPEN-PR-FILE.
+           IF IO-FG NOT = 0
+              GO TO ENDIT.
+
+           MOVE EXT-CONAME-CONAME  TO H-NAME.
+           MOVE EXT-CONAME-SYSDATE TO H-DATE.
+
+           PERFORM OPEN-BT-FILE.
+
+           MOVE MKTEMP-DEFAULT TO MKTEMP-BUF.
+           PERFORM MKTEMP-CALL.
+           PERFORM OPEN-WK-FILE-OUTPUT.
+           PERFORM CLOSE-WK-FILE.
+           PERFORM OPEN-WK-FILE.
+
+      * REWRITE GP FILE HERE, IF WE DO NOT ACCEPT THEN WE DO NOT WANT
+      * TO INCREMENT THE NEXT BATCH NUMBER
+      
+           IF EXT-ROUTE-BUF = "00" OR "70"
+              PERFORM OPEN-GP-FILE
+              MOVE 1 TO GP-KEY
+              PERFORM READ-GP-FILE
+              ADD 1 TO GP-REFCD-NEXT-BATCH
+              IF NOT GP-REFCD-NEXT-BATCH-VALID
+                 MOVE GP-REFCD-NEXT-BATCH-START TO GP-REFCD-NEXT-BATCH
+              END-IF
+              PERFORM REWRITE-GP-FILE
+              PERFORM CLOSE-GP-FILE.
+
+           PERFORM OPEN-BR-FILE.
+           PERFORM OPEN-SP1-FILE.
+
+           MOVE 10000 TO HOLD-BRANCH.
+
+           GO TO EXIT-INITIALIZE.
+       ENDIT.
+           MOVE "X" TO ERRCD.
+       EXIT-INITIALIZE.
+           EXIT.
+
+      ******************************************************************
+       EO-EXEC-AUDIT SECTION.
+      ******************************************************************
+           MOVE EXT-EOBUF-DATE2 TO TRANS-DATE.
+       EXIT-EO-EXEC-AUDIT.
+           EXIT.
+
+      ******************************************************************
+       COMPUTE-PAYOFF-AMTS SECTION.
+      ******************************************************************
+
+      * COMPUTE PAYOFF AMT. ONLY IF CD-BR-PAYOFF-FG IS Y, CUSTOM REGACC
+      * ROUTINE ONLY IF CD-BR-PAYOFF-FG IS Y, WILL READ BTFILE,
+      * COMPUTE PAYOFFS & WRITE BP FOR PAYOFF AMT
+
+       NEXT-BT-PAYOFF.
+           PERFORM READ-BT-FILE.
+           IF IO-FG = 9 OR BT-REC(1:1) = X'1A'
+              PERFORM CLOSE-BT-FILE
+              PERFORM OPEN-BT-FILE
+              GO TO EXIT-COMPUTE-PAYOFF-AMTS.
+
+           IF BT-TYPE = "T"
+              GO TO UPDATE-TRAILER.
+
+           IF BT-TYPE NOT = "D"
+              MOVE "PAYOFF ROUTINE, INVALID BT TYPE &" TO MESS
+              INSPECT MESS REPLACING FIRST "&" BY BT-TYPE
+              PERFORM SEND-MESS
+              GO TO NEXT-BT-PAYOFF.
+
+           MOVE SPACES TO D-MESS.
+           MOVE BT-BRANCH TO BR-NO.
+           PERFORM READ-BR-FILE.
+           IF IO-BAD
+              MOVE "INVALID BRANCH NUMBER &&&&" TO D-MESS
+              INSPECT D-MESS REPLACING FIRST "&&&&" BY BT-BRANCH
+              PERFORM DETAIL-LINE-PROCESS
+              GO TO NEXT-BT-PAYOFF.
+
+       MOVE-BRANCH-PATH-INFO.
+           MOVE EXT-FILPATH-BASE TO FILPATH-BASE.
+           MOVE BR-MACHINE       TO FILPATH-MACHINE.
+           MOVE BR-DATA-PATH     TO FILPATH-DATA.
+           MOVE "B"        TO LN-PATH-OVERRIDE
+                              BW-PATH-OVERRIDE
+                              LTI-PATH-OVERRIDE
+                              LTP-PATH-OVERRIDE
+                              GB-PATH-OVERRIDE.
+
+      * NEED FOR LCAS ROUTINES (REPLACES GLOBRD)
+           PERFORM OPEN-GB-FILE.
+           MOVE GB-PATH-OWNBR TO GB-BRNO.
+           MOVE 1             TO GB-NO.
+           PERFORM READ-GB-FILE.
+           PERFORM CLOSE-GB-FILE.
+           IF IO-BAD
+              MOVE "INVALID GLOBAL FILE &&&&&&" TO D-MESS
+              INSPECT D-MESS REPLACING FIRST "&&&&&&" BY BT-ACCTNO
+              PERFORM DETAIL-LINE-PROCESS
+              MOVE 0 TO BT-SIGNED-AMT
+              GO TO UPDATE-BT.
+
+           PERFORM OPEN-BW1-FILE.
+           PERFORM OPEN-LN1-FILE.
+
+           MOVE BR-NO     TO LN-OWNBR.
+           MOVE BT-ACCTNO TO LN-ACCTNO.
+           PERFORM READ-LN1-FILE.
+           IF IO-BAD
+              MOVE "INVALID ACCOUNT NUMBER &&&&&&" TO D-MESS
+              INSPECT D-MESS REPLACING FIRST "&&&&&&" BY BT-ACCTNO
+              PERFORM DETAIL-LINE-PROCESS
+              MOVE 0 TO BT-SIGNED-AMT
+              GO TO UPDATE-BT.
+
+      * VOIDED LOAN, RESCISSION
+           IF ( LN-POCD-NONLOAN )
+              MOVE "ACCOUNT &&&&&& IS DELETED/RESC?"
+                 TO D-MESS
+              INSPECT D-MESS REPLACING FIRST "&&&&&&" BY BT-ACCTNO
+              PERFORM DETAIL-LINE-PROCESS
+              MOVE 0 TO BT-SIGNED-AMT
+              GO TO UPDATE-BT.
+
+           IF LN-POFFDATE NOT = 0
+              MOVE "ACCOUNT &&&&&& IS PAID OFF!" TO D-MESS
+              INSPECT D-MESS REPLACING FIRST "&&&&&&" BY BT-ACCTNO
+              PERFORM DETAIL-LINE-PROCESS
+              MOVE 0 TO BT-SIGNED-AMT
+              GO TO UPDATE-BT.
+
+           MOVE LN-SSNO(1) TO BW-SSNO.
+           PERFORM READ-BW1-FILE.
+           IF IO-FG NOT = 0
+              MOVE SPACES TO BW-ZIP
+              MOVE "NOT ON FILE!!" TO BW-LNAME.
+
+           MOVE LN-ORGST     TO SP-ORGST.
+           MOVE LN-SPRCLASS  TO SP-SPRCLASS.
+           MOVE LN-SUBCLASS  TO SP-SUBCLASS.
+           MOVE LN-LAWCODE   TO SP-LAWCODE.
+
+           IF LPWSSP-SP1-KEY NOT = SP1-KEY
+              MOVE SP1-KEY TO LPWSSP-SP1-KEY
+              PERFORM READ-SP1-FILE
+              IF IO-FG NOT = 0
+                 GO TO IO-ERROR.
+
+           MOVE PO-DATE TO POFF-PAYDATE.
+           MOVE "05" TO POFF-LPTRCD.
+           MOVE "M" TO POFF-MAKERCD.
+           MOVE "N" TO POFF-DEF-STOP.
+           PERFORM PAYOFF-LOAN-ROUTINE.
+
+           MOVE POFF-NETDUE TO BT-SIGNED-AMT.
+           ADD POFF-NETDUE TO TOTAL-PAYOFF-AMOUNT.
+           ADD 1           TO TOTAL-PAYOFF-RECS.
+
+       UPDATE-BT.
+           PERFORM REWRITE-BT-FILE.
+           IF IO-BAD
+              GO TO IO-ERROR.
+
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-BW1-FILE.
+           GO TO NEXT-BT-PAYOFF.
+
+       UPDATE-TRAILER.
+           MOVE TOTAL-PAYOFF-RECS TO BT-REC-COUNT.
+           MOVE TOTAL-PAYOFF-AMOUNT TO BT-TOTAL-AMOUNT.
+           PERFORM REWRITE-BT-FILE.
+           IF IO-BAD
+              GO TO IO-ERROR.
+           PERFORM CLOSE-BT-FILE.
+           PERFORM OPEN-BT-FILE.
+       EXIT-COMPUTE-PAYOFF-AMTS.
+           EXIT.
+
+      ******************************************************************
+       ENTER-PARAMETERS SECTION.
+      ******************************************************************
+       ENTER-REFCD.
+           MOVE "E  A050REFCD." TO VDU.
+           PERFORM SCREENIO.
+           IF F6-KEY
+              PERFORM CODE-SCAN
+              IF IO-FG NOT = 0
+                 GO TO ENTER-REFCD
+              ELSE
+                 MOVE "00" TO VDUSTATUS.
+           IF F7-KEY
+              GO TO EXIT-PARM.
+           IF NOT ENTER-KEY
+              GO TO ENTER-REFCD.
+
+           PERFORM OPEN-CD1-FILE.
+           MOVE "BR"   TO CD-TYPE.
+           MOVE VDUBUF TO CD-CODE
+                          REFCD
+                          H-TITLE-REFCD.
+           PERFORM READ-CD1-FILE.
+           IF (IO-BAD) OR (CD-BR-FILE-TYPE = "LC" OR "C")
+              MOVE "REFERENCE CODE NOT ON FILE" TO MESS
+              PERFORM SEND-MESS
+              GO TO ENTER-REFCD
+           ELSE
+              MOVE CD-BR-MULTIPLE-REFCDS TO HOLD-BATCH-MULTIPLE-REFCDS
+              MOVE CD-BR-PAYOFF-FG       TO HOLD-CD-BR-PAYOFF-FG
+              MOVE CD-BR-POST-SS-TRCD    TO HOLD-CD-BR-POST-SS-TRCD.
+
+      * SETUP BT-PATH:
+           MOVE EXT-FILPATH-BASE     TO BT-PATH-BASE.
+           MOVE EXT-FILPATH-MACHINE  TO BT-PATH-MACHINE.
+           MOVE CD-BR-FILE-NAME      TO BT-PATH-BATCH-NAME.
+
+           MOVE "S  A170GLOBALFILE." TO VDU.
+           MOVE BT-PATH-DISPLAY      TO VDUBUF.
+           PERFORM SCREENIO.
+
+      * CHECK THAT THE GLOBAL BATCH FILE IS THERE
+      
+           IF EXT-ROUTE-BUF = "00"
+              MOVE BT-PATH TO ACCESS-BUF
+              PERFORM ACCESS-CALL
+              IF STAT NOT = "00"
+                 MOVE "GLOBAL BATCH FILE DOES NOT EXIST !!!" TO MESS
+                 PERFORM SEND-MESS
+                 MOVE "1>" TO VDUSTATUS
+                 MOVE "X" TO ERRCD
+                 GO TO EXIT-PARM.
+
+           MOVE " " TO ERRCD.
+
+           IF CD-BR-PAYOFF-FG NOT = "Y"
+              GO TO EXIT-PARM.
+
+      ******************************************************************
+      * ENTER PAYOFF DATE. ONLY IF CD-BR-PAYOFF-FG IS Y, CUSTOM REGACC
+      * ROUTINE ONLY IF CD-BR-PAYOFF-FG IS Y, WILL READ BTFILE,
+      * COMPUTE PAYOFFS & WRITE BP FOR PAYOFF AMT
+      ******************************************************************
+
+           MOVE "S  A000DATEPROMPT." TO VDU.
+           MOVE "PAYOFF DATE      :" TO VDUBUF.
+           PERFORM SCREENIO.
+       ENTER-PODATE.
+           MOVE "ERNM060PODATE." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10" GO TO ENTER-REFCD.
+           IF VDUSTATUS = "1>" GO TO ENDIT.
+           IF VDUSTATUS NOT = "00" AND NOT = "1D" GO TO ENTER-PODATE.
+           MOVE VDU-DATE-YYYYMMDD TO PO-DATE.
+           IF PO-DATE = ZERO
+              MOVE "S  8000PODATE."  TO VDU
+              MOVE TRANS-DATE TO PO-DATE VDU-DATE-YYYYMMDD
+              PERFORM SCREENIO.
+
+       EXIT-PARM.
+           EXIT.
+
+      ******************************************************************
+       DISPLAY-PARAMETERS SECTION.
+      ******************************************************************
+           MOVE "S  A050REFCD." TO VDU.
+           MOVE REFCD           TO VDUBUF.
+           PERFORM SCREENIO.
+
+
+      ******************************************************************
+       CHECK-FOR-DUPS SECTION.
+      ******************************************************************
+
+      *  CHECK TO MAKE SURE THIS ISN'T A RECENTLY UPDATED BATCH THAT 
+      *  WAS COPIED AGAIN BY ACCIDENT.  FIRST GET FOOTPRINT OF SELECTED
+      *  BTFILE WITH DGST COMMAND & SAVE IT.  THEN GET DGST FOR FILES
+      *  WITH SAME  REFCD IN ED/DONE WITH MOST RECENT FIRST 
+
+           IF GP-BATCH-REFCD-DUP-DAYS NOT NUMERIC
+              MOVE 30 TO GP-BATCH-REFCD-DUP-DAYS.
+           IF GP-BATCH-REFCD-DUP-DAYS = 0
+              GO TO EXIT-CHECK-FOR-DUPS.
+
+           MOVE TRANS-DATE TO NDTE-DATE.
+           COMPUTE NDTE-HOLD = -1 * GP-BATCH-REFCD-DUP-DAYS.
+           PERFORM INCREMENT-DAYS.
+           MOVE NDTE-DATE  TO DUP-CHECK-DATE.
+
+           MOVE MKTEMP-DEFAULT TO MKTEMP-BUF.
+           PERFORM MKTEMP-CALL.
+           MOVE MKTEMP-BUF TO DUP-PATH.
+           PERFORM OPEN-DUP-FILE-OUTPUT.
+           PERFORM CLOSE-DUP-FILE.
+
+           MOVE "FIL" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           MOVE GETENV-BUF TO FIL-PATH.
+
+           CALL "C$TOLOWER" USING DGST-CMD1, VALUE 16.
+           CALL "C$TOLOWER" USING DGST-CMD2, VALUE 29.
+           CALL "C$TOLOWER" USING DGST-CMD3, VALUE 5.
+           MOVE FIL-PATH-BASE       TO DGST-CMD-BASE.
+           MOVE BT-PATH-BATCH-NAME  TO DGST-BT-FILENAME.
+           MOVE DUP-PATH            TO DGST-DUP-FILEPATH.
+           MOVE DGST-COMMAND        TO SYSTEM-BUF.
+           PERFORM SYSTEM-CALL.
+
+           PERFORM OPEN-DUP-FILE.
+           MOVE SPACES TO DUP-BT-REC.
+           PERFORM READ-DUP-FILE.
+           PERFORM CLOSE-DUP-FILE.
+           IF IO-BAD
+              GO TO IO-ERROR.
+
+           MOVE DUP-BT-DGST TO SAVE-BT-DGST.
+           PERFORM OPEN-DUP-FILE-OUTPUT.
+           PERFORM CLOSE-DUP-FILE.
+
+           MOVE "DONE/"             TO DGST-DONE-DIR.
+           MOVE BT-PATH-BATCH-NAME  TO DGST-DONE-FILE.
+           MOVE "*"                 TO DGST-DONE-STAR.
+           MOVE DUP-PATH            TO DGST-DUP-FILEPATH.
+           MOVE DGST-COMMAND        TO SYSTEM-BUF.
+           PERFORM SYSTEM-CALL.
+
+           PERFORM OPEN-DUP-FILE.
+           MOVE "N" TO DUP-FG.
+       CHECK-NEXT-DUP.
+           MOVE SPACES TO DUP-DONE-REC.
+           PERFORM READ-DUP-FILE.
+           IF IO-BAD
+              GO TO EXIT-CHECK-FOR-DUPS.
+
+           CALL "C$FILEINFO" USING DUP-DONE-FILEPATH, FILE-INFO,
+                          GIVING STAT-99.
+
+           IF FILE-DATE < DUP-CHECK-DATE
+              GO TO EXIT-CHECK-FOR-DUPS.
+
+           IF DUP-DONE-DGST = SAVE-BT-DGST
+              MOVE "Y" TO DUP-FG
+           ELSE
+              GO TO CHECK-NEXT-DUP.
+
+       EXIT-CHECK-FOR-DUPS.
+           PERFORM CLOSE-DUP-FILE.
+
+      ******************************************************************
+       DETAIL-LINE-PROCESS SECTION.
+      ******************************************************************
+           EVALUATE BT-TYPE
+              WHEN   "D" PERFORM DETAIL-LINE-DETAIL
+              WHEN   "T" PERFORM DETAIL-LINE-TRAILER
+              WHEN OTHER PERFORM DETAIL-LINE-INVALID
+           END-EVALUATE.
+
+      **************************************************
+       DETAIL-LINE-DETAIL SECTION.
+      **************************************************
+           MOVE BT-BRANCH    TO D-BRANCH.
+           MOVE BT-ACCTNO    TO D-ACCTNO.
+
+      * IO-FG FROM THE WRITE-BP1 OR READ-BR
+      * MJD 990614 REPLACED TEST BELOW. IF IO-FG IS SET DURING WRITE
+      *   DUP-FLAG IS SET TO "Y" WHICH ALLOWS DUPLICATE TRANS ON THE
+      *   BP-FILE BUT STILL FLAGS THEM (*) ON BATCH LISTING. (TFC)
+      *--->IF IO-FG NOT = 0 OR BT-ACCTNO = 0
+
+           IF DUP-FLAG = "Y" OR BT-ACCTNO = 0
+              MOVE "*"           TO D-DUP.
+           MOVE LN-SSNO(1)       TO D-SSNO.
+           INSPECT D-SSNO REPLACING ALL "/" BY "-".
+           MOVE ALL "X"          TO D-SOC1 D-SOC2.
+           MOVE BT-SIGNED-AMT    TO D-AMOUNT.
+           MOVE BT-REFCD         TO D-REFCD.
+           MOVE TRANS-DATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.
+           MOVE DATE-MMDDYY      TO D-DATE.
+           IF (BT-PAYDATE = 202020 OR BT-PAYDATE = 020202
+                 OR BT-PAYDATE = 0)
+              MOVE DATE-MMDDYY   TO D-DATE
+           ELSE
+              MOVE BT-PAYDATE    TO D-DATE.
+           MOVE NAME-WORKER      TO D-NAME.
+           IF HOLD-CD-BR-POST-SS-TRCD = "Y"
+              MOVE BT-AUCTION-FEES TO D-AUCTION-FEES
+           ELSE
+              MOVE SPACES          TO D-AUCTION-FEES-X.
+
+           MOVE 1 TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+      ******************************************************************
+       DETAIL-LINE-NO-LOAN SECTION.
+      ******************************************************************
+           MOVE SPACES       TO DETAIL-LINE.
+
+           MOVE "INVALID REFCD: &&&&&" TO D-MESS.
+           INSPECT D-MESS REPLACING FIRST "&&&&&" BY BT-REFCD.
+           MOVE BT-BRANCH    TO D-BRANCH.
+           MOVE BT-ACCTNO    TO D-ACCTNO.
+           IF DUP-FLAG = "Y" OR BT-ACCTNO = 0
+              MOVE "*"        TO D-DUP.
+           MOVE BT-SIGNED-AMT TO D-AMOUNT.
+           MOVE BT-REFCD      TO D-REFCD.
+           MOVE TRANS-DATE    TO D-DATE.
+           IF (BT-PAYDATE = 202020 OR BT-PAYDATE = 020202
+                 OR BT-PAYDATE = 0)
+              MOVE TRANS-DATE TO D-DATE
+           ELSE
+              MOVE BT-PAYDATE  TO D-DATE.
+           IF HOLD-CD-BR-POST-SS-TRCD = "Y"
+              MOVE BT-AUCTION-FEES TO D-AUCTION-FEES
+           ELSE
+              MOVE SPACES          TO D-AUCTION-FEES-X.
+
+           MOVE 1 TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+      **************************************************
+       DETAIL-LINE-TRAILER SECTION.
+      **************************************************
+           MOVE "TOTALS        :" TO D-TOT-PROMPT.
+           MOVE BT-REC-COUNT      TO D-TOT-NUMBER.
+           MOVE BT-TOTAL-AMOUNT   TO D-TOT-AMOUNT.
+           MOVE "TOTALS FROM TRAILER RECORD" TO D-TOT-MESSAGE.
+
+           IF (BT-REC-COUNT NOT = TOTAL-READ(2)) AND
+              (BT-TOTAL-AMOUNT NOT = TOTAL-AMT-READ(2))
+              MOVE "TOTALS DO NOT MATCH DETAIL" TO D-MESS.
+
+           MOVE 1 TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+      **************************************************
+       DETAIL-LINE-INVALID SECTION.
+      **************************************************
+           STRING WS_QUOTE BT-REC WS_QUOTE
+                  DELIMITED BY SIZE INTO DETAIL-LINE.
+           STRING "UNKNOWN RECORD TYPE " WS_QUOTE BT-TYPE WS_QUOTE
+                  DELIMITED BY SIZE INTO D-MESS.
+           MOVE 1 TO LN-FEED.
+           PERFORM WRITE-DETAIL-LINE.
+
+      **************************************************
+       WRITE-DETAIL-LINE SECTION.
+      **************************************************
+           ADD LN-FEED TO LN-COUNT.
+           IF LN-COUNT > EXT-CONAME-RPT-LINES
+              PERFORM HEAD-PAGE.
+           MOVE DETAIL-LINE TO PR-REC.
+           PERFORM WRITE-PR-REC.
+           MOVE 1 TO LN-FEED.
+           MOVE SPACES TO DETAIL-LINE.
+
+      **************************************************
+       HEAD-PAGE SECTION.
+      **************************************************
+           ADD 1            TO PAGE-NUMBER.
+           MOVE PAGE-NUMBER TO H-PAGE-NO.
+           PERFORM GET-TIME.
+           MOVE T-HH        TO H-HR.
+           MOVE T-MM        TO H-MIN.
+           MOVE HEAD1       TO PR-REC.
+           MOVE 99          TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           IF HOLD-CD-BR-PAYOFF-FG = "Y"
+              MOVE "PAYOFF BATCH" TO H-TITLE-PAYOFF
+           ELSE
+              MOVE SPACES TO H-TITLE-PAYOFF.
+           MOVE HEAD2       TO PR-REC.
+           MOVE 1           TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           MOVE HEAD3       TO PR-REC.
+           MOVE 1           TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+           MOVE HEAD4       TO PR-REC.
+           IF HOLD-CD-BR-POST-SS-TRCD = "Y"
+              MOVE HEAD4-REGACC TO PR-REC.
+           MOVE 2           TO LN-FEED.
+           PERFORM WRITE-PR-REC.
+
+       END-HEAD-PAGE.
+           MOVE 4           TO LN-COUNT.
+           MOVE 2           TO LN-FEED.
+
+      **************************************************
+       CREATE-SPOOL-DIR SECTION.
+      **************************************************
+
+      * STORE SPOOL FILE NAME AS /XXX/XXXX/R$/EO/....
+      * WE NEED A FULL PATH NAME HERE ELSE DIR WILL CHANGE WHEN WE
+      * CHANGE DIRECTORIES TO ANOTHER BRANCH.
+      *
+           MOVE " " TO ERRCD.
+           MOVE EXT-FILPATH-BASE    TO EX-SPOOL-BASE.
+           MOVE EXT-FILPATH-MACHINE TO EX-SPOOL-MACHINE.
+           MOVE EXT-FILPATH-DATA    TO EX-SPOOL-DATA-PATH.
+           MOVE TRANS-DATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.
+           MOVE DATE-MMDDYY TO EX-SPOOL-DATE.
+           MOVE " " TO EX-SPOOL-FILE.
+           MOVE EX-SPOOL TO DIR-ACCESS-BUF.
+           PERFORM DIR-ACCESS-CALL.
+           IF STAT NOT = "00"
+              CALL "C$MAKEDIR" USING DIR-ACCESS-BUF GIVING STAT-99
+              IF STAT NOT = "00"
+                 MOVE "E" TO ERRCD
+                 IF EXT-ROUTE-BUF = "00"
+                    MOVE "CANNOT CREATE SPOOL DIRECTORY" TO MESS
+                    PERFORM SEND-MESS
+                    MOVE DIR-ACCESS-BUF TO MESS
+                    PERFORM SEND-MESS
+                    GO TO EXIT-CREATE-SPOOL-DIR
+                 ELSE
+                   MOVE "CANNOT CREATE SPOOL DIRECTORY" TO REF-LOG-MSG
+                    PERFORM CREATE-LOG
+                    GO TO EXIT-CREATE-SPOOL-DIR.
+
+           MOVE "/"     TO EX-SPOOL-FILE.
+           MOVE "BPREF" TO EX-SPOOL-NAME.
+           MOVE "  "    TO EX-SPOOL-SUF.
+
+      *****************************************************************
+      * THEY ARE ALLOWED TO RUN THIS  MORE THAN ONCE ON THE
+      * SAME TRANSACTION DATE, SO CHECK TO SEE IF REPORT EXISTS, IF
+      * SO, INCREMENT THE STEP # SO WE DON'T WIPE OUT PRIOR REPORTS
+      *****************************************************************
+           MOVE 1 TO STEP-COUNT.
+       TRY-NEXT-STEP-NO.
+           MOVE STEP-COUNT TO EX-SPOOL-STEP.
+           MOVE EX-SPOOL TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT = "00"
+              IF STEP-COUNT < 999
+                 ADD 1 TO STEP-COUNT
+                 GO TO TRY-NEXT-STEP-NO.
+
+       EXIT-CREATE-SPOOL-DIR.
+           EXIT.
+
+      ******************************************************************
+       PROCESS-BORROWER SECTION.
+      ******************************************************************
+           MOVE LN-SSNO(1) TO BW-SSNO.
+           PERFORM READ-BW1-FILE.
+           IF IO-BAD
+               MOVE "*** BORROWER NOT ON FILE ***" TO NAME-WORKER
+               GO TO PROCESS-BORROWER-EXIT.
+
+           MOVE BW-LNAME TO NAME-WORKER.
+           MOVE BW-FNAME TO FIRST-NAME.
+           INSPECT NAME-WORKER REPLACING FIRST "  " BY ",?".
+           INSPECT NAME-WORKER REPLACING FIRST "                "
+                   BY FIRST-NAME.
+           INSPECT NAME-WORKER REPLACING ALL "?" BY " ".
+
+       PROCESS-BORROWER-EXIT.
+           EXIT.
+
+      ******************************************************************
+       CODE-SCAN SECTION.
+      ******************************************************************
+
+           MOVE "BR"   TO CDSCAN-TYPE.
+           MOVE SPACES TO CDSCAN-CODE.
+
+           MOVE "WI/CDSCAN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH CDSCAN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF CDSCAN-STATUS NOT = "00" OR CDSCAN-CODE = SPACES
+              MOVE 9 TO IO-FG
+              GO TO EXIT-CODE-SCAN.
+
+           MOVE 0 TO IO-FG.
+
+           MOVE "S  A050REFCD." TO VDU.
+           MOVE CDSCAN-CODE     TO VDUBUF.
+           PERFORM SCREENIO.
+
+           MOVE CDSCAN-CODE TO VDUBUF.
+
+       EXIT-CODE-SCAN.
+           EXIT.
+
+      ******************************************
+       CREATE-LOG SECTION.
+      ******************************************
+           MOVE REF-LOG-PATH TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT-GOOD
+              PERFORM OPEN-REF-LOG-FILE-EXTEND
+           ELSE
+              PERFORM OPEN-REF-LOG-FILE-OUTPUT.
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT TO REF-LOG-TIME.
+           MOVE EXT-CONAME-USER-ID TO REF-LOG-USERID.
+           MOVE "REF: " TO REF-LOG-PROMPT1.
+           MOVE REFCD TO REF-LOG-REFCD.
+           IF BATCH-NO NOT = 0
+              MOVE "BAT: " TO REF-LOG-PROMPT2.
+           MOVE BATCH-NO TO REF-LOG-BATCH.
+           PERFORM WRITE-REF-LOG-FILE.
+           PERFORM CLOSE-REF-LOG-FILE.
+
+      ******************************************************************
+      *
+      *    C O P Y - L I B R A R Y - S E C T I O N S
+      *
+      ******************************************************************
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBGB/TIMEIO.CPY".
+       COPY "LIBLP/LPPOFF.CPY".
+       COPY "LIBLP/LPPOF2.CPY".
+       COPY "LIBLP/LPRATE.CPY".
+       COPY "LIBGB/REBATE.CPY".
+       COPY "LIBLP/LPLCAP.CPY".
+       COPY "LIBLP/LPIBPC.CPY".
+       COPY "LIBLP/ADDONSPR.CPY".
+       COPY "LIBLP/LPAPRS.CPY".
+       COPY "LIBLP/LPMDTE.CPY".
+       COPY "LIBLP/LPXDTE.CPY".
+       COPY "LIBLP/LPSCHD.CPY".
+       COPY "LIBLP/LPITRM.CPY".
+       COPY "LIBLP/LPAMTS.CPY".
+       COPY "LIBLP/LPAPRZ.CPY".
+       COPY "LIBLP/LPUPER.CPY".
+       COPY "LIBLP/LPLCAS.CPY".
+       COPY "LIBLP/LPLCHG.CPY".
+       COPY "LIBLP/SETCTBL.CPY".
+       COPY "LIBLP/LPUPWK.CPY".
+       COPY "LIBGB/RBACT.CPY".
+
+      ****************************************************
+       FORM-RESET SECTION.
+      ****************************************************
+           MOVE EXT-CONAME-CONAME TO BPREF-CONAME.
+           MOVE EXT-CONAME-SYSDATE TO BPREF-SYSDATE.
+           DISPLAY BPREF-SCREEN UPON EXT-EOBUF-WINDOW-HANDLE.
+           MOVE BPREF-FORM-FIELDS TO WR-BUF.
+           MOVE BPREF-FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+      ****************************************************
+       SETUP-LINK-INFO SECTION.
+      ****************************************************
+           MOVE BPREF-HELP--FILE TO HELP-LINK-FILE.
+           MOVE BPREF-HELP--DIR  TO HELP-LINK-DIR.
+
+      ****************************************************
+       VDU-CONVERT-FIELD SECTION.
+      ****************************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBSP/BPREF_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      ******************************************************************
+       MISC SECTION.
+      ******************************************************************
+       COPY "LIBGB/GETPR.CPY".
+       COPY "LIBGB/GETENV.CPY".
+       COPY "LIBGB/ACCESS.CPY".
+       COPY "LIBGB/DACCESS.CPY".
+       COPY "LIBGB/SYSTEM.CPY".
+       COPY "LIBGB/RMFILE.CPY".
+       COPY "LIBGB/MKTEMP.CPY".
+      *-----------------------------------------------------------------
+       GET-BR.
+           MOVE BT-BRANCH TO BR-NO.
+           PERFORM READ-BR-FILE.
+      *-----------------------------------------------------------------
+       SEND-LEGEND.
+           IF EXT-ROUTE-BUF = "00"
+              MOVE MESS TO WR-BUF
+              MOVE MESS-LIST TO WR-LIST
+              PERFORM CALL-WRFORM.
+
+      ******************************************************************
+       IO-ROUTINE SECTION.
+      ******************************************************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBLP/LPSPGS_SQL.CPY".
+       COPY "LIBLP/LPLTPGS_SQL.CPY".
+       COPY "LIBLP/LPLTIGS_SQL.CPY".
+       COPY "LIBLP/LPLNGS_SQL.CPY".
+       COPY "LIBLP/LPCDGS_SQL.CPY".
+       COPY "LIBLP/LPBWGS_SQL.CPY".
+       COPY "LIBGB/GBGPGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBGBGS_SQL.CPY".
+       COPY "LIBGB/GBPRINT.CPY".
+       COPY "LIBLP/LPBP1IN.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBGB/GBGBRN.CPY".
+       COPY "LIBLP/LPBW1RN.CPY".
+       COPY "LIBLP/LPCD1RN.CPY".
+       COPY "LIBLP/LPLN1RN.CPY".
+       COPY "LIBGB/GBGPIN.CPY".
+       COPY "LIBGB/GBWKIN.CPY".
+       COPY "LIBLP/LPSP1RN.CPY".
+       COPY "LIBLP/LPLTI1RN.CPY".
+       COPY "LIBLP/LPLTP1RN.CPY".
+       OPEN-BT-FILE.
+           PERFORM OPEN-IT.
+           MOVE BT-PATH TO E-FILE.
+           OPEN I-O BT-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-BT-FILE.
+           IF IO-FG = 7
+              CLOSE BT-FILE
+              GO TO OPEN-BT-FILE.
+       READ-BT-FILE.
+           PERFORM READ-IT.
+           MOVE BT-PATH TO E-FILE.
+           READ BT-FILE.
+           IF IO-FG = 8
+              GO TO READ-BT-FILE.
+       REWRITE-BT-FILE.
+           PERFORM REWRITE-IT.
+           MOVE BT-PATH TO E-FILE.
+           MOVE SPACES TO E-KEYX.
+           REWRITE BT-REC.
+           MOVE SPACES TO BT-REC.
+       CLOSE-BT-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE BT-FILE.
+       OPEN-DUP-FILE-OUTPUT.
+           PERFORM OPEN-IT.
+           MOVE DUP-PATH TO E-FILE.
+           OPEN OUTPUT DUP-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-DUP-FILE-OUTPUT.
+           IF IO-FG = 7
+              CLOSE DUP-FILE
+              GO TO OPEN-DUP-FILE-OUTPUT.
+       OPEN-DUP-FILE.
+           PERFORM OPEN-IT.
+           MOVE DUP-PATH TO E-FILE.
+           OPEN I-O DUP-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-DUP-FILE.
+           IF IO-FG = 7
+              CLOSE DUP-FILE
+              GO TO OPEN-DUP-FILE.
+       READ-DUP-FILE.
+           PERFORM READ-IT.
+           MOVE DUP-PATH TO E-FILE.
+           READ DUP-FILE.
+           IF IO-FG = 8
+              GO TO READ-DUP-FILE.
+       CLOSE-DUP-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE DUP-FILE.
+       OPEN-REF-LOG-FILE-EXTEND.
+           OPEN EXTEND REF-LOG-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-REF-LOG-FILE-EXTEND.
+           IF IO-FG = 7
+              CLOSE REF-LOG-FILE
+              GO TO OPEN-REF-LOG-FILE-EXTEND.
+       OPEN-REF-LOG-FILE-OUTPUT.
+           OPEN OUTPUT REF-LOG-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-REF-LOG-FILE-OUTPUT.
+           IF IO-FG = 7
+              CLOSE REF-LOG-FILE
+              GO TO OPEN-REF-LOG-FILE-OUTPUT.
+       OPEN-REF-LOG-FILE.
+           OPEN INPUT REF-LOG-FILE.
+           IF IO-FG = 8
+              GO TO OPEN-REF-LOG-FILE.
+           IF IO-FG = 7
+              CLOSE REF-LOG-FILE
+              GO TO OPEN-REF-LOG-FILE.
+       WRITE-REF-LOG-FILE.
+           WRITE REF-LOG-REC.
+       CLOSE-REF-LOG-FILE.
+           CLOSE REF-LOG-FILE.
+
+
+       COPY "LIBGB/FERRORS.CPY".
+           MOVE "E" TO ERRCD.
+
+      ******************************************************************
+       END-PROGRAM SECTION.
+      ******************************************************************
+       END-RUN.
+           PERFORM CLOSE-FILES.
+           MOVE MKTEMP-BUF TO ACCESS-BUF.
+           PERFORM REMOVE-WORKFILE.
+           MOVE DUP-PATH TO ACCESS-BUF.
+           PERFORM REMOVE-WORKFILE.
+       EXIT-PROG.
+           IF EXT-ROUTE-BUF = "00"
+              MOVE EXIT-PATH TO FORM-NAM 
+              MOVE FORM-PATH   TO FORM-PATHNAME.
+       STOP-RUN.
+           IF EXT-ROUTE-BUF = "00" OR "40" OR "50"
+              DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+              DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN 
+              DESTROY BPREF-SCREEN
+              DESTROY EXT-EOBUF-WINDOW-HANDLE.
+           EXIT PROGRAM.

@@ -1,0 +1,34 @@
+Program: APIPAY
+Explanation (auto-structured):
+
+## Validation (2 facts)
+- Program APIPAY paragraph EXIT-VALIDATE-REVERSAL performs reversal (fact 781e6fa9e853c9b4d933) [conf=0.60]
+- Program APIPAY paragraph VALIDATE-REVERSAL performs reversal (fact dfd0e85e35f07e6f7728) [conf=0.60]
+
+## Posting (8 facts)
+- Program APIPAY paragraph MAIN-PROGRAM performs reversal interest when condition: IF VALID-REVERSAL-FG NOT = "Y" (fact 35c8d8dcff4cc88e8b31) [conf=0.80; gate=IF VALID-REVERSAL-FG NOT = "Y"]
+- Program APIPAY paragraph SKIP-PAYOFF-CALC performs reversal gl when condition: IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND (fact a13932705e0966c7650a) [conf=0.80; gate=IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND]
+- Program APIPAY paragraph REVERSAL-LP1-FILE performs reversal interest (fact edbb32d3b9576761c458) [conf=0.70]
+- Program APIPAY paragraph POST-REFUNDS-PLUS-PY-AGAIN performs posting interest (fact d42bafc04a4e400d5ea0) [conf=0.70]
+- Program APIPAY paragraph TEST-PAYOFF-ALLOWED performs payment interest (fact 1235a2c82dedc5b85d45) [conf=0.70]
+- Program APIPAY paragraph REVERSAL-POSTING performs reversal gl (fact 15031862b931d240b35d) [conf=0.70]
+- Program APIPAY paragraph OTHER-CHG-POSTING performs fee (fact bf9630eec262529fe48d) [conf=0.60]
+- Program APIPAY paragraph SETUP-LONPF-BUFFER performs fee (fact dfebc40e1aba5bcb84e5) [conf=0.60]
+
+## Error / Edge Handling (1 facts)
+- Program APIPAY paragraph INVALID-REVERSAL performs reversal (fact 0da051e0f42739908e56) [conf=0.60]
+
+## Other (20 facts)
+- Program APIPAY paragraph POST-Z2 performs posting when condition: IF LN-OT2BAL > (BP-TRAMT - VALID-POSTING-NOPOFF) (fact c249fdddc7a188a44896) [conf=0.70; gate=IF LN-OT2BAL > (BP-TRAMT - VALID-POSTING-NOPOFF)]
+- Program APIPAY paragraph POST-Z2-EXIT performs posting (fact 76e337deed7db833ab64) [conf=0.60]
+- Program APIPAY paragraph REVERSAL-SAVE-SCREEN performs reversal (fact d3e5ace590384ed07e25) [conf=0.60]
+- Program APIPAY paragraph READ-EARNINGS performs reversal (fact 3a50f3c6ac43ab6665aa) [conf=0.60]
+- Program APIPAY paragraph POST-PO performs posting (fact 37b2d94bd260898717ce) [conf=0.60]
+- Program APIPAY paragraph INITIALIZATION performs payment (fact 4bfbc4057809b210df9d) [conf=0.60]
+- Program APIPAY paragraph PAYMENT-POSTING performs payment (fact b615c12353c11aca18f3) [conf=0.60]
+- Program APIPAY paragraph POST-REFUNDS-PLUS-PY performs posting (fact e98d516ac7065e482ed3) [conf=0.60]
+- Program APIPAY paragraph BYPASS-SERVICE performs reversal (fact 2b2d0d5076ec26c7236b) [conf=0.60]
+- Program APIPAY paragraph BANKRUPT-POSTING performs payment (fact 7dd187de3c9173a3fc32) [conf=0.60]
+- Program APIPAY paragraph PAYOFF-POSTING performs posting (fact 2c819121bb4314b1adda) [conf=0.60]
+- Program APIPAY paragraph WORKING-STORAGE performs reversal (fact 45334876ae7374418651) [conf=0.60]
+

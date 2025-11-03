@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSPW
+           SELECT PW-FILE ASSIGN TO PW-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY PW1-KEY
+                  FILE STATUS FILE-STAT.

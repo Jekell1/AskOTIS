@@ -1,0 +1,12 @@
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/rag-1750705704292?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/test-admin-probe?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-libex-6698413774341033812?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-libgb-15348970331881423905?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-libgl-4602471711281268119?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-liblp-7039729866598665107?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-libwi-12265414380486348411?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-libwi-8602067593498413514?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-lp-6768251260835612686?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-lp-821922878718562086?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-lp-8408883677879487839?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}
+Invoke-RestMethod -Method Delete -Uri "$env:AZURE_SEARCH_ENDPOINT/indexes/vector-sp-12018138830471187900?api-version=2024-07-01" -Headers @{'api-key'=$env:AZURE_SEARCH_KEY}

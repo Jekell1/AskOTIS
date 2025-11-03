@@ -1,0 +1,72 @@
+{
+  "question": "Tell me about the variable DS-BRANCH. Where is it initially defined and what is it used for?",
+  "scope": "variable",
+  "expanded_query": "DS-BRANCH DSBRANCH Tell Where about and defined for initially is it me the used variable what",
+  "aliases": {
+    "DSBRANCH": [
+      "DS-BRANCH"
+    ]
+  },
+  "answer_outline": "- Explain variable role (read vs write dominance).\n- List top reader and writer programs.\n- Show representative reference lines.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "fcd9a4ae639d30356091c3b5f0423d607089bbd6",
+      "path": "CB3ABD55E125F0E5D45C070B3BC9DBFD4F890FFA",
+      "line": 9,
+      "snippet": "*  MJD 091895 ADDES DATE TO CALL FOR DLBAL ( NEEDED FOR DS-DATE)"
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "e947782c9000ac55d22c7e69c1794095a0c42a2d",
+      "path": "cobol_src\\FP\\PST821.CBL",
+      "line": 155,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "fa5ce4b602a39db5456cb44ef1e8a626b88d4ec6",
+      "path": "3D5E432FC22131FCE46E2450714D8E592D7EB66E",
+      "line": 157,
+      "snippet": "* 01/11/2021 COMMENTED OUT THE SETENV CALL AND THE ACCEPT GP-REC, WE"
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "e50a2187da9ce54e1d3b60fdeeecaa5192e0f8e5",
+      "path": "cobol_src\\MN\\FDMAIN.CBL",
+      "line": 322,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "IT",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "AND",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759097698.4903297,
+    "k": 6,
+    "candidate_indexes": [
+      "variable_usage",
+      "symbol_refs",
+      "data_items",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "DS-BRANCH"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

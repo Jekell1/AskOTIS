@@ -1,0 +1,157 @@
+      * COPYMEMBER: LIBUP/UPABYCL
+      ******************************************************************
+      *
+      * DESCRIPTION: BRANCH STATISTICS FILE CLEAR - A THRU B
+      *
+      * 20200622 NEW
+      ******************************************************************
+       CLEAR-ABY-FILE SECTION.
+           MOVE ALL X"09" TO ABYA-REC ABYB-REC.
+
+           MOVE 0 TO ABYA-DATE-CCYYMM ABYA-BRNO ABYA-CLASS
+                     ABYA-LTOUCH-DATE
+                     ABYB-DATE-CCYYMM ABYB-BRNO ABYB-CLASS.
+
+      * ABYA-PERIOD-TBL:
+           PERFORM CLEAR-ABYA-PERIOD-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 11
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * ABYA-REPO-ACTIVITY-TBL:
+           PERFORM CLEAR-ABYA-REPO-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 5
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * ABYA-PL-ACTIVITY-TBL:
+           PERFORM CLEAR-ABYA-PL-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * ABY-DLR-ACTIVITY-TBL:
+           PERFORM CLEAR-ABY-DLR-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 3
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * ABYB-MTD-YTD-LMO-LYR:
+
+           PERFORM CLEAR-ABYB-PL-RECOVERY
+                     VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 5.
+
+           PERFORM VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 2
+              MOVE 0 TO ABYB-NO-SOLD(BYSUB1)  ABYB-AMT-SOLD(BYSUB1)
+                        ABYB-NO-TRANS(BYSUB1) ABYB-AMT-TRANS(BYSUB1)
+                        ABYB-NO-PURCH(BYSUB1) ABYB-AMT-PURCH(BYSUB1)
+                        ABYB-OTHCOL(BYSUB1)   ABYB-OT2COL(BYSUB1)
+                        ABYB-INTCOL(BYSUB1)   ABYB-LATECOL(BYSUB1) 
+                        ABYB-PRINCOL(BYSUB1)  ABYB-DEFCOL(BYSUB1)
+                        ABYB-RNPRIN(BYSUB1)   ABYB-INTREB(BYSUB1)
+                        ABYB-CLREB1(BYSUB1)   ABYB-CLREB2(BYSUB1)
+                        ABYB-CLREB3(BYSUB1)   ABYB-CLREB4(BYSUB1)
+                        ABYB-AHREB(BYSUB1)    ABYB-PPREB(BYSUB1)
+                        ABYB-O1REB(BYSUB1)    ABYB-O2REB(BYSUB1) 
+                        ABYB-O3REB(BYSUB1)    ABYB-O4REB(BYSUB1)
+                        ABYB-O5REB(BYSUB1)    ABYB-O6REB(BYSUB1)
+                        ABYB-O7REB(BYSUB1)    ABYB-SCREB(BYSUB1)
+                        ABYB-MFREB(BYSUB1)    ABYB-DFREB(BYSUB1) 
+                        ABYB-UN7-REB(BYSUB1)  ABYB-UN8-REB(BYSUB1)
+                        ABYB-UN9-REB(BYSUB1)  ABYB-UN10-REB(BYSUB1)
+                        ABYB-PART-CHGOFF(BYSUB1) ABYB-ALLOTMENTS(BYSUB1)
+                        ABYB-LOCKBOX(BYSUB1) ABYB-PROCEEDS(BYSUB1)
+                        ABYB-OTH-NO-COL(BYSUB1) ABYB-OT2-NO-COL(BYSUB1)
+                        ABYB-INT-NO-COL(BYSUB1) ABYB-LATE-NO-COL(BYSUB1)
+                        ABYB-OTH-NO-WAIVED(BYSUB1)
+                        ABYB-OT2-NO-WAIVED(BYSUB1)
+                        ABYB-INT-NO-WAIVED(BYSUB1)
+                        ABYB-LATE-NO-WAIVED(BYSUB1)
+                        ABYB-OTH-AMT-WAIVED(BYSUB1)
+                        ABYB-OT2-AMT-WAIVED(BYSUB1)
+                        ABYB-INT-AMT-WAIVED(BYSUB1)
+                        ABYB-LATE-AMT-WAIVED(BYSUB1)
+           END-PERFORM.
+
+           PERFORM VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 2
+              AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 10
+              MOVE 0 TO ABYB-INS-NO-ELIG(BYSUB1 BYSUB2)
+                        ABYB-INS-NO-WROTE(BYSUB1 BYSUB2)
+                        ABYB-INS-NO-NOTWROTE(BYSUB1 BYSUB2)
+                        ABYB-INS-AMT-WROTE(BYSUB1 BYSUB2)
+           END-PERFORM.
+
+           PERFORM VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 2
+              AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 3
+                 MOVE 0 TO ABYB-FEE-NO-ELIG(BYSUB1 BYSUB2)
+                 MOVE 0 TO ABYB-FEE-NO-WROTE(BYSUB1 BYSUB2)
+                 MOVE 0 TO ABYB-FEE-NO-NOTWROTE(BYSUB1 BYSUB2)
+                 MOVE 0 TO ABYB-FEE-AMT-WROTE(BYSUB1 BYSUB2)
+           END-PERFORM.
+
+
+
+      * ABYB-DEL-BUCKETS:
+           PERFORM CLEAR-ABYB-DEL-BUCKETS VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+           MOVE 0 TO ABYB-SUMWGTTM ABYB-SUMWGTAV ABYB-SUMWGTTA
+                     ABYB-IB-ACCRUED  ABYB-PROJ-INCREASE  ABYB-STD-POS
+                     ABYB-PROJ-PROFIT ABYB-30-DAY-MOVED.
+
+
+      * ABYB-UNEARNED-ACTIVITY:
+           PERFORM VARYING BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                     AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                     AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3
+               MOVE 0 TO ABYB-UNEARNED-AMT(BYSUB1 BYSUB2 BYSUB3)
+           END-PERFORM.
+
+           GO TO CLEAR-BY-FILE-EXIT.
+
+
+       CLEAR-ABYB-PL-RECOVERY.
+           MOVE 0 TO ABYB-PL-PRINCOL(1 BYSUB1)
+                     ABYB-PL-INTCOL(1 BYSUB1)
+                     ABYB-PL-LATECOL(1 BYSUB1)
+                     ABYB-PL-O2COL(1 BYSUB1)
+           MOVE 0 TO ABYB-PL-PRINCOL(2 BYSUB1)
+                     ABYB-PL-INTCOL(2 BYSUB1)
+                     ABYB-PL-LATECOL(2 BYSUB1)
+                     ABYB-PL-O2COL(2 BYSUB1).
+
+       CLEAR-ABYA-PERIOD-TBL.
+           MOVE 0 TO ABYA-NO(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-AMT(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-O2(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-INT(BYSUB1 BYSUB2 BYSUB3).
+
+
+       CLEAR-ABYB-DEL-BUCKETS.
+           MOVE 0 TO ABYB-UNITS(BYSUB1 BYSUB2 BYSUB3)
+                     ABYB-OUTBAL(BYSUB1 BYSUB2 BYSUB3)
+                     ABYB-UNITS-BNKRPT(BYSUB1 BYSUB2 BYSUB3)
+                     ABYB-OUTBAL-BNKRPT(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-ABYA-REPO-ACTIVITY-TBL.
+           MOVE 0 TO ABYA-NO-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-AMT-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-O2-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-INT-REPO(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-ABYA-PL-ACTIVITY-TBL.
+           MOVE 0 TO ABYA-NO-PL(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-AMT-PL(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-O2-PL(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-INT-PL(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-ABY-DLR-ACTIVITY-TBL.
+           MOVE 0 TO ABYA-DLRVPRIN(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-DLRVCHGS(BYSUB1 BYSUB2 BYSUB3)
+                     ABYA-DLPARVHELD(BYSUB1 BYSUB2)
+                     ABYB-DLDISC(BYSUB1).
+
+       CLEAR-BY-FILE-EXIT.
+           EXIT.

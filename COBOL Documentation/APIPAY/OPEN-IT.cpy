@@ -1,0 +1,5 @@
+       OPEN-IT.
+           MOVE "OPEN ERROR" TO E-MSG.
+           MOVE SPACES TO E-KEYX.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.

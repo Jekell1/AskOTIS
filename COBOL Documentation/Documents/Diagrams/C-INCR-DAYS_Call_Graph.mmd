@@ -1,0 +1,76 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-INCR-DAYS Module]
+    B --> C[Input Validation]
+    C --> D[Direction Processing]
+    D --> E[Day Increment Loop]
+    E --> F[Boundary Management]
+    F --> G[Output Assembly]
+    G --> H[Return to Caller]
+    
+    subgraph "Input Processing"
+        I[Date Parsing]
+        J[Increment Validation]
+        K[Direction Determination]
+    end
+    
+    subgraph "Calendar Logic"
+        L[Leap Year Detection]
+        M[Days-per-Month Lookup]
+        N[Month Boundary Logic]
+        O[Year Boundary Logic]
+    end
+    
+    subgraph "Loop Processing"
+        P[Forward Day Logic]
+        Q[Backward Day Logic]
+        R[Remaining Days Counter]
+    end
+    
+    subgraph "Working Storage"
+        S[INCR-DAYS-DATE]
+        T[INCR-DAYS-INCREMENT]
+        U[WS-INCR-DAYS-WORK-AREA]
+        V[Current Date Variables]
+    end
+    
+    subgraph "Output Structure"
+        W[WS-INCR-DAYS-OUT-CCYY]
+        X[WS-INCR-DAYS-OUT-MM]
+        Y[WS-INCR-DAYS-OUT-DD]
+        Z[Return Code]
+    end
+    
+    subgraph "Calendar Tables"
+        AA[DAYS-PER-MONTH-TABLE]
+        BB[LEAP-YEAR-LOGIC]
+    end
+    
+    C --> I
+    C --> J
+    D --> K
+    
+    F --> L
+    F --> M
+    F --> N
+    F --> O
+    
+    E --> P
+    E --> Q
+    E --> R
+    
+    B --> S
+    B --> T
+    B --> U
+    B --> V
+    
+    G --> W
+    G --> X
+    G --> Y
+    G --> Z
+    
+    F --> AA
+    F --> BB
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style B fill:#f3e5f5

@@ -1,0 +1,67 @@
+graph TD
+    A[Error Detected] --> B{Error Source}
+    
+    B -->|Input Validation| C[Parameter Error]
+    B -->|File I/O| D[File System Error]
+    B -->|Business Logic| E[Business Rule Violation]
+    B -->|System| F[System Error]
+    
+    C --> C1{Error Type}
+    C1 -->|Branch Invalid| C2[Return Code 2]
+    C1 -->|RefCode Invalid| C3[Return Code 3]
+    C1 -->|Machine Mismatch| C4[Return Code 4]
+    C1 -->|Global Missing| C5[Return Code 5]
+    C1 -->|Day Not Open| C6[Return Code 6]
+    
+    D --> D1[File Error Handler]
+    D1 --> D2[Log to ERRLOG]
+    D2 --> D3{Retry Possible?}
+    D3 -->|Yes| D4[Retry Operation]
+    D3 -->|No| D5[Escalate Error]
+    D4 --> D6{Retry Success?}
+    D6 -->|Yes| D7[Continue Processing]
+    D6 -->|No| D3
+    
+    E --> E1{Business Rule Type}
+    E1 -->|Payment Rejected| E2[LONPF Error Handling]
+    E1 -->|Authorization Missing| E3[Return Code 66]
+    E1 -->|Processing Denied| E4[Return Code 67/68]
+    E1 -->|Update Rejected| E5[Return Code 69]
+    
+    F --> F1[System Error Handler]
+    F1 --> F2[Log Critical Error]
+    F2 --> F3[Emergency Shutdown]
+    
+    C2 --> G[Create Error Log Entry]
+    C3 --> G
+    C4 --> G
+    C5 --> G
+    C6 --> G
+    E2 --> G
+    E3 --> G
+    E4 --> G
+    E5 --> G
+    D5 --> G
+    F3 --> G
+    
+    G --> H[Format Error Message]
+    H --> I[Write to LOG-FILE]
+    I --> J[Set Return Status]
+    J --> K[Clean Up Resources]
+    K --> L[Exit Program]
+    
+    D7 --> M[Resume Normal Processing]
+    
+    classDef inputError fill:#ffe6e6
+    classDef fileError fill:#fff2e6
+    classDef businessError fill:#e6f3ff
+    classDef systemError fill:#f0e6ff
+    classDef recovery fill:#e6ffe6
+    classDef terminal fill:#d4d4d4
+    
+    class C,C1,C2,C3,C4,C5,C6 inputError
+    class D,D1,D2,D3,D4,D5,D6 fileError
+    class E,E1,E2,E3,E4,E5 businessError
+    class F,F1,F2,F3 systemError
+    class D7,M recovery
+    class G,H,I,J,K,L terminal

@@ -1,0 +1,33 @@
+      * REDUCE TRANSACTION AMOUNT BY PAYMENT:
+       LCAP-B-J-PMT.
+           IF LCAP-AMTNEEDED >= LCAP-TRAMT
+              SUBTRACT LCAP-TRAMT FROM LCAP-AMTNEEDED
+              MOVE 0 TO LCAP-TRAMT
+           ELSE
+              SUBTRACT LCAP-AMTNEEDED FROM LCAP-TRAMT
+              MOVE 0 TO LCAP-AMTNEEDED
+              IF LN-PAY-SCHLD-FG = "Y"
+                 ADD 1 TO LCAP-PMT-NO.
+   
+           IF LCAP-AMTNEEDED >= LCAP-LPAPINT
+              SUBTRACT LCAP-LPAPINT FROM LCAP-AMTNEEDED
+              MOVE 0 TO LCAP-LPAPINT
+           ELSE
+              SUBTRACT LCAP-AMTNEEDED FROM LCAP-LPAPINT
+              MOVE 0 TO LCAP-AMTNEEDED.
+   
+           IF LCAP-AMTNEEDED >= LCAP-LPAPLC
+              SUBTRACT LCAP-LPAPLC FROM LCAP-AMTNEEDED
+              MOVE 0 TO LCAP-LPAPLC
+           ELSE
+              SUBTRACT LCAP-AMTNEEDED FROM LCAP-LPAPLC
+              MOVE 0 TO LCAP-AMTNEEDED.
+   
+           IF LN-PAY-SCHLD-FG = "Y"
+              MOVE SCHD-AMT(LCAP-PMT-NO) TO LCAP-AMTNEEDED
+                                            LCHG-CURPAY
+           ELSE
+              MOVE LN-REGPYAMT TO LCAP-AMTNEEDED
+                                  LCHG-CURPAY.
+           GO TO LCAP-B-J-DATE-CHK.
+

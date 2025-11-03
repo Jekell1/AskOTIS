@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSBY
+           SELECT OBY-FILE ASSIGN TO OBY-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OBY1-KEY
+                  FILE STATUS FILE-STAT.

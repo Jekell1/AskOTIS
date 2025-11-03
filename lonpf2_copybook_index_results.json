@@ -1,0 +1,2025 @@
+{
+  "query": "LONPF2 copybooks",
+  "total_records": 288,
+  "unique_copybooks": 288,
+  "copybooks": [
+    "LIBCL/CLMENUW_EXT.CPY",
+    "LIBCL/CRNOR2W.CPY",
+    "LIBEX/EX01XNO.CPY",
+    "LIBEX/EX01XTRP.CPY",
+    "LIBGB/ACCESS.CPY",
+    "LIBGB/ACCESSW.CPY",
+    "LIBGB/AGEING.CPY",
+    "LIBGB/AGEINGW.CPY",
+    "LIBGB/CONAME_EXT.CPY",
+    "LIBGB/CONNECTW_SQL.CPY",
+    "LIBGB/CONNECT_SQL.CPY",
+    "LIBGB/DACCESS.CPY",
+    "LIBGB/DACCESSW.CPY",
+    "LIBGB/DATER.CPY",
+    "LIBGB/DATERW.CPY",
+    "LIBGB/DECLAR2.CPY",
+    "LIBGB/DECLARE.CPY",
+    "LIBGB/FERRORS.CPY",
+    "LIBGB/FILEWK.CPY",
+    "LIBGB/GB01BR.CPY",
+    "LIBGB/GB01BR_SQL.CPY",
+    "LIBGB/GB01GB.CPY",
+    "LIBGB/GB01GB_SQL.CPY",
+    "LIBGB/GBBRGS_SQL.CPY",
+    "LIBGB/GBBRRN.CPY",
+    "LIBGB/GBGBGS_SQL.CPY",
+    "LIBGB/GBGBRN.CPY",
+    "LIBGB/GBWSBR.CPY",
+    "LIBGB/GBWSGB.CPY",
+    "LIBGB/GETENV.CPY",
+    "LIBGB/GETENVW.CPY",
+    "LIBGB/GETFMW.CPY",
+    "LIBGB/GETPR.CPY",
+    "LIBGB/GETPRW.CPY",
+    "LIBGB/GPENV.CPY",
+    "LIBGB/GPENVW.CPY",
+    "LIBGB/HELPLINK.CPY",
+    "LIBGB/MESSWK.CPY",
+    "LIBGB/PRU_LNK.CPY",
+    "LIBGB/RBACT.CPY",
+    "LIBGB/RBACTW.CPY",
+    "LIBGB/REBATE.CPY",
+    "LIBGB/REBATEW.CPY",
+    "LIBGB/SCREEN.CPY",
+    "LIBGB/SCREENW.CPY",
+    "LIBGB/SPPDTH.CPY",
+    "LIBGB/SPPDTHW.CPY",
+    "LIBGB/SYSTEM.CPY",
+    "LIBGB/SYSTEMW.CPY",
+    "LIBGB/TIMEIO.CPY",
+    "LIBGB/TIMEWK.CPY",
+    "LIBGL/GL01GL.CPY",
+    "LIBGL/GL01GL_SQL.CPY",
+    "LIBGL/GLGLGS_SQL.CPY",
+    "LIBGL/GLWSGL.CPY",
+    "LIBLP/ADDONSPR.CPY",
+    "LIBLP/ADDONSPRW.CPY",
+    "LIBLP/DEFPOL.CPY",
+    "LIBLP/DEFPOLW.CPY",
+    "LIBLP/LONPF_DEF.CPY",
+    "LIBLP/LONPF_EVA.CPY",
+    "LIBLP/LONPF_SCN.CPY",
+    "LIBLP/LONPF_WKS.CPY",
+    "LIBLP/LP01BW.CPY",
+    "LIBLP/LP01BW_SQL.CPY",
+    "LIBLP/LP01CA.CPY",
+    "LIBLP/LP01CA_SQL.CPY",
+    "LIBLP/LP01CD.CPY",
+    "LIBLP/LP01CD_SQL.CPY",
+    "LIBLP/LP01CH.CPY",
+    "LIBLP/LP01CH_SQL.CPY",
+    "LIBLP/LP01CX.CPY",
+    "LIBLP/LP01CX_SQL.CPY",
+    "LIBLP/LP01DS.CPY",
+    "LIBLP/LP01DS_SQL.CPY",
+    "LIBLP/LP01DT.CPY",
+    "LIBLP/LP01DT_SQL.CPY",
+    "LIBLP/LP01ES.CPY",
+    "LIBLP/LP01ES_SQL.CPY",
+    "LIBLP/LP01FD.CPY",
+    "LIBLP/LP01FD_SQL.CPY",
+    "LIBLP/LP01FM.CPY",
+    "LIBLP/LP01FM_SQL.CPY",
+    "LIBLP/LP01IC.CPY",
+    "LIBLP/LP01IC_SQL.CPY",
+    "LIBLP/LP01LC.CPY",
+    "LIBLP/LP01LC_SQL.CPY",
+    "LIBLP/LP01LM.CPY",
+    "LIBLP/LP01LM_SQL.CPY",
+    "LIBLP/LP01LN.CPY",
+    "LIBLP/LP01LN_SQL.CPY",
+    "LIBLP/LP01LP.CPY",
+    "LIBLP/LP01LP_SQL.CPY",
+    "LIBLP/LP01LSP.CPY",
+    "LIBLP/LP01LSP_SQL.CPY",
+    "LIBLP/LP01LSX.CPY",
+    "LIBLP/LP01LSX_SQL.CPY",
+    "LIBLP/LP01LTB.CPY",
+    "LIBLP/LP01LTB_SQL.CPY",
+    "LIBLP/LP01LTI.CPY",
+    "LIBLP/LP01LTI_SQL.CPY",
+    "LIBLP/LP01LTP.CPY",
+    "LIBLP/LP01LTP_SQL.CPY",
+    "LIBLP/LP01LX.CPY",
+    "LIBLP/LP01LXE.CPY",
+    "LIBLP/LP01LXE_SQL.CPY",
+    "LIBLP/LP01LXG.CPY",
+    "LIBLP/LP01LXG_SQL.CPY",
+    "LIBLP/LP01LX_SQL.CPY",
+    "LIBLP/LP01NO.CPY",
+    "LIBLP/LP01NO_SQL.CPY",
+    "LIBLP/LP01PD.CPY",
+    "LIBLP/LP01PD_SQL.CPY",
+    "LIBLP/LP01SP.CPY",
+    "LIBLP/LP01SPA.CPY",
+    "LIBLP/LP01SPB.CPY",
+    "LIBLP/LP01SPC.CPY",
+    "LIBLP/LP01SP_SQL.CPY",
+    "LIBLP/LP01TRP.CPY",
+    "LIBLP/LP01TRP_SQL.CPY",
+    "LIBLP/LP01TY.CPY",
+    "LIBLP/LP01TY_SQL.CPY",
+    "LIBLP/LPAMTS.CPY",
+    "LIBLP/LPAMTSW.CPY",
+    "LIBLP/LPAPRS.CPY",
+    "LIBLP/LPAPRSW.CPY",
+    "LIBLP/LPAPRZ.CPY",
+    "LIBLP/LPAPRZW.CPY",
+    "LIBLP/LPAVCR.CPY",
+    "LIBLP/LPAVCRW.CPY",
+    "LIBLP/LPBW1IN.CPY",
+    "LIBLP/LPBWGS_SQL.CPY",
+    "LIBLP/LPCA1IN.CPY",
+    "LIBLP/LPCAGS_SQL.CPY",
+    "LIBLP/LPCD1RN.CPY",
+    "LIBLP/LPCDEL.CPY",
+    "LIBLP/LPCDELW.CPY",
+    "LIBLP/LPCDGS_SQL.CPY",
+    "LIBLP/LPCEPP.CPY",
+    "LIBLP/LPCEPPW.CPY",
+    "LIBLP/LPCHCL.CPY",
+    "LIBLP/LPCHGS_SQL.CPY",
+    "LIBLP/LPCHIN.CPY",
+    "LIBLP/LPCX1IN.CPY",
+    "LIBLP/LPCXCL.CPY",
+    "LIBLP/LPCXGS_SQL.CPY",
+    "LIBLP/LPDEFW.CPY",
+    "LIBLP/LPDS1IN.CPY",
+    "LIBLP/LPDSCL.CPY",
+    "LIBLP/LPDSCLW.CPY",
+    "LIBLP/LPDSGS_SQL.CPY",
+    "LIBLP/LPDT1IN.CPY",
+    "LIBLP/LPDTCL.CPY",
+    "LIBLP/LPDTGS_SQL.CPY",
+    "LIBLP/LPEARN.CPY",
+    "LIBLP/LPEARNW.CPY",
+    "LIBLP/LPES1IN.CPY",
+    "LIBLP/LPESGS_SQL.CPY",
+    "LIBLP/LPFD1RN.CPY",
+    "LIBLP/LPFDGS_SQL.CPY",
+    "LIBLP/LPFDREPAYNO.CPY",
+    "LIBLP/LPFDREPAYTRP.CPY",
+    "LIBLP/LPFDWK.CPY",
+    "LIBLP/LPFM1IN.CPY",
+    "LIBLP/LPFMCL.CPY",
+    "LIBLP/LPFMGS_SQL.CPY",
+    "LIBLP/LPFRFD.CPY",
+    "LIBLP/LPFSREPAYNO.CPY",
+    "LIBLP/LPFSREPAYTRP.CPY",
+    "LIBLP/LPFSWK.CPY",
+    "LIBLP/LPIBPC.CPY",
+    "LIBLP/LPIBPCW.CPY",
+    "LIBLP/LPIC1RN.CPY",
+    "LIBLP/LPICGS_SQL.CPY",
+    "LIBLP/LPIPBUF.CPY",
+    "LIBLP/LPITRM.CPY",
+    "LIBLP/LPITRMW.CPY",
+    "LIBLP/LPLC1RN.CPY",
+    "LIBLP/LPLCAP.CPY",
+    "LIBLP/LPLCAPW.CPY",
+    "LIBLP/LPLCAS.CPY",
+    "LIBLP/LPLCASW.CPY",
+    "LIBLP/LPLCGS_SQL.CPY",
+    "LIBLP/LPLCHG.CPY",
+    "LIBLP/LPLCHGW.CPY",
+    "LIBLP/LPLM1IN.CPY",
+    "LIBLP/LPLMGS_SQL.CPY",
+    "LIBLP/LPLN1IN.CPY",
+    "LIBLP/LPLNGS_SQL.CPY",
+    "LIBLP/LPLOANW.CPY",
+    "LIBLP/LPLP1IN.CPY",
+    "LIBLP/LPLPGS_SQL.CPY",
+    "LIBLP/LPLSP1IN.CPY",
+    "LIBLP/LPLSPGS_SQL.CPY",
+    "LIBLP/LPLSX1IN.CPY",
+    "LIBLP/LPLSXGS_SQL.CPY",
+    "LIBLP/LPLTB1IN.CPY",
+    "LIBLP/LPLTBCL.CPY",
+    "LIBLP/LPLTBGS_SQL.CPY",
+    "LIBLP/LPLTI1IN.CPY",
+    "LIBLP/LPLTIGS_SQL.CPY",
+    "LIBLP/LPLTP1RN.CPY",
+    "LIBLP/LPLTPGS_SQL.CPY",
+    "LIBLP/LPLX1IN.CPY",
+    "LIBLP/LPLXCL.CPY",
+    "LIBLP/LPLXE1IN.CPY",
+    "LIBLP/LPLXEGS_SQL.CPY",
+    "LIBLP/LPLXG1IN.CPY",
+    "LIBLP/LPLXGGS_SQL.CPY",
+    "LIBLP/LPLXGS_SQL.CPY",
+    "LIBLP/LPMDTE.CPY",
+    "LIBLP/LPMDTEW.CPY",
+    "LIBLP/LPMENUW.CPY",
+    "LIBLP/LPNO1IN.CPY",
+    "LIBLP/LPNOGS_SQL.CPY",
+    "LIBLP/LPPD1IN.CPY",
+    "LIBLP/LPPDCL.CPY",
+    "LIBLP/LPPDGS_SQL.CPY",
+    "LIBLP/LPPDUE.CPY",
+    "LIBLP/LPPDUEW.CPY",
+    "LIBLP/LPPFBUF.CPY",
+    "LIBLP/LPPOF2.CPY",
+    "LIBLP/LPPOFF.CPY",
+    "LIBLP/LPPOFFW.CPY",
+    "LIBLP/LPRATE.CPY",
+    "LIBLP/LPRATEW.CPY",
+    "LIBLP/LPREPAYNOI.CPY",
+    "LIBLP/LPREPAYTRPI.CPY",
+    "LIBLP/LPSCHD.CPY",
+    "LIBLP/LPSCHDW.CPY",
+    "LIBLP/LPSETTYW.CPY",
+    "LIBLP/LPSP1RN.CPY",
+    "LIBLP/LPSPGS_SQL.CPY",
+    "LIBLP/LPSRCD.CPY",
+    "LIBLP/LPSRCDW.CPY",
+    "LIBLP/LPSTAT.CPY",
+    "LIBLP/LPSTATW.CPY",
+    "LIBLP/LPTDEL.CPY",
+    "LIBLP/LPTRP1IN.CPY",
+    "LIBLP/LPTRPCL.CPY",
+    "LIBLP/LPTRPGS_SQL.CPY",
+    "LIBLP/LPTY1IN.CPY",
+    "LIBLP/LPTYCL.CPY",
+    "LIBLP/LPTYGS_SQL.CPY",
+    "LIBLP/LPUPER.CPY",
+    "LIBLP/LPUPERW.CPY",
+    "LIBLP/LPUPWK.CPY",
+    "LIBLP/LPUPWKW.CPY",
+    "LIBLP/LPWKI.CPY",
+    "LIBLP/LPWKPATH.CPY",
+    "LIBLP/LPWSBW.CPY",
+    "LIBLP/LPWSCA.CPY",
+    "LIBLP/LPWSCD.CPY",
+    "LIBLP/LPWSCH.CPY",
+    "LIBLP/LPWSCX.CPY",
+    "LIBLP/LPWSDS.CPY",
+    "LIBLP/LPWSDT.CPY",
+    "LIBLP/LPWSES.CPY",
+    "LIBLP/LPWSFD.CPY",
+    "LIBLP/LPWSFM.CPY",
+    "LIBLP/LPWSIC.CPY",
+    "LIBLP/LPWSLC.CPY",
+    "LIBLP/LPWSLM.CPY",
+    "LIBLP/LPWSLN.CPY",
+    "LIBLP/LPWSLP.CPY",
+    "LIBLP/LPWSLSP.CPY",
+    "LIBLP/LPWSLSX.CPY",
+    "LIBLP/LPWSLTB.CPY",
+    "LIBLP/LPWSLTI.CPY",
+    "LIBLP/LPWSLTP.CPY",
+    "LIBLP/LPWSLX.CPY",
+    "LIBLP/LPWSLXE.CPY",
+    "LIBLP/LPWSLXG.CPY",
+    "LIBLP/LPWSNO.CPY",
+    "LIBLP/LPWSPD.CPY",
+    "LIBLP/LPWSREPAYNO.CPY",
+    "LIBLP/LPWSREPAYTRP.CPY",
+    "LIBLP/LPWSSP.CPY",
+    "LIBLP/LPWSTRP.CPY",
+    "LIBLP/LPWSTY.CPY",
+    "LIBLP/LPXDTE.CPY",
+    "LIBLP/LPXDTEW.CPY",
+    "LIBLP/POSTDATE.CPY",
+    "LIBLP/POSTDATEW.CPY",
+    "LIBLP/SETCTBL.CPY",
+    "LIBLP/SETCTBLW.CPY",
+    "LIBLP/UPDATEREPAYNO.CPY",
+    "LIBLP/UPDATEREPAYTRP.CPY"
+  ],
+  "records": [
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LXE.CPY",
+      "line_number": 897
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LXG.CPY",
+      "line_number": 900
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LSP_SQL.CPY",
+      "line_number": 904
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSTY.CPY",
+      "line_number": 923
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGL/GLWSGL.CPY",
+      "line_number": 926
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSDS.CPY",
+      "line_number": 929
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01FD_SQL.CPY",
+      "line_number": 946
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01IC.CPY",
+      "line_number": 948
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTP_SQL.CPY",
+      "line_number": 958
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPMENUW.CPY",
+      "line_number": 1322
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSTATW.CPY",
+      "line_number": 1330
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSRCDW.CPY",
+      "line_number": 1332
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LONPF_WKS.CPY",
+      "line_number": 1355
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/UPDATEREPAYNO.CPY",
+      "line_number": 8821
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SPPDTH.CPY",
+      "line_number": 8827
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SCREEN.CPY",
+      "line_number": 8832
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPEARN.CPY",
+      "line_number": 8834
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCHG.CPY",
+      "line_number": 8849
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTRPGS_SQL.CPY",
+      "line_number": 9817
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSPGS_SQL.CPY",
+      "line_number": 9818
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXEGS_SQL.CPY",
+      "line_number": 9822
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLSPGS_SQL.CPY",
+      "line_number": 9828
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPBW1IN.CPY",
+      "line_number": 9859
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDT1IN.CPY",
+      "line_number": 9865
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFSREPAYTRP.CPY",
+      "line_number": 853
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBWSGB.CPY",
+      "line_number": 875
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CH.CPY",
+      "line_number": 876
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSCH.CPY",
+      "line_number": 878
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LN_SQL.CPY",
+      "line_number": 886
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LSP.CPY",
+      "line_number": 903
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLSX.CPY",
+      "line_number": 908
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01NO_SQL.CPY",
+      "line_number": 940
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CX_SQL.CPY",
+      "line_number": 943
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTB.CPY",
+      "line_number": 951
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTI.CPY",
+      "line_number": 954
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSES.CPY",
+      "line_number": 965
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBEX/EX01XTRP.CPY",
+      "line_number": 968
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/AGEINGW.CPY",
+      "line_number": 1306
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/MESSWK.CPY",
+      "line_number": 1311
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/TIMEWK.CPY",
+      "line_number": 1313
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GETPRW.CPY",
+      "line_number": 1325
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDSCLW.CPY",
+      "line_number": 1329
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPITRMW.CPY",
+      "line_number": 1342
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPDUEW.CPY",
+      "line_number": 1350
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/HELPLINK.CPY",
+      "line_number": 1356
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LONPF_SCN.CPY",
+      "line_number": 1369
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/DEFPOL.CPY",
+      "line_number": 8822
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCEPP.CPY",
+      "line_number": 8826
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DATER.CPY",
+      "line_number": 8831
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAPRZ.CPY",
+      "line_number": 8852
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPDUE.CPY",
+      "line_number": 8856
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFRFD.CPY",
+      "line_number": 8857
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GETPR.CPY",
+      "line_number": 8880
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/ACCESS.CPY",
+      "line_number": 8883
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTRPCL.CPY",
+      "line_number": 9803
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXGGS_SQL.CPY",
+      "line_number": 9821
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTBGS_SQL.CPY",
+      "line_number": 9826
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFDGS_SQL.CPY",
+      "line_number": 9835
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLM1IN.CPY",
+      "line_number": 9852
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTI1IN.CPY",
+      "line_number": 9873
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFSWK.CPY",
+      "line_number": 852
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLX.CPY",
+      "line_number": 896
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLSP.CPY",
+      "line_number": 905
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01DS.CPY",
+      "line_number": 927
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLTB.CPY",
+      "line_number": 953
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSREPAYTRP.CPY",
+      "line_number": 966
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GPENVW.CPY",
+      "line_number": 1334
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPIBPCW.CPY",
+      "line_number": 1339
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LONPF_DEF.CPY",
+      "line_number": 1354
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSRCD.CPY",
+      "line_number": 8836
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTBCL.CPY",
+      "line_number": 9809
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBGBRN.CPY",
+      "line_number": 9848
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFD1RN.CPY",
+      "line_number": 9868
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPES1IN.CPY",
+      "line_number": 9877
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFDREPAYNO.CPY",
+      "line_number": 862
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LC.CPY",
+      "line_number": 882
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LX.CPY",
+      "line_number": 894
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LXG_SQL.CPY",
+      "line_number": 901
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01SPB.CPY",
+      "line_number": 911
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGL/GL01GL.CPY",
+      "line_number": 924
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGL/GL01GL_SQL.CPY",
+      "line_number": 925
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01DT.CPY",
+      "line_number": 933
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01FM.CPY",
+      "line_number": 936
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CD_SQL.CPY",
+      "line_number": 961
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDEFW.CPY",
+      "line_number": 1316
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSETTYW.CPY",
+      "line_number": 1323
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/POSTDATEW.CPY",
+      "line_number": 1331
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/CONAME_EXT.CPY",
+      "line_number": 1352
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SCREENW.CPY",
+      "line_number": 1353
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GETFMW.CPY",
+      "line_number": 1364
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DECLARE.CPY",
+      "line_number": 1377
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAMTS.CPY",
+      "line_number": 8841
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/REBATE.CPY",
+      "line_number": 8844
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCAS.CPY",
+      "line_number": 8850
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAPRS.CPY",
+      "line_number": 8851
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/TIMEIO.CPY",
+      "line_number": 8858
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPDCL.CPY",
+      "line_number": 9810
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCGS_SQL.CPY",
+      "line_number": 9829
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLPGS_SQL.CPY",
+      "line_number": 9830
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPESGS_SQL.CPY",
+      "line_number": 9836
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCAGS_SQL.CPY",
+      "line_number": 9842
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLSX1IN.CPY",
+      "line_number": 9857
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSP1RN.CPY",
+      "line_number": 9858
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTRP1IN.CPY",
+      "line_number": 9870
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFSREPAYNO.CPY",
+      "line_number": 854
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GB01BR.CPY",
+      "line_number": 870
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GB01BR_SQL.CPY",
+      "line_number": 871
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CH_SQL.CPY",
+      "line_number": 877
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01TRP.CPY",
+      "line_number": 879
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LN.CPY",
+      "line_number": 885
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LM.CPY",
+      "line_number": 891
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01TY.CPY",
+      "line_number": 921
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSDT.CPY",
+      "line_number": 935
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSIC.CPY",
+      "line_number": 950
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CD.CPY",
+      "line_number": 960
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01ES.CPY",
+      "line_number": 963
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBEX/EX01XNO.CPY",
+      "line_number": 969
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SPPDTHW.CPY",
+      "line_number": 1305
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/FILEWK.CPY",
+      "line_number": 1310
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPIPBUF.CPY",
+      "line_number": 1314
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCHGW.CPY",
+      "line_number": 1345
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBCL/CLMENUW_EXT.CPY",
+      "line_number": 1359
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPXDTE.CPY",
+      "line_number": 8823
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPOFF.CPY",
+      "line_number": 8839
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLN1IN.CPY",
+      "line_number": 9850
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBWSBR.CPY",
+      "line_number": 872
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLC.CPY",
+      "line_number": 884
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LP.CPY",
+      "line_number": 888
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLXE.CPY",
+      "line_number": 899
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01SP.CPY",
+      "line_number": 909
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01BW.CPY",
+      "line_number": 915
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CA.CPY",
+      "line_number": 918
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSFM.CPY",
+      "line_number": 938
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSCD.CPY",
+      "line_number": 962
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DACCESSW.CPY",
+      "line_number": 1326
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SYSTEMW.CPY",
+      "line_number": 1328
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAVCRW.CPY",
+      "line_number": 1335
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/ADDONSPRW.CPY",
+      "line_number": 1337
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCDEL.CPY",
+      "line_number": 8825
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAVCR.CPY",
+      "line_number": 8838
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPIBPC.CPY",
+      "line_number": 8842
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GPENV.CPY",
+      "line_number": 8845
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCHCL.CPY",
+      "line_number": 9808
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTYGS_SQL.CPY",
+      "line_number": 9816
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPBWGS_SQL.CPY",
+      "line_number": 9843
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBBRGS_SQL.CPY",
+      "line_number": 9845
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLSP1IN.CPY",
+      "line_number": 9856
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCA1IN.CPY",
+      "line_number": 9860
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDS1IN.CPY",
+      "line_number": 9862
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPIC1RN.CPY",
+      "line_number": 9872
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTP1RN.CPY",
+      "line_number": 9875
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCD1RN.CPY",
+      "line_number": 9876
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPREPAYTRPI.CPY",
+      "line_number": 9878
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFDWK.CPY",
+      "line_number": 860
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GB01GB.CPY",
+      "line_number": 873
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLXG.CPY",
+      "line_number": 902
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01DS_SQL.CPY",
+      "line_number": 928
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01DT_SQL.CPY",
+      "line_number": 934
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01FM_SQL.CPY",
+      "line_number": 937
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWKPATH.CPY",
+      "line_number": 1303
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GETENVW.CPY",
+      "line_number": 1304
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/CONNECTW_SQL.CPY",
+      "line_number": 1309
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPOFFW.CPY",
+      "line_number": 1336
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSCHDW.CPY",
+      "line_number": 1343
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCAPW.CPY",
+      "line_number": 1344
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/RBACT.CPY",
+      "line_number": 8837
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPITRM.CPY",
+      "line_number": 8847
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSCHD.CPY",
+      "line_number": 8853
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GETENV.CPY",
+      "line_number": 8881
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDTCL.CPY",
+      "line_number": 9804
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCDGS_SQL.CPY",
+      "line_number": 9841
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBGBGS_SQL.CPY",
+      "line_number": 9846
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLX1IN.CPY",
+      "line_number": 9853
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPREPAYNOI.CPY",
+      "line_number": 9879
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLN.CPY",
+      "line_number": 887
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLP.CPY",
+      "line_number": 890
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSSP.CPY",
+      "line_number": 914
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPUPWKW.CPY",
+      "line_number": 1307
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCEPPW.CPY",
+      "line_number": 1321
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPEARNW.CPY",
+      "line_number": 1324
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/ACCESSW.CPY",
+      "line_number": 1327
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/PRU_LNK.CPY",
+      "line_number": 1357
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DECLAR2.CPY",
+      "line_number": 1410
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPUPER.CPY",
+      "line_number": 8830
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/POSTDATE.CPY",
+      "line_number": 8835
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTDEL.CPY",
+      "line_number": 8846
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCAP.CPY",
+      "line_number": 8848
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTYCL.CPY",
+      "line_number": 9806
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPDGS_SQL.CPY",
+      "line_number": 9819
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXGS_SQL.CPY",
+      "line_number": 9823
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPICGS_SQL.CPY",
+      "line_number": 9833
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GBBRRN.CPY",
+      "line_number": 9847
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXG1IN.CPY",
+      "line_number": 9855
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCHIN.CPY",
+      "line_number": 9871
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LC_SQL.CPY",
+      "line_number": 883
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LP_SQL.CPY",
+      "line_number": 889
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLM.CPY",
+      "line_number": 893
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LX_SQL.CPY",
+      "line_number": 895
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LXE_SQL.CPY",
+      "line_number": 898
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSCA.CPY",
+      "line_number": 920
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01PD.CPY",
+      "line_number": 930
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01PD_SQL.CPY",
+      "line_number": 931
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSNO.CPY",
+      "line_number": 941
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CX.CPY",
+      "line_number": 942
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01IC_SQL.CPY",
+      "line_number": 949
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLTI.CPY",
+      "line_number": 956
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSLTP.CPY",
+      "line_number": 959
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01ES_SQL.CPY",
+      "line_number": 964
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSREPAYNO.CPY",
+      "line_number": 967
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/DEFPOLW.CPY",
+      "line_number": 1317
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/REBATEW.CPY",
+      "line_number": 1341
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/SETCTBLW.CPY",
+      "line_number": 1349
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/SETCTBL.CPY",
+      "line_number": 8854
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLNGS_SQL.CPY",
+      "line_number": 9831
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLC1RN.CPY",
+      "line_number": 9849
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPTY1IN.CPY",
+      "line_number": 9861
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCX1IN.CPY",
+      "line_number": 9869
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01TRP_SQL.CPY",
+      "line_number": 880
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSTRP.CPY",
+      "line_number": 881
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01SPA.CPY",
+      "line_number": 910
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01TY_SQL.CPY",
+      "line_number": 922
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01FD.CPY",
+      "line_number": 945
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSFD.CPY",
+      "line_number": 947
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTB_SQL.CPY",
+      "line_number": 952
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTI_SQL.CPY",
+      "line_number": 955
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPUPERW.CPY",
+      "line_number": 1308
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPMDTEW.CPY",
+      "line_number": 1319
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/RBACTW.CPY",
+      "line_number": 1333
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAPRSW.CPY",
+      "line_number": 1347
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/UPDATEREPAYTRP.CPY",
+      "line_number": 8820
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/AGEING.CPY",
+      "line_number": 8828
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPOF2.CPY",
+      "line_number": 8840
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/SYSTEM.CPY",
+      "line_number": 8884
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/CONNECT_SQL.CPY",
+      "line_number": 9815
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPNOGS_SQL.CPY",
+      "line_number": 9820
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTPGS_SQL.CPY",
+      "line_number": 9824
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLMGS_SQL.CPY",
+      "line_number": 9832
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCXGS_SQL.CPY",
+      "line_number": 9839
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGL/GLGLGS_SQL.CPY",
+      "line_number": 9844
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/FERRORS.CPY",
+      "line_number": 9881
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFDREPAYTRP.CPY",
+      "line_number": 861
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LSX_SQL.CPY",
+      "line_number": 907
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01SPC.CPY",
+      "line_number": 912
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01SP_SQL.CPY",
+      "line_number": 913
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSBW.CPY",
+      "line_number": 917
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01CA_SQL.CPY",
+      "line_number": 919
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSPD.CPY",
+      "line_number": 932
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01NO.CPY",
+      "line_number": 939
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LTP.CPY",
+      "line_number": 957
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DATERW.CPY",
+      "line_number": 1312
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBCL/CRNOR2W.CPY",
+      "line_number": 1315
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAMTSW.CPY",
+      "line_number": 1338
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLCASW.CPY",
+      "line_number": 1346
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLOANW.CPY",
+      "line_number": 1366
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPUPWK.CPY",
+      "line_number": 8829
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/ADDONSPR.CPY",
+      "line_number": 8855
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFMCL.CPY",
+      "line_number": 9801
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDSCL.CPY",
+      "line_number": 9805
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXCL.CPY",
+      "line_number": 9807
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFMGS_SQL.CPY",
+      "line_number": 9834
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDTGS_SQL.CPY",
+      "line_number": 9837
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPDSGS_SQL.CPY",
+      "line_number": 9838
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCHGS_SQL.CPY",
+      "line_number": 9840
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPFM1IN.CPY",
+      "line_number": 9866
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPNO1IN.CPY",
+      "line_number": 9867
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTB1IN.CPY",
+      "line_number": 9874
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/GB01GB_SQL.CPY",
+      "line_number": 874
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LM_SQL.CPY",
+      "line_number": 892
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01LSX.CPY",
+      "line_number": 906
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LP01BW_SQL.CPY",
+      "line_number": 916
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWSCX.CPY",
+      "line_number": 944
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPXDTEW.CPY",
+      "line_number": 1318
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCDELW.CPY",
+      "line_number": 1320
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPRATEW.CPY",
+      "line_number": 1340
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPAPRZW.CPY",
+      "line_number": 1348
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPFBUF.CPY",
+      "line_number": 1365
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPMDTE.CPY",
+      "line_number": 8824
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPSTAT.CPY",
+      "line_number": 8833
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPRATE.CPY",
+      "line_number": 8843
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LONPF_EVA.CPY",
+      "line_number": 8873
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBGB/DACCESS.CPY",
+      "line_number": 8882
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPCXCL.CPY",
+      "line_number": 9802
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLTIGS_SQL.CPY",
+      "line_number": 9825
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLSXGS_SQL.CPY",
+      "line_number": 9827
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLP1IN.CPY",
+      "line_number": 9851
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPLXE1IN.CPY",
+      "line_number": 9854
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPPD1IN.CPY",
+      "line_number": 9863
+    },
+    {
+      "@search.score": 1.0,
+      "program_id": "LONPF2",
+      "copybook_name": "LIBLP/LPWKI.CPY",
+      "line_number": 9864
+    }
+  ]
+}

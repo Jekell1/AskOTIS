@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF7 Repository/Other Processor Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #fd7e14 0%, #ffc107 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #fd7e14;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #fd7e14;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #fd7e14;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #fd7e14;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #fd7e14;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #e56b0b;
+            transform: translateY(-2px);
+        }
+        .toc-link {
+            color: #0066cc;
+            text-decoration: none;
+            padding: 2px 0;
+            display: block;
+        }
+        .toc-link:hover {
+            color: #004499;
+            text-decoration: underline;
+        }
+        .mermaid {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .parameter-table {
+            margin: 15px 0;
+        }
+        .parameter-table th {
+            background: #e9ecef;
+            font-weight: bold;
+            text-align: left;
+        }
+        .parameter-table td {
+            vertical-align: top;
+            padding: 8px 12px;
+        }
+        .section-anchor {
+            position: relative;
+            top: -60px;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY</a> > LONPF7 Repository/Other Processor
+    </div>
+
+    <div class="header">
+        <h1>LONPF7 Transaction Processor</h1>
+        <div class="meta">
+            <strong>Payment Types:</strong> AL, AI, AP, WL, WI, WO, OT, O2, W2, OP, RE<br>
+            <strong>Purpose:</strong> Loan Processing Transaction Posting Program 7<br>
+            <strong>Date Written:</strong> 02/17/84 | <strong>Called From:</strong> APIPAY Program
+        </div>
+    </div>
+
+    <h2>Table of Contents</h2>
+    <div class="note">
+        <ul style="columns: 2; -webkit-columns: 2; -moz-columns: 2;">
+            <li><a href="#overview">Program Overview</a></li>
+            <li><a href="#transaction-types">Transaction Types Supported</a></li>
+            <li><a href="#input-parameters">Input Parameters</a></li>
+            <li><a href="#program-flow">Program Flow Diagrams</a></li>
+            <li><a href="#technical-implementation">Technical Implementation</a></li>
+            <li><a href="#transaction-processing">Transaction-Specific Processing</a></li>
+            <li><a href="#error-handling">Error Handling and Validation</a></li>
+            <li><a href="#integration-points">Integration Points</a></li>
+            <li><a href="#referenced-programs">Referenced Programs</a></li>
+            <li><a href="#file-dependencies">File Dependencies</a></li>
+            <li><a href="#performance">Performance Considerations</a></li>
+        </ul>
+    </div>
+
+    <h2 id="overview">Program Overview</h2>
+    
+    <p><strong>LONPF7</strong> is a comprehensive transaction processing program that handles multiple types of loan account transactions including interest assessment, late charges, payments, waivers, other charges, and repossession expenses. This is one of the most complex processors in the loan system, supporting 11 different transaction types with sophisticated business logic for each.</p>
+
+    <h3>Key Responsibilities</h3>
+    <ul>
+        <li><strong>Interest Assessment</strong>: Calculates and applies interest charges (AI transactions)</li>
+        <li><strong>Late Charge Assessment</strong>: Processes late charge calculations (AL transactions)</li>
+        <li><strong>Payment Application</strong>: Handles payment applications with detailed allocation (AP transactions)</li>
+        <li><strong>Waiver Processing</strong>: Processes interest and late charge waivers (WI, WL transactions)</li>
+        <li><strong>Other Charges</strong>: Manages miscellaneous charges and fees (OT, O2 transactions)</li>
+        <li><strong>Combination Processing</strong>: Handles complex combination transactions (OP, W2, WO)</li>
+        <li><strong>Repossession Expenses</strong>: Processes repossession-related charges (RE transactions)</li>
+        <li><strong>Revolving Account Support</strong>: Special handling for revolving credit accounts</li>
+        <li><strong>Interbranch Processing</strong>: Supports interbranch transaction processing</li>
+        <li><strong>GL Distribution</strong>: Manages general ledger distribution for transactions</li>
+    </ul>
+
+    <h2 id="transaction-types">Transaction Types Supported</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Description</th>
+                <th>Business Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>AL</strong></td>
+                <td>Assess Late Charge</td>
+                <td>Calculates and applies late charges based on delinquency</td>
+            </tr>
+            <tr>
+                <td><strong>AI</strong></td>
+                <td>Assess Interest</td>
+                <td>Calculates and applies interest charges to loan accounts</td>
+            </tr>
+            <tr>
+                <td><strong>AP</strong></td>
+                <td>Apply Payment</td>
+                <td>Applies payments with detailed allocation to principal, interest, and fees</td>
+            </tr>
+            <tr>
+                <td><strong>WL</strong></td>
+                <td>Waive Late Charge</td>
+                <td>Waives or reduces late charge amounts on accounts</td>
+            </tr>
+            <tr>
+                <td><strong>WI</strong></td>
+                <td>Waive Interest</td>
+                <td>Waives or reduces interest charges on accounts</td>
+            </tr>
+            <tr>
+                <td><strong>WO</strong></td>
+                <td>Waive Other</td>
+                <td>Waives miscellaneous charges and other fees</td>
+            </tr>
+            <tr>
+                <td><strong>OT</strong></td>
+                <td>Other Charges</td>
+                <td>Applies miscellaneous charges, fees, and adjustments</td>
+            </tr>
+            <tr>
+                <td><strong>O2</strong></td>
+                <td>Other Type 2</td>
+                <td>Secondary other charge processing with special handling</td>
+            </tr>
+            <tr>
+                <td><strong>W2</strong></td>
+                <td>Waive Type 2</td>
+                <td>Advanced waiver processing for complex scenarios</td>
+            </tr>
+            <tr>
+                <td><strong>OP</strong></td>
+                <td>Other/Payment Combination</td>
+                <td>Automatic combination of OT and AP transactions</td>
+            </tr>
+            <tr>
+                <td><strong>RE</strong></td>
+                <td>Repossession Expense</td>
+                <td>Adds repossession-related expenses to loan accounts</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="input-parameters">Input Parameters</h2>
+
+    <p>LONPF7 receives input through the LONPF-BUFFER data structure passed from the calling program (APIPAY). The following parameters control transaction processing:</p>
+
+    <h3>Required Input Fields</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Valid Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LONPF-BRANCH</strong></td>
+                <td>Numeric(3)</td>
+                <td>Branch number for the loan account</td>
+                <td>001-999</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-ACCOUNT</strong></td>
+                <td>Numeric(8)</td>
+                <td>Loan account number</td>
+                <td>Valid account number</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-TRAN-CODE</strong></td>
+                <td>Character(2)</td>
+                <td>Transaction type code</td>
+                <td>AL, AI, AP, WL, WI, WO, OT, O2, W2, OP, RE</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-AMOUNT</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Transaction amount</td>
+                <td>Greater than 0.00</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-DATE</strong></td>
+                <td>Numeric(8)</td>
+                <td>Transaction date (YYYYMMDD)</td>
+                <td>Valid date format</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Optional Input Fields</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Usage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LONPF-PASSWORD</strong></td>
+                <td>Character(8)</td>
+                <td>Password for protected transactions</td>
+                <td>Required for certain sensitive operations</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-REFERENCE</strong></td>
+                <td>Character(12)</td>
+                <td>Reference number for transaction</td>
+                <td>Check numbers, receipt numbers, etc.</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-ALLOCATION-OVERRIDE</strong></td>
+                <td>Character(1)</td>
+                <td>Override standard payment allocation</td>
+                <td>Y/N - For AP transactions</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-PRINCIPAL-AMT</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Specific principal amount</td>
+                <td>When allocation override is used</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-INTEREST-AMT</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Specific interest amount</td>
+                <td>When allocation override is used</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-OTHER-AMT</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Specific other charges amount</td>
+                <td>When allocation override is used</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-BATCH-FLAG</strong></td>
+                <td>Character(1)</td>
+                <td>Batch processing indicator</td>
+                <td>Y/N - For batch payment processing</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Output Fields</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LONPF-RETURN-CODE</strong></td>
+                <td>Numeric(2)</td>
+                <td>Processing result code</td>
+                <td>00=Success, 01-99=Error codes</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-ERROR-MESSAGE</strong></td>
+                <td>Character(60)</td>
+                <td>Error description</td>
+                <td>Detailed error message when return code > 00</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-NEW-BALANCE</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Updated account balance</td>
+                <td>Balance after transaction processing</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-TRANSACTION-ID</strong></td>
+                <td>Numeric(10)</td>
+                <td>Unique transaction identifier</td>
+                <td>Generated transaction ID for audit trail</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="program-flow">Program Flow Diagrams</h2>
+
+    <h3>Main Program Flow</h3>
+    <div class="mermaid">
+flowchart TD
+    A[LONPF7 ENTRY<br/>Called from APIPAY] --> B[INITIALIZE PROGRAM<br/>• Clear working storage<br/>• Set up file pointers<br/>• Initialize return codes]
+    B --> C[VALIDATE INPUT PARAMETERS<br/>• Check required fields<br/>• Validate transaction code<br/>• Verify account format<br/>• Validate amounts and dates]
+    C --> D{Validation<br/>Successful?}
+    D -->|No| E[ERROR EXIT<br/>• Set error code<br/>• Set message<br/>• Return to caller]
+    D -->|Yes| F[READ ACCOUNT RECORD<br/>• Open LN1-FILE<br/>• Read loan master record<br/>• Verify account exists]
+    F --> G{Account<br/>Found?}
+    G -->|No| E
+    G -->|Yes| H[TRANSACTION CODE ROUTING<br/>Based on LONPF-TRAN-CODE:<br/>AL → ASSESS-LATE-CHARGE<br/>AI → ASSESS-INTEREST<br/>AP → APPLY-PAYMENT<br/>WL → WAIVE-LATE-CHARGE<br/>WI → WAIVE-INTEREST<br/>WO → WAIVE-OTHER<br/>OT → OTHER-CHARGES<br/>O2 → OTHER-TYPE-2<br/>W2 → WAIVE-TYPE-2<br/>OP → OTHER-PAYMENT-COMBO<br/>RE → REPOSSESSION-EXPENSE]
+    H --> I[EXECUTE TRANSACTION LOGIC<br/>• Process specific transaction<br/>• Update account balances<br/>• Calculate new amounts<br/>• Apply business rules]
+    I --> J{Transaction<br/>Successful?}
+    J -->|No| E
+    J -->|Yes| K[UPDATE ACCOUNT RECORD<br/>• Write updated LN1 record<br/>• Create transaction history<br/>• Update extended data LXE<br/>• Generate GL entries LXG]
+    K --> L[RETURN TO CALLER<br/>• Set success return code<br/>• Pass back updated balance<br/>• Return transaction ID<br/>• Close files]
+    </div>
+
+    <h3>Payment Allocation Flow (AP Transactions)</h3>
+    <div class="mermaid">
+flowchart TD
+    A[APPLY PAYMENT AP<br/>Payment Amount: $XXX.XX] --> B{Check Allocation<br/>Override?}
+    B -->|Yes| C[USE SPECIFIED ALLOCATION<br/>• Principal<br/>• Interest<br/>• Other]
+    B -->|No| D[STANDARD ALLOCATION ORDER<br/>1. Late Charges if any<br/>2. Interest current + past due<br/>3. Principal current payment<br/>4. Principal past due<br/>5. Other charges<br/>6. Advance payment if surplus]
+    C --> E[CALCULATE ALLOCATIONS<br/>For each component:<br/>• Determine amount owed<br/>• Apply payment up to owed amount<br/>• Track remaining payment<br/>• Update balance components]
+    D --> E
+    E --> F[UPDATE ACCOUNT FIELDS<br/>• Principal Balance<br/>• Interest Balance<br/>• Late Charge Balance<br/>• Other Charge Balance<br/>• Last Payment Date<br/>• Last Payment Amount]
+    F --> G[TRANSACTION COMPLETE<br/>Return updated balances]
+    </div>
+
+    <h3>Interest Assessment Flow (AI Transactions)</h3>
+    <div class="mermaid">
+flowchart TD
+    A[ASSESS INTEREST AI<br/>From Last Interest Date] --> B[GET INTEREST RATE INFO<br/>• Read account interest rate<br/>• Check rate table RC2-FILE<br/>• Determine calculation method<br/>• Get number of days to calculate]
+    B --> C{Interest<br/>Calculation<br/>Method?}
+    C -->|Simple| D[Simple Interest: P × R × T]
+    C -->|Daily Simple| E[Daily Simple: P × R ÷ 365 × D]
+    C -->|Add-On| F[Add-On Interest: Pre-calculated]
+    C -->|Rule of 78s| G[Rule of 78s: Remaining schedule]
+    D --> H[APPLY INTEREST CHARGE<br/>• Add to interest balance<br/>• Update last interest date<br/>• Update interest accrued fields<br/>• Check maximum interest limits]
+    E --> H
+    F --> H
+    G --> H
+    H --> I{Revolving<br/>Account?}
+    I -->|Yes| J[UPDATE REVOLVING LOGIC<br/>• Update available credit<br/>• Check credit limits<br/>• Adjust minimum payment due]
+    I -->|No| K[INTEREST ASSESSMENT COMPLETE]
+    J --> K
+    </div>
+
+    <h3>Error Handling Flow</h3>
+    <div class="mermaid">
+flowchart TD
+    A[ERROR DETECTED<br/>At any processing point] --> B[IDENTIFY ERROR TYPE<br/>• Validation error<br/>• Business rule violation<br/>• File access error<br/>• Calculation error<br/>• Authorization error]
+    B --> C[SET APPROPRIATE ERROR<br/>• LONPF-RETURN-CODE 01-99<br/>• LONPF-ERROR-MESSAGE<br/>• Log error details]
+    C --> D[ROLLBACK CHANGES<br/>• Restore original account data<br/>• Remove partial updates<br/>• Ensure data integrity]
+    D --> E[CLEAN UP AND EXIT<br/>• Close any open files<br/>• Clear working storage<br/>• Return to calling program]
+    E --> F[RETURN ERROR STATUS<br/>To calling program]
+    </div>
+
+    <h3>Transaction-Specific Process Flows</h3>
+
+    <h4>Late Charge Assessment (AL) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[ASSESS LATE CHARGE AL] --> B[CHECK ACCOUNT STATUS<br/>• Verify account is active<br/>• Check for restrictions<br/>• Validate delinquency status]
+    B --> C{Account<br/>Eligible?}
+    C -->|No| D[ERROR: Account not eligible<br/>for late charge assessment]
+    C -->|Yes| E[CALCULATE DELINQUENCY<br/>• Days past due<br/>• Grace period consideration<br/>• Previous late charges]
+    E --> F{Past Due<br/>Days > Grace<br/>Period?}
+    F -->|No| G[NO LATE CHARGE<br/>Account current or in grace]
+    F -->|Yes| H[GET LATE CHARGE RATE<br/>• Read account terms<br/>• Check rate tables<br/>• Apply caps and limits]
+    H --> I[CALCULATE LATE CHARGE<br/>• Flat fee or percentage<br/>• Maximum charge limits<br/>• Minimum charge thresholds]
+    I --> J[APPLY LATE CHARGE<br/>• Add to late charge balance<br/>• Update charge date<br/>• Create transaction record]
+    J --> K[UPDATE ACCOUNT<br/>• New late charge balance<br/>• Account status changes<br/>• Notification flags]
+    </div>
+
+    <h4>Interest Assessment (AI) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[ASSESS INTEREST AI<br/>From Last Interest Date] --> B[GET INTEREST RATE INFO<br/>• Read account interest rate<br/>• Check rate table RC2-FILE<br/>• Determine calculation method<br/>• Get number of days to calculate]
+    B --> C{Interest<br/>Calculation<br/>Method?}
+    C -->|Simple| D[Simple Interest: P × R × T]
+    C -->|Daily Simple| E[Daily Simple: P × R ÷ 365 × D]
+    C -->|Add-On| F[Add-On Interest: Pre-calculated]
+    C -->|Rule of 78s| G[Rule of 78s: Remaining schedule]
+    D --> H[APPLY INTEREST CHARGE<br/>• Add to interest balance<br/>• Update last interest date<br/>• Update interest accrued fields<br/>• Check maximum interest limits]
+    E --> H
+    F --> H
+    G --> H
+    H --> I{Revolving<br/>Account?}
+    I -->|Yes| J[UPDATE REVOLVING LOGIC<br/>• Update available credit<br/>• Check credit limits<br/>• Adjust minimum payment due]
+    I -->|No| K[INTEREST ASSESSMENT COMPLETE]
+    J --> K
+    </div>
+
+    <h4>Waiver Processing (WL, WI, WO, W2) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[WAIVER TRANSACTION<br/>WL, WI, WO, W2] --> B[VALIDATE AUTHORIZATION<br/>• Check operator permissions<br/>• Verify waiver authority<br/>• Password validation if required]
+    B --> C{Authorization<br/>Valid?}
+    C -->|No| D[ERROR: Insufficient<br/>authorization for waiver]
+    C -->|Yes| E{Waiver<br/>Type?}
+    E -->|WL| F[WAIVE LATE CHARGE<br/>• Check current late charge balance<br/>• Validate waiver amount<br/>• Apply partial or full waiver]
+    E -->|WI| G[WAIVE INTEREST<br/>• Check current interest balance<br/>• Validate waiver amount<br/>• Apply partial or full waiver]
+    E -->|WO| H[WAIVE OTHER CHARGES<br/>• Check other charge balance<br/>• Validate waiver amount<br/>• Apply partial or full waiver]
+    E -->|W2| I[WAIVE TYPE 2<br/>• Advanced waiver processing<br/>• Complex scenario handling<br/>• Multiple charge type waiver]
+    F --> J[REDUCE BALANCE<br/>• Subtract waiver amount<br/>• Update account balances<br/>• Create waiver record]
+    G --> J
+    H --> J
+    I --> J
+    J --> K[UPDATE AUDIT TRAIL<br/>• Record waiver details<br/>• Operator information<br/>• Authorization codes]
+    </div>
+
+    <h4>Other Charges (OT, O2) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[OTHER CHARGES<br/>OT or O2] --> B[VALIDATE CHARGE TYPE<br/>• Check charge code validity<br/>• Verify account eligibility<br/>• Validate charge amount]
+    B --> C{Charge<br/>Type?}
+    C -->|OT| D[STANDARD OTHER CHARGE<br/>• Fees and adjustments<br/>• Account maintenance charges<br/>• Miscellaneous charges]
+    C -->|O2| E[OTHER TYPE 2 CHARGE<br/>• Secondary charge processing<br/>• Special handling charges<br/>• Complex fee structures]
+    D --> F[CALCULATE CHARGE AMOUNT<br/>• Apply rate tables if applicable<br/>• Check maximum limits<br/>• Apply business rules]
+    E --> F
+    F --> G[APPLY CHARGE<br/>• Add to other charge balance<br/>• Update account totals<br/>• Create charge record]
+    G --> H[UPDATE ACCOUNT STATUS<br/>• Check balance thresholds<br/>• Update payment due amounts<br/>• Set notification flags]
+    </div>
+
+    <h4>Combination Transaction (OP) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[OTHER/PAYMENT COMBO OP] --> B[VALIDATE COMBINATION<br/>• Check both OT and AP amounts<br/>• Verify account status<br/>• Validate total transaction]
+    B --> C[PHASE 1: APPLY OTHER CHARGE<br/>• Process OT component first<br/>• Add charge to balance<br/>• Update account totals]
+    C --> D{OT Phase<br/>Successful?}
+    D -->|No| E[ROLLBACK TRANSACTION<br/>Return error status]
+    D -->|Yes| F[PHASE 2: APPLY PAYMENT<br/>• Process AP component<br/>• Apply payment allocation<br/>• Update balances]
+    F --> G{AP Phase<br/>Successful?}
+    G -->|No| H[ROLLBACK OT CHARGE<br/>Restore original state<br/>Return error status]
+    G -->|Yes| I[COMPLETE COMBINATION<br/>• Both phases successful<br/>• Update final balances<br/>• Create combined record]
+    I --> J[TRANSACTION COMPLETE<br/>Combined OT+AP processed]
+    </div>
+
+    <h4>Repossession Expense (RE) Flow</h4>
+    <div class="mermaid">
+flowchart TD
+    A[REPOSSESSION EXPENSE RE] --> B[VALIDATE REPO STATUS<br/>• Check account status<br/>• Verify repo eligibility<br/>• Validate expense type]
+    B --> C{Account<br/>Repo Eligible?}
+    C -->|No| D[ERROR: Account not eligible<br/>for repo expenses]
+    C -->|Yes| E[CATEGORIZE EXPENSE<br/>• Towing costs<br/>• Storage fees<br/>• Legal expenses<br/>• Sale preparation costs]
+    E --> F[VALIDATE EXPENSE AMOUNT<br/>• Check reasonableness<br/>• Apply maximum limits<br/>• Verify authorization]
+    F --> G[APPLY REPO EXPENSE<br/>• Add to account balance<br/>• Update repo tracking<br/>• Create expense record]
+    G --> H[UPDATE REPO STATUS<br/>• Track total repo costs<br/>• Update account flags<br/>• Set collection status]
+    H --> I[GENERATE NOTIFICATIONS<br/>• Customer notices<br/>• Internal alerts<br/>• Compliance reports]
+    </div>
+
+    <h2 id="technical-implementation">Technical Implementation</h2>
+
+    <h3>Program Structure</h3>
+    <ul>
+        <li><strong>Main Processing Logic</strong>: Centralized transaction routing based on transaction code</li>
+        <li><strong>Specialized Routines</strong>: Dedicated subroutines for each transaction type</li>
+        <li><strong>Data Validation</strong>: Comprehensive field validation and error checking</li>
+        <li><strong>Account Access</strong>: Direct loan account file access with locking mechanisms</li>
+        <li><strong>GL Integration</strong>: Automatic general ledger entry creation</li>
+        <li><strong>Audit Trail</strong>: Complete transaction logging and history maintenance</li>
+    </ul>
+
+    <h3>Key Processing Features</h3>
+    <ul>
+        <li><strong>Payment Allocation Priority</strong>: Late charges → Interest → Principal (configurable)</li>
+        <li><strong>Batch Payment Support</strong>: Processes multiple payments in sequence</li>
+        <li><strong>Password Protection</strong>: Supports password-protected transaction processing</li>
+        <li><strong>Amount Validation</strong>: Prevents overdrafts and validates transaction amounts</li>
+        <li><strong>Date Handling</strong>: Sophisticated date calculations for interest and late charges</li>
+        <li><strong>Revolving Account Logic</strong>: Special processing for revolving credit accounts</li>
+        <li><strong>Interbranch Support</strong>: Cross-branch transaction processing capabilities</li>
+    </ul>
+
+    <h3>Business Rules Implementation</h3>
+    <ul>
+        <li><strong>Interest Calculation</strong>: Uses account-specific rates and calculation methods</li>
+        <li><strong>Late Charge Logic</strong>: Applies late charges based on delinquency days and account status</li>
+        <li><strong>Waiver Authorization</strong>: Requires appropriate authorization for waiver transactions</li>
+        <li><strong>Payment Application</strong>: Follows standard allocation hierarchy unless overridden</li>
+        <li><strong>Zero Balance Handling</strong>: Special processing for accounts with zero balances</li>
+        <li><strong>Account Status Updates</strong>: Automatic status changes based on transaction results</li>
+    </ul>
+
+    <h3 id="transaction-processing">Transaction-Specific Processing</h3>
+
+    <h4>Interest Assessment (AI)</h4>
+    <ul>
+        <li>Calculates interest based on account type and rate tables</li>
+        <li>Handles different calculation methods (simple, compound, etc.)</li>
+        <li>Applies interest to appropriate balance components</li>
+        <li>Updates interest accrual dates and amounts</li>
+    </ul>
+
+    <h4>Late Charge Assessment (AL)</h4>
+    <ul>
+        <li>Evaluates delinquency status and days past due</li>
+        <li>Applies late charges according to account terms</li>
+        <li>Handles grace periods and waiver conditions</li>
+        <li>Updates late charge history and tracking</li>
+    </ul>
+
+    <h4>Payment Application (AP)</h4>
+    <ul>
+        <li>Allocates payments according to priority rules</li>
+        <li>Handles partial payments and overpayments</li>
+        <li>Updates account balances and payment history</li>
+        <li>Processes advance payments and payment reversals</li>
+    </ul>
+
+    <h4>Waiver Processing (WL, WI, WO, W2)</h4>
+    <ul>
+        <li>Validates authorization for waiver transactions</li>
+        <li>Reduces or eliminates specified charges</li>
+        <li>Maintains waiver history for audit purposes</li>
+        <li>Updates account balances after waiver application</li>
+    </ul>
+
+    <h4>Other Charges (OT, O2)</h4>
+    <ul>
+        <li>Applies miscellaneous charges and fees</li>
+        <li>Handles special charge types and adjustments</li>
+        <li>Validates charge amounts and authorization</li>
+        <li>Updates account with additional charges</li>
+    </ul>
+
+    <h4>Combination Transactions (OP)</h4>
+    <ul>
+        <li>Processes OT (other charge) followed by AP (payment)</li>
+        <li>Ensures proper sequencing of charge and payment</li>
+        <li>Maintains transaction integrity across both operations</li>
+        <li>Provides combined processing efficiency</li>
+    </ul>
+
+    <h4>Repossession Expenses (RE)</h4>
+    <ul>
+        <li>Adds repossession-related costs to account</li>
+        <li>Handles various expense types and categories</li>
+        <li>Updates account status for repossession tracking</li>
+        <li>Maintains detailed expense records</li>
+    </ul>
+
+    <h2 id="error-handling">Error Handling and Validation</h2>
+
+    <div class="warning">
+        <h3>Critical Validation Points</h3>
+        <ul>
+            <li><strong>Account Existence</strong>: Validates loan account exists before processing</li>
+            <li><strong>Transaction Amount</strong>: Ensures amounts are positive and within limits</li>
+            <li><strong>Account Status</strong>: Verifies account is in valid status for transaction type</li>
+            <li><strong>Authorization</strong>: Checks operator permissions for sensitive transactions</li>
+            <li><strong>Balance Verification</strong>: Prevents negative balances where inappropriate</li>
+            <li><strong>Date Validation</strong>: Ensures transaction dates are logical and within limits</li>
+            <li><strong>Password Verification</strong>: Validates passwords for protected transactions</li>
+        </ul>
+    </div>
+
+    <h3>Common Error Conditions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Type</th>
+                <th>Description</th>
+                <th>Resolution</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Invalid Transaction Code</strong></td>
+                <td>Unsupported transaction type</td>
+                <td>Use valid transaction codes (AL, AI, AP, etc.)</td>
+            </tr>
+            <tr>
+                <td><strong>Account Not Found</strong></td>
+                <td>Loan account does not exist</td>
+                <td>Verify account number and branch</td>
+            </tr>
+            <tr>
+                <td><strong>Insufficient Authorization</strong></td>
+                <td>Operator lacks required permissions</td>
+                <td>Obtain proper authorization or supervisor override</td>
+            </tr>
+            <tr>
+                <td><strong>Invalid Amount</strong></td>
+                <td>Transaction amount is invalid</td>
+                <td>Verify amount is positive and within limits</td>
+            </tr>
+            <tr>
+                <td><strong>Account Status Error</strong></td>
+                <td>Account status prevents transaction</td>
+                <td>Review account status and resolve restrictions</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="integration-points">Integration Points</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Purpose</th>
+                <th>Data Flow</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>APIPAY</strong></td>
+                <td>Main calling program</td>
+                <td>Receives transaction parameters and returns status</td>
+            </tr>
+            <tr>
+                <td><strong>Loan Account File</strong></td>
+                <td>Primary data source</td>
+                <td>Reads/writes account balance and status information</td>
+            </tr>
+            <tr>
+                <td><strong>General Ledger</strong></td>
+                <td>Financial reporting</td>
+                <td>Creates GL entries for all monetary transactions</td>
+            </tr>
+            <tr>
+                <td><strong>Transaction History</strong></td>
+                <td>Audit trail</td>
+                <td>Records all transaction details for reporting and compliance</td>
+            </tr>
+            <tr>
+                <td><strong>Interest Rate Tables</strong></td>
+                <td>Rate information</td>
+                <td>Accesses current interest rates for calculation purposes</td>
+            </tr>
+            <tr>
+                <td><strong>Parameter Files</strong></td>
+                <td>System configuration</td>
+                <td>Reads system parameters and business rules</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="referenced-programs">Referenced Programs</h2>
+
+    <p>LONPF7 calls several external programs to perform specialized functions:</p>
+
+    <h3>Direct Program Calls</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Program</th>
+                <th>Purpose</th>
+                <th>Usage Context</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong><a href="ALLENT_Documentation.html">ALLENT</a></strong></td>
+                <td>General Ledger allocation entry program</td>
+                <td>Called for GL distribution processing and accounting entries</td>
+            </tr>
+            <tr>
+                <td><strong><a href="PASSWD_Documentation.html">PASSWD</a></strong></td>
+                <td>Password verification program</td>
+                <td>Used for transaction authorization (OT, AP, WI, WL, WO, W2 transactions)</td>
+            </tr>
+            <tr>
+                <td><strong><a href="CDSCAN_Documentation.html">CDSCAN</a></strong></td>
+                <td>Code scanning program</td>
+                <td>Called for payoff code scanning and validation</td>
+            </tr>
+            <tr>
+                <td><strong><a href="C$JUSTIFY_Documentation.html">C$JUSTIFY</a></strong></td>
+                <td>System utility for text justification</td>
+                <td>Used for formatting VDU buffer content and display formatting</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Internal Routines</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Routine</th>
+                <th>Purpose</th>
+                <th>Usage Context</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>GETENV-CALL</strong></td>
+                <td>Environment variable retrieval</td>
+                <td>Gets "RVLINES" environment variable to determine whether to display balances on reversals</td>
+            </tr>
+            <tr>
+                <td><strong>CALL-WRFORM</strong></td>
+                <td>Form writing routine</td>
+                <td>Called multiple times for screen/form processing and user interface operations</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPF7 uses FORM-PROGX as a generic program caller mechanism, where FORM-NAM is set to the specific program name before the call, making it a dynamic program calling system. This allows for flexible integration with various system components while maintaining a consistent calling interface.</p>
+    </div>
+
+    <h2 id="file-dependencies">File Dependencies</h2>
+
+    <h3>Files Read/Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master records</td><td>Read/Write</td></tr>
+            <tr><td><strong>LTP1-FILE</strong></td><td>Transaction history</td><td>Write</td></tr>
+            <tr><td><strong>LXE1-FILE</strong></td><td>Extended loan data</td><td>Read/Write</td></tr>
+            <tr><td><strong>LXG1-FILE</strong></td><td>GL distribution data</td><td>Read/Write</td></tr>
+            <tr><td><strong>SP1-FILE</strong></td><td>System parameters</td><td>Read</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work/calculation file</td><td>Read/Write</td></tr>
+            <tr><td><strong>BR-FILE</strong></td><td>Branch information</td><td>Read</td></tr>
+            <tr><td><strong>RC2-FILE</strong></td><td>Rate tables</td><td>Read</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="performance">Performance Considerations</h2>
+
+    <ul>
+        <li><strong>File Locking</strong>: Implements proper file locking to prevent concurrent update issues</li>
+        <li><strong>Batch Processing</strong>: Optimized for high-volume batch transaction processing</li>
+        <li><strong>Memory Management</strong>: Efficient use of working storage for large transaction volumes</li>
+        <li><strong>Error Recovery</strong>: Robust error handling prevents data corruption</li>
+        <li><strong>Transaction Rollback</strong>: Ability to reverse transactions if errors occur</li>
+        <li><strong>Database Integrity</strong>: Maintains referential integrity across all file updates</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPF7 is one of the most comprehensive transaction processors in the loan system, handling 11 different transaction types with sophisticated business logic. It requires careful attention to business rules, authorization levels, and data integrity to ensure accurate processing of all loan account transactions.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+    
+    <!-- Mermaid.js for flowcharts -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

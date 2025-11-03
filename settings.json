@@ -1,0 +1,5 @@
+{
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.chat.inline.enable": true,
+  "github.copilot.chat.inline.experimental.terminal.enabled": true
+}

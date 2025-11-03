@@ -1,0 +1,11 @@
+{
+  "embedded_so_far": 82829,
+  "baseline_missing": 1464271,
+  "percent": 5.656671,
+  "remaining_estimate": 1383900,
+  "rate_docs_per_sec": 37.57788272133691,
+  "eta_minutes": 612.7017188294159,
+  "elapsed_seconds": 1252.671424627304,
+  "batches_processed": 50,
+  "timestamp": 1759411858.9112449
+}

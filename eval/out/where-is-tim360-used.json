@@ -1,0 +1,71 @@
+{
+  "question": "Where is TIM360 used?",
+  "scope": "mixed",
+  "expanded_query": "TIM360 Where is used",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_calls",
+      "id": "94aad34077ac4b7f3959c2016f1d7ea7241aeb88",
+      "path": "cobol_src\\WI\\SFQUOT.CBL",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "d764f287d4b32cbacf61aa40712c8ade2349690d",
+      "path": "A8F2868BD2BB8807B0597D2911174B4452546B83",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "IS",
+      "path": "IS",
+      "line": null,
+      "snippet": "IS ; ROLE:UNKNOWN ; OUT: ; IN:PEVERI,SFQUOT ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "ACQEXT",
+      "path": "ACQEXT",
+      "line": null,
+      "snippet": "Paragraphs=61; edges=100; depth=9; cycles=Y; entries=36; exits=33; fanout_max=14; risk=0.835. Entry: FORM-RESET.... High fanout: END-ROUTINE (14)."
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LTINFO",
+      "path": "LTINFO",
+      "line": null,
+      "snippet": "Paragraphs=35; edges=32; depth=3; cycles=N; entries=24; exits=24; fanout_max=9; risk=0.405. Entry: SETUP-LINK-INFO.... High fanout: MAIN-PROGRAM-EXIT (9)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "SFQUOT",
+      "path": "SFQUOT",
+      "line": null,
+      "snippet": "SFQUOT ; ROLE:UNKNOWN ; OUT:A,BUYRATE,COMPUTE-PURCHASE-FIELDS,F3-LOANS,FORM-PROGX,FROM,IS,QUOTES,TO,VERIFY-PASSWORD ; IN: ; COPY:ACCESS,ACCESSW,BUYRTEW,CALCPV,CALCPVW,CDBSCNW,CDSCANW,CONAME_EXT,CONNECTW_SQL,DATER,DATERW,DECLARE_SQL,DLCKPD,DLSCANW,FEEENT,FEEENTPD,FEEENTW,FEEENT_DEF,FEEENT_SCN,FEEENT_WKS,FERRORS,FILEWK,GB01BR,GB01BR_SQL,GBBRGS_SQL,GBBRRN,GBWSBR,GETENV,GETENVW,GL01GI,GL01GI_SQL,GLGI1"
+    }
+  ],
+  "meta": {
+    "ts": 1759097681.5592177,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths",
+      "symbol_refs",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "TIM360"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPREGZ - Interest Calculation and Earnings Processing - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > LPREGZ Interest Calculation
+    </div>
+
+    <div class="header">
+        <h1>LPREGZ - Interest Calculation and Earnings Processing</h1>
+        <div class="meta">
+            <strong>Module:</strong> LPREGZ<br>
+            <strong>Type:</strong> Copy Member (Routine)<br>
+            <strong>Location:</strong> LIBLP/LPREGZ.CPY<br>
+            <strong>Purpose:</strong> Actuarial / U.S. Rule Unearned Routine - Federal Reserve Regulation Z Method<br>
+            <strong>Used By:</strong> LONPFC, Interest Processing Programs<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#purpose">Purpose and Functionality</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-parameters">Output Parameters</a></li>
+                <li><a href="#calculation-methods">Calculation Methods</a></li>
+                <li><a href="#processing-flow">Processing Flow</a></li>
+                <li><a href="#regulatory-compliance">Regulatory Compliance</a></li>
+                <li><a href="#usage-examples">Usage Examples</a></li>
+                <li><a href="#technical-details">Technical Implementation</a></li>
+                <li><a href="#integration">Integration Points</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p><strong>LPREGZ</strong> (Federal Reserve Regulation Z Method) is a sophisticated copy member that calculates unearned interest refunds according to Federal Reserve Regulation Z requirements. It supports both Actuarial and U.S. Rule methods for determining unearned interest when loans are paid off early.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>Unearned Interest Calculation:</strong> Calculates refund amounts for early loan payoffs</li>
+                <li><strong>Regulatory Compliance:</strong> Ensures compliance with Federal Reserve Regulation Z</li>
+                <li><strong>Multiple Calculation Methods:</strong> Supports Actuarial and U.S. Rule methods</li>
+                <li><strong>Present Value Calculation:</strong> Determines present value of remaining payments</li>
+                <li><strong>Deferment Handling:</strong> Considers loan deferments in calculations</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Regulatory Context:</strong> LPREGZ implements Federal Reserve Regulation Z (Truth in Lending) requirements for calculating unearned interest refunds, ensuring accurate and compliant interest calculations for early loan payoffs.</p>
+            </div>
+        </section>
+
+        <section id="purpose">
+            <h2>Purpose and Functionality</h2>
+            
+            <h3>Primary Functions</h3>
+            <table>
+                <tr>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Regulatory Basis</th>
+                </tr>
+                <tr>
+                    <td><strong>Unearned Interest Calculation</strong></td>
+                    <td>Calculates unearned portion of finance charges</td>
+                    <td>Regulation Z Section 226.18</td>
+                </tr>
+                <tr>
+                    <td><strong>Present Value Determination</strong></td>
+                    <td>Determines present value of future payments</td>
+                    <td>Actuarial method requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Method Selection</strong></td>
+                    <td>Applies appropriate calculation method</td>
+                    <td>State and federal requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Deferment Adjustment</strong></td>
+                    <td>Adjusts calculations for loan deferments</td>
+                    <td>Truth in Lending provisions</td>
+                </tr>
+            </table>
+
+            <h3>Calculation Methods Supported</h3>
+            <table>
+                <tr>
+                    <th>Method</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Use Case</th>
+                </tr>
+                <tr>
+                    <td><strong>Actuarial</strong></td>
+                    <td>A</td>
+                    <td>Actuarial method using present value calculations</td>
+                    <td>Most common for consumer loans</td>
+                </tr>
+                <tr>
+                    <td><strong>U.S. Rule</strong></td>
+                    <td>C</td>
+                    <td>U.S. Rule method for simple interest calculation</td>
+                    <td>Simple interest loans, some commercial loans</td>
+                </tr>
+            </table>
+
+            <h3>Business Logic Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Early Payoff Request] --> B[Validate Input Parameters]
+                B --> C{APR = 0?}
+                C -->|Yes| D[Return Full Finance Charge]
+                C -->|No| E[Check Unearned Date vs Interest Date]
+                E --> F{Date Before Interest Date?}
+                F -->|Yes| G[Return Full Finance Charge]
+                F -->|No| H[Set Unit Period Information]
+                H --> I[Calculate Elapsed Time to Maturity]
+                I --> J{Past Maturity?}
+                J -->|Yes| K[No Unearned Interest]
+                J -->|No| L[Calculate Fractional Periods]
+                L --> M[Calculate Interest Rate per Period]
+                M --> N{Calculation Method}
+                N -->|Actuarial| O[Actuarial Calculation]
+                N -->|U.S. Rule| P[U.S. Rule Calculation]
+                O --> Q[Return Unearned Amount]
+                P --> Q
+                D --> Q
+                G --> Q
+                K --> Q
+            </div>
+        </section>
+
+        <section id="input-parameters">
+            <h2>Input Parameters</h2>
+            
+            <h3>Required Input Fields</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-DATE</strong></td>
+                    <td>Date</td>
+                    <td>Date of unearned calculation (payoff date)</td>
+                    <td>Determines calculation point</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-LOANDATE</strong></td>
+                    <td>Date</td>
+                    <td>Original loan origination date</td>
+                    <td>Loan term reference</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-INTDATE</strong></td>
+                    <td>Date</td>
+                    <td>Interest start date</td>
+                    <td>Interest calculation reference</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-1STPYDATE</strong></td>
+                    <td>Date</td>
+                    <td>First payment due date</td>
+                    <td>Payment schedule reference</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-ORGTERM</strong></td>
+                    <td>Numeric</td>
+                    <td>Original loan term (number of payments)</td>
+                    <td>Total payment count</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-1STPYAMT</strong></td>
+                    <td>Amount</td>
+                    <td>Amount of first payment</td>
+                    <td>Payment schedule calculation</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-REGPYAMT</strong></td>
+                    <td>Amount</td>
+                    <td>Amount of regular payments</td>
+                    <td>Standard payment amount</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-LASTPYAMT</strong></td>
+                    <td>Amount</td>
+                    <td>Amount of final payment</td>
+                    <td>Final payment calculation</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-FINCHG</strong></td>
+                    <td>Amount</td>
+                    <td>Total finance charge</td>
+                    <td>Base for unearned calculation</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-APRATE</strong></td>
+                    <td>Rate</td>
+                    <td>Annual Percentage Rate</td>
+                    <td>Interest rate for calculations</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-DISFRMLA</strong></td>
+                    <td>Code</td>
+                    <td>Disclosure formula (A=Actuarial, C=U.S. Rule)</td>
+                    <td>Calculation method selection</td>
+                </tr>
+            </table>
+
+            <h3>Unit Period Parameters</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Example Values</th>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-UNITPER-CD</strong></td>
+                    <td>Code</td>
+                    <td>Unit period code</td>
+                    <td>"W"=Weekly, "M"=Monthly, "S"=Semi-monthly</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-UNITPER-FREQ</strong></td>
+                    <td>Numeric</td>
+                    <td>Unit period frequency</td>
+                    <td>1=Standard, 2=Bi-weekly, etc.</td>
+                </tr>
+            </table>
+
+            <h3>Optional Parameters</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Default</th>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-INCLUDE-DEF-FG</strong></td>
+                    <td>Flag</td>
+                    <td>Include deferments in calculation</td>
+                    <td>" " (No)</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-TOTNODEF</strong></td>
+                    <td>Numeric</td>
+                    <td>Total number of deferments</td>
+                    <td>0</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="output-parameters">
+            <h2>Output Parameters</h2>
+            
+            <h3>Primary Output Fields</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-UNEARNED</strong></td>
+                    <td>Amount</td>
+                    <td>Unearned interest amount to be refunded</td>
+                    <td>Primary calculation result</td>
+                </tr>
+                <tr>
+                    <td><strong>REGZ-PRES-VALUE</strong></td>
+                    <td>Amount</td>
+                    <td>Present value of remaining payments</td>
+                    <td>Actuarial method calculation</td>
+                </tr>
+            </table>
+
+            <h3>Intermediate Calculation Values</h3>
+            <ul>
+                <li><strong>REGZF:</strong> Fractional period from unearned date to next payment</li>
+                <li><strong>REGZT:</strong> Whole periods from unearned date to next payment</li>
+                <li><strong>REGZI:</strong> Interest rate per payment/compound interval</li>
+                <li><strong>ELAPSED-UNITPER:</strong> Elapsed unit periods to maturity</li>
+                <li><strong>ELAPSED-UNITPER-REM:</strong> Remaining fractional period</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Calculation Results:</strong> The primary output is REGZ-UNEARNED, which represents the portion of finance charges that must be refunded to the borrower upon early payoff, calculated according to Regulation Z requirements.</p>
+            </div>
+        </section>
+
+        <section id="calculation-methods">
+            <h2>Calculation Methods</h2>
+            
+            <h3>Actuarial Method (Formula A)</h3>
+            <p>The actuarial method calculates unearned interest using present value principles:</p>
+            
+            <h4>Key Steps</h4>
+            <ol>
+                <li><strong>Determine Remaining Term:</strong> Calculate periods from payoff date to maturity</li>
+                <li><strong>Calculate Interest Rate per Period:</strong> APR ÷ periods per year</li>
+                <li><strong>Compute Present Value:</strong> Sum of discounted future payments</li>
+                <li><strong>Calculate Unearned:</strong> Difference between scheduled and present value</li>
+            </ol>
+
+            <h4>Formula Components</h4>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Calculation</th>
+                </tr>
+                <tr>
+                    <td><strong>Rate per Period</strong></td>
+                    <td>Interest rate per payment period</td>
+                    <td>APR × 0.01 ÷ periods per year</td>
+                </tr>
+                <tr>
+                    <td><strong>Fractional Period</strong></td>
+                    <td>Partial period adjustment</td>
+                    <td>Remaining days ÷ days in period</td>
+                </tr>
+                <tr>
+                    <td><strong>Present Value Factor</strong></td>
+                    <td>Discount factor for future payments</td>
+                    <td>1 ÷ (1 + rate)^periods</td>
+                </tr>
+            </table>
+
+            <h3>U.S. Rule Method (Formula C)</h3>
+            <p>The U.S. Rule method uses simple interest calculations:</p>
+            
+            <h4>Characteristics</h4>
+            <ul>
+                <li><strong>Simple Interest:</strong> Interest calculated on outstanding principal only</li>
+                <li><strong>Payment Application:</strong> Payments applied to interest first, then principal</li>
+                <li><strong>Linear Calculation:</strong> Straight-line interest accrual</li>
+                <li><strong>No Compounding:</strong> Interest does not compound</li>
+            </ul>
+
+            <h3>Special Cases and Adjustments</h3>
+            <div class="warning">
+                <p><strong>Special Handling:</strong></p>
+                <ul>
+                    <li><strong>Zero APR:</strong> Returns full finance charge as unearned</li>
+                    <li><strong>Past Maturity:</strong> Returns zero unearned if past original maturity</li>
+                    <li><strong>Before Interest Date:</strong> Returns full finance charge if payoff before interest start</li>
+                    <li><strong>Deferments:</strong> Adjusts calculations when deferments are included</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="processing-flow">
+            <h2>Processing Flow</h2>
+            
+            <h3>Main Calculation Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[REGZ-UNEARNED-CALC Entry] --> B[Initialize Output Variables]
+                B --> C{REGZ-APRATE = 0?}
+                C -->|Yes| D[MOVE REGZ-FINCHG TO REGZ-UNEARNED]
+                C -->|No| E[Compare Dates]
+                E --> F{REGZ-DATE < REGZ-INTDATE?}
+                F -->|Yes| G[MOVE REGZ-FINCHG TO REGZ-UNEARNED]
+                F -->|No| H[Set Unit Period Information]
+                H --> I[Calculate Elapsed Time to Maturity]
+                I --> J{Past Original Maturity?}
+                J -->|Yes| K[Exit with Zero Unearned]
+                J -->|No| L[Calculate Fractional Period]
+                L --> M[Calculate Whole Periods]
+                M --> N[Compute Interest Rate per Period]
+                N --> O{REGZ-DISFRMLA}
+                O -->|A| P[Actuarial Calculation]
+                O -->|C| Q[U.S. Rule Calculation]
+                P --> R[Exit Section]
+                Q --> R
+                D --> R
+                G --> R
+                K --> R
+            </div>
+
+            <h3>Unit Period Calculation</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Set Unit Period Info] --> B[MOVE REGZ-UNITPER-CD TO UPER-UNITPER-CD]
+                B --> C[MOVE REGZ-UNITPER-FREQ TO UPER-UNITPER-FREQ]
+                C --> D[MOVE REGZ-INTDATE TO UPER-INTDATE]
+                D --> E[MOVE REGZ-1STPYDATE TO UPER-1STPYDATE]
+                E --> F[MOVE REGZ-ORGTERM TO UPER-TERM]
+                F --> G[PERFORM UPER-CALCULATION]
+                G --> H[Unit Period Setup Complete]
+            </div>
+
+            <h3>Date and Period Calculations</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Calculate Maturity Date] --> B[Add Term-1 to First Payment Date]
+                B --> C[Compare Unearned Date to Maturity]
+                C --> D{Unearned Date <= Maturity?}
+                D -->|No| E[Exit with Zero Unearned]
+                D -->|Yes| F[Calculate Elapsed Periods]
+                F --> G[Determine Fractional Period]
+                G --> H[Calculate Whole Periods Remaining]
+                H --> I[Set Period Variables]
+                I --> J[Continue to Interest Calculation]
+                E --> K[End Processing]
+                J --> K
+            </div>
+        </section>
+
+        <section id="regulatory-compliance">
+            <h2>Regulatory Compliance</h2>
+            
+            <h3>Federal Reserve Regulation Z Requirements</h3>
+            <table>
+                <tr>
+                    <th>Requirement</th>
+                    <th>Implementation</th>
+                    <th>Compliance Method</th>
+                </tr>
+                <tr>
+                    <td><strong>Truth in Lending</strong></td>
+                    <td>Accurate unearned interest calculation</td>
+                    <td>Actuarial and U.S. Rule methods</td>
+                </tr>
+                <tr>
+                    <td><strong>APR Disclosure</strong></td>
+                    <td>Use disclosed APR in calculations</td>
+                    <td>REGZ-APRATE parameter</td>
+                </tr>
+                <tr>
+                    <td><strong>Early Payoff Rights</strong></td>
+                    <td>Accurate refund calculations</td>
+                    <td>Standardized calculation methods</td>
+                </tr>
+                <tr>
+                    <td><strong>Deferment Handling</strong></td>
+                    <td>Optional deferment inclusion</td>
+                    <td>REGZ-INCLUDE-DEF-FG parameter</td>
+                </tr>
+            </table>
+
+            <h3>State Compliance Considerations</h3>
+            <ul>
+                <li><strong>Method Selection:</strong> Some states require specific calculation methods</li>
+                <li><strong>Minimum Refunds:</strong> State laws may set minimum refund thresholds</li>
+                <li><strong>Deferment Treatment:</strong> State-specific rules for deferment handling</li>
+                <li><strong>Documentation:</strong> Audit trail requirements for calculations</li>
+            </ul>
+
+            <h3>Audit and Documentation</h3>
+            <div class="note">
+                <p><strong>Compliance Documentation:</strong></p>
+                <ul>
+                    <li><strong>Calculation Method:</strong> Document which method (A or C) was used</li>
+                    <li><strong>Input Parameters:</strong> Maintain record of all input values</li>
+                    <li><strong>Intermediate Results:</strong> Preserve calculation steps for audit</li>
+                    <li><strong>Final Results:</strong> Document unearned amount and present value</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="usage-examples">
+            <h2>Usage Examples</h2>
+            
+            <h3>Standard Actuarial Calculation</h3>
+            <pre><code>* Set up input parameters for actuarial method
+MOVE PAYOFF-DATE TO REGZ-DATE
+MOVE LOAN-DATE TO REGZ-LOANDATE
+MOVE INTEREST-DATE TO REGZ-INTDATE
+MOVE FIRST-PAYMENT-DATE TO REGZ-1STPYDATE
+MOVE ORIGINAL-TERM TO REGZ-ORGTERM
+MOVE FIRST-PAYMENT-AMOUNT TO REGZ-1STPYAMT
+MOVE REGULAR-PAYMENT-AMOUNT TO REGZ-REGPYAMT
+MOVE LAST-PAYMENT-AMOUNT TO REGZ-LASTPYAMT
+MOVE TOTAL-FINANCE-CHARGE TO REGZ-FINCHG
+MOVE ANNUAL-PERCENTAGE-RATE TO REGZ-APRATE
+MOVE "A" TO REGZ-DISFRMLA
+MOVE "M" TO REGZ-UNITPER-CD
+MOVE 1 TO REGZ-UNITPER-FREQ
+
+* Perform unearned calculation
+PERFORM REGZ-UNEARNED-CALC
+
+* Process results
+MOVE REGZ-UNEARNED TO REFUND-AMOUNT
+DISPLAY "Unearned interest refund: " REFUND-AMOUNT</code></pre>
+
+            <h3>U.S. Rule Method</h3>
+            <pre><code>* Set up for U.S. Rule calculation
+MOVE PAYOFF-DATE TO REGZ-DATE
+MOVE LOAN-DATE TO REGZ-LOANDATE
+MOVE INTEREST-DATE TO REGZ-INTDATE
+MOVE FIRST-PAYMENT-DATE TO REGZ-1STPYDATE
+MOVE ORIGINAL-TERM TO REGZ-ORGTERM
+MOVE PAYMENT-AMOUNT TO REGZ-REGPYAMT
+MOVE PAYMENT-AMOUNT TO REGZ-1STPYAMT
+MOVE PAYMENT-AMOUNT TO REGZ-LASTPYAMT
+MOVE TOTAL-FINANCE-CHARGE TO REGZ-FINCHG
+MOVE SIMPLE-INTEREST-RATE TO REGZ-APRATE
+MOVE "C" TO REGZ-DISFRMLA
+MOVE "M" TO REGZ-UNITPER-CD
+MOVE 1 TO REGZ-UNITPER-FREQ
+
+* Calculate unearned under U.S. Rule
+PERFORM REGZ-UNEARNED-CALC
+
+* Apply results
+ADD REGZ-UNEARNED TO CUSTOMER-REFUND</code></pre>
+
+            <h3>Including Deferments</h3>
+            <pre><code>* Set up calculation with deferments included
+MOVE PAYOFF-DATE TO REGZ-DATE
+MOVE LOAN-DATE TO REGZ-LOANDATE
+MOVE INTEREST-DATE TO REGZ-INTDATE
+MOVE FIRST-PAYMENT-DATE TO REGZ-1STPYDATE
+MOVE ORIGINAL-TERM TO REGZ-ORGTERM
+MOVE PAYMENT-AMOUNT TO REGZ-REGPYAMT
+MOVE PAYMENT-AMOUNT TO REGZ-1STPYAMT
+MOVE PAYMENT-AMOUNT TO REGZ-LASTPYAMT
+MOVE TOTAL-FINANCE-CHARGE TO REGZ-FINCHG
+MOVE ANNUAL-PERCENTAGE-RATE TO REGZ-APRATE
+MOVE "A" TO REGZ-DISFRMLA
+MOVE "Y" TO REGZ-INCLUDE-DEF-FG
+MOVE NUMBER-OF-DEFERMENTS TO REGZ-TOTNODEF
+
+* Calculate with deferment adjustments
+PERFORM REGZ-UNEARNED-CALC
+
+* Review impact of deferments
+IF REGZ-UNEARNED > STANDARD-UNEARNED
+   DISPLAY "Deferments increased refund amount"
+END-IF</code></pre>
+        </section>
+
+        <section id="technical-details">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Mathematical Precision</h3>
+            <ul>
+                <li><strong>Decimal Precision:</strong> Uses appropriate decimal places for financial calculations</li>
+                <li><strong>Rounding Rules:</strong> Follows banking rounding conventions</li>
+                <li><strong>Overflow Protection:</strong> Handles large calculation values safely</li>
+                <li><strong>Zero Handling:</strong> Proper handling of zero and negative values</li>
+            </ul>
+
+            <h3>Performance Characteristics</h3>
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Implementation</th>
+                    <th>Benefits</th>
+                </tr>
+                <tr>
+                    <td><strong>Calculation Speed</strong></td>
+                    <td>Optimized mathematical routines</td>
+                    <td>Fast processing for high volumes</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory Usage</strong></td>
+                    <td>Efficient variable management</td>
+                    <td>Minimal memory footprint</td>
+                </tr>
+                <tr>
+                    <td><strong>Error Handling</strong></td>
+                    <td>Comprehensive validation</td>
+                    <td>Reliable results</td>
+                </tr>
+            </table>
+
+            <h3>Dependencies</h3>
+            <ul>
+                <li><strong>Unit Period Routines:</strong> UPER-CALCULATION for period setup</li>
+                <li><strong>Date Routines:</strong> Date arithmetic and validation</li>
+                <li><strong>Time Routines:</strong> TIMUPER for elapsed time calculations</li>
+                <li><strong>Increment Routines:</strong> INCREMENT-UNITPER for date advancement</li>
+            </ul>
+
+            <div class="warning">
+                <p><strong>Critical Dependencies:</strong> LPREGZ relies on accurate date and time calculation routines. Any changes to these underlying routines must be carefully tested to ensure continued compliance with Regulation Z requirements.</p>
+            </div>
+        </section>
+
+        <section id="integration">
+            <h2>Integration Points</h2>
+            
+            <h3>Calling Programs</h3>
+            <ul>
+                <li><strong>LONPFC:</strong> Loan payment processing with early payoff calculations</li>
+                <li><strong>Payoff Programs:</strong> Dedicated loan payoff processing</li>
+                <li><strong>Interest Calculators:</strong> Interest calculation and earnings processing</li>
+                <li><strong>Regulatory Reporting:</strong> Compliance reporting systems</li>
+            </ul>
+
+            <h3>Data Sources</h3>
+            <ul>
+                <li><strong>Loan Master:</strong> Original loan terms and conditions</li>
+                <li><strong>Payment History:</strong> Payment dates and amounts</li>
+                <li><strong>Interest Parameters:</strong> APR and calculation method settings</li>
+                <li><strong>State Parameters:</strong> State-specific calculation requirements</li>
+            </ul>
+
+            <h3>Output Destinations</h3>
+            <ul>
+                <li><strong>Payoff Calculations:</strong> Final payoff amount determination</li>
+                <li><strong>Refund Processing:</strong> Customer refund calculations</li>
+                <li><strong>Financial Reporting:</strong> Interest income adjustments</li>
+                <li><strong>Regulatory Reports:</strong> Compliance documentation</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Regulatory Updates:</strong> Monitor Federal Reserve Regulation Z changes</li>
+                <li><strong>State Law Changes:</strong> Track state-specific requirement updates</li>
+                <li><strong>Calculation Accuracy:</strong> Regular testing of calculation precision</li>
+                <li><strong>Performance Monitoring:</strong> Monitor calculation performance under load</li>
+            </ul>
+
+            <h3>Testing Requirements</h3>
+            <table>
+                <tr>
+                    <th>Test Type</th>
+                    <th>Focus Area</th>
+                    <th>Frequency</th>
+                </tr>
+                <tr>
+                    <td><strong>Accuracy Testing</strong></td>
+                    <td>Mathematical precision of calculations</td>
+                    <td>Quarterly</td>
+                </tr>
+                <tr>
+                    <td><strong>Compliance Testing</strong></td>
+                    <td>Regulatory requirement adherence</td>
+                    <td>Annually</td>
+                </tr>
+                <tr>
+                    <td><strong>Edge Case Testing</strong></td>
+                    <td>Boundary conditions and special cases</td>
+                    <td>Semi-annually</td>
+                </tr>
+                <tr>
+                    <td><strong>Performance Testing</strong></td>
+                    <td>High-volume processing capabilities</td>
+                    <td>Annually</td>
+                </tr>
+            </table>
+
+            <h3>Critical Considerations</h3>
+            <div class="note">
+                <p><strong>Compliance Critical:</strong></p>
+                <ul>
+                    <li><strong>Regulatory Compliance:</strong> Any changes must maintain Regulation Z compliance</li>
+                    <li><strong>Audit Trail:</strong> Maintain detailed audit trails for all calculations</li>
+                    <li><strong>Accuracy:</strong> Financial accuracy is paramount for customer trust and regulatory compliance</li>
+                    <li><strong>Documentation:</strong> Comprehensive documentation required for regulatory review</li>
+                </ul>
+            </div>
+
+            <h3>Future Enhancements</h3>
+            <ul>
+                <li><strong>Additional Methods:</strong> Support for new calculation methods as regulations evolve</li>
+                <li><strong>Enhanced Reporting:</strong> Detailed calculation step reporting for audit purposes</li>
+                <li><strong>Performance Optimization:</strong> Continued optimization for high-volume processing</li>
+                <li><strong>Integration Expansion:</strong> Enhanced integration with modern banking systems</li>
+            </ul>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Initialize Mermaid
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

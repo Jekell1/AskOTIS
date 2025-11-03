@@ -1,0 +1,11 @@
+      IDENTIFICATION DIVISION.
+      PROGRAM-ID. TEST-PROGRAM.
+      
+      DATA DIVISION.
+      WORKING-STORAGE SECTION.
+      01  WS-COUNTER      PIC 9(3) VALUE 0.
+      
+      PROCEDURE DIVISION.
+      MAIN-LOGIC.
+          DISPLAY 'Hello World'.
+          STOP RUN.

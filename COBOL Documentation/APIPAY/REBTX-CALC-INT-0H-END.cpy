@@ -1,0 +1,4 @@
+       REBTX-CALC-INT-0H-END.
+           COMPUTE REBTX-CALC-INT =
+                   REBTX-CALC-INT / 365 * ELAPSED-DAYS.
+

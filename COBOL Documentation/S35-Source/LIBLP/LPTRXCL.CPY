@@ -1,0 +1,41 @@
+      * COPYMEMBER: LIBLP/LPTRXCL
+
+      ***********************************************************************
+      *    LPTRXCL    TRANSFER TRANSACTION FILE CLEAR ROUTINE
+      *
+      * REV:
+      *  MJD 062895 ADDED CLEAR OF TX-POSTTIME AND TX-POSTDATE.
+      *  MJD 160928 FIXED FOR NEW A30 RECORD
+      * CS 161117 ADD TX-SUBCLASS
+      ***********************************************************************
+       CLEAR-TRX-FILE SECTION.
+           MOVE SPACES TO TRX-REC.
+
+           MOVE 0 TO
+              TX-DATE TX-BRNO TX-CLASS TX-ACCTNO 
+              TX-LAWCODE TX-LINE TX-LTOUCH-DATE TX-LOANDATE TX-PROCEEDS
+              TX-LNAMT TX-FINCHG TX-INTCHG TX-SERCHG TX-EXTCHG
+              TX-MAINTFEE TX-ORGTERM TX-DLNO TX-DLPARTRCAMT TX-PURBAL
+              TX-DLPARVHELD TX-DLPARVPAID TX-DLDISC
+              TX-ANTICTERM TX-PRLNNO TX-PRBAL TX-TFRBAL
+              TX-SPRCLASS TX-POSTTIME TX-POSTDATE.
+
+              MOVE 0 TO TX-SUBCLASS.
+
+              PERFORM CLEAR-TRX-FILE-TABLES
+                   VARYING TRXSUB FROM 1 BY 1 UNTIL TRXSUB > 10.
+
+              GO TO CLEAR-TRX-FILE-EXIT.
+
+       CLEAR-TRX-FILE-TABLES.
+              IF TRXSUB < 4
+                 MOVE 0 TO TX-DLRVPRIN(TRXSUB) TX-DLRVCHGS(TRXSUB).
+              IF TRXSUB < 5
+                 MOVE 0 TO TX-SSNO(TRXSUB).
+
+      * OCCURS 10
+              MOVE 0 TO TX-EARNINGS(TRXSUB)    TX-ANTICERN(TRXSUB) 
+              MOVE 0 TO TX-INSANTICERN(TRXSUB) TX-INSEARNINGS(TRXSUB).
+
+       CLEAR-TRX-FILE-EXIT.
+           EXIT.

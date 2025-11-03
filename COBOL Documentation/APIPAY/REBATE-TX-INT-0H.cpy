@@ -1,0 +1,81 @@
+      *******************************************
+      *          ( 0 H )
+      *TEXAS INTEREST REFUND FORMULA
+      *******************************************
+       REBATE-TX-INT-0H SECTION.
+           MOVE 0 TO REBTX-CALC-INT-TOT.
+
+      *IF REBATE DATE IS >= MATURITY, FORCE A ZERO REBATE:
+           PERFORM MATURITY-DATE-CALCULATION.
+           IF REB-PAYDATE NOT < MDTE-DATE
+              MOVE 0 TO REB-REBATE
+              GO TO REBATE-TX-INT-0H-EXIT.
+
+           PERFORM LOAN-CALCULATIONS.
+           MOVE DISCLOSED-FINAMT TO REBTX-AMTFIN.
+
+           COMPUTE REBTX-SERCHG-SLICE ROUNDED =
+                         LN-SERCHG / REB-LN-ORGTERM.
+
+      * SEE IF REBATE DATE IS ON OR PRIOR TO 1STPAY,
+      * IF SO DETERMINE INTEREST THRU REBATE DATE
+      
+           IF REB-PAYDATE NOT > REB-LN-ORIG-1STPYDATE
+              MOVE REB-LN-INTDATE  TO NUM-DATE
+              MOVE REB-PAYDATE     TO SYS-DATE
+              PERFORM TIM365
+              PERFORM REBTX-CALC-INT-0H
+              ADD REBTX-CALC-INT TO REBTX-CALC-INT-TOT
+              GO TO REBATE-TX-INT-0H-END.
+
+
+           MOVE REB-LN-1STPYAMT    TO REBTX-PYAMT.
+           MOVE REB-LN-INTDATE     TO REBTX-FROM-DATE.
+           MOVE REB-LN-ORIG-1STPYDATE TO REBTX-TO-DATE.
+
+       REBATE-TX-INT-0H-LOOP.
+           MOVE REBTX-FROM-DATE TO NUM-DATE.
+           MOVE REBTX-TO-DATE   TO SYS-DATE.
+           PERFORM TIM365.
+           PERFORM REBTX-CALC-INT-0H
+           ADD REBTX-CALC-INT TO REBTX-CALC-INT-TOT.
+           COMPUTE REBTX-AMTFIN =
+              REBTX-AMTFIN - REBTX-PYAMT
+               + REBTX-CALC-INT + REBTX-SERCHG-SLICE.
+
+           IF REBTX-AMTFIN < 0
+              MOVE 0 TO REBTX-AMTFIN.
+
+           MOVE REBTX-TO-DATE   TO REBTX-FROM-DATE
+                                  NDTE-DATE.
+           MOVE 1               TO NDTE-HOLD.
+           PERFORM INCREMENT-UNITPER.
+           MOVE NDTE-DATE       TO REBTX-TO-DATE.
+           MOVE REB-LN-REGPYAMT TO REBTX-PYAMT.
+
+           IF REB-PAYDATE > REBTX-TO-DATE
+              GO TO  REBATE-TX-INT-0H-LOOP.
+
+           MOVE REBTX-FROM-DATE TO NUM-DATE.
+           MOVE REB-PAYDATE     TO SYS-DATE.
+           PERFORM TIM365.
+           PERFORM REBTX-CALC-INT-0H.
+           ADD REBTX-CALC-INT TO REBTX-CALC-INT-TOT.
+
+
+       REBATE-TX-INT-0H-END.
+      *    MOVE REBTX-CALC-INT-TOT TO
+      *                    REBTX-CALC-INT-X.
+      *    MOVE REBTX-CALC-INT-X TO MESS.
+      *    PERFORM SEND-MESS.
+           COMPUTE REB-REBATE =
+              1.50 + LN-INTCHG + LN-EXTCHG - REBTX-CALC-INT-TOT.
+           IF REB-REBATE < 0
+              MOVE 0 TO REB-REBATE.
+           IF REB-REBATE > (LN-INTCHG + LN-EXTCHG)
+              COMPUTE REB-REBATE = LN-INTCHG + LN-EXTCHG.
+           GO TO REBATE-TX-INT-0H-EXIT.
+
+       REBATE-TX-INT-0H-EXIT.
+           EXIT.
+

@@ -1,0 +1,45 @@
+%%{init: {"theme": "default", "themeVariables": {"primaryColor": "#28a745", "primaryTextColor": "#fff", "primaryBorderColor": "#1e7e34", "lineColor": "#28a745", "sectionBkgColor": "#f8f9fa", "altSectionBkgColor": "#e9ecef", "gridColor": "#dee2e6", "secondaryColor": "#6c757d", "tertiaryColor": "#f8f9fa"}}}%%
+
+flowchart TD
+    A[Processing Step] --> B{Error Occurred?}
+    B -->|No| C[Continue Processing]
+    B -->|Yes| D[Identify Error Type]
+    
+    D --> E{Error Category}
+    E -->|File Error| F[Handle File Error]
+    E -->|Validation Error| G[Handle Validation Error]
+    E -->|Business Rule Error| H[Handle Business Rule Error]
+    E -->|System Error| I[Handle System Error]
+    
+    F --> J[Log Error Message]
+    G --> K[Display User Message]
+    H --> L[Apply Business Logic]
+    I --> M[System Error Handling]
+    
+    J --> N{Recoverable?}
+    K --> O[Allow User Correction]
+    L --> P{Override Available?}
+    M --> Q[Terminate Processing]
+    
+    N -->|Yes| R[Retry Operation]
+    N -->|No| Q
+    
+    O --> S[Return to Entry]
+    P -->|Yes| T[Request Password]
+    P -->|No| S
+    
+    T --> U{Valid Password?}
+    U -->|Yes| V[Apply Override]
+    U -->|No| S
+    
+    R --> A
+    V --> C
+    S --> W[End Error Handling]
+    Q --> W
+    C --> X[Continue Normal Flow]
+    
+    style A fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style B fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style E fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff
+    style Q fill:#dc3545,stroke:#c82333,stroke-width:2px,color:#fff
+    style X fill:#6f42c1,stroke:#563d7c,stroke-width:2px,color:#fff

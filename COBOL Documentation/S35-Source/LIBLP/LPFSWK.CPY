@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSWK
+           SELECT WK-FILE ASSIGN TO TEMP-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY WK-KEY
+                  FILE STATUS FILE-STAT.

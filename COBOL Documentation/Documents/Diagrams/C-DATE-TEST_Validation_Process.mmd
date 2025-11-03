@@ -1,0 +1,44 @@
+flowchart TD
+    A[Date Validation Process] --> B[Format Validation]
+    A --> C[Logical Validation]
+    
+    B --> D[Month Range Check]
+    B --> E[Day Range Check]
+    D --> F{MM: 01-12?}
+    E --> G{DD Valid for Month?}
+    
+    F -->|No| H[INVALID: Month Out of Range]
+    F -->|Yes| I[Month OK]
+    G -->|No| J[INVALID: Day Out of Range]
+    G -->|Yes| K[Day OK]
+    
+    I --> L[Format Validation Complete]
+    K --> L
+    H --> M[Return 0]
+    J --> M
+    
+    L --> C
+    C --> N[Julian Conversion Test]
+    N --> O[PERFORM C-CALL-JUL]
+    O --> P{Conversion Success?}
+    P -->|No| Q[INVALID: Julian Conversion Failed]
+    P -->|Yes| R[Round-Trip Test]
+    
+    R --> S[PERFORM C-CALL-CJUL]
+    S --> T{Original = Back-Converted?}
+    T -->|No| U[INVALID: Round-Trip Failed]
+    T -->|Yes| V[VALID: Return Original Date]
+    
+    Q --> M
+    U --> M
+    V --> W[Return Original]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff9c4
+    style C fill:#e8f5e8
+    style M fill:#ffebee
+    style W fill:#c8e6c9
+    style F fill:#fff3e0
+    style G fill:#fff3e0
+    style P fill:#fff3e0
+    style T fill:#fff3e0

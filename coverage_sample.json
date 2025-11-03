@@ -1,0 +1,766 @@
+{
+  "aggregate": {
+    "programs": 40,
+    "total_lines": 27921,
+    "total_covered_lines": 25918,
+    "overall_coverage_pct": 92.83,
+    "median_program_coverage_pct": 89.945,
+    "programs_below_70pct": 0
+  },
+  "programs": [
+    {
+      "program_id": "ELREAD",
+      "file_path": "./cobol_src/CL/ELREAD.CBL",
+      "total_lines": 141,
+      "paragraph_count": 12,
+      "covered_lines": 106,
+      "coverage_pct": 75.18,
+      "avg_paragraph_length": 8.83,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 29,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 35,
+          "length": 35
+        }
+      ]
+    },
+    {
+      "program_id": "LCFLD",
+      "file_path": "./cobol_src/CL/LCFLD.CBL",
+      "total_lines": 170,
+      "paragraph_count": 12,
+      "covered_lines": 133,
+      "coverage_pct": 78.24,
+      "avg_paragraph_length": 11.08,
+      "median_paragraph_length": 2.5,
+      "max_paragraph_length": 70,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 37,
+          "length": 37
+        }
+      ]
+    },
+    {
+      "program_id": "CDBRRD",
+      "file_path": "./cobol_src/CL/CDBRRD.CBL",
+      "total_lines": 103,
+      "paragraph_count": 12,
+      "covered_lines": 81,
+      "coverage_pct": 78.64,
+      "avg_paragraph_length": 6.75,
+      "median_paragraph_length": 2.0,
+      "max_paragraph_length": 30,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 22,
+          "length": 22
+        }
+      ]
+    },
+    {
+      "program_id": "CDREAD",
+      "file_path": "./cobol_src/CL/CDREAD.CBL",
+      "total_lines": 95,
+      "paragraph_count": 12,
+      "covered_lines": 75,
+      "coverage_pct": 78.95,
+      "avg_paragraph_length": 6.25,
+      "median_paragraph_length": 2.0,
+      "max_paragraph_length": 26,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 20,
+          "length": 20
+        }
+      ]
+    },
+    {
+      "program_id": "ERRLOG",
+      "file_path": "./cobol_src/CL/ERRLOG.CBL",
+      "total_lines": 222,
+      "paragraph_count": 14,
+      "covered_lines": 178,
+      "coverage_pct": 80.18,
+      "avg_paragraph_length": 12.71,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 99,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 44,
+          "length": 44
+        }
+      ]
+    },
+    {
+      "program_id": "DWSSAP",
+      "file_path": "./cobol_src/CL/DWSSAP.CBL",
+      "total_lines": 57,
+      "paragraph_count": 11,
+      "covered_lines": 46,
+      "coverage_pct": 80.7,
+      "avg_paragraph_length": 4.18,
+      "median_paragraph_length": 2,
+      "max_paragraph_length": 16,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 11,
+          "length": 11
+        }
+      ]
+    },
+    {
+      "program_id": "BISCAN",
+      "file_path": "./cobol_src/CL/BISCAN.CBL",
+      "total_lines": 539,
+      "paragraph_count": 34,
+      "covered_lines": 437,
+      "coverage_pct": 81.08,
+      "avg_paragraph_length": 12.85,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 170,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 102,
+          "length": 102
+        }
+      ]
+    },
+    {
+      "program_id": "IRREAD",
+      "file_path": "./cobol_src/CL/IRREAD.CBL",
+      "total_lines": 91,
+      "paragraph_count": 11,
+      "covered_lines": 74,
+      "coverage_pct": 81.32,
+      "avg_paragraph_length": 6.73,
+      "median_paragraph_length": 2,
+      "max_paragraph_length": 29,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 17,
+          "length": 17
+        }
+      ]
+    },
+    {
+      "program_id": "BICLAS",
+      "file_path": "./cobol_src/CL/BICLAS.CBL",
+      "total_lines": 155,
+      "paragraph_count": 15,
+      "covered_lines": 132,
+      "coverage_pct": 85.16,
+      "avg_paragraph_length": 8.8,
+      "median_paragraph_length": 2,
+      "max_paragraph_length": 47,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 23,
+          "length": 23
+        }
+      ]
+    },
+    {
+      "program_id": "CASC16",
+      "file_path": "./cobol_src/CL/CASC16.CBL",
+      "total_lines": 299,
+      "paragraph_count": 30,
+      "covered_lines": 257,
+      "coverage_pct": 85.95,
+      "avg_paragraph_length": 8.57,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 40,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 42,
+          "length": 42
+        }
+      ]
+    },
+    {
+      "program_id": "CHKSEC",
+      "file_path": "./cobol_src/CL/CHKSEC.CBL",
+      "total_lines": 215,
+      "paragraph_count": 12,
+      "covered_lines": 187,
+      "coverage_pct": 86.98,
+      "avg_paragraph_length": 15.58,
+      "median_paragraph_length": 6.5,
+      "max_paragraph_length": 63,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 28,
+          "length": 28
+        }
+      ]
+    },
+    {
+      "program_id": "CREARX",
+      "file_path": "./cobol_src/CL/CREARX.CBL",
+      "total_lines": 147,
+      "paragraph_count": 14,
+      "covered_lines": 128,
+      "coverage_pct": 87.07,
+      "avg_paragraph_length": 9.14,
+      "median_paragraph_length": 2.5,
+      "max_paragraph_length": 49,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 19,
+          "length": 19
+        }
+      ]
+    },
+    {
+      "program_id": "IRREBT",
+      "file_path": "./cobol_src/CL/IRREBT.CBL",
+      "total_lines": 110,
+      "paragraph_count": 11,
+      "covered_lines": 96,
+      "coverage_pct": 87.27,
+      "avg_paragraph_length": 8.73,
+      "median_paragraph_length": 2,
+      "max_paragraph_length": 41,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 14,
+          "length": 14
+        }
+      ]
+    },
+    {
+      "program_id": "CREAIX",
+      "file_path": "./cobol_src/CL/CREAIX.CBL",
+      "total_lines": 264,
+      "paragraph_count": 26,
+      "covered_lines": 232,
+      "coverage_pct": 87.88,
+      "avg_paragraph_length": 8.92,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 43,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 32,
+          "length": 32
+        }
+      ]
+    },
+    {
+      "program_id": "FINDLN",
+      "file_path": "./cobol_src/CL/FINDLN.CBL",
+      "total_lines": 227,
+      "paragraph_count": 21,
+      "covered_lines": 201,
+      "coverage_pct": 88.55,
+      "avg_paragraph_length": 9.57,
+      "median_paragraph_length": 3,
+      "max_paragraph_length": 35,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 26,
+          "length": 26
+        }
+      ]
+    },
+    {
+      "program_id": "ACUMEM",
+      "file_path": "./cobol_src/CL/ACUMEM.CBL",
+      "total_lines": 315,
+      "paragraph_count": 28,
+      "covered_lines": 281,
+      "coverage_pct": 89.21,
+      "avg_paragraph_length": 10.04,
+      "median_paragraph_length": 9.0,
+      "max_paragraph_length": 58,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 34,
+          "length": 34
+        }
+      ]
+    },
+    {
+      "program_id": "CKSTAT",
+      "file_path": "./cobol_src/CL/CKSTAT.CBL",
+      "total_lines": 322,
+      "paragraph_count": 35,
+      "covered_lines": 288,
+      "coverage_pct": 89.44,
+      "avg_paragraph_length": 8.23,
+      "median_paragraph_length": 3,
+      "max_paragraph_length": 53,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 34,
+          "length": 34
+        }
+      ]
+    },
+    {
+      "program_id": "CRNOR2",
+      "file_path": "./cobol_src/CL/CRNOR2.CBL",
+      "total_lines": 767,
+      "paragraph_count": 32,
+      "covered_lines": 687,
+      "coverage_pct": 89.57,
+      "avg_paragraph_length": 21.47,
+      "median_paragraph_length": 5.5,
+      "max_paragraph_length": 91,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 80,
+          "length": 80
+        }
+      ]
+    },
+    {
+      "program_id": "INSTAX",
+      "file_path": "./cobol_src/CL/INSTAX.CBL",
+      "total_lines": 147,
+      "paragraph_count": 13,
+      "covered_lines": 132,
+      "coverage_pct": 89.8,
+      "avg_paragraph_length": 10.15,
+      "median_paragraph_length": 3,
+      "max_paragraph_length": 51,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 15,
+          "length": 15
+        }
+      ]
+    },
+    {
+      "program_id": "BTRACK",
+      "file_path": "./cobol_src/CL/BTRACK.CBL",
+      "total_lines": 295,
+      "paragraph_count": 17,
+      "covered_lines": 265,
+      "coverage_pct": 89.83,
+      "avg_paragraph_length": 15.59,
+      "median_paragraph_length": 7,
+      "max_paragraph_length": 87,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 30,
+          "length": 30
+        }
+      ]
+    },
+    {
+      "program_id": "BICREA",
+      "file_path": "./cobol_src/CL/BICREA.CBL",
+      "total_lines": 543,
+      "paragraph_count": 38,
+      "covered_lines": 489,
+      "coverage_pct": 90.06,
+      "avg_paragraph_length": 12.87,
+      "median_paragraph_length": 5.0,
+      "max_paragraph_length": 106,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 54,
+          "length": 54
+        }
+      ]
+    },
+    {
+      "program_id": "FEEADD",
+      "file_path": "./cobol_src/CL/FEEADD.CBL",
+      "total_lines": 151,
+      "paragraph_count": 20,
+      "covered_lines": 136,
+      "coverage_pct": 90.07,
+      "avg_paragraph_length": 6.8,
+      "median_paragraph_length": 2.0,
+      "max_paragraph_length": 36,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 15,
+          "length": 15
+        }
+      ]
+    },
+    {
+      "program_id": "CLMENU",
+      "file_path": "./cobol_src/CL/CLMENU.CBL",
+      "total_lines": 919,
+      "paragraph_count": 60,
+      "covered_lines": 828,
+      "coverage_pct": 90.1,
+      "avg_paragraph_length": 13.8,
+      "median_paragraph_length": 9.0,
+      "max_paragraph_length": 138,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 91,
+          "length": 91
+        }
+      ]
+    },
+    {
+      "program_id": "DEFI01",
+      "file_path": "./cobol_src/CL/DEFI01.CBL",
+      "total_lines": 313,
+      "paragraph_count": 18,
+      "covered_lines": 283,
+      "coverage_pct": 90.42,
+      "avg_paragraph_length": 15.72,
+      "median_paragraph_length": 2.5,
+      "max_paragraph_length": 74,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 30,
+          "length": 30
+        }
+      ]
+    },
+    {
+      "program_id": "LFPPO",
+      "file_path": "./cobol_src/CL/LFPPO.CBL",
+      "total_lines": 347,
+      "paragraph_count": 28,
+      "covered_lines": 316,
+      "coverage_pct": 91.07,
+      "avg_paragraph_length": 11.29,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 63,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 31,
+          "length": 31
+        }
+      ]
+    },
+    {
+      "program_id": "LNVERI",
+      "file_path": "./cobol_src/CL/LNVERI.CBL",
+      "total_lines": 1255,
+      "paragraph_count": 71,
+      "covered_lines": 1146,
+      "coverage_pct": 91.31,
+      "avg_paragraph_length": 16.14,
+      "median_paragraph_length": 7,
+      "max_paragraph_length": 144,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 109,
+          "length": 109
+        }
+      ]
+    },
+    {
+      "program_id": "AUDITW",
+      "file_path": "./cobol_src/CL/AUDITW.CBL",
+      "total_lines": 424,
+      "paragraph_count": 39,
+      "covered_lines": 394,
+      "coverage_pct": 92.92,
+      "avg_paragraph_length": 10.1,
+      "median_paragraph_length": 6,
+      "max_paragraph_length": 54,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 30,
+          "length": 30
+        }
+      ]
+    },
+    {
+      "program_id": "GASC13",
+      "file_path": "./cobol_src/CL/GASC13.CBL",
+      "total_lines": 700,
+      "paragraph_count": 46,
+      "covered_lines": 651,
+      "coverage_pct": 93.0,
+      "avg_paragraph_length": 14.15,
+      "median_paragraph_length": 6.0,
+      "max_paragraph_length": 132,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 49,
+          "length": 49
+        }
+      ]
+    },
+    {
+      "program_id": "GASC54",
+      "file_path": "./cobol_src/CL/GASC54.CBL",
+      "total_lines": 710,
+      "paragraph_count": 47,
+      "covered_lines": 661,
+      "coverage_pct": 93.1,
+      "avg_paragraph_length": 14.06,
+      "median_paragraph_length": 7,
+      "max_paragraph_length": 123,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 49,
+          "length": 49
+        }
+      ]
+    },
+    {
+      "program_id": "CHMEMO",
+      "file_path": "./cobol_src/CL/CHMEMO.CBL",
+      "total_lines": 728,
+      "paragraph_count": 45,
+      "covered_lines": 679,
+      "coverage_pct": 93.27,
+      "avg_paragraph_length": 15.09,
+      "median_paragraph_length": 10,
+      "max_paragraph_length": 181,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 49,
+          "length": 49
+        }
+      ]
+    },
+    {
+      "program_id": "MFEE04",
+      "file_path": "./cobol_src/CL/MFEE04.CBL",
+      "total_lines": 314,
+      "paragraph_count": 21,
+      "covered_lines": 293,
+      "coverage_pct": 93.31,
+      "avg_paragraph_length": 13.95,
+      "median_paragraph_length": 3,
+      "max_paragraph_length": 123,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 21,
+          "length": 21
+        }
+      ]
+    },
+    {
+      "program_id": "FEUNR1",
+      "file_path": "./cobol_src/CL/FEUNR1.CBL",
+      "total_lines": 1859,
+      "paragraph_count": 115,
+      "covered_lines": 1743,
+      "coverage_pct": 93.76,
+      "avg_paragraph_length": 15.16,
+      "median_paragraph_length": 7,
+      "max_paragraph_length": 295,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 116,
+          "length": 116
+        }
+      ]
+    },
+    {
+      "program_id": "ERRSQL",
+      "file_path": "./cobol_src/CL/ERRSQL.CBL",
+      "total_lines": 562,
+      "paragraph_count": 17,
+      "covered_lines": 527,
+      "coverage_pct": 93.77,
+      "avg_paragraph_length": 31.0,
+      "median_paragraph_length": 8,
+      "max_paragraph_length": 135,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 35,
+          "length": 35
+        }
+      ]
+    },
+    {
+      "program_id": "CK1497",
+      "file_path": "./cobol_src/CL/CK1497.CBL",
+      "total_lines": 971,
+      "paragraph_count": 99,
+      "covered_lines": 915,
+      "coverage_pct": 94.23,
+      "avg_paragraph_length": 9.24,
+      "median_paragraph_length": 5,
+      "max_paragraph_length": 209,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 56,
+          "length": 56
+        }
+      ]
+    },
+    {
+      "program_id": "ICUNR1",
+      "file_path": "./cobol_src/CL/ICUNR1.CBL",
+      "total_lines": 4472,
+      "paragraph_count": 169,
+      "covered_lines": 4223,
+      "coverage_pct": 94.43,
+      "avg_paragraph_length": 24.99,
+      "median_paragraph_length": 9,
+      "max_paragraph_length": 512,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 249,
+          "length": 249
+        }
+      ]
+    },
+    {
+      "program_id": "GASC12",
+      "file_path": "./cobol_src/CL/GASC12.CBL",
+      "total_lines": 674,
+      "paragraph_count": 45,
+      "covered_lines": 638,
+      "coverage_pct": 94.66,
+      "avg_paragraph_length": 14.18,
+      "median_paragraph_length": 6,
+      "max_paragraph_length": 124,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 36,
+          "length": 36
+        }
+      ]
+    },
+    {
+      "program_id": "CHBMMO",
+      "file_path": "./cobol_src/CL/CHBMMO.CBL",
+      "total_lines": 941,
+      "paragraph_count": 21,
+      "covered_lines": 900,
+      "coverage_pct": 95.64,
+      "avg_paragraph_length": 42.86,
+      "median_paragraph_length": 3,
+      "max_paragraph_length": 644,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 41,
+          "length": 41
+        }
+      ]
+    },
+    {
+      "program_id": "ICUNR2",
+      "file_path": "./cobol_src/CL/ICUNR2.CBL",
+      "total_lines": 3247,
+      "paragraph_count": 165,
+      "covered_lines": 3109,
+      "coverage_pct": 95.75,
+      "avg_paragraph_length": 18.84,
+      "median_paragraph_length": 8,
+      "max_paragraph_length": 437,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 138,
+          "length": 138
+        }
+      ]
+    },
+    {
+      "program_id": "ICUNR3",
+      "file_path": "./cobol_src/CL/ICUNR3.CBL",
+      "total_lines": 3858,
+      "paragraph_count": 177,
+      "covered_lines": 3721,
+      "coverage_pct": 96.45,
+      "avg_paragraph_length": 21.02,
+      "median_paragraph_length": 8,
+      "max_paragraph_length": 459,
+      "gap_count": 1,
+      "largest_gaps": [
+        {
+          "start_line": 1,
+          "end_line": 137,
+          "length": 137
+        }
+      ]
+    },
+    {
+      "program_id": "BWVDEL",
+      "file_path": "./cobol_src/CL/BWVDEL.CBL",
+      "total_lines": 252,
+      "paragraph_count": 30,
+      "covered_lines": 250,
+      "coverage_pct": 99.21,
+      "avg_paragraph_length": 8.33,
+      "median_paragraph_length": 3.0,
+      "max_paragraph_length": 54,
+      "gap_count": 0,
+      "largest_gaps": []
+    }
+  ]
+}

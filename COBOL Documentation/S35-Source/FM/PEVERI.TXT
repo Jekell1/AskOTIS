@@ -1,0 +1,65 @@
+\GENERALHELP\
+
+The PASSWORD EXCEPTION AUDIT REPORT prints a LIST of
+all logins that exist in the PEFILE but do NOT exist
+in the /etc/passwd opsys login file.
+
+\QUEUE\
+
+The default of "Y" will create a print file and
+then proceed to print the report.
+                      OR
+Enter "N" and the report WILL begin to print immediately.
+                      OR
+Enter "V" and the report will go to a file to be VIEWED
+on the screen but WILL NOT print.
+
+Press RETURN after making any entries.
+
+\COPIES\
+
+Specify the NUMBER of TIMES you 
+would like the report to PRINT.
+
+Press RETURN after making any
+entries.
+
+\PRU\
+
+Specify the PRINTER NUMBER on which the report should print.
+If you are printing 'PIGGY BACK' enter 00 for PRINTER NO.
+
+The "QUEUE REPORT" of "Y" means the report will create a
+print file and then proceed to the printer.
+ 
+Enter "N" and the report will begin to print immediately.
+
+Enter "V" and the report will not print bu will be available
+for VIEWING on the screen.
+
+Press the UP ARROW KEY (^) to change the QUEUE or NUMBER OF
+COPIES field.
+                         OR
+Press FUNCTION KEY 7 (F7) to EXIT the menu.
+
+
+
+\ACCEPT\
+
+Enter "Y" to BEGIN printing the listing.
+                 OR
+Enter "N" to CANCEL the listing.
+                 OR
+Press FUNCTION KEY 1 (F1) to return to 
+PRINTER NO. field.
+                 OR
+Press the UP ARROW KEY (^) to move the cursor UP.
+                 OR
+Press FUNCTION KEY 7 (F7) to EXIT the 
+screen.
+                 OR
+Press FUNCTION KEY 10 (F10) to INTERRUPT 
+your current process to perform other 
+functions without losing the current 
+screen input.
+

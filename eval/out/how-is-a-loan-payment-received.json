@@ -1,0 +1,69 @@
+{
+  "question": "How is a loan payment received?",
+  "scope": "mixed",
+  "expanded_query": "How a is loan payment received",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_calls",
+      "id": "d29e09cf016b3be527385ae7fb0a4f9d8864427c",
+      "path": "cobol_src\\LP\\LONPB0.CBL",
+      "line": 236,
+      "snippet": "*  BAH 030516 PASSWORD MODIFYING ANY FIELD FROM A F3 RECALL LOAN"
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "5ad08b48bc9522a2bd983cbe77bdca1f422d6833",
+      "path": "2114058EE40D6FD46F2D43BC9518F3960161DAB6",
+      "line": 105,
+      "snippet": "01  A-DELETED-LOAN-FOUND    PIC X."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "A",
+      "path": "A",
+      "line": null,
+      "snippet": "A ; ROLE:LEAF ; OUT: ; IN:BLQUOT,CLQUOT,LNQUOT,PGMENU,SFQUOT,WIMENU,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "WIMENU",
+      "path": "WIMENU",
+      "line": null,
+      "snippet": "Paragraphs=51; edges=49; depth=3; cycles=N; entries=28; exits=41; fanout_max=17; risk=0.445. Entry: EXIT-PROG.... High fanout: SELECT-FIELD-FROM-DISPLAY (17)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "IS",
+      "path": "IS",
+      "line": null,
+      "snippet": "IS ; ROLE:UNKNOWN ; OUT: ; IN:PEVERI,SFQUOT ; COPY:"
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "A-LOAN-FOUND",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759097716.0934067,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths",
+      "symbol_refs",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: COBOL Search API
+  version: 1.0.0
+  description: Search COBOL code at line level using Azure AI Search
+servers:
+  - url: https://az-use1-ai-search.search.windows.net
+paths:
+  /indexes/cobol-index/docs/search:
+    post:
+      operationId: searchCobolIndex
+      summary: Search the COBOL index
+      description: Search across indexed COBOL code lines with full-text search and symbol filtering
+      security:
+        - apiKeyHeader: []
+      parameters:
+        - in: query
+          name: api-version
+          required: true
+          schema:
+            type: string
+            default: "2024-07-01"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  description: Search query - use quotes for exact matches, * for all
+                  example: "CUSTOMER-ACCNT-NO"
+                select:
+                  type: string
+                  description: Comma-separated fields to return
+                  example: "repo_path,line,code,symbol_name,symbol_kind"
+                filter:
+                  type: string
+                  description: OData filter expression
+                  example: "symbol_kind eq 'program'"
+                top:
+                  type: integer
+                  description: Number of results to return (max 1000)
+                  default: 50
+                  maximum: 1000
+                count:
+                  type: boolean
+                  description: Include total count in response
+                  default: false
+              required:
+                - search
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        repo_path:
+                          type: string
+                        line:
+                          type: integer
+                        code:
+                          type: string
+                        symbol_name:
+                          type: string
+                        symbol_kind:
+                          type: string
+                        calls:
+                          type: array
+                          items:
+                            type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+components:
+  schemas: {}
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: api-key

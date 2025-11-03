@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM361 Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM361 Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-TIM361 Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-TIM361.cpy</code><br />
+<strong>Program ID:</strong> C-TIM361<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#algorithm-details">Algorithm Details</a></li>
+<li><a href="#example-usage">Example Usage</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#maintenance-notes">Maintenance Notes</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-TIM361</strong> module is a specialized date arithmetic utility within the APIPAY system that computes elapsed time between two dates using a modified 361-day year calculation method. This method is specifically designed for note calculations and implements unique February handling where February 28 is treated as day 30 when calculating time spans to other months.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-TIM361</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Elapsed time calculation using 361-day year method for notes</li>
+<li><strong>Location</strong>: APIPAY/C-TIM361.cpy</li>
+<li><strong>Dependencies</strong>: C-TIMBEG, C-TIMEND, C-LEAP-YEAR-TEST</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-TIM361 provides specialized elapsed time calculations for note instruments using a modified 358-day method. The key distinction is its unique February 28 handling:
+- <strong>February 28 Treatment</strong>: When calculating from Feb 28 to any other month's 29th/30th/31st, Feb 28 is treated as the 30th
+- <strong>Note-Specific Logic</strong>: Designed specifically for promissory note and similar financial instrument calculations
+- <strong>360-Day Base</strong>: Uses 30-day months like other 360-day methods but with special February rules</p>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Note-Optimized Calculations</strong>: Specifically designed for note instruments</li>
+<li><strong>February 28 Special Treatment</strong>: Treats Feb 28 as day 30 in cross-month calculations</li>
+<li><strong>Leap Year Intelligence</strong>: Proper handling of February 29 in leap years</li>
+<li><strong>Month Standardization</strong>: 30-day month normalization</li>
+<li><strong>Complex Conditional Logic</strong>: Sophisticated February handling rules</li>
+</ol>
+<h3>February 28 Special Logic</h3>
+<p>The unique feature of C-TIM361 is its treatment of February 28:
+- <strong>Cross-Month Spans</strong>: Feb 28 → Mar 29/30/31 treats Feb 28 as Feb 30
+- <strong>Same-Month Spans</strong>: Feb 28 → Feb 29 uses actual days
+- <strong>Leap Year Awareness</strong>: Different handling for leap vs non-leap years</p>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-DATE1-CCYY/MM/DD</strong>: Start date components</li>
+<li><strong>WS-DATE2-CCYY/MM/DD</strong>: End date components</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-XDAYS</strong>: Total elapsed days using 361 method</li>
+<li><strong>ELAPSED-MONTHS</strong>: Elapsed months (via C-TIMEND)</li>
+<li><strong>ELAPSED-DAYS</strong>: Elapsed days (via C-TIMEND)</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days (via C-TIMEND)</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Initialization and Day Capping</h4>
+<pre><code class="language-cobol">PERFORM C-TIMBEG
+IF WS-DATE1-DD &gt; 30
+   MOVE 30 TO WS-DATE1-DD
+IF WS-DATE2-DD &gt; 30
+   MOVE 30 TO WS-DATE2-DD
+</code></pre>
+<h4>Phase 2: Forward February Processing</h4>
+<pre><code class="language-cobol">IF WS-DATE2-MM = 2 AND WS-DATE2-DD &gt; WS-DATE1-DD
+   MOVE WS-DATE2-CCYY TO LEAP-YEAR-CCYY
+   PERFORM C-LEAP-YEAR-TEST
+   IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29
+      MOVE 30 TO WS-DATE2-DD
+   ELSE
+      IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28
+         MOVE 30 TO WS-DATE2-DD
+</code></pre>
+<h4>Phase 3: Backward February Processing</h4>
+<pre><code class="language-cobol">IF WS-DATE2-MM = 2 AND WS-DATE2-DD &lt; WS-DATE1-DD
+   IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29
+      MOVE 29 TO WS-DATE1-DD
+   ELSE
+      IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28
+         MOVE 28 TO WS-DATE1-DD
+</code></pre>
+<h4>Phase 4: Complex February 28 Logic</h4>
+<pre><code class="language-cobol">IF NOT (
+   WS-DATE1-MM NOT = 2 OR
+   (WS-DATE1-DD &lt; 28 AND WS-DATE1-DD NOT &gt; WS-DATE2-DD) OR
+   (WS-DATE1-DD = WS-DATE2-DD AND WS-DATE1-MM = WS-DATE2-MM
+    AND WS-DATE1-CCYY = WS-DATE2-CCYY)
+)
+   IF LEAP-YEAR-FALSE
+      ADD 2 TO WS-DATE1-DD
+   ELSE
+      ADD 1 TO WS-DATE1-DD
+</code></pre>
+<h4>Phase 5: Final Calculation</h4>
+<pre><code class="language-cobol">COMPUTE WS-XDAYS = ((WS-DATE2-CCYY - WS-DATE1-CCYY) * 360)
+                 + ((WS-DATE2-MM - WS-DATE1-MM) * 30)
+                 + (WS-DATE2-DD - WS-DATE1-DD)
+</code></pre>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-TIM361-WORK-AREA
+├── WS-DATE1-CCYY           (Start year)
+├── WS-DATE1-MM             (Start month)
+├── WS-DATE1-DD             (Start day, adjusted)
+├── WS-DATE2-CCYY           (End year)
+├── WS-DATE2-MM             (End month)
+├── WS-DATE2-DD             (End day, adjusted)
+├── WS-XDAYS                (Calculated elapsed days)
+└── LEAP-YEAR-CCYY          (Leap year test input)
+</code></pre>
+<h3>Complex Conditional Logic Breakdown</h3>
+<p>The key logic statement evaluates:
+1. <strong>Month Check</strong>: Is start month February?
+2. <strong>Day Range Check</strong>: Is start day &gt;= 28 and creates cross-month span?
+3. <strong>Date Equality Check</strong>: Are dates identical?</p>
+<p>If all conditions indicate February 28 cross-month calculation, apply special adjustments.</p>
+<h2>Calculation Examples</h2>
+<h3>February 28 Cross-Month Example</h3>
+<pre><code>From: February 28, 2023 (non-leap)
+To: March 30, 2023
+
+Step 1: Check conditions
+  - DATE1-MM = 2 (February)
+  - DATE1-DD = 28 &gt;= 28
+  - Not same date
+
+Step 2: Apply adjustment
+  - Non-leap year: ADD 2 TO DATE1-DD
+  - Feb 28 becomes Feb 30
+
+Step 3: Calculate
+  - Days = (0 years × 360) + (1 month × 30) + (0 days)
+  - Result = 30 days
+</code></pre>
+<h3>February 29 Leap Year Example</h3>
+<pre><code>From: February 29, 2024 (leap)
+To: April 15, 2024
+
+Step 1: Forward February processing
+  - DATE2 not February, no adjustment
+
+Step 2: Complex logic check
+  - DATE1-MM = 2, DATE1-DD = 29
+  - Leap year: ADD 1 TO DATE1-DD
+  - Feb 29 becomes Feb 30
+
+Step 3: Calculate
+  - Days = (0 years × 360) + (2 months × 30) + (-15 days)
+  - Result = 45 days
+</code></pre>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Initialize] → [Day Capping] → [Forward February] → 
+[Backward February] → [Complex February Logic] → [Final Calculation]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>Note processing systems</strong>: Promissory note calculations</li>
+<li><strong>Specialized loan products</strong>: Notes and commercial paper</li>
+<li><strong>Interest calculations</strong>: Note-specific interest periods</li>
+<li><strong>Financial instruments</strong>: Custom calculation requirements</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li><strong>C-TIMBEG</strong>: Initialize time calculation workspace</li>
+<li><strong>C-TIMEND</strong>: Finalize and format elapsed time results</li>
+<li><strong>C-LEAP-YEAR-TEST</strong>: Leap year determination</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Validation Points</h3>
+<ol>
+<li><strong>Date Component Validation</strong>: Handled by calling modules</li>
+<li><strong>Leap Year Logic</strong>: Comprehensive leap year processing</li>
+<li><strong>Complex Conditions</strong>: Multi-condition validation logic</li>
+<li><strong>Date Sequence</strong>: Assumes proper date ordering</li>
+</ol>
+<h3>Boundary Conditions</h3>
+<ul>
+<li><strong>February Edge Cases</strong>: Extensive February 28/29 handling</li>
+<li><strong>Month Transitions</strong>: Cross-month calculation accuracy</li>
+<li><strong>Year Boundaries</strong>: Proper year rollover handling</li>
+<li><strong>Leap Year Transitions</strong>: Feb 29 → non-leap year scenarios</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) calculation with complex conditional logic</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Logic Complexity</strong>: More complex than standard 360-day methods</li>
+<li><strong>Accuracy</strong>: Specialized for note calculation requirements</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Note Calculation</h3>
+<pre><code class="language-cobol">MOVE 2024 TO WS-DATE1-CCYY
+MOVE 02 TO WS-DATE1-MM
+MOVE 28 TO WS-DATE1-DD
+MOVE 2024 TO WS-DATE2-CCYY
+MOVE 05 TO WS-DATE2-MM
+MOVE 31 TO WS-DATE2-DD
+PERFORM C-TIM361
+* Result: Feb 28 treated as Feb 30 for cross-month calculation
+</code></pre>
+<h3>Same-Month February Calculation</h3>
+<pre><code class="language-cobol">MOVE 2024 TO WS-DATE1-CCYY
+MOVE 02 TO WS-DATE1-MM
+MOVE 28 TO WS-DATE1-DD
+MOVE 2024 TO WS-DATE2-CCYY
+MOVE 02 TO WS-DATE2-MM
+MOVE 29 TO WS-DATE2-DD
+PERFORM C-TIM361
+* Result: Standard 1-day calculation within February
+</code></pre>
+<h2>Maintenance Notes</h2>
+<h3>Design Philosophy</h3>
+<ul>
+<li><strong>Note Specialization</strong>: Optimized for note instrument calculations</li>
+<li><strong>February Focus</strong>: Comprehensive February 28 handling</li>
+<li><strong>Conditional Complexity</strong>: Sophisticated multi-condition logic</li>
+<li><strong>Financial Accuracy</strong>: Precise calculations for financial instruments</li>
+</ul>
+<h3>Code Quality</h3>
+<ul>
+<li><strong>Complex Logic</strong>: Well-structured but intricate conditional processing</li>
+<li><strong>Specialized Purpose</strong>: Clear focus on note calculations</li>
+<li><strong>Robust Testing</strong>: Requires extensive February scenario testing</li>
+<li><strong>Maintainability</strong>: Complex conditions require careful modification</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-TIM360-358_Documentation.html">C-TIM360-358 Documentation</a> - Standard 360/358-day calculations</li>
+<li><a href="C-TIMBEG_Documentation.html">C-TIMBEG Documentation</a> - Time calculation initialization</li>
+<li><a href="C-TIMEND_Documentation.html">C-TIMEND Documentation</a> - Time calculation completion</li>
+<li><a href="C-LEAP-YEAR-TEST_Documentation.html">C-LEAP-YEAR-TEST Documentation</a> - Leap year detection</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-TIM361_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-TIM361_Complex_Logic.mmd">Complex February Logic</a></li>
+<li><a href="../Diagrams/C-TIM361_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

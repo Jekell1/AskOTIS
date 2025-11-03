@@ -1,0 +1,65 @@
+{
+  "question": "Show me a flow of DAILY.CBL",
+  "scope": "flow",
+  "expanded_query": "CBL DAILY Show a flow me of",
+  "aliases": {},
+  "answer_outline": "- Identify primary entry program and key perform chain.\n- Summarize major branches / loops (if any).\n- Highlight high risk segments (risk_score).\n- Cite evidence snippets with program + line references.",
+  "diagram": "flowchart TD\n  I-O-CONTROL--> CLOSE-LN1-FILE\n  TEST-F1--> END-ENTRY-MODULE\n  TEST-F1--> ENTER-ELE\n  A-051--> SCREENIO\n  A-06--> CREATE-ROUTINE\n  A-07--> SEND-MESS\n  A-072--> SCREENIO\n  A-08--> ENTER-ELE\n  EXIT--> CREATE-FORM-REQUEST-EXIT\n  EXIT--> OPEN-CH-FILE\n  SEND-LEGEND--> CLOSE-LTP1-FILE\n  SEND-LEGEND--> CLOSE-LTL1-FILE\n  I-O-CONTROL--> OPEN-WINDOW\n  I-O-CONTROL--> READ-LN1-FILE\n  TEST-F5--> GOTO-FIELD\n  EXIT--> EXIT-SET-RELEASE-TYPE\n  EXIT--> CREATE-SETUP-REC\n  EXIT--> UPDATE-CH-LM-FILE\n  EXIT--> CONVERT-YYYYMMDD-TO-MMDDYY\n  SEND-LEGEND--> CLOSE-FD1-FILE\n  CREATE-ROUTINE--> ENTER-ELE\n  ENTER-ELE--> SCREENIO\n  A-01--> SCREENIO\n  A-07--> ENTER-ELE\n  A-081--> SCREENIO\n  EXIT--> CLOSE-LTL1-FILE\n  CREATE-SETUP-REC--> GET-TIME\n  EXIT--> OPEN-LTL1-FILE\n  SEND-LEGEND--> CLOSE-BW1-FILE\n  I-O-CONTROL--> SEND-LEGEND\n  MODIFY-ROUTINE--> SEND-LEGEND\n  MODIFY-ROUTINE--> UPDATE-LT\n  TEST-F6--> FORM-SCAN\n  GOTO-FIELD--> A-01\n  A-041--> READ-ST1-FILE\n  A-051--> CREATE-ROUTINE\n  A-072--> CREATE-ROUTINE\n  EXIT--> OPEN-ST1-FILE\n  EXIT--> SCREENIO\n  EXIT--> OPEN-FM1-FILE\n  ENTER-ELE--> CREATE-ROUTINE\n  A-041--> OPEN-ST1-FILE\n  A-07--> CREATE-ROUTINE\n  EXIT--> READ-SP1-FILE\n  EXIT--> IO-ERROR\n  EXIT--> FORM-PROGX\n  EXIT--> CALL-WRFORM\n  SEND-LEGEND--> CLOSE-SP1-FILE\n  SEND-LEGEND--> CLOSE-LM1-FILE\n  MAIN-MODULE--> END-ROUTINE\n  CREATE-ROUTINE--> MODIFY-ROUTINE\n  ENTER-ELE--> MODIFY-ROUTINE\n  ENTER-ELE--> VERIFY-PASSWORD\n  A-01--> ENTER-ELE\n  A-031--> ENTER-ELE\n  A-042--> CREATE-ROUTINE\n  A-072--> READ-FD1-FILE\n  EXIT--> READ-ST1-FILE\n  EXIT--> REWRITE-LTL1-FILE\n  EXIT--> OPEN-SP1-FILE\n  EXIT--> WRITE-FM1-FILE\n  SEND-LEGEND--> CLOSE-LN1-FILE\n  MODIFY-ROUTINE--> CREATE-CHANGE-REC\n  A-031--> CREATE-ROUTINE\n  A-051--> ENTER-ELE\n  A-081--> ENTER-ELE\n  A-081--> CREATE-ROUTINE\n  EXIT--> REWRITE-FM1-FILE\n  EXIT--> EXIT-GET-FM-PATH\n  EXIT--> OPEN-BR-FILE\n  EXIT--> CLOSE-CH-FILE\n  SEND-LEGEND--> CLOSE-ST1-FILE\n  SEND-LEGEND--> CLOSE-FM1-FILE\n  EXIT-PROG--> CLOSE-WINDOW\n  A-01--> CREATE-ROUTINE\n  A-042--> A-041\n  A-072--> SEND-MESS\n  EXIT--> CLEAR-FM-FILE\n  EXIT--> READ-BR-FILE\n  EXIT--> OPEN-LM1-FILE\n  EXIT--> EXIT-CREATE-CHANGE-REC\n  EXIT--> CLEAR-LTL-FILE\n  I-O-CONTROL--> SQL-CONNECT\n  I-O-CONTROL--> OPEN-BR-FILE\n  I-O-CONTROL--> CONVERT-ALPDATE-TO-YYYYMMDD\n  A-01--> SEND-MESS\n  A-01--> OPEN-BW1-FILE\n  A-041--> SCREENIO\n  A-041--> ENTER-ELE\n  A-06--> ENTER-ELE\n  A-07--> TSTDAT\n  A-072--> OPEN-FD1-FILE\n  A-072--> CLOSE-FD1-FILE\n  UGLY-ENTER-AGAIN--> SCREENIO\n  EXIT--> CLOSE-FM1-FILE\n  UPDATE-CH-AGAIN--> WRITE-CH-FILE\n  I-O-CONTROL--> READ-BR-FILE\n  I-O-CONTROL--> GET-GPENV\n  MAIN-MODULE--> FORM-RESET\n  MAIN-MODULE--> DISPLAY-FIELDS\n  MAIN-MODULE--> ENTRY-MODULE\n  MODIFY-ROUTINE--> SCREENIO\n  TEST-F4--> CREATE-ROUTINE\n  GOTO-FIELD--> END-ENTRY-MODULE\n  A-01--> READ-BW1-FILE\n  A-07--> SCREENIO\n  EXIT--> CLOSE-ST1-FILE\n  EXIT--> EXIT-FORM-SCAN\n  SEND-LEGEND--> CLOSE-FILES\n  ENTER-ELE--> SEND-MESS\n  TEST-F6--> ENTER-ELE\n  A-01--> CLOSE-BW1-FILE\n  A-02--> CREATE-ROUTINE\n  A-072--> ENTER-ELE\n  EXIT--> WRITE-LTL1-FILE\n  EXIT--> CLOSE-SP1-FILE\n  CREATE-SETUP-REC--> CLEAR-CH-FILE\n  EXIT--> READ-LTL1-FILE\n  SEND-LEGEND--> CLOSE-CH-FILE\n  I-O-CONTROL--> CALL-WRFORM\n  I-O-CONTROL--> OPEN-LN1-FILE\n  I-O-CONTROL--> CLOSE-BR-FILE\n  MODIFY-ROUTINE--> END-ENTRY-MODULE\n  MODIFY-ROUTINE--> SEND-MESS\n  A-031--> SCREENIO\n  A-041--> CLOSE-ST1-FILE\n  A-042--> SCREENIO\n  A-072--> FORM-SCAN\n  EXIT--> CREATE-FORM-REQUEST\n  EXIT--> GET-FM-PATH\n  EXIT--> CLOSE-BR-FILE\n  UPDATE-CH-AGAIN--> UPDATE-CH-LM-FILE-EXIT\n  UPDATE-CH-LM-FILE-AGAIN--> WRITE-LM1-FILE\n  SEND-LEGEND--> CALL-WRFORM\n  SEND-LEGEND--> CLOSE-BR-FILE",
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "TITLEW",
+      "path": "TITLEW",
+      "line": null,
+      "snippet": "Paragraphs=74; edges=135; depth=8; cycles=Y; entries=48; exits=38; fanout_max=37; risk=0.82. Entry: A-042.... High fanout: EXIT (37)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "OF",
+      "path": "OF",
+      "line": null,
+      "snippet": "OF ; ROLE:LEAF ; OUT: ; IN:BLKONE,BWLNS3,ENDYER,LNQUOT,LONPB0,LPCPMU,LPMAN1,LPMAN2,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "207e716d2da08fb337906342700f4bec4d84453f",
+      "path": "cobol_src\\LP\\XONPC0.CBL",
+      "line": 196,
+      "snippet": "*            FIELDS SECTION, ON A RECALL OF SAVE RESCISSION, IT WAS"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LNMAN7",
+      "path": "LNMAN7",
+      "line": null,
+      "snippet": "Paragraphs=95; edges=155; depth=8; cycles=Y; entries=65; exits=33; fanout_max=13; risk=0.82. Entry: SETUP-LINK-INFO.... High fanout: EXIT (13)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "A",
+      "path": "A",
+      "line": null,
+      "snippet": "A ; ROLE:LEAF ; OUT: ; IN:BLQUOT,CLQUOT,LNQUOT,PGMENU,SFQUOT,WIMENU,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "ea636a779b27ba2a066e2a5340c00ed88122af9e",
+      "path": "cobol_src\\WI\\BWLNS3.CBL",
+      "line": 734,
+      "snippet": "* STORE HISTORY LOAN SEQNO FOR EXACT RECALL OF SELECTED LOAN:"
+    }
+  ],
+  "meta": {
+    "ts": 1759097689.1752656,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

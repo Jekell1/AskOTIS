@@ -1,0 +1,18 @@
+      * COPYMEMBER: LIBWI/RCINQW
+      * CHANGED RCINQW-DATE1 AND DATE2 TO 9(8).
+      * 2024.0418 BAH REMOVED RCINQ-RANGE-STATUS, RCINQ-OPEN-WINDOW
+       01  RCINQ-BUF.
+           03  RCINQ-OPEN-FG         PIC X.
+           03  RCINQ-UPDATED-FG      PIC X.
+           03  RCINQ-EARNINGS-FG     PIC X.
+           03  RCINQ-EOMUPD-FG       PIC X.
+           03  RCINQ-DEPOSIT-FG      PIC X.
+           03  RCINQ-CHECKS-FG       PIC X.
+           03  RCINQ-BEG-BRANCH      PIC 9(4).
+           03  RCINQ-GROUP REDEFINES RCINQ-BEG-BRANCH PIC X(4).
+           03  RCINQ-END-BRANCH      PIC 9(4).
+      * SCREEN FIELD HAD SAME NAME
+           03  RCINQW-DATE1          PIC 9(8).
+           03  RCINQW-DATE2          PIC 9(8).
+           03  RCINQ-ENTER-RANGES    PIC X.
+           03  RCINQ-STATUS          PIC XX.

@@ -1,0 +1,28 @@
+flowchart TD
+    A[Start C-TIMBEG] --> B[Preserve Original Dates]
+    B --> C[Save NUM-DATE to SV-NUM-DATE]
+    C --> D[Save SYS-DATE to SV-SYS-DATE]
+    D --> E[Convert WS-DATE1 to Julian]
+    E --> F[PERFORM C-CALL-JUL]
+    F --> G[Store in WS-JUL-1]
+    G --> H[Convert WS-DATE2 to Julian]
+    H --> I[PERFORM C-CALL-JUL]
+    I --> J[Store in WS-JUL-2]
+    J --> K{WS-JUL-1 > WS-JUL-2?}
+    K -->|Yes| L[Dates Out of Order]
+    K -->|No| M[Dates in Order]
+    L --> N[Swap WS-DATE1 and WS-DATE2]
+    N --> O[Swap WS-JUL-1 and WS-JUL-2]
+    O --> P[Set WS-XSIGN = -1]
+    M --> Q[Set WS-XSIGN = +1]
+    P --> R[Restore Original Values]
+    Q --> R
+    R --> S[Restore NUM-DATE from SV-NUM-DATE]
+    S --> T[Restore SYS-DATE from SV-SYS-DATE]
+    T --> U[End C-TIMBEG]
+
+    style A fill:#e1f5fe
+    style U fill:#c8e6c9
+    style K fill:#fff3e0
+    style L fill:#ffebee
+    style M fill:#e8f5e8

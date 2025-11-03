@@ -1,0 +1,83 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-INCR-MONTHS Module]
+    B --> C[Input Processing]
+    C --> D[Month Arithmetic]
+    D --> E[Boundary Management]
+    E --> F[Date Validation]
+    F --> G[Output Assembly]
+    G --> H[Return to Caller]
+    
+    subgraph "Arithmetic Engine"
+        I[Division by 12]
+        J[Year Component Extraction]
+        K[Month Component Extraction]
+        L[Addition Operations]
+    end
+    
+    subgraph "Boundary Logic"
+        M[Underflow Detection]
+        N[Overflow Detection]
+        O[Year Adjustment]
+        P[Month Normalization]
+    end
+    
+    subgraph "Validation System"
+        Q[C-CALL-NEWDATE Module]
+        R[Day Adjustment Logic]
+        S[Month Length Validation]
+        T[Leap Year Handling]
+    end
+    
+    subgraph "Working Storage"
+        U[WS-UP-WORK]
+        V[WS-DIV-RESULT]
+        W[WS-MOD-12]
+        X[WS-NDTE-Variables]
+    end
+    
+    subgraph "Output Structure"
+        Y[WS-NDTE-CCYY-S]
+        Z[WS-NDTE-MM-S]
+        AA[WS-NDTE-DD-S]
+        BB[Date Validity Flag]
+    end
+    
+    subgraph "Calendar Constants"
+        CC[MONTHS-PER-YEAR = 12]
+        DD[MONTH-BOUNDARIES]
+        EE[DAYS-PER-MONTH]
+    end
+    
+    D --> I
+    D --> J
+    D --> K
+    D --> L
+    
+    E --> M
+    E --> N
+    E --> O
+    E --> P
+    
+    F --> Q
+    F --> R
+    F --> S
+    F --> T
+    
+    B --> U
+    B --> V
+    B --> W
+    B --> X
+    
+    G --> Y
+    G --> Z
+    G --> AA
+    G --> BB
+    
+    D --> CC
+    E --> DD
+    F --> EE
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style B fill:#f3e5f5
+    style Q fill:#e8f5e8

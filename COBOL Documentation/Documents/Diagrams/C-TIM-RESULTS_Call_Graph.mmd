@@ -1,0 +1,30 @@
+flowchart LR
+    A[Calling Programs] --> B[C-TIM-RESULTS]
+    C[C-DATE-COMPARE] --> B
+    D[ELAPSED-RESULTS Processing] --> B
+    E[Payment Date Validation] --> B
+    F[Date Sorting Routines] --> B
+    G[Transaction Processing] --> B
+    
+    B --> H[WS-TIM-RESULTS Output]
+    B --> I[No External Calls]
+    
+    H --> J[L - Less Than]
+    H --> K[E - Equal]
+    H --> L[G - Greater Than]
+    
+    M[Input Sources] --> B
+    N[WS-JUL-1 - First Julian Date] --> B
+    O[WS-JUL-2 - Second Julian Date] --> B
+    
+    style B fill:#4fc3f7
+    style A fill:#ffb74d
+    style C fill:#ffb74d
+    style D fill:#ffb74d
+    style E fill:#ffb74d
+    style F fill:#ffb74d
+    style G fill:#ffb74d
+    style I fill:#81c784
+    style J fill:#ffebee
+    style K fill:#e8f5e8
+    style L fill:#fff9c4

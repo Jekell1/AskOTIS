@@ -1,0 +1,16 @@
+{
+  "indexes": {
+    "cobol-paragraphs": {
+      "processed": 131170,
+      "ts": 1757779795
+    },
+    "cobol-calls": {
+      "processed": 7732,
+      "ts": 1757780336
+    },
+    "cobol-xrefs": {
+      "processed": 18932,
+      "ts": 1757781632
+    }
+  }
+}

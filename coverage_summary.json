@@ -1,0 +1,48 @@
+{
+  "programs": 9956,
+  "median_program_coverage_pct": 0.0,
+  "coverage_buckets": {
+    "zero": {
+      "count": 5891,
+      "pct": 59.17
+    },
+    "0_10": {
+      "count": 2,
+      "pct": 0.02
+    },
+    "10_50": {
+      "count": 69,
+      "pct": 0.69
+    },
+    "50_70": {
+      "count": 96,
+      "pct": 0.96
+    },
+    "70_90": {
+      "count": 416,
+      "pct": 4.18
+    },
+    "90_100": {
+      "count": 3482,
+      "pct": 34.97
+    }
+  },
+  "classifications": {
+    "NO_PARAS": {
+      "count": 5882,
+      "pct": 59.08
+    },
+    "LOW_COVERAGE": {
+      "count": 4,
+      "pct": 0.04
+    },
+    "NORMAL": {
+      "count": 4058,
+      "pct": 40.76
+    },
+    "DATA_ONLY": {
+      "count": 12,
+      "pct": 0.12
+    }
+  }
+}

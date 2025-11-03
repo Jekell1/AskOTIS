@@ -1,0 +1,44 @@
+{
+  "total_local_programs": 1739,
+  "total_in_flow_index": 3881,
+  "missing_count": 5,
+  "missing_sample": [
+    {
+      "program_id": "TEST-DATA",
+      "path": "C:\\Users\\jeff.childers\\Documents\\OTISCodeResearcher\\test-data.cbl",
+      "size": 163,
+      "has_program_id": false,
+      "reason": "no_program_id_clause_detected"
+    },
+    {
+      "program_id": "SPINQ",
+      "path": "C:\\Users\\jeff.childers\\Documents\\OTISCodeResearcher\\cobol_src\\SP\\SPINQ.CBL",
+      "size": 2724,
+      "has_program_id": true,
+      "reason": "unknown_not_indexed"
+    },
+    {
+      "program_id": "AC2BAH",
+      "path": "C:\\Users\\jeff.childers\\Documents\\OTISCodeResearcher\\cobol_src\\UT\\AC2BAH.CBL",
+      "size": 181907,
+      "has_program_id": true,
+      "reason": "unknown_not_indexed"
+    },
+    {
+      "program_id": "JKC002",
+      "path": "C:\\Users\\jeff.childers\\Documents\\OTISCodeResearcher\\cobol_src\\UT\\JKC002.CBL",
+      "size": 80940,
+      "has_program_id": true,
+      "reason": "unknown_not_indexed"
+    },
+    {
+      "program_id": "LCUST1",
+      "path": "C:\\Users\\jeff.childers\\Documents\\OTISCodeResearcher\\cobol_src\\UT\\LCUST1.CBL",
+      "size": 6269,
+      "has_program_id": true,
+      "reason": "unknown_not_indexed"
+    }
+  ],
+  "generated_at": 1759097434.7249892,
+  "api_version": "2025-08-01-preview"
+}

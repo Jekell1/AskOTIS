@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCR-DAYS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCR-DAYS Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-INCR-DAYS Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-INCR-DAYS.cpy</code><br />
+<strong>Program ID:</strong> C-INCR-DAYS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#functional-description">Functional Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-INCR-DAYS</strong> module is a fundamental date arithmetic utility within the APIPAY system that performs precise day-based date calculations. This module adds or subtracts a specified number of days to/from a given date, handling all calendar complexities including leap years, month boundaries, and year transitions.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-INCR-DAYS</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Day-based date arithmetic and increment operations</li>
+<li><strong>Location</strong>: APIPAY/C-INCR-DAYS.cpy</li>
+<li><strong>Dependencies</strong>: Date validation utilities, leap year detection</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-INCR-DAYS serves as the core day arithmetic engine for the APIPAY system, enabling precise date calculations by adding or subtracting days while maintaining calendar accuracy. The module handles all complexities of the Gregorian calendar including:</p>
+<ul>
+<li>Leap year calculations and adjustments</li>
+<li>Month boundary transitions (28/29/30/31 day months)</li>
+<li>Year boundary crossings</li>
+<li>Negative day increments (date subtraction)</li>
+<li>Large increment values spanning multiple years</li>
+</ul>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Bidirectional Operations</strong>: Supports both addition and subtraction of days</li>
+<li><strong>Calendar Accuracy</strong>: Handles all Gregorian calendar complexities correctly</li>
+<li><strong>Leap Year Intelligence</strong>: Automatically adjusts for leap years</li>
+<li><strong>Boundary Management</strong>: Seamlessly crosses month and year boundaries</li>
+<li><strong>Large Increment Support</strong>: Efficiently processes large day increments</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>INCR-DAYS-DATE</strong>: Input date in CCYYMMDD format</li>
+<li><strong>INCR-DAYS-INCREMENT</strong>: Number of days to add (positive) or subtract (negative)</li>
+<li><strong>INCR-DAYS-DIRECTION</strong>: Operation direction (ADD/SUBTRACT)</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-INCR-DAYS-OUT-CCYY</strong>: 4-digit output year</li>
+<li><strong>WS-INCR-DAYS-OUT-MM</strong>: 2-digit output month</li>
+<li><strong>WS-INCR-DAYS-OUT-DD</strong>: 2-digit output day</li>
+<li><strong>Return Code</strong>: Success/failure indication</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Input Validation</h4>
+<ul>
+<li>Validates input date format and ranges</li>
+<li>Verifies increment value is numeric</li>
+<li>Checks for reasonable increment limits</li>
+</ul>
+<h4>Phase 2: Direction Processing</h4>
+<ul>
+<li>Determines if operation is addition or subtraction</li>
+<li>Handles negative increment values</li>
+<li>Sets processing direction flags</li>
+</ul>
+<h4>Phase 3: Day Calculation Loop</h4>
+<ul>
+<li>Processes increment in manageable chunks</li>
+<li>Handles day-by-day advancement for accuracy</li>
+<li>Manages month and year transitions</li>
+</ul>
+<h4>Phase 4: Boundary Management</h4>
+<ul>
+<li>Detects month boundary crossings</li>
+<li>Applies correct days-per-month logic</li>
+<li>Handles leap year February adjustments</li>
+<li>Manages year boundary transitions</li>
+</ul>
+<h4>Phase 5: Result Assembly</h4>
+<ul>
+<li>Validates final date components</li>
+<li>Formats output in CCYYMMDD structure</li>
+<li>Sets appropriate return codes</li>
+</ul>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-INCR-DAYS-WORK-AREA
+├── WS-INCR-DAYS-CURRENT-DATE    (Working date during processing)
+├── WS-INCR-DAYS-REMAINING       (Remaining days to process)
+├── WS-INCR-DAYS-CURRENT-YEAR    (Current year being processed)
+├── WS-INCR-DAYS-CURRENT-MONTH   (Current month being processed)
+├── WS-INCR-DAYS-CURRENT-DAY     (Current day being processed)
+├── WS-INCR-DAYS-DAYS-IN-MONTH   (Days in current month)
+└── WS-INCR-DAYS-LEAP-FLAG       (Leap year indicator)
+</code></pre>
+<h3>Days-per-Month Table</h3>
+<pre><code class="language-cobol">DAYS-PER-MONTH-TABLE
+├── January: 31 days
+├── February: 28/29 days (leap year dependent)
+├── March: 31 days
+├── April: 30 days
+├── May: 31 days
+├── June: 30 days
+├── July: 31 days
+├── August: 31 days
+├── September: 30 days
+├── October: 31 days
+├── November: 30 days
+└── December: 31 days
+</code></pre>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Input Date + Increment] → [Validation] → [Direction Setup] → 
+[Day Loop Processing] → [Boundary Handling] → [Output Assembly]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>Payment scheduling modules</strong>: Due date calculations</li>
+<li><strong>Interest calculation routines</strong>: Accrual period processing</li>
+<li><strong>Report generation</strong>: Date range calculations</li>
+<li><strong>Loan processing</strong>: Maturity date calculations</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li>Leap year detection utilities</li>
+<li>Date validation routines</li>
+<li>Calendar boundary utilities</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Error Conditions</h3>
+<ol>
+<li><strong>Invalid Input Date</strong>: Malformed or invalid input date</li>
+<li><strong>Invalid Increment</strong>: Non-numeric or extreme increment values</li>
+<li><strong>Date Range Overflow</strong>: Result date outside valid range</li>
+<li><strong>Calendar Arithmetic Errors</strong>: Internal calculation failures</li>
+</ol>
+<h3>Error Recovery</h3>
+<ul>
+<li>Returns standardized error codes</li>
+<li>Maintains input data integrity</li>
+<li>Provides diagnostic information for debugging</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: Optimized loop processing for large increments</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Algorithm Complexity</strong>: Linear time complexity O(n) where n is increment size</li>
+<li><strong>Calendar Lookup</strong>: Efficient days-per-month table access</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Forward Date Increment</h3>
+<pre><code class="language-cobol">MOVE &quot;20231215&quot; TO INCR-DAYS-DATE
+MOVE +30 TO INCR-DAYS-INCREMENT
+MOVE &quot;ADD&quot; TO INCR-DAYS-DIRECTION
+PERFORM C-INCR-DAYS
+* Result: 20240114 (January 14, 2024)
+</code></pre>
+<h3>Backward Date Increment</h3>
+<pre><code class="language-cobol">MOVE &quot;20240301&quot; TO INCR-DAYS-DATE
+MOVE -10 TO INCR-DAYS-INCREMENT
+MOVE &quot;SUBTRACT&quot; TO INCR-DAYS-DIRECTION
+PERFORM C-INCR-DAYS
+* Result: 20240220 (February 20, 2024 - leap year)
+</code></pre>
+<h3>Large Increment Processing</h3>
+<pre><code class="language-cobol">MOVE &quot;20230101&quot; TO INCR-DAYS-DATE
+MOVE +365 TO INCR-DAYS-INCREMENT
+PERFORM C-INCR-DAYS
+* Result: 20240101 (handles year boundary)
+</code></pre>
+<h2>Maintenance Notes</h2>
+<h3>Modification History</h3>
+<ul>
+<li>Original implementation for basic day arithmetic</li>
+<li>Enhanced for leap year accuracy</li>
+<li>Optimized for large increment processing</li>
+<li>Added boundary crossing improvements</li>
+</ul>
+<h3>Future Enhancements</h3>
+<ul>
+<li>Business day calculation support</li>
+<li>Holiday calendar integration</li>
+<li>Performance optimization for very large increments</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-LEAP-YEAR-TEST_Documentation.html">C-LEAP-YEAR-TEST Documentation</a> - Leap year detection</li>
+<li><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS Documentation</a> - Month-based increments</li>
+<li><a href="C-INCR-HALF-MONTHS_Documentation.html">C-INCR-HALF-MONTHS Documentation</a> - Half-month increments</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-INCR-DAYS_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-INCR-DAYS_Increment_Loop.mmd">Day Increment Loop</a></li>
+<li><a href="../Diagrams/C-INCR-DAYS_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

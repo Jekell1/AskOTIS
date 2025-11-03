@@ -1,0 +1,8 @@
+# OTIS RAG Requirements
+
+# Core dependencies
+openai>=1.0.0           # Azure OpenAI SDK
+requests>=2.31.0        # HTTP requests for Azure Search
+
+# Optional (for CLI enhancements)
+python-dotenv>=1.0.0   # Load .env files (optional)

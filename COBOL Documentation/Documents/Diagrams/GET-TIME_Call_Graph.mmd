@@ -1,0 +1,27 @@
+graph TD
+    A[GET-TIME] --> B[System Time Functions]
+    B --> C[COBOL ACCEPT FROM TIME]
+    
+    D[Transaction Processing] --> A
+    E[Logging Systems] --> A
+    F[User Interface] --> A
+    G[Report Generation] --> A
+    H[Audit Systems] --> A
+    
+    A --> I[Time Format Options]
+    I --> J[12-Hour Format with AM/PM]
+    I --> K[24-Hour Military Format]
+    
+    A --> L[Output Components]
+    L --> M[T-HH: Hours]
+    L --> N[T-MM: Minutes]
+    L --> O[T-COL: Colon Separator]
+    L --> P[T-SPACE: Space Character]
+    L --> Q[T-AMPM: AM/PM Indicator]
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fff3e0
+    style F fill:#fff3e0

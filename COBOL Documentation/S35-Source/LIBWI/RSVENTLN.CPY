@@ -1,0 +1,58 @@
+      * COPYMEMBER: LIBWI/RSVENTLN
+      **************************************************************************
+      *             (RSVENTLN)
+      *    VERSION FOR LN-FILE
+      *      NOTE: IF YOU CHANGE THESE SECTIONS
+      *            CHANGE ALSO 'RSVENTPD'
+      * REV:
+      * JTG 061898 ADDED LOGIC FOR S.F. RENEWALS INTO S.F. MERCURY #E176
+      * JTG 102098 ADDED LOGIC FOR DL-PARVPAID-FRMLA-IB INSTANT AUTO #744
+      * JTG 991215 ADDED SP-DLDISC-RVPRIN1-AF-PCNT (RSVENT-AMTFIN), TFC #058
+      * JTG 010507 ALLOWED ENTRY OF 'TRADEIN' RE: SALE PRICE-DP-TI PAACO PR#1467
+      * JTG 020916 ADDED LN-DLCOMM-03-CMSI LN-DLCOMM-PP-CMSI  REGACC #1846
+      **************************************************************************
+
+      *********************************************
+      *    CALCULATE RESERVE WINDOW YIELD
+      *********************************************
+       RSV-CALC-YIELD SECTION.
+           PERFORM COMPUTE-MEMO-OURS-NOTOURS.
+
+           COMPUTE APR-FINANCED =
+               LN-SELLPR + NON-MEMO-CHGS - INS-COMM
+                  + LN-PRBAL + LN-PRINTDUE
+                   - LN-PRFINCHGRB - LN-PRINSRB.
+           IF BR-DOWNPY-FLAG NOT = "Y"
+              SUBTRACT LN-DOWNPY LN-TRADEIN FROM APR-FINANCED.
+
+           SUBTRACT RSVENTX-DLDISC FROM APR-FINANCED.
+           ADD RSVENTX-DLRVCHGS(1)    TO APR-FINANCED.
+           ADD RSVENTX-DLRVCHGS(2)    TO APR-FINANCED.
+           ADD RSVENTX-DLRVCHGS(3)    TO APR-FINANCED.
+           ADD RSVENTX-DLPARVHELD     TO APR-FINANCED.
+           ADD RSVENTX-DLPARVPAID     TO APR-FINANCED.
+           ADD RSVENTX-INSPREM-DLADJ  TO APR-FINANCED.
+           ADD RSVENTX-DLCOMM-PP-CMSI TO APR-FINANCED.
+           ADD RSVENTX-DLCOMM-O3-CMSI TO APR-FINANCED.
+
+           MOVE LN-ORGTERM TO APR-ORGTERM.
+           MOVE LN-1STPYAMT TO APR-1STPYAMT.
+           MOVE LN-REGPYAMT TO APR-REGPYAMT.
+           MOVE LN-LASTPYAMT TO APR-LASTPYAMT.
+           MOVE LN-INTDATE TO APR-INTDATE.
+           MOVE LN-1STPYDATE TO APR-1STPYDATE.
+           MOVE LN-UNITPER-CD TO APR-UNITPER-CD.
+           MOVE LN-UNITPER-FREQ TO APR-UNITPER-FREQ.
+           MOVE "A" TO APR-DISFRMLA.
+           PERFORM APR-REGZ.
+           MOVE APR-APR TO RSVENTX-YLDRATE.
+
+       RSV-CALC-YIELD-EXIT.
+           EXIT.
+
+      ****************************************************
+      *    CALCULATE RESERVE WINDOW AMOUNT FINANCED
+      ****************************************************
+       RSV-CALC-AMTFIN SECTION.
+           PERFORM LOAN-CALCULATIONS.
+           COMPUTE RSVENT-AMTFIN = TOTAL-REPAY - LN-INTCHG.

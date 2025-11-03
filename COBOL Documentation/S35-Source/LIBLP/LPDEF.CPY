@@ -1,0 +1,951 @@
+      * COPYMEMBER: LIBLP/LPDEF
+      ****************************************************************
+      *   COMPUTATION OF DEFERMENT CHARGES
+      *
+      *   W A R N I N G:
+      *            THIS PROGRAM CALLS A SUB PROGRAM AND REQUIRES
+      *            THAT THE PROGRAM CONTAINING THIS COPY MEMBER
+      *            HAVE THE STATEMENT:
+      *
+      *       =======>  MOVE FORM-PATHNAME TO FORM-PATH <=======
+      *
+      *   NAME: LPDEF
+      *   DESC: THIS ROUTINE COMPUTES DEFERMENT CHARGE/S FOR A SINGLE
+      *         DEFERMENT TRANSACTION.
+      *
+      *    IN : DEF-NODEF         THE NUMBER OF DEFERMENTS GRANTED
+      *                           ON A SINGLE TRANSACTION.
+      *         DEF-PAYDATE       THE POSTING DATE OF THE DEFERMENT
+      *         DEF-TOTAL-INTDUE  THE TOTAL IB INTEREST DUE THRU DEF-PAYDATE
+      *
+      *    OUT: DEF-AMOUNT        THE AMOUNT OF THE DEFERMENT CHARGE
+      *         DEF-LCHG-REFUND   USED BY INDIANA DEF FRMLA 8
+      *         DEF-DUEDATE       USED WITH DEF-BASE (7), AND IDENTIFIES
+      *                           THE DEFERRED PAYMENT DUE DATE
+      *         DEF-DUETERM       USED WITH DEF-BASE (7), AND IDENTIFIES
+      *                           THE DEFERRED PERIOD
+      *
+      *
+      *   COPY: TIM, TIMW, INCRMM, LPNDTE, LPNDTEW,
+      *         REBATE, REBATEW,
+      * REV :
+      *  050288 BR  SP-DEF-PERCENT = 5, SP-DEFBASE = 4,5
+      *             DEFERMENT FORMULA 5
+      *  072688 JTG ADDED FORMULA # 6
+      *  120588 JTG ADDED DEFERMENT PERCENT CODE 6 (IOWA)
+      *  090589 JTG ADDED DEFERMENT BASE CODE 6 (GEORGIA)
+      *  112289 SLC ADDED DEFERMENT FORMULAS 7 AND 98 (SPRING)
+      *  112789 JTG CHANGED ROUITNES TO USE PDTH-DATE-FULL
+      *  121489 JTG CHANGED USE OF HOLD-JDRATE TO DEF-WKRATE
+      *  052590 JTG ADDED DEFERMENT FRMLA 8, (IN) PACESETTER
+      *  121191 JTG CHANGED DEF FRMLA-2 TO DERIVE DEFERRED PERIOD
+      *             BASED ON ORIGINAL 1ST PAY NOT CHANGED DUE DATE
+      *  063092 JTG ADDED DEFERMENT PERCENT CODE 7 (COLONIAL TN)
+      *                   AND DEFERMENT BASE CODE 7
+      *                   (DEF-DUEDATE)
+      *                   (DEF-DUETERM)
+      *  100592 JTG ADDED TEST ON LCFRMLA = "K"
+      *  050694 JTG ADDED DEF-PAYDATE = DEFERMENT POSTING DATE
+      *  062495 SLC ADDED DEF-BASE 8. WHOLE REMAINING PMTS.
+      *  062795 JTG ADDED 'IL' DEF-BASE 9 , NET BALANCE - REFUND
+      *  062795 JTG ADDED 'KY' DEF-BASE 10, NET BALANCE + $5.00
+      *  082895 KEC ADDED DEFERMENT FORMULA OF 9
+      *  082895 KEC MADE DEFERMENT BASE AMOUNT CODE OF 9 INTO A
+      *             SEPERATE SECTION.
+      *  071696 MJD MADE LN-LCPDTH-DATE INTO MMDDYY FORMAT, REMOVED
+      *             CODE TO CONVERT FROM MMYY. ADDED DEF-ELAPSED-MTHS
+      *             AS A HOLD WORKER FOR ELAPSED-MONTHS.
+      *  071796 BAH CHANGED DEFPERCD 1 TO DIVIDE BY LN-UNITPER-PER-YEAR
+      *             INSTEAD OF FORCING 12 (MONTHLY)
+      *  072496 BAH ADDED DEFPERCD 8 (INSTANT, KY)
+      *  073198 BAH CHANGED DEF-COMPUTE-F-5-CHARGE, COMPUTING PAYMENTS MADE
+      *             WAS NOT WORKING WITH ADDONS, USE PAID-THRU-CALCULATION
+      *  101698 BAH ADD .99999 TO PDTH-PAYS IN F-5-CHARGE, FROM ABOVE CHANGE,
+      *             MERCURY(MIDLAND) NOT HAPPY WITH CHANGE !
+      *  JTG 000321 NEW DEFERMENT FORMULA SP-DEFFRMLA = 97 (> OF INTDUE OR
+      *             1/3 OF REGPAY) MERCURY #224
+      *  JTG 000621 CORRECTED FORMULA'S 99, 98 AND 97 INTEREST BEARING
+      *             DEFERMENT CHARGES, BY SETTING UP DEF-TOTAL-INTDUE
+      *             AS A INPUT FIELD AND NOT USING INDU-INTEREST MERCURY #224
+      *  JTG 010720 STOPPED CALCULATION OF DEFERMENT CHARGE
+      *             IF NEW RATE TYPE 'Z' AMORTIZED WHERE RUNTIME COMPUTES
+      *             INTEREST ON A 30 DAY METHOD (REAL ESTATE) AND LOAN CALCS
+      *             ARE DONE SIMPLE, REMOVED TIE TO CTBL, FORCING TESTS ON (1)
+      *                                             LENDMARK PR#1045 & PR#1380
+      *  BAH 050518 ADDED TEST OF SP-RBSPOPT1 = 21 FOR THRIFT TO ADD THE
+      *             PREPAY PENALTY BACK INTO THE REBATE AMOUNT OR THE DEFERMENT
+      *             CALCULATION IN THE INQUIRIES WONT COME OUT CORRECT. PL#493
+      *             DEF FORMLA 2
+      *  MJD 150519 ADDED DEFBASE = 11:
+      *             CALCULATE THE BASE DOLLAR AMOUNT AS THE REGULAR PAYMENT
+      *             AMOUNT LESS MONTHLY MAINTENANCE DOLLAR AMOUNT TIMES THE
+      *             NUMBER OF MONTHS FROM THE CURRENT DUE DATE ON THE
+      *             ACCOUNT THRU THE UPDATED MATURITY DATE ON THE ACCOUNT
+      *             AFTER THE DEFERMENT WAS POSTED.              REGENCY PR#4753
+      *  MJD 150930 FIXED ISSUE WITH DEFBASE = 11.  FORMULA WAS USING
+      *             PDTH-NXT-SCHD-DATE BUT SHOULD HAVE BEEN USING
+      *             PDTH-CUR-SCHD-DATE.                          REGENCY PR#4753
+      *  MJD 161213 ADDED DEFERMENT FORMULA 10 (71225 PR#384)
+      **************************************************************************
+       DEF-COMPUTE-DEFERMENT SECTION.
+           MOVE 0 TO DEF-AMOUNT
+                     DEF-DUEDATE
+                     DEF-DUETERM
+                     DEF-LCHG-REFUND.
+
+      *   NO CHARGE WHEN MORTGAGE INTEREST TYPE 'Z'
+           IF SP-CAL-RATETYPE(1) = "Z"
+              GO TO DEF-COMPUTE-DEFERMENT-EXIT.
+
+           IF SP-DEFFRMLA = 0
+              PERFORM DEF-COMPUTE-FRMLA-0
+           ELSE
+           IF SP-DEFFRMLA = 1
+              PERFORM DEF-COMPUTE-FRMLA-1
+           ELSE
+           IF SP-DEFFRMLA = 2
+              PERFORM DEF-COMPUTE-FRMLA-2
+           ELSE
+           IF SP-DEFFRMLA = 3
+              PERFORM DEF-COMPUTE-FRMLA-3
+           ELSE
+           IF SP-DEFFRMLA = 4
+              PERFORM DEF-COMPUTE-FRMLA-4
+           ELSE
+           IF SP-DEFFRMLA = 5
+              PERFORM DEF-COMPUTE-FRMLA-5
+           ELSE
+           IF SP-DEFFRMLA = 6
+              PERFORM DEF-COMPUTE-FRMLA-6
+           ELSE
+           IF SP-DEFFRMLA = 7
+              PERFORM DEF-COMPUTE-FRMLA-7
+           ELSE
+           IF SP-DEFFRMLA = 8
+              PERFORM DEF-COMPUTE-FRMLA-8
+           ELSE
+           IF SP-DEFFRMLA = 9
+              PERFORM DEF-COMPUTE-FRMLA-9
+           ELSE
+           IF SP-DEFFRMLA = 10
+              PERFORM DEF-COMPUTE-FRMLA-10
+           ELSE
+           IF SP-DEFFRMLA = 95 OR 96 OR 97 OR 98 OR 99
+              PERFORM DEF-COMPUTE-FRMLA-99.
+
+           IF DEF-AMOUNT < 0
+              MOVE 0 TO DEF-AMOUNT.
+
+       DEF-COMPUTE-DEFERMENT-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 0
+      *
+      *    CONFIGURED DEFERMENT METHOD:
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY MULTIPLING SOME PERCENT BY SOME
+      *         BASE AMOUNT.
+      *
+      ******************************************************
+       DEF-COMPUTE-FRMLA-0 SECTION.
+           PERFORM DEF-COMPUTE-F-0.
+           MULTIPLY DEF-NODEF BY DEF-AMOUNT.
+           GO TO DEF-COMPUTE-FRMLA-0-EXIT.
+
+       DEF-COMPUTE-F-0.
+      ***********************************
+      * GET DEFERMENT PERCENT:
+      ***********************************
+           MOVE 0 TO DEF-PERCENT.
+           IF SP-DEFPERCD = 0
+              MOVE SP-DEFWORKER TO DEF-PERCENT
+           ELSE
+           IF SP-DEFPERCD = 1
+              COMPUTE DEF-PERCENT ROUNDED = LN-APRATE /
+                                            LN-UNITPER-PER-YEAR
+           ELSE
+           IF SP-DEFPERCD = 4
+              COMPUTE DEF-PERCENT ROUNDED = DEF-WKRATE / 12
+           ELSE
+           IF SP-DEFPERCD = 5 OR 8
+              COMPUTE DEF-PERCENT ROUNDED = (1 / LN-ORGTERM) * 100
+           ELSE
+           IF SP-DEFPERCD = 7
+              COMPUTE DEF-PERCENT ROUNDED = LN-EFFRATE / 12.
+
+           IF SP-DEFPERCD = 2
+              COMPUTE DEF-PERCENT ROUNDED = LN-INTCHG /
+                      ((LN-ORGTERM * (LN-ORGTERM + 1)) / 2).
+
+           IF SP-DEFPERCD = 3
+              IF LN-OVRDRATE = 999.999
+                 COMPUTE DEF-PERCENT ROUNDED = SP-CAL-RATE(1 1) / 12
+              ELSE
+                 COMPUTE DEF-PERCENT ROUNDED = LN-OVRDRATE / 12.
+
+           IF SP-DEFPERCD = 6
+              COMPUTE DEF-PERCENT ROUNDED = LN-APRATE / 12
+              IF DEF-PERCENT > SP-DEFWORKER
+                 MOVE SP-DEFWORKER TO DEF-PERCENT.
+
+      ***********************************
+      * GET DEFERMENT BASE AMOUNT:
+      ***********************************
+      * DEFBASE = 07: CALCULATE THE BASE DOLLAR AMOUNT AS THE REGULAR PAYMENT
+      *               AMOUNT INCLUDING MONTHLY MAINTENANCE DOLLAR AMOUNT TIMES
+      *               THE NUMBER OF MONTHS FROM THE CURRENT DUE DATE ON THE
+      *               ACCOUNT THRU THE UPDATED MATURITY DATE ON THE ACCOUNT
+      *               AFTER THE DEFERMENT WAS POSTED. REGENCY #4753/MJD/150519
+      * DEFBASE = 11: CALCULATE THE BASE DOLLAR AMOUNT AS THE REGULAR PAYMENT
+      *               AMOUNT LESS MONTHLY MAINTENANCE DOLLAR AMOUNT TIMES THE
+      *               NUMBER OF MONTHS FROM THE "CURRENT" DUE DATE ON THE
+      *               ACCOUNT THRU THE UPDATED MATURITY DATE ON THE ACCOUNT
+      *               AFTER THE DEFERMENT WAS POSTED. REGENCY #4753/MJD/150519
+           IF SP-DEFBASE = 7 OR 11
+              MOVE LN-ORIG-1STPYDATE TO PDTH-DATE-WORK
+              PERFORM PAID-THRU-CALCULATION
+              PERFORM MATURITY-DATE-CALCULATION
+              IF SP-DEFBASE = 7
+                 MOVE PDTH-NXT-SCHD-DATE TO NUM-DATE DEF-DUEDATE
+                 MOVE MDTE-DATE TO SYS-DATE
+                 PERFORM TIM360
+                 ADD 1 ELAPSED-MONTHS GIVING DEF-DUETERM
+                 COMPUTE DEF-BASE = PDTH-NXT-SCHD-PAY * DEF-DUETERM
+              ELSE
+                 MOVE PDTH-CUR-SCHD-DATE TO NUM-DATE DEF-DUEDATE
+                 MOVE MDTE-DATE TO SYS-DATE
+                 PERFORM TIM360
+                 ADD 1 ELAPSED-MONTHS GIVING DEF-DUETERM
+                 COMPUTE DEF-BASE = (PDTH-NXT-SCHD-PAY - LN-MAINTFEE)
+                                           * DEF-DUETERM
+              END-IF
+           END-IF.
+
+           IF SP-DEFBASE = 0
+              MOVE LN-REGPYAMT TO DEF-BASE
+           ELSE
+           IF SP-DEFBASE = 2 OR 10
+              COMPUTE DEF-BASE = LN-CURBAL - LN-OT2BAL
+           ELSE
+              COMPUTE DEF-WRP = (LN-CURBAL - LN-OT2BAL) / LN-REGPYAMT
+              IF SP-DEFBASE = 1
+                 COMPUTE DEF-BASE ROUNDED = DEF-WRP * LN-REGPYAMT
+              ELSE
+              IF SP-DEFBASE = 3
+                 COMPUTE DEF-BASE ROUNDED = DEF-WRP *
+                                      (LN-REGPYAMT - LN-MAINTFEE)
+              ELSE
+              IF SP-DEFBASE = 4
+                 COMPUTE DEF-BASE ROUNDED = LN-MAINTFEE +
+                    LN-INTCHG + LN-SERCHG + LN-EXTCHG
+              ELSE
+              IF SP-DEFBASE = 5
+                 COMPUTE DEF-BASE ROUNDED = LN-INTCHG + LN-EXTCHG
+              ELSE
+              IF SP-DEFBASE = 6
+                 COMPUTE DEF-BASE = LN-REGPYAMT - LN-MAINTFEE
+              ELSE
+              IF SP-DEFBASE = 8
+                 COMPUTE DEF-BASE = DEF-WRP * 100
+              ELSE
+              IF SP-DEFBASE = 9
+                 PERFORM DEFBASE-9.
+
+      ***********************************
+      * CALCULATE DEFERMENT:
+      ***********************************
+           COMPUTE DEF-AMOUNT ROUNDED = DEF-BASE * (DEF-PERCENT / 100).
+           IF SP-DEFPERCD = 8
+              MOVE LN-UNITPER-CD TO UPWK-UNITPER-CD
+              MOVE LN-UNITPER-FREQ TO UPWK-UNITPER-FREQ
+              PERFORM UPWK-DEF-CALC
+              COMPUTE DEF-AMOUNT = DEF-AMOUNT
+                          + SP-DEFWORKER / UPWK-UNITPER-WK.
+
+           IF SP-DEFBASE = 10
+              COMPUTE DEF-AMOUNT = DEF-AMOUNT + 5.
+
+      ***********************************
+      * TEST AGAINST MAXIMUM AND MINIMUM:
+      ***********************************
+           IF DEF-AMOUNT < SP-DEFMIN
+              MOVE SP-DEFMIN TO DEF-AMOUNT
+           ELSE
+              IF DEF-AMOUNT > SP-DEFMAX
+                 MOVE SP-DEFMAX TO DEF-AMOUNT.
+
+       DEF-COMPUTE-FRMLA-0-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 1
+      *
+      *    MANUALLY INPUTED DEFERMENT CHARGE:
+      *
+      *    THIS ROUTINE ALLOWS THE OPERATOR TO INPUT
+      *         THE CHARGE FOR THE ONE OR MANY DEFERMENTSL.
+      *
+      ******************************************************
+       DEF-COMPUTE-FRMLA-1 SECTION.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 2
+      *
+      *    REBATE, END OF DEFERED PERIOD METHOD:
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY TAKING THE DIFFERENCE BETWEEN AN INTEREST
+      *         REBATE AT THE END OF THE DEFERRED PERIOD
+      *         AND THE END OF THE PREVIOUS PERIOD.
+      *
+      *    NOTE:
+      *        WHEN SP-DEFEXCEPT = 'A' ONLY 1 DEFERMENT CHARGE
+      *        IS COMPUTED AND THAT AMOUNT MULTIPLIED BY THE
+      *        NUMBER REQUIRED.
+      ********************************************************
+       DEF-COMPUTE-FRMLA-2 SECTION.
+           IF SP-DEFEXCEPT = "A"
+              MOVE 1 TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-2
+              MULTIPLY DEF-NODEF BY DEF-AMOUNT
+           ELSE
+              MOVE DEF-NODEF TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-2.
+           GO TO DEF-COMPUTE-FRMLA-2-EXIT.
+
+       DEF-COMPUTE-F-2.
+      * COMPUTE BEGINNING OF DEFERED PERIOD REBATE:
+           MOVE LN-ORIG-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO DEF-SAVEPDTH-DATE.
+           MOVE PDTH-DATE-FULL TO REB-PAYDATE.
+           MOVE LN-ORGTERM     TO REB-ORGTERM.
+           MOVE 7              TO REB-SUB.
+           MOVE LN-INTCHG      TO REB-TOTCHG.
+           PERFORM REBATE.
+      * ADDED THIS FOR THRIFT, IF FIRST DEFERED PERIOD HAS A PENALTY,
+      * IT CANT BE PART OF THE DEFERMENT, OR FIRST MONTH WILL BE LESS
+      * THAN SECOND MONTH, AND WONT SHOW A DEFERMENT
+           IF SP-RBSPOPT1(REB-SUB) = 21
+              ADD REB-MS-PENALTY TO REB-REBATE.
+           MOVE REB-REBATE TO DEF-PRIORRB.
+      * COMPUTE END OF DEFERED PERIOD REBATE:
+           MOVE DEF-SAVEPDTH-DATE TO NDTE-DATE.
+           MOVE DEF-WRP TO NDTE-HOLD.
+           PERFORM INCREMENT-MONTHS.
+           MOVE NDTE-DATE TO REB-PAYDATE.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           PERFORM REBATE.
+      * ADDED THIS FOR THRIFT, IF FIRST DEFERED PERIOD HAS A PENALTY,
+      * IT CANT BE PART OF THE DEFERMENT
+           IF SP-RBSPOPT1(REB-SUB) = 21
+              ADD REB-MS-PENALTY TO REB-REBATE.
+           SUBTRACT REB-REBATE FROM DEF-PRIORRB GIVING DEF-AMOUNT.
+       DEF-COMPUTE-FRMLA-2-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 3
+      *
+      *    REBATE, DAY OF DEFERMENT METHOD:
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY TAKING THE DIFFERENCE BETWEEN AN INTEREST
+      *         REBATE THE DAY OF THE DEFERMENT AND ONE
+      *         MONTH PRIOR TO THE DAY OF THEE DEFERMENT.
+      *
+      *    NOTE:
+      *        SP-DEFEXCEPT = 'A' OR ' ' HAS NO IMPACT ON THIS
+      *        FORMULA SINCE THE CHARGE IS COMPUTED THE DAY
+      *        OF THE DEFERMENT.
+      ********************************************************
+       DEF-COMPUTE-FRMLA-3 SECTION.
+           PERFORM DEF-COMPUTE-F-3.
+           MULTIPLY DEF-NODEF BY DEF-AMOUNT.
+           GO TO DEF-COMPUTE-FRMLA-3-EXIT.
+
+       DEF-COMPUTE-F-3.
+           MOVE DEF-PAYDATE TO NDTE-DATE.
+           MOVE -1 TO NDTE-HOLD.
+           PERFORM INCREMENT-MONTHS.
+           MOVE NDTE-DATE TO REB-PAYDATE.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE 7 TO REB-SUB.
+           PERFORM REBATE.
+           MOVE REB-REBATE TO DEF-PRIORRB.
+           MOVE DEF-PAYDATE TO REB-PAYDATE.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE 7 TO REB-SUB.
+           PERFORM REBATE.
+           SUBTRACT REB-REBATE FROM DEF-PRIORRB GIVING DEF-AMOUNT.
+       DEF-COMPUTE-FRMLA-3-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 4
+      *
+      *    REBATE, END OF DEFERED PERIOD METHOD ADVANCING
+      *    DEFERED PERIOD IF LATE CHARGES OR PAYMENTS
+      *    OCCURED IN THAT PERIOD:
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *        BY TAKING THE DIFFERENCE BETWEEN AN INTEREST
+      *        REBATE AT THE END OF THE DEFERRED PERIOD
+      *        AND THE END OF THE PREVIOUS PERIOD.
+      *    THE DEFERED PERIOD IS ADVANCED WHEN LATE CHARGES
+      *        OR A PAYMENT OCCURED IN THE NEXT CONTRACTUAL
+      *        PAY PERIOD.
+      *
+      *    NOTE:
+      *        WHEN SP-DEFEXCEPT = 'A' ONLY 1 DEFERMENT CHARGE
+      *        IS COMPUTED AND THAT AMOUNT MULTIPLIED BY THE
+      *        NUMBER REQUIRED.
+      ********************************************************
+       DEF-COMPUTE-FRMLA-4 SECTION.
+           IF SP-DEFEXCEPT = "A"
+              MOVE 1 TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-4
+              MULTIPLY DEF-NODEF BY DEF-AMOUNT
+           ELSE
+              MOVE DEF-NODEF TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-4.
+           GO TO DEF-COMPUTE-FRMLA-4-EXIT.
+
+       DEF-COMPUTE-F-4.
+      * COMPUTE BEGINNING OF DEFERED PERIOD REBATE:
+           PERFORM DEF-COMPUTE-F-4-PERIOD.
+           MOVE NUM-DATE TO DEF-SAVEPDTH-DATE.
+           MOVE NUM-DATE TO REB-PAYDATE.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           PERFORM REBATE.
+           MOVE REB-REBATE TO DEF-PRIORRB.
+      * COMPUTE END OF DEFERED PERIOD REBATE:
+           MOVE DEF-SAVEPDTH-DATE TO NDTE-DATE.
+           MOVE DEF-WRP TO NDTE-HOLD.
+           PERFORM INCREMENT-MONTHS.
+           MOVE NDTE-DATE TO REB-PAYDATE.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           PERFORM REBATE.
+           SUBTRACT REB-REBATE FROM DEF-PRIORRB GIVING DEF-AMOUNT.
+       DEF-COMPUTE-FRMLA-4-EXIT.
+           EXIT.
+
+      * ESTABLISH PERIOD TO DEFER:
+       DEF-COMPUTE-F-4-PERIOD SECTION.
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO NUM-DATE.
+           MOVE -1 TO DEF-ADVANCE.
+           PERFORM DEF-COMPUTE-F-4-ADVPER
+                       UNTIL DEF-ADVANCE = 0.
+           GO TO DEF-COMPUTE-F-4-PERIOD-EXIT.
+
+      * IF PAYMENTS OR LATE CHARGES OCCURED IN
+      * DEFERED PERIOD ADVANCE TO NEXT PERIOD
+      * FOR PURPOSES OF CHARGES.
+       DEF-COMPUTE-F-4-ADVPER.
+           IF DEF-ADVANCE > 0
+              MOVE NUM-DATE TO NDTE-DATE
+              MOVE DEF-ADVANCE TO NDTE-HOLD
+              PERFORM INCREMENT-MONTHS
+              MOVE NDTE-DATE TO NUM-DATE.
+           MOVE LN-DATE-PAID-LAST TO SYS-DATE.
+           PERFORM TIM.
+           IF ELAPSED-DAYS > 0
+              MOVE 1 TO DEF-ADVANCE
+           ELSE
+              MOVE 0 TO DEF-ADVANCE
+              MOVE LN-LCPDTH-DATE TO SYS-DATE
+      *       MOVE S-DD TO S-MM
+      *       MOVE LN-1STPYDA TO S-DD
+      *    LN-LCPDTH-DATE NOW 9(6), NO NEED TO SHIFT.  MJD 071696
+              PERFORM TIM
+              IF ELAPSED-DAYS > 0
+                 MOVE 1  TO DEF-ADVANCE.
+
+       DEF-COMPUTE-F-4-PERIOD-EXIT.
+           EXIT.
+
+      *********************************************************
+      *    DEFERMENT FORMULA 5:  VIRGINIA DEFERMENT FORMULA
+      *
+      *   -DEFERMENT = (REBATE AT BEGIN OF DEFERRED PERIOD
+      *                     - REBATE AT END OF DEFERRED PERIOD)
+      *   -DEFERRED PERIOD IS DERIVED FROM THE CURRENT BALANCE.
+      *   -ANY LATE CHARGES INCURRED IN THE DEFERRED PERIOD
+      *    ARE REBATED BACK TO THE CUSTOMER BY REDUCING THE
+      *    COMPUTED CHARGE.
+      *
+      *********************************************************
+       DEF-COMPUTE-FRMLA-5 SECTION.
+           IF SP-DEFEXCEPT = "A"
+              MOVE 1 TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-5-CHARGE
+              MULTIPLY DEF-NODEF BY DEF-AMOUNT
+              IF SP-LCFRMLA = "D" OR "G" OR "K"
+                 PERFORM DEF-COMPUTE-F-5-LCHG-ADJ
+              ELSE
+                 NEXT SENTENCE
+           ELSE
+              MOVE DEF-NODEF TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-5-CHARGE
+              IF SP-LCFRMLA = "D" OR "G" OR "K"
+                 PERFORM DEF-COMPUTE-F-5-LCHG-ADJ.
+       DEF-COMPUTE-FRMLA-5-EXIT.
+           EXIT.
+
+      *************************************************
+      * DETERMINE CHARGE FOR DEFINED DEFERMENT PERIOD:
+      *   ESTABLISH BEGINNING DATE OF DEFERED PERIOD
+      *   ESTABLISH ENDING DATE OF DEFERED PERIOD
+      *************************************************
+       DEF-COMPUTE-F-5-CHARGE SECTION.
+      * 10/15/98 OLD WAY
+      * COMPUTE MONTHS REMAINING:
+      *    IF LN-REGPYAMT NOT = 0
+      *       COMPUTE DEF-PAYS-MADE = (LN-CURBAL - LN-OT2BAL)
+      *                                              / LN-REGPYAMT
+      *    ELSE
+      *       MOVE 0 TO DEF-PAYS-MADE.
+      * COMPUTE PAYMENTS MADE:
+      *    COMPUTE DEF-PAYS-MADE = LN-ORGTERM + LN-TOTNODEF
+      *                                           - DEF-PAYS-MADE.
+
+      * NEW WAY:
+
+      * ONLY LOOK AT PRINCIPAL
+           IF SP-CONTRFRMLA-TOTAL
+              SUBTRACT LN-TOTLCHG FROM LN-TOTPAYMNTD.
+      * SUBTRACT OUT TOTINT BECAUSE OF OVERRIDDEN DEFERMENTS ON PRECOMP LOANS
+      * THE DIFFERENCE WENT TO INTBAL AND THEN GOT PUT IN TOTPAYMNTD
+           SUBTRACT LN-TOTINT FROM LN-TOTPAYMNTD.
+
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+      * 10/16/98 ADDED PER JTG AND CS, WANT NUMBER TO BE LIKE OLD ROUTINE
+      *          AND WE TRUNCATE, SO WE ARE 1 MONTH LESS THAN THE OLD
+      *          ROUTINE
+      * EXAMPLE:   OLD ROUTINE 18.12 REMAINING
+      *            NEW ROUTINE  5.88 PDTH-PAYS
+      *         THESE DO NOT NET 24 MONTHS, WANT THE NEW ROUTINE TO COME
+      *         OUT WITH 6, SO ADD .999999 AND THEN TRUNCATE
+      *    MOVE PDTH-PAYS TO DEF-PAYS-MADE.
+
+           COMPUTE DEF-PAYS-MADE = PDTH-PAYMENTS + .999999 + LN-TOTNODEF.
+
+      * PUT TOTPAYMNTD BACK TO WHERE IT BELONGS
+           IF SP-CONTRFRMLA-TOTAL
+              ADD LN-TOTLCHG TO LN-TOTPAYMNTD.
+           ADD LN-TOTINT TO LN-TOTPAYMNTD.
+
+      * COMPUTE START OF DEFERED PERIOD:
+           MOVE LN-1STPYDATE TO NDTE-DATE.
+           COMPUTE NDTE-HOLD = DEF-PAYS-MADE - 1.
+           PERFORM INCREMENT-MONTHS.
+           MOVE NDTE-DATE TO DEF-BEG-PERIOD-DATE.
+
+      * COMPUTE BEGINNING OF DEFERED PERIOD REBATE.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE DEF-BEG-PERIOD-DATE TO REB-PAYDATE.
+           PERFORM REBATE.
+           MOVE REB-REBATE TO DEF-PRIORRB.
+
+      * COMPUTE END OF DEFERED PERIOD REBATE:
+           MOVE 7 TO REB-SUB.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE DEF-BEG-PERIOD-DATE TO NDTE-DATE.
+           MOVE DEF-WRP TO NDTE-HOLD.
+           PERFORM INCREMENT-MONTHS.
+           MOVE NDTE-DATE TO REB-PAYDATE DEF-END-PERIOD-DATE.
+           PERFORM REBATE.
+
+      * COMPUTE-DEFERMENT CHARGE:
+           COMPUTE DEF-AMOUNT = DEF-PRIORRB - REB-REBATE.
+
+      ***********************************************
+      * REDUCE DEFERMENT CHARGE BY LATE CHARGES
+      * TAKEN IN THE DEFERED PERIODS:
+      ***********************************************
+       DEF-COMPUTE-F-5-LCHG-ADJ SECTION.
+           MOVE DEF-BEG-PERIOD-DATE TO NUM-DATE.
+           MOVE LN-LCPDTH-DATE      TO SYS-DATE.
+           MOVE NUM-DA              TO S-DD.
+           MOVE 360                 TO ELAPSED-YRTYPE.
+           PERFORM TIMALL.
+           IF ELAPSED-MONTHS NOT > 0
+              GO TO DEF-COMPUTE-F-5-LCHG-ADJ-EXIT.
+
+           IF LN-TOTLCHG NOT > 0
+              GO TO DEF-COMPUTE-F-5-LCHG-ADJ-EXIT.
+
+           MOVE ELAPSED-MONTHS TO DEF-ELAPSED-MTHS.
+           MOVE 0              TO LCHG-LATE.
+           MOVE LN-LCPDTH-DATE TO LCHG-LCPDTH-DATE.
+           PERFORM LATE-CHARGE-CALCULATION.
+           IF DEF-NODEF < DEF-ELAPSED-MTHS
+              MOVE DEF-NODEF TO DEF-ELAPSED-MTHS.
+
+           COMPUTE DEF-BASE = LCHG-CHARGE * DEF-ELAPSED-MTHS.
+           IF DEF-BASE > LN-TOTLCHG
+              MOVE LN-TOTLCHG TO DEF-BASE.
+
+           COMPUTE DEF-AMOUNT = DEF-AMOUNT - DEF-BASE.
+
+       DEF-COMPUTE-F-5-LCHG-ADJ-EXIT.
+           EXIT.
+
+      *********************************************************
+      *    DEFERMENT FORMULA 6:  BUDGET DEFERMENT FORMULA
+      *
+      *   -DEFERMENT = (78THS REBATE AT BEGIN OF DEFERRED PERIOD
+      *                  - 78THS REBATE AT END OF DEFERRED PERIOD)
+      *   -DEFERRED PERIOD IS DERIVED FROM THE CURRENT BALANCE.
+      *   -ANY LATE CHARGES INCURRED IN THE DEFERRED PERIOD
+      *    ARE REBATED BACK TO THE CUSTOMER BY REDUCING THE
+      *    COMPUTED CHARGE.
+      *
+      *********************************************************
+       DEF-COMPUTE-FRMLA-6 SECTION.
+           IF SP-DEFEXCEPT = "A"
+              MOVE 1 TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-6-CHARGE
+              MULTIPLY DEF-NODEF BY DEF-AMOUNT
+              IF SP-LCFRMLA = "D" OR "G" OR "K"
+                 PERFORM DEF-COMPUTE-F-6-LCHG-ADJ
+              ELSE
+                 NEXT SENTENCE
+           ELSE
+              MOVE DEF-NODEF TO DEF-WRP
+              PERFORM DEF-COMPUTE-F-6-CHARGE
+              IF SP-LCFRMLA = "D" OR "G" OR "K"
+                 PERFORM DEF-COMPUTE-F-6-LCHG-ADJ.
+       DEF-COMPUTE-FRMLA-6-EXIT.
+           EXIT.
+
+      ******************************************************
+      * DETERMINE CHARGE FOR DEFINED DEFERMENT PERIOD:
+      *   ESTABLISH BEGINNING OF DEFERED PERIOD 78THS REBATE
+      *   ESTABLISH ENDING OF DEFERED PERIOD 78THS REBATE
+      ******************************************************
+       DEF-COMPUTE-F-6-CHARGE SECTION.
+      * COMPUTE MONTHS REMAINING:
+           IF LN-REGPYAMT NOT = 0
+              COMPUTE DEF-PAYS-MADE ROUNDED =
+                  (LN-CURBAL - LN-OT2BAL) / LN-REGPYAMT + 0.5
+           ELSE
+              MOVE 0 TO DEF-PAYS-MADE.
+
+      * COMPUTE BEGINNING OF DEFERED PERIOD REBATE.
+           COMPUTE DEF-PRIORRB ROUNDED = LN-INTCHG *
+                   (DEF-PAYS-MADE * (DEF-PAYS-MADE + 1))
+                 / (LN-ORGTERM * (LN-ORGTERM + 1)).
+
+      * COMPUTE END OF DEFERED PERIOD REBATE:
+           SUBTRACT DEF-WRP FROM DEF-PAYS-MADE.
+           COMPUTE REB-REBATE ROUNDED = LN-INTCHG *
+                   (DEF-PAYS-MADE * (DEF-PAYS-MADE + 1))
+                 / (LN-ORGTERM * (LN-ORGTERM + 1)).
+
+      * COMPUTE-DEFERMENT CHARGE:
+           COMPUTE DEF-AMOUNT = DEF-PRIORRB - REB-REBATE.
+
+      ***********************************************
+      * REDUCE DEFERMENT CHARGE BY LATE CHARGES
+      * TAKEN IN THE DEFERED PERIODS:
+      ***********************************************
+       DEF-COMPUTE-F-6-LCHG-ADJ SECTION.
+           MOVE DEF-BEG-PERIOD-DATE TO NUM-DATE.
+           MOVE LN-LCPDTH-DATE TO SYS-DATE.
+      *    MOVE S-DD TO S-MM.
+      *    LN-LCPDTH-DATE NOW 9(6), NO NEED TO SHIFT.  MJD 071696
+           MOVE NUM-DA TO S-DD.
+           MOVE 360 TO ELAPSED-YRTYPE.
+           PERFORM TIMALL.
+           IF ELAPSED-MONTHS NOT > 0
+              GO TO DEF-COMPUTE-F-6-LCHG-ADJ-EXIT.
+           IF LN-TOTLCHG NOT > 0
+              GO TO DEF-COMPUTE-F-6-LCHG-ADJ-EXIT.
+           MOVE ELAPSED-MONTHS TO DEF-ELAPSED-MTHS.
+           MOVE 0 TO LCHG-LATE.
+           MOVE LN-LCPDTH-DATE TO LCHG-LCPDTH-DATE.
+           PERFORM LATE-CHARGE-CALCULATION.
+           IF DEF-NODEF < DEF-ELAPSED-MTHS
+              MOVE DEF-NODEF TO DEF-ELAPSED-MTHS.
+           COMPUTE DEF-BASE = LCHG-CHARGE * DEF-ELAPSED-MTHS.
+           IF DEF-BASE > LN-TOTLCHG
+              MOVE LN-TOTLCHG TO DEF-BASE.
+           COMPUTE DEF-AMOUNT = DEF-AMOUNT - DEF-BASE.
+       DEF-COMPUTE-F-6-LCHG-ADJ-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 7
+      *
+      *    REBATE, FROM AID THROUGH TO DEFER DATE.
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY TAKING THE DIFFERENCE BETWEEN AN INTEREST
+      *         REBATE AT THE END OF THE PAID THROUGH DATE
+      *         AND THE DATE OF THE DEFERMENT.
+      *
+      *    NOTE:
+      *        SP-DEFEXCEPT = 'A' OR ' ' HAS NO IMPACT ON THIS
+      *        FORMULA SINCE THE CHARGE IS COMPUTED THE DAY
+      *        OF THE DEFERMENT.
+      ********************************************************
+       DEF-COMPUTE-FRMLA-7 SECTION.
+      * COMPUTE BEGINNING OF DEFERED PERIOD REBATE:
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO DEF-SAVEPDTH-DATE.
+           MOVE PDTH-DATE-FULL TO REB-PAYDATE.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           PERFORM REBATE.
+           MOVE REB-REBATE TO DEF-PRIORRB.
+      * COMPUTE END OF DEFERED PERIOD REBATE:
+           MOVE LP-PAYDATE TO REB-PAYDATE.
+           MOVE 7 TO REB-SUB.
+           MOVE LN-INTCHG TO REB-TOTCHG.
+           MOVE LN-ORGTERM TO REB-ORGTERM.
+           PERFORM REBATE.
+           SUBTRACT REB-REBATE FROM DEF-PRIORRB GIVING DEF-AMOUNT.
+           COMPUTE DEF-AMOUNT = DEF-AMOUNT + 1.00.
+           IF LN-REGPYAMT / 2 > DEF-AMOUNT
+              COMPUTE DEF-AMOUNT = LN-REGPYAMT / 2.
+       DEF-COMPUTE-FRMLA-7-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 8
+      *
+      *    REBATE, INDIANA (PACESETTER)
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY TAKING THE BALANCE LESS TOTLCHG PAID
+      *         MULTIPLIED BY THE APR / 12.
+      *    NOTE:
+      *        MULTIPLE DEFERMENTS ARE NOT ALLOWED:
+      *        SP-DEFEXCEPT = 'A' OR ' ' HAS NO IMPACT ON THIS
+      *        FORMULA SINCE THE CHARGE IS COMPUTED THE DAY
+      *        OF THE DEFERMENT.
+      ********************************************************
+       DEF-COMPUTE-FRMLA-8 SECTION.
+      * CALL SUBPROGRAM TO DETERMINE DEFERMENT CHARGE:
+           MOVE "I"        TO DEF-FORM-PROG-TYPE.
+           MOVE 01         TO DEF-FORM-PROG-NO.
+           MOVE LP-PAYDATE TO DEF-POST-DATE.
+           PERFORM DEF-CALL-SUBPROG.
+           IF DEF-COMMON-RTNCD = " "
+              MOVE DEF-COMMON-DEFCHG TO DEF-AMOUNT
+              MOVE DEF-LC-REBATE     TO DEF-LCHG-REFUND.
+       DEF-COMPUTE-FRMLA-8-EXIT.
+           EXIT.
+
+      ******************************************************************
+      *
+      *    DEFERMENT FORMULA 9 - FOR LOUISANA
+      *
+      *    THIS ROUTINE COMPUTES THE DEFERMENT CHARGE
+      *         BY TAKING THE SMALLEST AMOUNT BETWEEN 25% OF THE
+      *         STANDARD PAYMENT AMOUNT OR 1/12 OF THE APR TIMES THE
+      *         NET BALANCE.
+      *
+      *    NOTE:
+      ******************************************************************
+       DEF-COMPUTE-FRMLA-9 SECTION.
+
+      * DEFBASE-9 = THE NET BALANCE:
+      *    ( NB = LEDGER-CARD-BALANCE - INTEREST-REFUND-AMOUNT -
+      *           SPECIAL REFUND AMOUNT ).
+
+           PERFORM DEFBASE-9.
+
+      * THIS CONDITION LOOKS FOR THE SMALLEST AMOUNT BETWEEN:
+      *    1. 25% OF THE STANDARD PAYMENT AMOUNT.
+      *    2. 1/12 OF THE APR TIMES THE NET BALANCE.
+
+           COMPUTE DEF-WORKER1 ROUNDED = ( 0.25 * LN-REGPYAMT ).
+           COMPUTE DEF-WORKER2 ROUNDED = (LN-APRATE / 1200) * DEF-BASE.
+
+           IF ( DEF-WORKER1 < DEF-WORKER2 )
+              MOVE DEF-WORKER1 TO DEF-AMOUNT
+           ELSE
+              MOVE DEF-WORKER2 TO DEF-AMOUNT.
+
+       DEF-COMPUTE-FRMLA-9-EXIT.
+           EXIT.
+
+      ******************************************************
+      *    DEFERMENT FORMULA 99 OR 98 OR 97 OR 96 OR 95
+      *
+      *    INTEREST BEARING METHOD:
+      *
+      *    THIS ROUTINE DERIVES THE DEFERMENT CHARGE
+      *         BY TAKING THE INTEREST DUE THRU THE
+      *         DAY OF THE DEFERMENT.
+      *
+      *    NOTE:
+      *         MULTIPLE DEFERMENTS ARE NOT ALLOWED ON A
+      *         SINGLE TRANSACTION LEVEL.
+      ******************************************************
+
+       DEF-COMPUTE-FRMLA-99 SECTION.
+      *      FORMULA 97 MUST INCLUDE LN-INTBAL WITH NEW ASSESSED INTEREST:
+           IF SP-DEFFRMLA = 97
+              MOVE DEF-TOTAL-INTDUE TO DEF-AMOUNT
+           ELSE
+              COMPUTE DEF-AMOUNT = DEF-TOTAL-INTDUE - LN-INTBAL.
+
+      * MULLEN PR#2477
+           IF SP-DEFFRMLA = 96
+              COMPUTE DEF-AMOUNT = LN-CURBAL * (2 / 100).
+
+      * MERCURY #224:
+           IF SP-DEFFRMLA = 97
+              IF LN-REGPYAMT / 3 > DEF-AMOUNT
+                 COMPUTE DEF-AMOUNT ROUNDED = LN-REGPYAMT / 3.
+
+           IF SP-DEFFRMLA = 98
+              COMPUTE DEF-AMOUNT = DEF-AMOUNT + 1.00
+              IF LN-REGPYAMT / 2 > DEF-AMOUNT
+                 COMPUTE DEF-AMOUNT = LN-REGPYAMT / 2.
+
+      * HAMPTON ROADS PR# 3280
+           IF SP-DEFFRMLA = 95
+              MOVE DEF-PAYDATE TO RATE-DATE IBPC-DATE
+              MOVE "PY" TO RATE-LPTRCD
+              MOVE LN-MAKERCD(1) TO RATE-MAKERCD
+              PERFORM SET-PY-RATE
+      * PER DIEM RATE TIMES DAYS IN UNIT PERIOD
+              COMPUTE DEF-PERCENT ROUNDED = INDU-WORKER / INDU-WK
+              COMPUTE DEF-AMOUNT ROUNDED =
+                  (DEF-PERCENT * LN-DAYS-IN-UNITPER) * DEF-NODEF.
+
+
+      * TEST AGAINST MAXIMUM AND MINIMUM:
+           IF DEF-AMOUNT < SP-DEFMIN
+              MOVE SP-DEFMIN TO DEF-AMOUNT
+           ELSE
+              IF DEF-AMOUNT > SP-DEFMAX
+                 MOVE SP-DEFMAX TO DEF-AMOUNT.
+
+      *********************************************
+      *   ROUTINE TO CALL SUBPROGRAM:
+      *
+      *   MOVE FIELDS TO PASS TO DEF-COMMON
+      *   MOVE PROGRAM NAME TO DEF-FORM-PROG
+      *   IF NO CANCEL OF SUBPROG IS REQUESTED
+      *      MOVE SPACES TO DEF-CANCEL-FG.
+      *********************************************
+       DEF-CALL-SUBPROG SECTION.
+           MOVE DEF-FORM-PATH TO FORM-NAM.
+       DEF-CALL-SUBPROG-RETRY.
+           CALL FORM-PROGX USING FORM-PATH DEF-COMMON LN-REC SP-REC
+                ON OVERFLOW
+                GO TO DEF-CALL-SUBPROG-RETRY.
+           IF DEF-CANCEL-FG = "Y"
+              CANCEL FORM-PROGX.
+           MOVE "Y" TO DEF-CANCEL-FG.
+
+      ******************************************************************
+      *
+      *   D E F B A S E - 9
+      *
+      *   THIS SECTION IS FOR DEFERMENT BASE AMOUNT CODE OF 9
+      *
+      ******************************************************************
+       DEFBASE-9 SECTION.
+           MOVE DEF-PAYDATE TO REB-PAYDATE.
+           MOVE LN-INTCHG   TO REB-TOTCHG.
+           MOVE LN-ORGTERM  TO REB-ORGTERM.
+           MOVE 7 TO REB-SUB.
+           PERFORM REBATE.
+
+           IF ( REB-SUB NOT = 0 )
+              COMPUTE DEF-WORKER = LN-CURBAL - LN-OT2BAL - REB-REBATE
+              IF ( DEF-WORKER NOT < 0 )
+                 MOVE DEF-WORKER TO DEF-BASE.
+
+      *************************************************************************
+      * DEFERMENT FORMULA 10 (71225 PR# 384  12/13/2016)
+      *
+      * SIMPLE INTEREST BEARING METHOD:
+      *
+      * DEFERMENT FORMULA(DF-D9) = PMT AMOUNT * EXTENSION RATE * EXTENSION DAYS
+      *
+      *  WHERE: PAYMENT AMOUNT = THE REGULAR SCHEDULED PAYMENT AMOUNT
+      *         EXTENSION RATE = STORED APR RATE/365 OR IN THE CASE OF AN
+      *                          IR RATE CHANGE TRANSACTION THE IR RATE
+      *                          CURRENTLY IN EFFECT/365
+      *         DUE DATE = CONTRACTUAL DUE DATE (NO-TRUE-DUE) OR DUE DATE FROM
+      *                    THE F11 SCREEN TOP RIGHT CORNER.
+      *         NEXT DUE DATE = NEXT DUE DATE INCREMENTED ONE MONTHLY PERIOD
+      *                         FOR EACH DEFERMENT REQUESTED.
+      *         MATURITY DATE = THE UPDATED CONTRACT MATURITY DATE
+      *         EXTENSION-DAYS = ELAPSED DAYS BETWEEN DUE DATE AND MATURITY 
+      *                          DATE (365) + ELAPSED DAYS (365) BETWEEN DUE
+      *                          DATE AND NEXT DUE DATE.
+      *
+      * NOTE: PERCENT AND DEFERMENT AMOUNT ARE ROUNDED.  NUMBERS DID NOT
+      *       MATCH EXAMPLES PROVIDED BY CUSTOMER WITHOUT THE ROUNDING.
+      *
+      *************************************************************************
+       DEF-COMPUTE-FRMLA-10 SECTION.
+      * CALCULATE "DUE DATE":
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO NDTE-DATE.
+           MOVE LN-1STPYDATE TO NUM-DATE.
+           MOVE NUM-DA TO NDTE-DD.
+           MOVE 1 TO NDTE-HOLD.
+           PERFORM INCREMENT-UNITPER.
+           MOVE NDTE-DATE TO DEF-BEG-PERIOD-DATE.
+           
+      * CALCULATE "NEXT DUE DATE" BASED ON 1-9 DEFERMENT PERIODS:
+           MOVE DEF-NODEF TO NDTE-HOLD.
+           PERFORM INCREMENT-UNITPER.
+           MOVE NDTE-DATE TO DEF-END-PERIOD-DATE.
+           
+      * CALCULATE "EXTENSION RATE":           
+           COMPUTE DEF-PERCENT-V10 ROUNDED =  LN-APRATE/100/365.
+
+      * CALCULATE "MATURITY DATE":
+           MOVE " " TO MDTE-FLAG.
+           PERFORM MATURITY-DATE-CALCULATION.
+
+      * CALCULATE "EXTENSION DAYS":
+           MOVE DEF-BEG-PERIOD-DATE TO NUM-DATE.
+           MOVE MDTE-DATE TO SYS-DATE.
+           PERFORM TIM365.
+           MOVE ELAPSED-DAYS TO DEF-WRP.
+           MOVE DEF-BEG-PERIOD-DATE TO NUM-DATE.
+           MOVE DEF-END-PERIOD-DATE TO SYS-DATE.
+           PERFORM TIM365.
+           ADD ELAPSED-DAYS TO DEF-WRP.
+           
+      * CALCULATE DEFERMENT AMOUNT:
+           COMPUTE DEF-AMOUNT ROUNDED = PDTH-CUR-SCHD-PAY * 
+                                DEF-PERCENT-V10 * DEF-WRP.
+                                
+      * TEST AGAINST MAXIMUM AND MINIMUM:
+           IF DEF-AMOUNT < SP-DEFMIN
+              MOVE SP-DEFMIN TO DEF-AMOUNT
+           ELSE
+              IF DEF-AMOUNT > SP-DEFMAX
+                 MOVE SP-DEFMAX TO DEF-AMOUNT.

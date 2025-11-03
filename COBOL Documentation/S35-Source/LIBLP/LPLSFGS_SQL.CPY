@@ -1,0 +1,235 @@
+      * COPYMEMBER: LIBLP/LPLSFGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - LOAN STATUS - FOLLOW UP
+      *
+      *=================================================================
+      * REV:
+      * AMM 2021-0510 ***NEW***
+      *
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD LSF-REC FROM QLSF-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-LSF-FIELDS.
+           MOVE QLSF-BRNO TO LSF-BRNO.
+           MOVE QLSF-ACCTNO TO LSF-ACCTNO.
+           MOVE QLSF-SEQNO TO LSF-SEQNO.
+
+           IF ( QLSF-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-LTOUCH-DATE
+           ELSE
+              MOVE QLSF-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-LTOUCH-DATE.
+
+
+           IF ( QLSF-SKIP-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-SKIP-START-DATE
+           ELSE
+              MOVE QLSF-SKIP-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-SKIP-START-DATE.
+
+
+           IF ( QLSF-SKIP-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-SKIP-END-DATE
+           ELSE
+              MOVE QLSF-SKIP-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-SKIP-END-DATE.
+
+
+           IF ( QLSF-OFR-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-OFR-START-DATE
+           ELSE
+              MOVE QLSF-OFR-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-OFR-START-DATE.
+
+
+           IF ( QLSF-OFR-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-OFR-END-DATE
+           ELSE
+              MOVE QLSF-OFR-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-OFR-END-DATE.
+
+
+           IF ( QLSF-IMPOUND-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-IMPOUND-START-DATE
+           ELSE
+              MOVE QLSF-IMPOUND-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-IMPOUND-START-DATE.
+
+
+           IF ( QLSF-IMPOUND-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-IMPOUND-END-DATE
+           ELSE
+              MOVE QLSF-IMPOUND-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-IMPOUND-END-DATE.
+
+
+           IF ( QLSF-BNKRPT-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-BNKRPT-START-DATE
+           ELSE
+              MOVE QLSF-BNKRPT-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-BNKRPT-START-DATE.
+
+
+           IF ( QLSF-BNKRPT-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-BNKRPT-END-DATE
+           ELSE
+              MOVE QLSF-BNKRPT-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-BNKRPT-END-DATE.
+
+
+           IF ( QLSF-INSUR-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-INSUR-START-DATE
+           ELSE
+              MOVE QLSF-INSUR-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-INSUR-START-DATE.
+
+
+           IF ( QLSF-INSUR-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-INSUR-END-DATE
+           ELSE
+              MOVE QLSF-INSUR-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-INSUR-END-DATE.
+
+
+           IF ( QLSF-COLLECT-START-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-COLLECT-START-DATE
+           ELSE
+              MOVE QLSF-COLLECT-START-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-COLLECT-START-DATE.
+
+
+           IF ( QLSF-COLLECT-END-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSF-COLLECT-END-DATE
+           ELSE
+              MOVE QLSF-COLLECT-END-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSF-COLLECT-END-DATE.
+
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QLSF-REC FROM LSF-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-LSF-FIELDS.
+           MOVE LSF-BRNO TO QLSF-BRNO.
+           MOVE LSF-ACCTNO TO QLSF-ACCTNO.
+           MOVE LSF-SEQNO TO QLSF-SEQNO.
+
+           IF ( LSF-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-LTOUCH-DATE
+           ELSE
+              MOVE LSF-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-LTOUCH-DATE.
+
+
+           IF ( LSF-SKIP-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-SKIP-START-DATE
+           ELSE
+              MOVE LSF-SKIP-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-SKIP-START-DATE.
+
+
+           IF ( LSF-SKIP-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-SKIP-END-DATE
+           ELSE
+              MOVE LSF-SKIP-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-SKIP-END-DATE.
+
+
+           IF ( LSF-OFR-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-OFR-START-DATE
+           ELSE
+              MOVE LSF-OFR-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-OFR-START-DATE.
+
+
+           IF ( LSF-OFR-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-OFR-END-DATE
+           ELSE
+              MOVE LSF-OFR-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-OFR-END-DATE.
+
+
+           IF ( LSF-IMPOUND-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-IMPOUND-START-DATE
+           ELSE
+              MOVE LSF-IMPOUND-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-IMPOUND-START-DATE.
+
+
+           IF ( LSF-IMPOUND-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-IMPOUND-END-DATE
+           ELSE
+              MOVE LSF-IMPOUND-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-IMPOUND-END-DATE.
+
+
+           IF ( LSF-BNKRPT-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-BNKRPT-START-DATE
+           ELSE
+              MOVE LSF-BNKRPT-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-BNKRPT-START-DATE.
+
+
+           IF ( LSF-BNKRPT-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-BNKRPT-END-DATE
+           ELSE
+              MOVE LSF-BNKRPT-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-BNKRPT-END-DATE.
+
+
+           IF ( LSF-INSUR-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-INSUR-START-DATE
+           ELSE
+              MOVE LSF-INSUR-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-INSUR-START-DATE.
+
+
+           IF ( LSF-INSUR-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-INSUR-END-DATE
+           ELSE
+              MOVE LSF-INSUR-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-INSUR-END-DATE.
+
+
+           IF ( LSF-COLLECT-START-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-COLLECT-START-DATE
+           ELSE
+              MOVE LSF-COLLECT-START-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-COLLECT-START-DATE.
+
+
+           IF ( LSF-COLLECT-END-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSF-COLLECT-END-DATE
+           ELSE
+              MOVE LSF-COLLECT-END-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSF-COLLECT-END-DATE.
+
+ 
+

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSCK
+           SELECT CK-FILE ASSIGN TO CK-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY CK1-KEY
+                  FILE STATUS FILE-STAT.

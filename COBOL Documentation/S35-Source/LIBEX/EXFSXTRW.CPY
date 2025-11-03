@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXTRW
+           SELECT XTRW-FILE ASSIGN TO XTRW-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XTRW-KEY
+                  FILE STATUS FILE-STAT.

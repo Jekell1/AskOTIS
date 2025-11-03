@@ -1,0 +1,17 @@
+graph TD
+    A[Start: CJUL SECTION] --> B[Set DATER-ACTION-CODE to 'C']
+    B --> C[Call DATER-ROUTINE]
+    C --> D{DATER-ROUTINE Processing}
+    D --> E[Convert Julian to Calendar Date]
+    E --> F{Conversion Successful?}
+    F -->|Yes| G[Set NUM-DATE to Calendar Date]
+    F -->|No| H[Set NUM-DATE to 0]
+    F -->|No| I[Set Error Flag]
+    G --> J[Return to Caller]
+    H --> I
+    I --> J
+    
+    style A fill:#e1f5fe
+    style J fill:#e8f5e8
+    style H fill:#ffebee
+    style I fill:#ffebee

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXRC
+           SELECT XRC-FILE ASSIGN TO XRC-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XRC-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,30 @@
+flowchart TD
+    A[Year Type Processing] --> B{TA-YRTYPE Value}
+    
+    B -->|998| C[Unit Period Method]
+    B -->|365| D[Standard Calendar Method]
+    B -->|Other| E[30-Day Month Method]
+    
+    C --> F[Pre-calculated Months]
+    F --> G[Apply Sign to Months]
+    G --> H[Calculate Remainder Days - Months*30]
+    H --> I[Unit Period Result]
+    
+    D --> J[Julian Date Difference]
+    J --> K[Apply Sign to Difference]
+    K --> L[Direct Day Calculation]
+    L --> M[365-Day Result]
+    
+    E --> N[Divide Days by 30]
+    N --> O[Integer Division for Months]
+    O --> P[Modulo Operation for Remainder]
+    P --> Q[Standard Result]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#e8f5e8
+    style D fill:#fff9c4
+    style E fill:#f3e5f5
+    style I fill:#c8e6c9
+    style M fill:#c8e6c9
+    style Q fill:#c8e6c9

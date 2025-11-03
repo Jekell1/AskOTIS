@@ -1,0 +1,76 @@
+{
+  "results": [
+    {
+      "index": "new_cobol_program_meta",
+      "total": 0,
+      "with_vector": 0,
+      "coverage_pct": 0.0,
+      "coverage_fail": true
+    },
+    {
+      "index": "new_cobol_copybook_meta",
+      "total": 7817,
+      "with_vector": 7817,
+      "coverage_pct": 100.0
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "total": 1571,
+      "with_vector": 1571,
+      "coverage_pct": 100.0
+    },
+    {
+      "index": "new_cobol_flow_edges_v2",
+      "total": 366650,
+      "with_vector": 64483,
+      "coverage_pct": 17.59
+    },
+    {
+      "index": "new_cobol_ui_paths",
+      "total": 0,
+      "with_vector": 0,
+      "coverage_pct": 0.0,
+      "coverage_fail": true
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "total": 0,
+      "with_vector": 0,
+      "coverage_pct": 0.0,
+      "coverage_fail": true
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "total": 1571,
+      "with_vector": 1571,
+      "coverage_pct": 100.0
+    },
+    {
+      "index": "new_cobol_copybook_usage",
+      "total": 114307,
+      "with_vector": 114307,
+      "coverage_pct": 100.0
+    },
+    {
+      "index": "cobol-facts-v3",
+      "total": 31,
+      "with_vector": 31,
+      "coverage_pct": 100.0
+    }
+  ],
+  "failures": [
+    {
+      "index": "new_cobol_program_meta",
+      "reason": "coverage 0.00% < required 99.0%"
+    },
+    {
+      "index": "new_cobol_ui_paths",
+      "reason": "coverage 0.00% < required 99.0%"
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "reason": "coverage 0.00% < required 99.0%"
+    }
+  ],
+  "ok": false
+}

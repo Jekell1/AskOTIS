@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF2 - Loan Processing Transaction Update Program</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">LONPF2 - Loan Processing Transaction Update Program</span>
+        </nav>
+        <main class="content">
+<h1>LONPF2 - Loan Processing Transaction Update Program</h1>
+<p><strong>Generated on:</strong> July 22, 2025<br />
+<strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Source Location:</strong> .\S35-Source\LP\LONPF2.CBL<br />
+<strong>Program ID:</strong> LONPF2<br />
+<strong>Date Written:</strong> 021784  </p>
+<hr />
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p>LONPF2 is a comprehensive loan processing transaction update program that handles various types of financial transactions for loan accounts. This program is responsible for updating multiple file systems including loan records, payment records, transaction records, dealer statistics, and general ledger entries.</p>
+<h3>Purpose and Scope</h3>
+<p>The program serves as the central transaction update engine for loan processing operations. It:</p>
+<ul>
+<li>Processes various payment and transaction types including regular payments, payoffs, rebates, and reversals</li>
+<li>Updates loan balances, payment histories, and account statuses</li>
+<li>Maintains dealer statistics and commission calculations</li>
+<li>Handles insurance and addon product transactions</li>
+<li>Processes repo (repossession) and bankruptcy transactions</li>
+<li>Updates general ledger entries for proper financial reporting</li>
+</ul>
+<h3>Business Context</h3>
+<p>LONPF2 operates within a comprehensive loan management system and is typically called from:
+- <strong>APIPAY</strong> - Main payment processing system
+- <strong>LONPW</strong> - Manual batch payment entry system
+- <strong>LONPQ1</strong> - Automatic renewal processing
+- Various other loan processing programs</p>
+<p>The program follows a strict file update order: BW, CA, LM, DS, TY, LN, LT, TR, DT, LP to ensure data consistency and proper transaction sequencing.</p>
+<hr />
+<h2>Transaction Types Supported</h2>
+<p>LONPF2 supports a wide variety of transaction codes, each with specific processing logic:</p>
+<h3>Payment Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PY</strong></td>
+<td>Regular Payment</td>
+<td>Standard loan payment application</td>
+</tr>
+<tr>
+<td><strong>PA</strong></td>
+<td>Payment (Alternative)</td>
+<td>Payment with special handling</td>
+</tr>
+<tr>
+<td><strong>PO</strong></td>
+<td>Payoff</td>
+<td>Full loan payoff transaction</td>
+</tr>
+<tr>
+<td><strong>EP</strong></td>
+<td>Escrow Payment</td>
+<td>Escrow account payment</td>
+</tr>
+<tr>
+<td><strong>ED</strong></td>
+<td>Escrow Disbursement</td>
+<td>Payment from escrow account</td>
+</tr>
+<tr>
+<td><strong>PE</strong></td>
+<td>Payment Exception</td>
+<td>Exception payment processing</td>
+</tr>
+<tr>
+<td><strong>PN</strong></td>
+<td>Non-Cash Payment</td>
+<td>Payment without cash movement</td>
+</tr>
+<tr>
+<td><strong>PZ</strong></td>
+<td>Non-Cash Payment/No RecDel</td>
+<td>Payment without recording delay</td>
+</tr>
+</tbody>
+</table>
+<h3>Repo and Recovery Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SX</strong></td>
+<td>Repo Expense</td>
+<td>Repossession expense posting</td>
+</tr>
+<tr>
+<td><strong>ZX</strong></td>
+<td>Repo Expense (Alternative)</td>
+<td>Similar to SX with different handling</td>
+</tr>
+<tr>
+<td><strong>SV</strong></td>
+<td>Repo Redeem</td>
+<td>Account redemption from repo status</td>
+</tr>
+<tr>
+<td><strong>SS</strong></td>
+<td>Repo Sale</td>
+<td>Sale of repossessed collateral</td>
+</tr>
+</tbody>
+</table>
+<h3>Rebate and Refund Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RI</strong></td>
+<td>Interest Rebate</td>
+<td>Interest refund calculation</td>
+</tr>
+<tr>
+<td><strong>RC</strong></td>
+<td>Commission Rebate</td>
+<td>Commission refund</td>
+</tr>
+<tr>
+<td><strong>RA</strong></td>
+<td>Addon Rebate</td>
+<td>Addon product refund</td>
+</tr>
+<tr>
+<td><strong>RP</strong></td>
+<td>Premium Rebate</td>
+<td>Insurance premium refund</td>
+</tr>
+<tr>
+<td><strong>R1-R3</strong></td>
+<td>Specific Rebates</td>
+<td>Targeted rebate types</td>
+</tr>
+</tbody>
+</table>
+<h3>Special Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RV</strong></td>
+<td>Reversal</td>
+<td>Reverse any previous transaction</td>
+</tr>
+<tr>
+<td><strong>OV</strong></td>
+<td>Overpayment</td>
+<td>Handle excess payment amounts</td>
+</tr>
+<tr>
+<td><strong>OP</strong></td>
+<td>OT/AP Combination</td>
+<td>Automatic other/additional principal</td>
+</tr>
+<tr>
+<td><strong>RE</strong></td>
+<td>Repo Expense Addon</td>
+<td>Repossession expense addon</td>
+</tr>
+<tr>
+<td><strong>BK</strong></td>
+<td>Bankruptcy</td>
+<td>Bankruptcy status posting</td>
+</tr>
+<tr>
+<td><strong>BD</strong></td>
+<td>Bankruptcy Dismissal</td>
+<td>Bankruptcy dismissal</td>
+</tr>
+<tr>
+<td><strong>PL</strong></td>
+<td>Profit &amp; Loss</td>
+<td>Charge-off to P&amp;L</td>
+</tr>
+<tr>
+<td><strong>DC</strong></td>
+<td>Disclosure</td>
+<td>Disclosure transaction</td>
+</tr>
+</tbody>
+</table>
+<h3>Addon and Insurance Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CC</strong></td>
+<td>Credit Life Cancel</td>
+<td>Credit life insurance cancellation</td>
+</tr>
+<tr>
+<td><strong>CA</strong></td>
+<td>Credit AH Cancel</td>
+<td>Accident &amp; health insurance cancellation</td>
+</tr>
+<tr>
+<td><strong>CP</strong></td>
+<td>Credit Property Cancel</td>
+<td>Property insurance cancellation</td>
+</tr>
+<tr>
+<td><strong>C1-C3</strong></td>
+<td>Credit Insurance Types</td>
+<td>Specific insurance cancellations</td>
+</tr>
+<tr>
+<td><strong>IN</strong></td>
+<td>Insurance Loss</td>
+<td>Insurance loss posting</td>
+</tr>
+</tbody>
+</table>
+<h3>Deferment Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DF</strong></td>
+<td>Deferment</td>
+<td>Payment deferment</td>
+</tr>
+<tr>
+<td><strong>D2-D9</strong></td>
+<td>Deferment Types</td>
+<td>Specific deferment categories</td>
+</tr>
+</tbody>
+</table>
+<h3>Tax and Fee Transactions</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CT</strong></td>
+<td>County Tax</td>
+<td>County tax processing</td>
+</tr>
+<tr>
+<td><strong>CY</strong></td>
+<td>City Tax</td>
+<td>City tax processing</td>
+</tr>
+<tr>
+<td><strong>OT</strong></td>
+<td>Other Charges</td>
+<td>Miscellaneous charges</td>
+</tr>
+<tr>
+<td><strong>AP</strong></td>
+<td>Additional Principal</td>
+<td>Additional principal payment</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Input Parameters</h2>
+<p>LONPF2 receives input through the USING clause in the PROCEDURE DIVISION:</p>
+<pre><code class="language-cobol">PROCEDURE DIVISION
+    USING FORM-PATHNAME EXIT-PATHNAME PROG-BUF UPDATE-BUF.
+</code></pre>
+<h3>Parameter Details</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FORM-PATHNAME</strong></td>
+<td>PIC X(n)</td>
+<td>Path to form definition files</td>
+</tr>
+<tr>
+<td><strong>EXIT-PATHNAME</strong></td>
+<td>PIC X(n)</td>
+<td>Path for exit processing</td>
+</tr>
+<tr>
+<td><strong>PROG-BUF</strong></td>
+<td>Group Item</td>
+<td>Program buffer containing transaction data</td>
+</tr>
+<tr>
+<td><strong>UPDATE-BUF</strong></td>
+<td>Group Item</td>
+<td>Update buffer for file modifications</td>
+</tr>
+</tbody>
+</table>
+<h3>Key Input Fields (via UPDATE-BUF)</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+<th>Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-TRCD</strong></td>
+<td>Transaction Code</td>
+<td>PIC XX</td>
+</tr>
+<tr>
+<td><strong>LP-TRAMT</strong></td>
+<td>Transaction Amount</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+<tr>
+<td><strong>LP-REFNO</strong></td>
+<td>Reference Number</td>
+<td>PIC X(5)</td>
+</tr>
+<tr>
+<td><strong>LP-PAYDATE</strong></td>
+<td>Payment Date</td>
+<td>PIC 9(6)</td>
+</tr>
+<tr>
+<td><strong>LP-APCUR</strong></td>
+<td>Applied to Current</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+<tr>
+<td><strong>LP-APINT</strong></td>
+<td>Applied to Interest</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+<tr>
+<td><strong>LP-APLC</strong></td>
+<td>Applied to Late Charges</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+<tr>
+<td><strong>LP-APOTH</strong></td>
+<td>Applied to Other</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+<tr>
+<td><strong>LP-APOT2</strong></td>
+<td>Applied to Other 2</td>
+<td>PIC S9(7)V99 COMP-3</td>
+</tr>
+</tbody>
+</table>
+<h3>Environment Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FIL</strong></td>
+<td>Data file path</td>
+</tr>
+<tr>
+<td><strong>GPENV</strong></td>
+<td>Global parameters</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Output Fields</h2>
+<p>LONPF2 updates numerous files and fields throughout the system:</p>
+<h3>Primary Output Areas</h3>
+<table>
+<thead>
+<tr>
+<th>Field/File</th>
+<th>Description</th>
+<th>Updated When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ERRCD</strong></td>
+<td>Error Code</td>
+<td>Any validation failure</td>
+</tr>
+<tr>
+<td><strong>MESS</strong></td>
+<td>Message Text</td>
+<td>Error or informational messages</td>
+</tr>
+<tr>
+<td><strong>LP-REC</strong></td>
+<td>Loan Payment Record</td>
+<td>Every transaction</td>
+</tr>
+<tr>
+<td><strong>LN-REC</strong></td>
+<td>Loan Record</td>
+<td>Balance and status updates</td>
+</tr>
+<tr>
+<td><strong>TR-REC</strong></td>
+<td>Transaction Record</td>
+<td>GL and audit trail</td>
+</tr>
+</tbody>
+</table>
+<h3>Key Updated Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Update Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP1-FILE</strong></td>
+<td>Loan Payment Records</td>
+<td>Every transaction</td>
+</tr>
+<tr>
+<td><strong>LN1-FILE</strong></td>
+<td>Loan Master Records</td>
+<td>Balance changes</td>
+</tr>
+<tr>
+<td><strong>TR1-FILE</strong></td>
+<td>Transaction/GL Records</td>
+<td>Financial entries</td>
+</tr>
+<tr>
+<td><strong>TY1-FILE</strong></td>
+<td>Type/Statistics Records</td>
+<td>Statistical updates</td>
+</tr>
+<tr>
+<td><strong>DS1-FILE</strong></td>
+<td>Dealer Statistics</td>
+<td>Dealer-related transactions</td>
+</tr>
+<tr>
+<td><strong>BW1-FILE</strong></td>
+<td>Borrower Records</td>
+<td>Customer updates</td>
+</tr>
+<tr>
+<td><strong>CA1-FILE</strong></td>
+<td>Cash Drawer</td>
+<td>Cash transactions</td>
+</tr>
+</tbody>
+</table>
+<h3>Balance Updates</h3>
+<table>
+<thead>
+<tr>
+<th>Balance Type</th>
+<th>Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Current Balance</strong></td>
+<td>LN-CURBAL</td>
+<td>Principal balance</td>
+</tr>
+<tr>
+<td><strong>Interest Balance</strong></td>
+<td>LN-INTBAL</td>
+<td>Accrued interest</td>
+</tr>
+<tr>
+<td><strong>Late Charge Balance</strong></td>
+<td>LN-LCBAL</td>
+<td>Late charges owed</td>
+</tr>
+<tr>
+<td><strong>Other Balance</strong></td>
+<td>LN-OTHBAL</td>
+<td>Other charges</td>
+</tr>
+<tr>
+<td><strong>Other 2 Balance</strong></td>
+<td>LN-OT2BAL</td>
+<td>Additional charges</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3>Main Program Flow</h3>
+<p><a href="Diagrams/LONPF2_Main_Flow.mmd">Main Flow Diagram</a></p>
+<h3>Transaction Processing Flow</h3>
+<p><a href="Diagrams/LONPF2_Transaction_Processing.mmd">Transaction Processing Diagram</a></p>
+<h3>File Update Sequence</h3>
+<p><a href="Diagrams/LONPF2_File_Update_Sequence.mmd">File Update Sequence Diagram</a></p>
+<h3>Error Handling Flow</h3>
+<p><a href="Diagrams/LONPF2_Error_Handling.mmd">Error Handling Diagram</a></p>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<p><a href="Diagrams/LONPF2_Batch_Timeline.mmd">Batch Timeline Diagram</a></p>
+<p>The batch processing follows this sequence:</p>
+<ol>
+<li><strong>Initialization Phase</strong> (0-5 minutes)</li>
+<li>Open required files</li>
+<li>Validate input parameters</li>
+<li>
+<p>Read control records</p>
+</li>
+<li>
+<p><strong>Transaction Validation</strong> (5-10 minutes)</p>
+</li>
+<li>Verify loan record integrity</li>
+<li>Check transaction code validity</li>
+<li>
+<p>Validate business rules</p>
+</li>
+<li>
+<p><strong>File Update Phase</strong> (10-30 minutes)</p>
+</li>
+<li>Update files in prescribed order</li>
+<li>Calculate balances and statistics</li>
+<li>
+<p>Generate audit records</p>
+</li>
+<li>
+<p><strong>Completion Phase</strong> (30-35 minutes)</p>
+</li>
+<li>Close files</li>
+<li>Generate reports</li>
+<li>Set return codes</li>
+</ol>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>Main Control Paragraphs</h3>
+<h4><strong>MAIN-PROGRAM SECTION</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Primary control logic and initialization</li>
+<li><strong>Flow</strong>: </li>
+<li>Connect to SQL</li>
+<li>Restore screen and open initial files</li>
+<li>Validate loan record hasn't changed</li>
+<li>Call transaction processing routines</li>
+<li>Handle errors and exit processing</li>
+</ul>
+<h4><strong>UPDATE-TR1</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Update transaction file for GL entries</li>
+<li><strong>Flow</strong>:</li>
+<li>Open transaction file</li>
+<li>Get next available sequence number</li>
+<li>Create transaction record</li>
+<li>Write GL distribution entries</li>
+</ul>
+<h4><strong>UPDATE-LP1-FILE</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Create loan payment record</li>
+<li><strong>Flow</strong>:</li>
+<li>Move transaction data to LP record</li>
+<li>Set posting information (user, time, date)</li>
+<li>Handle special transaction processing</li>
+<li>Write payment record</li>
+</ul>
+<h4><strong>UPDATE-LN1-FILE</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Update loan master record</li>
+<li><strong>Flow</strong>:</li>
+<li>Calculate new balances</li>
+<li>Update payment history</li>
+<li>Set account status flags</li>
+<li>Handle payoff processing</li>
+</ul>
+<h4><strong>UPDATE-DS1-FILE</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Update dealer statistics</li>
+<li><strong>Flow</strong>:</li>
+<li>Read dealer statistics record</li>
+<li>Update volume and amount fields</li>
+<li>Handle commission calculations</li>
+<li>Write updated statistics</li>
+</ul>
+<h4><strong>UPDATE-TY1-FILE</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Update branch/type statistics</li>
+<li><strong>Flow</strong>:</li>
+<li>Update branch-level statistics</li>
+<li>Handle volume counters</li>
+<li>Update collected amounts</li>
+<li>Process delinquency statistics</li>
+</ul>
+<h3>Error Handling Paragraphs</h3>
+<h4><strong>LOAN-CHANGED-EXIT</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Handle loan record change conflicts</li>
+<li><strong>Trigger</strong>: When loan record modified by another process</li>
+<li><strong>Action</strong>: Set error message and exit</li>
+</ul>
+<h4><strong>IO-ERROR</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Handle file I/O errors</li>
+<li><strong>Trigger</strong>: Any file operation failure</li>
+<li><strong>Action</strong>: Set error code and terminate</li>
+</ul>
+<h4><strong>END-ROUTINE</strong></h4>
+<ul>
+<li><strong>Purpose</strong>: Clean shutdown processing</li>
+<li><strong>Flow</strong>: Close files, set return codes, exit</li>
+</ul>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Key Data Movement Patterns</h3>
+<h4><strong>Transaction Amount Distribution</strong></h4>
+<pre><code>LP-TRAMT (Input) 
+    ↓
+Validation &amp; Business Rules
+    ↓
+Distribution to:
+├── LP-APCUR (Current Balance)
+├── LP-APINT (Interest)
+├── LP-APLC (Late Charges)
+├── LP-APOTH (Other Charges)
+└── LP-APOT2 (Other 2 Charges)
+</code></pre>
+<h4><strong>Balance Update Flow</strong></h4>
+<pre><code>Original Balances (LN-REC)
+    ↓
+Payment Application
+    ↓
+New Balances:
+├── LN-CURBAL = LN-CURBAL - LP-APCUR
+├── LN-INTBAL = LN-INTBAL - LP-APINT
+├── LN-LCBAL = LN-LCBAL - LP-APLC
+├── LN-OTHBAL = LN-OTHBAL - LP-APOTH
+└── LN-OT2BAL = LN-OT2BAL - LP-APOT2
+</code></pre>
+<h4><strong>Statistical Update Flow</strong></h4>
+<pre><code>Transaction Data
+    ↓
+Branch Statistics (TY-FILE)
+    ↓
+Dealer Statistics (DS-FILE)
+    ↓
+Global Statistics (SP-FILE)
+</code></pre>
+<h3>Critical Data Dependencies</h3>
+<table>
+<thead>
+<tr>
+<th>Source Field</th>
+<th>Target Field(s)</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LP-TRCD</td>
+<td>Multiple validation flags</td>
+<td>Transaction type processing</td>
+</tr>
+<tr>
+<td>LP-TRAMT</td>
+<td>Balance calculations</td>
+<td>Amount distribution</td>
+</tr>
+<tr>
+<td>LN-PLCD</td>
+<td>PD-REC updates</td>
+<td>Payment due updates</td>
+</tr>
+<tr>
+<td>LN-OWNBR</td>
+<td>Inter-branch processing</td>
+<td>Branch-specific logic</td>
+</tr>
+<tr>
+<td>SP-* fields</td>
+<td>Business rule validation</td>
+<td>Parameter-driven processing</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Referenced Programs</h2>
+<p>LONPF2 integrates with numerous external programs and copy members:</p>
+<h3>Direct CALL Statements</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Called When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GETENV</strong></td>
+<td>Environment variable retrieval</td>
+<td>Initialization</td>
+</tr>
+<tr>
+<td><strong>CL/LEDGER</strong></td>
+<td>General ledger posting</td>
+<td>Transaction recording</td>
+</tr>
+<tr>
+<td><strong>LPSTAT-DISPLAY</strong></td>
+<td>Status display</td>
+<td>Screen updates</td>
+</tr>
+<tr>
+<td><strong>LPCERN</strong></td>
+<td>Interest calculation</td>
+<td>Interest bearing accounts</td>
+</tr>
+<tr>
+<td><strong>ADDONSPR</strong></td>
+<td>Addon processing</td>
+<td>Insurance/addon transactions</td>
+</tr>
+</tbody>
+</table>
+<h3>Copy Members (COPY Statements)</h3>
+<h4>File Definitions</h4>
+<table>
+<thead>
+<tr>
+<th>Copy Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIBLP/LPFSWK.CPY</td>
+<td>Work file control</td>
+</tr>
+<tr>
+<td>LIBLP/LPFDWK.CPY</td>
+<td>Work file data</td>
+</tr>
+<tr>
+<td>LIBLP/LP01*.CPY</td>
+<td>File record layouts</td>
+</tr>
+<tr>
+<td>LIBLP/LPWS*.CPY</td>
+<td>Working storage areas</td>
+</tr>
+</tbody>
+</table>
+<h4>Business Logic</h4>
+<table>
+<thead>
+<tr>
+<th>Copy Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIBLP/POSTDATE.CPY</td>
+<td>Date posting logic</td>
+</tr>
+<tr>
+<td>LIBLP/POSTDATEW.CPY</td>
+<td>Date posting work areas</td>
+</tr>
+<tr>
+<td>LIBLP/LPSRCD.CPY</td>
+<td>Source code handling</td>
+</tr>
+<tr>
+<td>LIBLP/ADDONSPR.CPY</td>
+<td>Addon processing</td>
+</tr>
+<tr>
+<td>LIBLP/LPPDUE.CPY</td>
+<td>Payment due logic</td>
+</tr>
+</tbody>
+</table>
+<h4>Calculation Routines</h4>
+<table>
+<thead>
+<tr>
+<th>Copy Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIBLP/LONPF.REV</td>
+<td>Reversal processing</td>
+</tr>
+<tr>
+<td>LIBLP/LPPOF2.CPY</td>
+<td>Payoff calculations</td>
+</tr>
+<tr>
+<td>LIBLP/LPWKLXE.CPY</td>
+<td>LXE work areas</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Validation Hierarchy</h3>
+<h4><strong>Level 1: Input Validation</strong></h4>
+<ul>
+<li>Parameter buffer validation</li>
+<li>Transaction code validation</li>
+<li>Amount field validation</li>
+<li>Date field validation</li>
+</ul>
+<h4><strong>Level 2: Business Rule Validation</strong></h4>
+<ul>
+<li>Loan status validation</li>
+<li>Transaction type compatibility</li>
+<li>Branch authority validation</li>
+<li>Amount limit validation</li>
+</ul>
+<h4><strong>Level 3: Data Integrity Validation</strong></h4>
+<ul>
+<li>Loan record consistency</li>
+<li>File lock validation</li>
+<li>Balance calculation validation</li>
+<li>Reference data validation</li>
+</ul>
+<h3>Error Processing Flow</h3>
+<pre><code>Error Detected
+    ↓
+Set ERRCD (Error Code)
+    ↓
+Set MESS (Error Message)
+    ↓
+PERFORM CONDITIONAL-SEND-MESS
+    ↓
+GO TO Appropriate Exit Point
+</code></pre>
+<h3>Error Recovery Mechanisms</h3>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Recovery Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File Lock</strong></td>
+<td>Retry with delay</td>
+</tr>
+<tr>
+<td><strong>Data Changed</strong></td>
+<td>Return error to caller</td>
+</tr>
+<tr>
+<td><strong>Invalid Input</strong></td>
+<td>Set error message, exit</td>
+</tr>
+<tr>
+<td><strong>I/O Error</strong></td>
+<td>Close files, terminate</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Common Error Conditions</h2>
+<h3>Transaction Validation Errors</h3>
+<table>
+<thead>
+<tr>
+<th>Error Code</th>
+<th>Message</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M</strong></td>
+<td>"LOAN HAS BEEN CHANGED, RE-INPUT CHANGES"</td>
+<td>Concurrent update detected</td>
+<td>Re-read loan and retry</td>
+</tr>
+<tr>
+<td><strong>X</strong></td>
+<td>"INVALID STATE PARAMETER RECORD"</td>
+<td>SP record missing/corrupt</td>
+<td>Check state parameter file</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td>File operation error</td>
+<td>I/O failure</td>
+<td>Check file status, retry</td>
+</tr>
+</tbody>
+</table>
+<h3>Business Rule Violations</h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Error Response</th>
+<th>Business Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Negative Balance</strong></td>
+<td>Warning message</td>
+<td>Depends on account type</td>
+</tr>
+<tr>
+<td><strong>Payoff with Balance</strong></td>
+<td>Adjustment required</td>
+<td>Must zero all balances</td>
+</tr>
+<tr>
+<td><strong>Invalid Transaction Type</strong></td>
+<td>Reject transaction</td>
+<td>Transaction code validation</td>
+</tr>
+<tr>
+<td><strong>Insufficient Payment</strong></td>
+<td>Accept with partial application</td>
+<td>Based on BR settings</td>
+</tr>
+</tbody>
+</table>
+<h3>File Processing Errors</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Error Condition</th>
+<th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LN1-FILE</strong></td>
+<td>Record locked</td>
+<td>Wait and retry</td>
+</tr>
+<tr>
+<td><strong>TR1-FILE</strong></td>
+<td>Sequence exhausted</td>
+<td>Reset sequence</td>
+</tr>
+<tr>
+<td><strong>LP1-FILE</strong></td>
+<td>Duplicate key</td>
+<td>Increment sequence</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4><strong>Working Storage Layout</strong></h4>
+<pre><code class="language-cobol">WORKING-STORAGE SECTION.
+01  HOLD-FIELDS.
+    05  HOLD-LP-TRCD        PIC XX.
+    05  HOLD-LP-APCUR       PIC S9(7)V99 COMP-3.
+    05  HOLD-LP-APINT       PIC S9(7)V99 COMP-3.
+    05  HOLD-DUEDATE        PIC 9(6).
+    05  HOLD-PDTH-DATE      PIC 9(6).
+
+01  CALCULATION-FIELDS.
+    05  ONE                 PIC S9 VALUE 0.
+    05  ONE-INS-RB-CAN      PIC S9.
+    05  TOTAL-REB-AMOUNTS   PIC S9(7)V99 COMP-3.
+
+01  FLAGS-AND-SWITCHES.
+    05  PWA-POOL-CHANGE-SW  PIC X.
+        88  PWA-POOL-HAS-BEEN-CHANGED  VALUE &quot;C&quot;.
+        88  PWA-POOL-PAYMENT-MADE      VALUE &quot;P&quot;.
+</code></pre>
+<h4><strong>File Processing Logic</strong></h4>
+<h5><strong>File Update Order (Critical Sequence)</strong></h5>
+<ol>
+<li><strong>BW1-FILE</strong> - Borrower records</li>
+<li><strong>CA1-FILE</strong> - Cash drawer</li>
+<li><strong>LM1-FILE</strong> - Loan memo (conditional)</li>
+<li><strong>DS1-FILE</strong> - Dealer statistics</li>
+<li><strong>TY1-FILE</strong> - Branch/type statistics</li>
+<li><strong>LN1-FILE</strong> - Loan master</li>
+<li><strong>LT1-FILE</strong> - Loan trailer (addons)</li>
+<li><strong>TR1-FILE</strong> - Transaction/GL</li>
+<li><strong>DT1-FILE</strong> - Detail transaction</li>
+<li><strong>LP1-FILE</strong> - Loan payment</li>
+</ol>
+<h5><strong>Key Algorithms</strong></h5>
+<h6><strong>Payoff Detection Algorithm</strong></h6>
+<pre><code class="language-cobol">IF LP-CURBAL = 0
+   IF LP-OTHBAL = 0
+      IF LP-OT2BAL = 0
+         IF LP-INTBAL = 0
+            IF LP-LCBAL = 0
+               MOVE -1 TO ONE.  * Payoff indicator
+</code></pre>
+<h6><strong>Reversal Processing Algorithm</strong></h6>
+<pre><code class="language-cobol">IF LP-TRCD = &quot;RV&quot;
+   MOVE +1 TO ONE-INS-RB-CAN
+   PERFORM UPDATE-LP-REVERSE
+   * Reverse all previous transaction effects
+</code></pre>
+<h6><strong>Balance Calculation Algorithm</strong></h6>
+<pre><code class="language-cobol">COMPUTE LN-CURBAL = LN-CURBAL - LP-APCUR
+COMPUTE LN-INTBAL = LN-INTBAL - LP-APINT
+COMPUTE LN-LCBAL = LN-LCBAL - LP-APLC
+COMPUTE LN-OTHBAL = LN-OTHBAL - LP-APOTH
+COMPUTE LN-OT2BAL = LN-OT2BAL - LP-APOT2
+</code></pre>
+<h3>File Handling</h3>
+<h4><strong>Dynamic File Opening</strong></h4>
+<pre><code class="language-cobol">PERFORM OPEN-LN1-FILE
+PERFORM READ-LN1-FILE
+IF IO-FG NOT = 0
+   GO TO IO-ERROR
+</code></pre>
+<h4><strong>Transaction Sequencing</strong></h4>
+<pre><code class="language-cobol">PERFORM NEXT-AVAIL-SEQ
+MOVE NEXT-SEQ TO LP-SEQNO
+MOVE NEXT-SEQ TO TR-SEQNO
+</code></pre>
+<h4><strong>Conditional Updates</strong></h4>
+<pre><code class="language-cobol">IF NOT (LP-TRCD = &quot;JD&quot; OR &quot;PL&quot; OR &quot;P2&quot; OR &quot;P3&quot;
+                       OR &quot;P4&quot; OR &quot;P5&quot; OR &quot;PI&quot;
+                       OR &quot;SP&quot; OR &quot;DC&quot; OR &quot;ED&quot;)
+   PERFORM UPDATE-BW1-FILE
+</code></pre>
+<hr />
+<h2>Integration Points</h2>
+<h3>External System Interfaces</h3>
+<h4><strong>APIPAY Integration</strong></h4>
+<ul>
+<li><strong>Entry Point</strong>: Called from APIPAY for transaction processing</li>
+<li><strong>Data Exchange</strong>: Transaction parameters via UPDATE-BUF</li>
+<li><strong>Return Values</strong>: ERRCD and MESS fields</li>
+</ul>
+<h4><strong>General Ledger Interface</strong></h4>
+<ul>
+<li><strong>Program</strong>: CL/LEDGER</li>
+<li><strong>Purpose</strong>: Post GL entries for transactions</li>
+<li><strong>Data</strong>: TR-REC with account distributions</li>
+</ul>
+<h4><strong>Batch Processing Interface</strong></h4>
+<ul>
+<li><strong>Entry</strong>: LONPW batch payment processing</li>
+<li><strong>Mode</strong>: Batch update mode (HOLD-BP-TRCD)</li>
+<li><strong>Validation</strong>: Reduced validation for batch efficiency</li>
+</ul>
+<h3>Database Interactions</h3>
+<h4><strong>SQL Connectivity</strong></h4>
+<pre><code class="language-cobol">PERFORM SQL-CONNECT
+</code></pre>
+<h4><strong>File Access Patterns</strong></h4>
+<ul>
+<li><strong>Read-Modify-Write</strong>: All master files</li>
+<li><strong>Write-Only</strong>: Transaction audit files</li>
+<li><strong>Read-Only</strong>: Parameter and control files</li>
+</ul>
+<h3>Inter-Program Communication</h3>
+<h4><strong>Parameter Passing</strong></h4>
+<pre><code class="language-cobol">CALL &quot;CL/LEDGER&quot; USING LC-REC TR-REC GL-PARAMS
+</code></pre>
+<h4><strong>Common Data Areas</strong></h4>
+<ul>
+<li>Global parameters (GP-*)</li>
+<li>Branch parameters (BR-*)</li>
+<li>State parameters (SP-*)</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Primary Files (Must Exist)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Update Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LN1-FILE</strong></td>
+<td>Loan Master Records</td>
+<td>I-O</td>
+<td>Read-Modify-Write</td>
+</tr>
+<tr>
+<td><strong>LP1-FILE</strong></td>
+<td>Loan Payment Records</td>
+<td>Output</td>
+<td>Write-Only</td>
+</tr>
+<tr>
+<td><strong>TR1-FILE</strong></td>
+<td>Transaction/GL Records</td>
+<td>Output</td>
+<td>Write-Only</td>
+</tr>
+<tr>
+<td><strong>SP1-FILE</strong></td>
+<td>State Parameters</td>
+<td>Input</td>
+<td>Read-Only</td>
+</tr>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch Parameters</td>
+<td>Input</td>
+<td>Read-Only</td>
+</tr>
+</tbody>
+</table>
+<h3>Statistical Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Update Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TY1-FILE</strong></td>
+<td>Branch Statistics</td>
+<td>I-O</td>
+<td>Every transaction</td>
+</tr>
+<tr>
+<td><strong>DS1-FILE</strong></td>
+<td>Dealer Statistics</td>
+<td>I-O</td>
+<td>Dealer transactions</td>
+</tr>
+<tr>
+<td><strong>BW1-FILE</strong></td>
+<td>Borrower Records</td>
+<td>I-O</td>
+<td>Customer updates</td>
+</tr>
+</tbody>
+</table>
+<h3>Supporting Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Conditional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CA1-FILE</strong></td>
+<td>Cash Drawer</td>
+<td>I-O</td>
+<td>Cash transactions</td>
+</tr>
+<tr>
+<td><strong>LM1-FILE</strong></td>
+<td>Loan Memos</td>
+<td>Output</td>
+<td>Memo generation</td>
+</tr>
+<tr>
+<td><strong>PD1-FILE</strong></td>
+<td>Payment Due</td>
+<td>I-O</td>
+<td>Payment due updates</td>
+</tr>
+<tr>
+<td><strong>LT1-FILE</strong></td>
+<td>Loan Trailers</td>
+<td>I-O</td>
+<td>Addon transactions</td>
+</tr>
+</tbody>
+</table>
+<h3>Copy Member Dependencies</h3>
+<h4><strong>Critical Copy Members</strong></h4>
+<pre><code class="language-cobol">COPY &quot;LIBLP/LPFSWK.CPY&quot;      * Work file control
+COPY &quot;LIBLP/LPFDWK.CPY&quot;      * Work file data
+COPY &quot;LIBLP/LP01LN.CPY&quot;      * Loan record layout
+COPY &quot;LIBLP/LP01LP.CPY&quot;      * Payment record layout
+COPY &quot;LIBLP/LP01TR.CPY&quot;      * Transaction record layout
+</code></pre>
+<h4><strong>Parameter Copy Members</strong></h4>
+<pre><code class="language-cobol">COPY &quot;LIBLP/LP01SP.CPY&quot;      * State parameters
+COPY &quot;LIBGB/GB01BR.CPY&quot;      * Branch parameters
+COPY &quot;LIBGB/GB01GB.CPY&quot;      * Global parameters
+</code></pre>
+<h3>Environment Dependencies</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FIL</strong></td>
+<td>Data file path</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>GPENV</strong></td>
+<td>Global environment</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>USER-PID</strong></td>
+<td>User identification</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><a href="Diagrams/LONPF2_Call_Graph.mmd">Call Graph Diagram</a></p>
+<h3>Primary Control Flow</h3>
+<pre><code>MAIN-PROGRAM SECTION
+├── SQL-CONNECT
+├── GET-GPENV
+├── RESTORE-SCREEN
+├── OPEN-LN1-FILE
+├── READ-LN1-FILE
+├── GET-LC
+├── GET-CON-REC-PRIOR-LNUPD
+├── GET-UNEARN-STATS-PRIOR-LNUPD
+├── PAID-THRU-CALCULATION
+├── UPDATE-LP-REVERSE (if RV)
+├── UPDATE-BW1-FILE
+├── UPDATE-CA1-FILE
+├── UPDATE-DS1-FILE
+├── UPDATE-TY1-FILE
+├── UPDATE-LN1-FILE
+├── UPDATE-LT1-FILE
+├── UPDATE-TR1
+├── CHECK-UPDATE
+└── END-ROUTINE
+</code></pre>
+<h3>File Update Hierarchy</h3>
+<pre><code>UPDATE-BW1-FILE
+├── OPEN-BW1-FILE
+├── READ-BW1-FILE
+├── UPDATE-BW1-CONT
+└── CLOSE-BW1-FILE
+
+UPDATE-DS1-FILE
+├── UPDATE-DS1-CHECK-EXISTS
+├── DS1-UPDATE-RESERVE-BAL
+├── DS1-COMPUTE-PART-RC-AMT
+└── UPDATE-DS1-SXSVSS
+
+UPDATE-TY1-FILE
+├── OPEN-TY1-FILE
+├── READ-TY1-FILE
+├── UPDATE-TY1-FILE-DLR-RESV
+└── UPDATE-TY1-POST-BR
+
+UPDATE-LN1-FILE
+├── CALCULATE-NEW-BALANCES
+├── UPDATE-PAYMENT-HISTORY
+├── SET-ACCOUNT-FLAGS
+└── HANDLE-PAYOFF-PROCESSING
+</code></pre>
+<h3>Transaction Processing Paragraphs</h3>
+<pre><code>UPDATE-TR1
+├── UPDATE-TR1-OPEN
+├── NEXT-AVAIL-SEQ
+├── CREATE-TR-RECORD
+└── WRITE-TR1-FILE
+
+UPDATE-LP1-FILE
+├── UPDATE-LP1-REBATES
+├── SET-POSTING-INFO
+├── HANDLE-SPECIAL-PROCESSING
+└── WRITE-LP1-FILE
+
+CONDITIONAL-SEND-MESS
+├── FORMAT-MESSAGE
+├── DISPLAY-MESSAGE
+└── LOG-MESSAGE
+</code></pre>
+<h3>Specialized Processing Paragraphs</h3>
+<pre><code>UPDATE-LP-REVERSE
+├── VALIDATE-REVERSAL
+├── LOCATE-ORIGINAL-TRANSACTION
+├── REVERSE-AMOUNTS
+└── UPDATE-REVERSE-FLAGS
+
+CHECK-UPDATE
+├── VALIDATE-CHECK-REQUEST
+├── CREATE-CHECK-RECORD
+├── UPDATE-CHECK-SEQUENCE
+└── GENERATE-CHECK-FORM
+
+SETRP (Receipt Printing)
+├── FORMAT-RECEIPT-DATA
+├── QUEUE-PRINT-REQUEST
+└── UPDATE-PRINT-FLAGS
+</code></pre>
+<hr />
+<p><em>This documentation provides a comprehensive overview of the LONPF2 program for developers and system administrators unfamiliar with COBOL or the loan processing system. Each section can be expanded based on specific implementation needs and business requirements.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

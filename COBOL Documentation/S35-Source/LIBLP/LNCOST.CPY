@@ -1,0 +1,53 @@
+      * COPYMEMBER: LIBLP/LNCOST
+      **************************************************************************
+      *         DETERMINE LOAN COST AMOUNT LOANCOST(6)
+      *
+      *   NAME: LNCOST
+      *   DESC: THIS ROUTINE DETERMINES THE LOAN COST [ ANTICERN(6) ]
+      *         BASED ON SP-LNCOST-FRMLA.
+      *
+      *   IN  : LNCOST-LNAMT
+      *         LNCOST-DLPARVHELD
+      *   OUT : LNCOST-LOANCOST
+      *
+      *   USED: LONPB2, LONPC2 (LOAN UPDATES)
+      *   COPY: LNCOSTW
+      * REV:
+      *  JTG 010808 ADDED SP-LNCOST-FRMLA-VALID 'P' AMORTIZED
+      *             PARTICIPATION EXPENSE                         REGACC PR#1559
+      *  JTG 030620 ADDED SP-LNCOST-FRMLA-VALID '3' AMORTIZED PARTIC.PAID
+      *             ADDED LOGIC FOR IB SALES FINANCE AMORTIZATED PARTICIPATION
+      *             RESERVE PAID EXPENSE, DIFFERENCE BETWEEN A BUY RATE
+      *             AND THE CONTRACT RATE                WISCONSIN FINANCE #2049
+      *   CS 110407 ADD SP-LNCOST-FRMLA '4', '4' WILL TAKE THE FLAT AMOUNT
+      *             IN SP-LNCOST-AMT PLUS TAKE THE PARTICIPATION PAID AND
+      *             MOVE TO LN-ANTICERN(3) ALLOWING FOR AMORTIZATION OF
+      *             PARTICIPATION EXPENSE   REGMGM PR#3765
+      * KEC 131106 {PR#345} REGIONAL ACCEPTANCE <A15> [KEVIN MULLEN]
+      *            ADD SP-LNCOST-FRMLA '5', '5' WILL TAKE THE FLAT AMOUNT
+      *             IN SP-LNCOST-AMT PLUS TAKE THE PARTICIPATION PAID AND
+      *             MOVE TO LN-ANTICERN(4) ALLOWING FOR AMORTIZATION OF
+      *             PARTICIPATION EXPENSE.  BASED ON SP-LNCOST-FRMLA '4'
+      **************************************************************************
+       COMPUTE-LOANCOST SECTION.
+           MOVE 0 TO LNCOST-LOANCOST.
+
+           IF SP-LNCOST-FRMLA = " "
+              NEXT SENTENCE
+           ELSE
+           IF SP-LNCOST-FRMLA = "A"
+              COMPUTE LNCOST-LOANCOST ROUNDED =
+                  LNCOST-LNAMT * SP-LNCOST-AMT / 100
+           ELSE
+           IF SP-LNCOST-FRMLA = "F" OR "4" OR "5"
+              MOVE SP-LNCOST-AMT     TO LNCOST-LOANCOST
+           ELSE
+           IF SP-LNCOST-FRMLA = "P"
+              MOVE LNCOST-DLPARVHELD TO LNCOST-LOANCOST
+           ELSE
+           IF SP-LNCOST-FRMLA = "3"
+              MOVE LNCOST-DLPARVPAID TO LNCOST-LOANCOST.
+
+       EXIT-COMPUTE-LOANCOST.
+           EXIT.
+

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCR-MONTHS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCR-MONTHS Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-INCR-MONTHS Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-INCR-MONTHS.cpy</code><br />
+<strong>Program ID:</strong> C-INCR-MONTHS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#functional-description">Functional Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-INCR-MONTHS</strong> module is a specialized date arithmetic utility within the APIPAY system that performs precise month-based date calculations. This module adds or subtracts a specified number of months to/from a given date, handling complex calendar scenarios including varying month lengths, leap years, and end-of-month adjustments.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-INCR-MONTHS</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Month-based date arithmetic with intelligent day adjustment</li>
+<li><strong>Location</strong>: APIPAY/C-INCR-MONTHS.cpy</li>
+<li><strong>Dependencies</strong>: C-CALL-NEWDATE (for date validation and adjustment)</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-INCR-MONTHS serves as the month arithmetic engine for the APIPAY system, enabling precise date calculations by adding or subtracting months while handling the complexities of varying month lengths. The module intelligently manages scenarios where the target month has fewer days than the original date.</p>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Intelligent Month Arithmetic</strong>: Handles month addition/subtraction with year rollover</li>
+<li><strong>Day Adjustment Logic</strong>: Automatically adjusts days when target month is shorter</li>
+<li><strong>Year Boundary Management</strong>: Seamlessly crosses year boundaries</li>
+<li><strong>Large Increment Support</strong>: Efficiently processes increments spanning multiple years</li>
+<li><strong>End-of-Month Intelligence</strong>: Properly handles last-day-of-month scenarios</li>
+</ol>
+<h3>Calendar Complexity Handling</h3>
+<ul>
+<li><strong>Varying Month Lengths</strong>: January (31) → February (28/29) adjustments</li>
+<li><strong>Leap Year Considerations</strong>: February 29 → non-leap year February 28</li>
+<li><strong>Year Rollover</strong>: December + 1 month = January of next year</li>
+<li><strong>Negative Increments</strong>: January - 1 month = December of previous year</li>
+</ul>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-UP-WORK</strong>: Number of months to increment (positive or negative)</li>
+<li><strong>WS-NDTE-CCYY-S</strong>: Input year (4-digit)</li>
+<li><strong>WS-NDTE-MM-S</strong>: Input month (2-digit)</li>
+<li><strong>WS-NDTE-DD-S</strong>: Input day (2-digit)</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-NDTE-CCYY-S</strong>: Updated year (4-digit)</li>
+<li><strong>WS-NDTE-MM-S</strong>: Updated month (2-digit)</li>
+<li><strong>WS-NDTE-DD-S</strong>: Updated day (2-digit, adjusted if necessary)</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Year and Month Calculation</h4>
+<pre><code class="language-cobol">DIVIDE WS-UP-WORK BY 12 GIVING WS-DIV-RESULT REMAINDER WS-MOD-12
+</code></pre>
+<ul>
+<li>Separates increment into year and month components</li>
+<li>Handles increments larger than 12 months efficiently</li>
+</ul>
+<h4>Phase 2: Month Addition</h4>
+<pre><code class="language-cobol">ADD WS-MOD-12 TO WS-NDTE-MM-S
+ADD WS-DIV-RESULT TO WS-NDTE-CCYY-S
+</code></pre>
+<ul>
+<li>Applies month increment to current month</li>
+<li>Applies year increment to current year</li>
+</ul>
+<h4>Phase 3: Boundary Adjustments</h4>
+<ul>
+<li><strong>Underflow Handling</strong>: Month &lt; 1 → Previous year, December</li>
+<li><strong>Overflow Handling</strong>: Month &gt; 12 → Next year, January</li>
+</ul>
+<h4>Phase 4: Day Validation and Adjustment</h4>
+<ul>
+<li>Calls C-CALL-NEWDATE for final validation</li>
+<li>Automatically adjusts invalid day combinations</li>
+<li>Preserves end-of-month semantics where possible</li>
+</ul>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-INCR-MONTHS-WORK-AREA
+├── WS-UP-WORK               (Input month increment)
+├── WS-DIV-RESULT           (Years portion of increment)
+├── WS-MOD-12               (Months portion of increment)
+├── WS-NDTE-CCYY-S          (Working year)
+├── WS-NDTE-MM-S            (Working month)
+├── WS-NDTE-DD-S            (Working day)
+└── DATER-ACTION-CODE       (Action flag for NEWDATE)
+</code></pre>
+<h3>Algorithm Components</h3>
+<ol>
+<li><strong>Division Operation</strong>: Separates years from months</li>
+<li><strong>Modulo Arithmetic</strong>: Extracts remaining months</li>
+<li><strong>Boundary Logic</strong>: Handles month/year overflow/underflow</li>
+<li><strong>Validation Call</strong>: Ensures final date validity</li>
+</ol>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Input Date + Month Increment] → [Divide by 12] → [Apply Years/Months] → 
+[Boundary Adjustments] → [Day Validation] → [Output Date]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>Payment scheduling</strong>: Monthly payment calculations</li>
+<li><strong>Interest accrual</strong>: Monthly compounding periods</li>
+<li><strong>Loan amortization</strong>: Payment date calculations</li>
+<li><strong>Report generation</strong>: Monthly reporting cycles</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li><strong>C-CALL-NEWDATE</strong>: Final date validation and adjustment</li>
+<li>Date validation utilities</li>
+<li>Calendar boundary management</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Boundary Conditions</h3>
+<ol>
+<li><strong>Month Underflow</strong>: Handled by year decrement and month adjustment</li>
+<li><strong>Month Overflow</strong>: Handled by year increment and month adjustment</li>
+<li><strong>Invalid Day Combinations</strong>: Resolved by C-CALL-NEWDATE</li>
+<li><strong>Large Increments</strong>: Efficiently processed through division logic</li>
+</ol>
+<h3>Date Adjustment Examples</h3>
+<ul>
+<li>January 31 + 1 month → February 28/29 (depending on leap year)</li>
+<li>March 31 + 1 month → April 30 (April has only 30 days)</li>
+<li>February 29 + 12 months → February 28 (if target year is not leap year)</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) time complexity through division arithmetic</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Large Increments</strong>: Efficiently handles multi-year increments</li>
+<li><strong>Validation Cost</strong>: Single call to C-CALL-NEWDATE per operation</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Month Addition</h3>
+<pre><code class="language-cobol">MOVE 3 TO WS-UP-WORK
+MOVE 2023 TO WS-NDTE-CCYY-S
+MOVE 10 TO WS-NDTE-MM-S
+MOVE 15 TO WS-NDTE-DD-S
+PERFORM C-INCR-MONTHS
+* Result: 2024-01-15 (October 15, 2023 + 3 months)
+</code></pre>
+<h3>Month Subtraction</h3>
+<pre><code class="language-cobol">MOVE -6 TO WS-UP-WORK
+MOVE 2024 TO WS-NDTE-CCYY-S
+MOVE 03 TO WS-NDTE-MM-S
+MOVE 31 TO WS-NDTE-DD-S
+PERFORM C-INCR-MONTHS
+* Result: 2023-09-30 (March 31, 2024 - 6 months, adjusted for September's 30 days)
+</code></pre>
+<h3>End-of-Month Handling</h3>
+<pre><code class="language-cobol">MOVE 1 TO WS-UP-WORK
+MOVE 2024 TO WS-NDTE-CCYY-S
+MOVE 01 TO WS-NDTE-MM-S
+MOVE 31 TO WS-NDTE-DD-S
+PERFORM C-INCR-MONTHS
+* Result: 2024-02-29 (January 31 + 1 month, adjusted for February leap year)
+</code></pre>
+<h2>Historical Context</h2>
+<h3>Legacy Considerations</h3>
+<p>The module contains commented-out code from earlier implementations that handled 2-digit years:
+- Original Y2K transition logic
+- 50-year pivot point handling
+- Century boundary management</p>
+<h3>Current Implementation</h3>
+<ul>
+<li>Full 4-digit year support</li>
+<li>Removed year range limitations</li>
+<li>Enhanced day validation through C-CALL-NEWDATE integration</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Modification History</h3>
+<ul>
+<li>Original 2-digit year implementation</li>
+<li>Y2K compliance updates</li>
+<li>4-digit year conversion</li>
+<li>Integration with C-CALL-NEWDATE for validation</li>
+<li>Removal of year range restrictions</li>
+</ul>
+<h3>Code Quality</h3>
+<ul>
+<li>Well-documented boundary handling</li>
+<li>Clear separation of concerns</li>
+<li>Efficient arithmetic approach</li>
+<li>Robust validation integration</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE Documentation</a> - Date validation and adjustment</li>
+<li><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS Documentation</a> - Day-based increments</li>
+<li><a href="C-INCR-HALF-MONTHS_Documentation.html">C-INCR-HALF-MONTHS Documentation</a> - Half-month increments</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-INCR-MONTHS_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-INCR-MONTHS_Arithmetic_Logic.mmd">Month Arithmetic Logic</a></li>
+<li><a href="../Diagrams/C-INCR-MONTHS_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

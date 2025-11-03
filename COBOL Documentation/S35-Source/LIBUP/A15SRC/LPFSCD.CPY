@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSCD
+           SELECT CD-FILE ASSIGN TO CD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY CD1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXCA
+           SELECT XCA-FILE ASSIGN TO XCA-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XCA-KEY
+                  FILE STATUS FILE-STAT.

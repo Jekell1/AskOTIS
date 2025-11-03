@@ -1,0 +1,44 @@
+gantt
+    title LONPF2 Batch Processing Timeline
+    dateFormat  HH:mm
+    axisFormat %H:%M
+    
+    section Initialization
+    SQL Connect           :init1, 00:00, 00:02
+    Environment Setup     :init2, after init1, 00:03
+    File Opening          :init3, after init2, 00:05
+    Parameter Reading     :init4, after init3, 00:02
+    
+    section Validation Phase  
+    Input Validation      :val1, after init4, 00:03
+    Loan Record Check     :val2, after val1, 00:02
+    Business Rule Check   :val3, after val2, 00:05
+    Transaction Validation:val4, after val3, 00:03
+    
+    section Transaction Processing
+    Amount Distribution   :proc1, after val4, 00:04
+    Balance Calculations  :proc2, after proc1, 00:03
+    Status Determination  :proc3, after proc2, 00:02
+    Special Processing    :proc4, after proc3, 00:06
+    
+    section File Updates
+    BW1 Borrower Update   :file1, after proc4, 00:02
+    CA1 Cash Update       :file2, after file1, 00:01
+    DS1 Dealer Stats      :file3, after file2, 00:03
+    TY1 Branch Stats      :file4, after file3, 00:02
+    LN1 Loan Master       :crit, file5, after file4, 00:04
+    LT1 Loan Trailers     :file6, after file5, 00:02
+    TR1 Transaction GL    :crit, file7, after file6, 00:03
+    LP1 Payment Record    :crit, file8, after file7, 00:02
+    
+    section Finalization
+    Audit Trail Creation  :final1, after file8, 00:02
+    Check Processing      :final2, after final1, 00:03
+    File Closing          :final3, after final2, 00:02
+    Return Code Setting   :final4, after final3, 00:01
+    
+    section Error Recovery
+    Error Detection       :err1, 00:15, 00:16
+    Rollback Processing   :err2, after err1, 00:03
+    Error Logging         :err3, after err2, 00:01
+    Recovery Procedures   :err4, after err3, 00:02

@@ -1,0 +1,66 @@
+{
+  "question": "What programs use SCREEN.CPY",
+  "scope": "ui",
+  "expanded_query": "CPY SCREEN What programs use",
+  "aliases": {},
+  "answer_outline": "- Describe navigation path / screen sequence.\n- Highlight guard or conditional transitions.\n- List key screens involved.\n- Cite evidence snippets with program + line references.",
+  "diagram": "flowchart TD\n  REC-PERIOD--> SCREENIO\n  REC-PERIOD--> BR-01\n  DT-02--> SEND-MESS\n  FILE-CONTROL--> CLOSE-BR-FILE\n  DT-02--> ENDIT\n  BR-01--> REC-PERIOD\n  ACCEPT-SCREEN-DATA--> LOG-CHANGES\n  ACCEPT-SCREEN-DATA--> START-GT2-FILE\n  FILE-CONTROL--> END-ROUTINE\n  DT-01--> REC-PERIOD\n  DT-02--> DT-01\n  BR-02--> BR-01\n  ACCEPT-SCREEN-DATA--> SQL-SET-DATE\n  READ-GLTRANS--> END-UPDATE-GL\n  EXIT--> FORM-PROGX\n  FILE-CONTROL--> READ-BR-FILE\n  REC-PERIOD--> CONVERT-YYYYMMDD-TO-MMDDYY\n  ACCEPT-SCREEN-DATA--> BR-01\n  ACCEPT-SCREEN-DATA--> CONVERT-YYYYMMDD-TO-MMDDYY\n  UPDATE-GLMASTER--> CALL-WRFORM\n  EXIT--> VERIFY-PASSWORD\n  ALL-DT--> SCREENIO\n  BR-01--> ALL-BR\n  BR-01--> ENDIT\n  READ-GLTRANS--> READ-GT2-FILE-NEXT\n  UPDATE-GLMASTER--> SEND-MESS\n  FILE-CONTROL--> OPEN-BR-FILE\n  BR-02--> SCREENIO\n  ACCEPT-SCREEN-DATA--> SCREENIO\n  ACCEPT-SCREEN-DATA--> CALL-WRFORM\n  REWRITE-GLTRANS--> REWRITE-GT2-FILE\n  REWRITE-GLMASTER--> REWRITE-GL1-FILE\n  REC-PERIOD--> ENDIT\n  BR-01--> SCREENIO\n  ACCEPT-SCREEN-DATA--> REC-PERIOD\n  UPDATE-GLMASTER--> READ-GLTRANS\n  FILE-CONTROL--> INITIALIZATION\n  REC-PERIOD--> SEND-WIMESS\n  VERIFY-DATE-RANGE--> DT-01\n  BR-02--> REC-PERIOD\n  ALL-BR--> SCREENIO\n  ACCEPT-SCREEN-DATA--> EXIT-INITIALIZATION\n  UPDATE-GLMASTER--> CONVERT-YYYYMMDD-TO-YYMMDD\n  END-EVALUATE--> CLOSE-GT2-FILE\n  FILE-CONTROL--> FORM-RESET\n  BR-01--> DT-01\n  END-EVALUATE--> CLOSE-BR-FILE\n  END-RUN--> CLOSE-FILES\n  FILE-CONTROL--> SEND-MESS\n  DT-01--> SCREENIO\n  VERIFY-DATE-RANGE--> OUT-OF-PERIOD\n  ACCEPT-SCREEN-DATA--> OPEN-GT2-FILE\n  EXIT--> SEND-MESS\n  END-EVALUATE--> CLOSE-GL1-FILE\n  FILE-CONTROL--> SQL-CONNECT\n  FILE-CONTROL--> GET-GPENV\n  BR-02--> ENDIT\n  ACCEPT-SCREEN-DATA--> OPEN-GL1-FILE\n  REWRITE-GLMASTER--> READ-GLTRANS\n  FILE-CONTROL--> UPDATE-GL1-FILE\n  DT-01--> ALL-DT\n  DT-01--> ENDIT\n  DT-02--> SCREENIO\n  DT-02--> REC-PERIOD\n  DT-02--> VERIFY-DATE-RANGE\n  BR-02--> SEND-MESS\n  BR-02--> ACCEPT-SCREEN-DATA\n  ACCEPT-SCREEN-DATA--> ENDIT\n  UPDATE-GLMASTER--> READ-GL1-FILE\n  EXIT--> CALL-WRFORM",
+  "evidence": [
+    {
+      "index": "new_cobol_screen_nodes",
+      "id": "F69930013A8F50B98E2280DCC89CE42A43FDB0BC",
+      "path": "F69930013A8F50B98E2280DCC89CE42A43FDB0BC",
+      "line": null,
+      "snippet": "Screen F69930013A8F50B98E2280DCC89CE42A43FDB0BC_SCREEN_1; fields=0; actions=0; transitions=5; sample_trans=CLOSE-WK-FILE,OPEN-WK-FILE,READ-WK-FILE,REWRITE-WK-FILE,WRITE-WK-FILE"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "GLUPD",
+      "path": "GLUPD",
+      "line": null,
+      "snippet": "Paragraphs=42; edges=70; depth=7; cycles=Y; entries=24; exits=23; fanout_max=12; risk=0.805. Entry: STOP-RUN.... High fanout: ACCEPT-SCREEN-DATA (12)."
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "id": "B92DFFF39DAA50E1415285E0DB0CC9B1AA3D7770",
+      "path": "B92DFFF39DAA50E1415285E0DB0CC9B1AA3D7770",
+      "line": null,
+      "snippet": "Screen B92DFFF39DAA50E1415285E0DB0CC9B1AA3D7770_SCREEN_1; fields=2; actions=0; transitions=0"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "PAYOFX",
+      "path": "PAYOFX",
+      "line": null,
+      "snippet": "Paragraphs=17; edges=24; depth=3; cycles=N; entries=15; exits=13; fanout_max=15; risk=0.445. Entry: SETUP-LINK-INFO.... High fanout: MAIN-INIT-SCREEN (15)."
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "id": "2CCBBA75AC38FFBE377A61D0E675CC1BFFD0A804",
+      "path": "2CCBBA75AC38FFBE377A61D0E675CC1BFFD0A804",
+      "line": null,
+      "snippet": "Screen 2CCBBA75AC38FFBE377A61D0E675CC1BFFD0A804_SCREEN_1; fields=0; actions=0; transitions=5; sample_trans=CLOSE-WK-FILE,OPEN-WK-FILE,READ-WK-FILE,REWRITE-WK-FILE,WRITE-WK-FILE"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "GTFLAG",
+      "path": "GTFLAG",
+      "line": null,
+      "snippet": "Paragraphs=39; edges=51; depth=8; cycles=Y; entries=22; exits=21; fanout_max=9; risk=0.78. Entry: STOP-RUN.... High fanout: ACCEPT-SCREEN-DATA (9)."
+    }
+  ],
+  "meta": {
+    "ts": 1759097695.9246078,
+    "k": 6,
+    "candidate_indexes": [
+      "ui_paths",
+      "screen_nodes",
+      "menu_trees",
+      "program_flows"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

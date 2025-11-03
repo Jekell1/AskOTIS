@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXTRJ
+           SELECT XTRJ-FILE ASSIGN TO XTRJ-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XTRJ-KEY
+                  FILE STATUS FILE-STAT.

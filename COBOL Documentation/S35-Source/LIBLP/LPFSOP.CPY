@@ -1,0 +1,5 @@
+      * COPYMEMBER: LIBLP/LPFSOP
+           SELECT OP-FILE ASSIGN OPEN-PATH
+                  ORGANIZATION SEQUENTIAL
+                  LOCK MODE AUTOMATIC
+                  FILE STATUS FILE-STAT.

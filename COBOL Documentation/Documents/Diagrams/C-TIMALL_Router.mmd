@@ -1,0 +1,22 @@
+graph TD
+    A[C-TIMALL Section] --> B{Evaluate TA-YRTYPE}
+    B -->|358 or 360| C[Perform C-TIM360-358]
+    B -->|361| D[Perform C-TIM361]
+    B -->|362| E[Perform C-TIM362]
+    B -->|365 or 367| F[Perform C-TIM365-367]
+    B -->|998 or 999| G[Perform C-TIM999-998]
+    
+    subgraph "Year Type Categories"
+    C --> C1[30-Day Month Methods]
+    D --> D1[360+ Day Methods]
+    E --> D1
+    F --> F1[Actual Calendar Methods]
+    G --> G1[Regulatory/Unit Period Methods]
+    end
+    
+    subgraph "Business Applications"
+    C1 --> BA1[Standard Financial Calculations]
+    D1 --> BA2[Specialized Payment Calculations]
+    F1 --> BA3[Actual Calendar-Based Calculations]
+    G1 --> BA4[Regulatory Compliance Calculations]
+    end

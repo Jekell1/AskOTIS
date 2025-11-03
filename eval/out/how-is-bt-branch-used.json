@@ -1,0 +1,71 @@
+{
+  "question": "How is BT-BRANCH used?",
+  "scope": "mixed",
+  "expanded_query": "BT-BRANCH How is used",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_calls",
+      "id": "3860c86d54e06c1a1df768ed56503bd42e49d018",
+      "path": "cobol_src\\MN\\CQMAIN.CBL",
+      "line": 739,
+      "snippet": "\"STOP!!! CALL BRANCH SUPPORT IMMEDIATELY!!!\""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "d764f287d4b32cbacf61aa40712c8ade2349690d",
+      "path": "A8F2868BD2BB8807B0597D2911174B4452546B83",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "IS",
+      "path": "IS",
+      "line": null,
+      "snippet": "IS ; ROLE:UNKNOWN ; OUT: ; IN:PEVERI,SFQUOT ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "BRANCH",
+      "path": "BRANCH",
+      "line": null,
+      "snippet": "BRANCH ; ROLE:UNKNOWN ; OUT: ; IN:CDBMAN,CQMAIN ; COPY:ACCESSW,BRANCH_DEF,BRANCH_SCN,BRANCH_WKS,CHKSEC,CONAME_EXT,CONNECTW_SQL,CONNECT_SQL,DATERW,DECLARE_SQL,FERRORS,GB01BR,GB01BR_SQL,GBBRGS_SQL,GBBRRN,GBWSBR,GETFMW,GL01GL,GL01GL_SQL,GLGL1IN,GLGLGS_SQL,GLWSGL,SCREEN"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BPBKBR",
+      "path": "BPBKBR",
+      "line": null,
+      "snippet": "Paragraphs=46; edges=63; depth=4; cycles=N; entries=26; exits=35; fanout_max=15; risk=0.46. Entry: STOP-RUN.... High fanout: NEXT-BT (15)."
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BPREF",
+      "path": "BPREF",
+      "line": null,
+      "snippet": "Paragraphs=109; edges=198; depth=6; cycles=N; entries=53; exits=60; fanout_max=30; risk=0.49. Entry: FORM-RESET.... High fanout: EXIT (30)."
+    }
+  ],
+  "meta": {
+    "ts": 1759097671.6282535,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths",
+      "symbol_refs",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "BT-BRANCH"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

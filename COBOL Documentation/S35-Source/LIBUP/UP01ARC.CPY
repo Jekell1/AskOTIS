@@ -1,0 +1,91 @@
+      ******************************************************************
+      *
+      * ASCII GLOBAL RECAP (DAILY) FILE 
+      *
+      *  TAB DELMITED
+      *
+      ******************************************************************
+       78  ARC-SIZE                                VALUE 304.
+       01  ARC-REC.
+           03  ARC-STATUS                   PIC XX.
+           03  FILLER                       PIC X.
+           03  ARC-BRNO                     PIC 9(4).
+           03  FILLER                       PIC X.
+           03  ARC-TRANS-DATE               PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-LTOUCH-DATE              PIC 9(08).
+           03  FILLER                       PIC X.
+           03  ARC-RECAP-FG                 PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-GL-FG                    PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-EOD-BATCH-FG             PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-NIGHTLY-FUNDS-FG         PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-EOM1-BATCH-FG            PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-EOM-UPDATE-FG            PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-EOM2-BATCH-FG            PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-BS-P2P3-INBAL-FG         PIC X.
+           03  FILLER                       PIC X.
+           03  ARC-DEPOSIT                  PIC +9(7).99.
+           03  FILLER                       PIC X.
+           03  ARC-OVER-SHORT               PIC +9(7).99.
+           03  FILLER                       PIC X.
+           03  ARC-CHECKS                   PIC +9(7).99.
+           03  FILLER                       PIC X.
+           03  ARC-OPENED-DATE              PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-OPENED-TIME              PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-OP-USERID                PIC X(10).
+           03  FILLER                       PIC X.
+           03  ARC-CLOSED-DATE              PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-CLOSED-TIME              PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-CL-USERID                PIC X(10).
+           03  FILLER                       PIC X.
+           03  ARC-UPDATED-DATE             PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-UPDATED-TIME             PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-UPDATED-USERID           PIC X(10).
+           03  FILLER                       PIC X.
+           03  ARC-EOD-BATCH-DATE           PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-EOD-BATCH-TIME           PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-FUNDS-DATE               PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-FUNDS-TIME               PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-EARNINGS-DATE            PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-EARNINGS-TIME            PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-EOM-UPDATED-DATE         PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-EOM-UPDATED-TIME         PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-EOM2-BATCH-DATE          PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-EOM2-BATCH-TIME          PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-CHECK-DATE               PIC 9(8).
+           03  FILLER                       PIC X.
+           03  ARC-CHECK-TIME               PIC 9(6).
+           03  FILLER                       PIC X.
+           03  ARC-LAST-ACCRUE              PIC 9(4).
+           03  FILLER                       PIC X.
+           03  ARC-ERROR-MSG                PIC X(15).
+           03  FILLER                       PIC X.
+           03  ARC-BANK-BAL                 PIC +9(9).99.
+           03  FILLER                       PIC X.
+           03  ARC-CHECK-DEPOSIT            PIC +9(7).99.
+           03  FILLER                       PIC X.
+           03  ARC-CR                       PIC X.
+           03  ARC-LF                       PIC X.

@@ -1,0 +1,110 @@
+[
+  {
+    "fact_id": "a13932705e0966c7650a",
+    "score": 0.038461538461538464,
+    "rank_sources": {
+      "keyword": 2,
+      "vector": 2
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.8,
+    "action_role": "REVERSAL",
+    "posting_type": "GL",
+    "gating_cond": "IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND",
+    "fact_text": "Program APIPAY paragraph SKIP-PAYOFF-CALC performs reversal gl when condition: IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND"
+  },
+  {
+    "fact_id": "edbb32d3b9576761c458",
+    "score": 0.03684922244759973,
+    "rank_sources": {
+      "keyword": 1,
+      "vector": 8
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.7,
+    "action_role": "REVERSAL",
+    "posting_type": "INTEREST",
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph REVERSAL-LP1-FILE performs reversal interest"
+  },
+  {
+    "fact_id": "45334876ae7374418651",
+    "score": 0.03636363636363636,
+    "rank_sources": {
+      "keyword": 5,
+      "vector": 5
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph WORKING-STORAGE performs reversal"
+  },
+  {
+    "fact_id": "8a0034b5af2c2a5a3d10",
+    "score": 0.036062378167641324,
+    "rank_sources": {
+      "keyword": 4,
+      "vector": 7
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph REVERSAL-RTN-EXIT performs reversal"
+  },
+  {
+    "fact_id": "3a50f3c6ac43ab6665aa",
+    "score": 0.0196078431372549,
+    "rank_sources": {
+      "vector": 1
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph READ-EARNINGS performs reversal"
+  },
+  {
+    "fact_id": "533df7529d1d673ad9d4",
+    "score": 0.018867924528301886,
+    "rank_sources": {
+      "keyword": 3
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph CALL-LONPF2-FOR-REVERSAL performs reversal"
+  },
+  {
+    "fact_id": "35c8d8dcff4cc88e8b31",
+    "score": 0.018867924528301886,
+    "rank_sources": {
+      "vector": 3
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.8,
+    "action_role": "REVERSAL",
+    "posting_type": "INTEREST",
+    "gating_cond": "IF VALID-REVERSAL-FG NOT = \"Y\"",
+    "fact_text": "Program APIPAY paragraph MAIN-PROGRAM performs reversal interest when condition: IF VALID-REVERSAL-FG NOT = \"Y\""
+  },
+  {
+    "fact_id": "0da051e0f42739908e56",
+    "score": 0.018518518518518517,
+    "rank_sources": {
+      "vector": 4
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph INVALID-REVERSAL performs reversal"
+  }
+]

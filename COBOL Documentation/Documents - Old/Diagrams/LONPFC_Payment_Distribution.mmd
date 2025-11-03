@@ -1,0 +1,34 @@
+%%{init: {"theme": "default", "themeVariables": {"primaryColor": "#28a745", "primaryTextColor": "#fff", "primaryBorderColor": "#1e7e34", "lineColor": "#28a745", "sectionBkgColor": "#f8f9fa", "altSectionBkgColor": "#e9ecef", "gridColor": "#dee2e6", "secondaryColor": "#6c757d", "tertiaryColor": "#f8f9fa"}}}%%
+
+flowchart TD
+    A[Payment Amount] --> B[Check Other Balances]
+    B --> C{Other Balance > 0?}
+    
+    C -->|Yes| D[Apply to Other Balance]
+    C -->|No| E[Check Late Charges]
+    
+    D --> F[Remaining Amount]
+    F --> E
+    
+    E --> G{Late Charges > 0?}
+    G -->|Yes| H[Apply to Late Charges]
+    G -->|No| I[Check Interest]
+    
+    H --> J[Remaining Amount]
+    J --> I
+    
+    I --> K{Interest Due > 0?}
+    K -->|Yes| L[Apply to Interest]
+    K -->|No| M[Apply to Principal]
+    
+    L --> N[Remaining Amount]
+    N --> M
+    
+    M --> O[Update Paid Through Date]
+    O --> P[Complete Distribution]
+    
+    style A fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style P fill:#dc3545,stroke:#c82333,stroke-width:2px,color:#fff
+    style C fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style G fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style K fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000

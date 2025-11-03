@@ -1,0 +1,82 @@
+{
+  "question": "Where is the variable BT-BRANCH instigated?",
+  "scope": "variable",
+  "expanded_query": "BT-BRANCH Where instigated is the variable",
+  "aliases": {},
+  "answer_outline": "- Explain variable role (read vs write dominance).\n- List top reader and writer programs.\n- Show representative reference lines.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "fd74836192a97f6fb347977260a6758282238285",
+      "path": "4E6FDA870237265F844F243B48F4A8166F77C788",
+      "line": 472,
+      "snippet": "01  BT-PATH."
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "e50a2187da9ce54e1d3b60fdeeecaa5192e0f8e5",
+      "path": "cobol_src\\MN\\FDMAIN.CBL",
+      "line": 322,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "69fd99c6c232cc2ec9e20ae2b15d2ae66dd833c1",
+      "path": "F63938D72D90990A97BA56CDE29029A22A242EA7",
+      "line": 93,
+      "snippet": "01  BT-REC."
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "20ab2fb0c1a858dce2421089d55de823e1889c8f",
+      "path": "cobol_src\\LP\\BULKT2.CBL",
+      "line": 638,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "9630b7219df12b496cbe6b196786e0312b38e69d",
+      "path": "ACC3AC61139F75E565B83F542D30B3BF90B80399",
+      "line": 125,
+      "snippet": "*   CS 110223 MODERN WANTED TO BE ABLE TO RECALL THE ACCOUNT YOU WERE"
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "THE",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "IS",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "THE-CLASS",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759088109.9395218,
+    "k": 8,
+    "candidate_indexes": [
+      "variable_usage",
+      "symbol_refs",
+      "data_items",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "BT-BRANCH"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

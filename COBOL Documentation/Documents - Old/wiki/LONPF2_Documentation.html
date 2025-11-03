@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF2 Reversal/Bankruptcy Processor Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #6c757d;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #6c757d;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #6c757d;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #6c757d;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY</a> > LONPF2 Reversal/Bankruptcy Processor
+    </div>
+
+    <div class="header">
+        <h1>LONPF2 Reversal/Bankruptcy Processor</h1>
+        <div class="meta">
+            <strong>Payment Types:</strong> RV (Reversal), BK (Bankruptcy), BD (Bankruptcy Dismissal)<br>
+            <strong>Purpose:</strong> Transaction Reversal and Bankruptcy Status Management<br>
+            <strong>Called From:</strong> APIPAY Program
+        </div>
+    </div>
+
+    <h2>Program Overview</h2>
+    
+    <p><strong>LONPF2</strong> is a specialized processor that handles two critical and sensitive areas of loan account management: transaction reversals and bankruptcy status changes. This program ensures proper handling of corrective transactions and legal status changes that have significant impact on both the customer and the financial institution.</p>
+
+    <div class="danger">
+        <p><strong>Critical Operations:</strong> This processor handles legally sensitive bankruptcy status changes and financial reversals that can have significant regulatory and audit implications.</p>
+    </div>
+
+    <h3>Key Responsibilities</h3>
+    <ul>
+        <li><strong>Transaction Reversal</strong>: Reverses previous transactions while maintaining audit integrity</li>
+        <li><strong>Bankruptcy Status Management</strong>: Updates accounts for bankruptcy filings and dismissals</li>
+        <li><strong>Legal Compliance</strong>: Ensures compliance with bankruptcy laws and regulations</li>
+        <li><strong>Audit Trail Maintenance</strong>: Maintains complete documentation of all changes</li>
+        <li><strong>Account Status Protection</strong>: Prevents unauthorized status changes</li>
+    </ul>
+
+    <h2>Transaction Types Supported</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Description</th>
+                <th>Business Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>RV</strong></td>
+                <td>Reversal</td>
+                <td>Reverses previous transactions due to errors or business requirements</td>
+            </tr>
+            <tr>
+                <td><strong>BK</strong></td>
+                <td>Bankruptcy</td>
+                <td>Updates account status when customer files for bankruptcy</td>
+            </tr>
+            <tr>
+                <td><strong>BD</strong></td>
+                <td>Bankruptcy Dismissal</td>
+                <td>Updates account status when bankruptcy case is dismissed</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Transaction Reversal Processing</h2>
+
+    <h3>Reversal Logic Flow</h3>
+    <ol>
+        <li><strong>Original Transaction Identification</strong>
+            <ul>
+                <li>Locate the original transaction to be reversed</li>
+                <li>Verify transaction is eligible for reversal</li>
+                <li>Check reversal time limits and business rules</li>
+                <li>Validate authorization for reversal</li>
+            </ul>
+        </li>
+        <li><strong>Impact Analysis</strong>
+            <ul>
+                <li>Analyze effects of reversing the transaction</li>
+                <li>Check for subsequent transactions that might be affected</li>
+                <li>Calculate balance adjustments required</li>
+                <li>Identify any secondary effects or dependencies</li>
+            </ul>
+        </li>
+        <li><strong>Reversal Execution</strong>
+            <ul>
+                <li>Create offsetting entries for the original transaction</li>
+                <li>Restore account balances to pre-transaction state</li>
+                <li>Update payment history with reversal details</li>
+                <li>Adjust interest calculations if necessary</li>
+            </ul>
+        </li>
+        <li><strong>Audit Documentation</strong>
+            <ul>
+                <li>Create complete audit trail of reversal</li>
+                <li>Document reason for reversal</li>
+                <li>Record authorization details</li>
+                <li>Link reversal to original transaction</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Reversal Types and Scenarios</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Reversal Type</th>
+                <th>Description</th>
+                <th>Common Reasons</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Payment Reversal</strong></td>
+                <td>Reverse a payment transaction</td>
+                <td>NSF check, duplicate payment, data entry error</td>
+            </tr>
+            <tr>
+                <td><strong>Fee Reversal</strong></td>
+                <td>Reverse fee charges</td>
+                <td>Incorrect fee assessment, customer service adjustment</td>
+            </tr>
+            <tr>
+                <td><strong>Interest Reversal</strong></td>
+                <td>Reverse interest charges</td>
+                <td>Rate calculation error, promotional adjustment</td>
+            </tr>
+            <tr>
+                <td><strong>Status Reversal</strong></td>
+                <td>Reverse status changes</td>
+                <td>Incorrect status update, system error correction</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Bankruptcy Processing</h2>
+
+    <h3>Bankruptcy Status Management</h3>
+    <ol>
+        <li><strong>Bankruptcy Filing (BK)</strong>
+            <ul>
+                <li>Verify account is not already in bankruptcy status</li>
+                <li>Update account status to bankruptcy</li>
+                <li>Set bankruptcy date and case information</li>
+                <li>Stop collection activities as required by law</li>
+                <li>Freeze interest accrual if required</li>
+                <li>Update credit bureau reporting status</li>
+            </ul>
+        </li>
+        <li><strong>Bankruptcy Dismissal (BD)</strong>
+            <ul>
+                <li>Verify account is currently in bankruptcy status</li>
+                <li>Update account status to reflect dismissal</li>
+                <li>Resume normal collection activities</li>
+                <li>Restore interest accrual if applicable</li>
+                <li>Update credit bureau reporting</li>
+                <li>Apply any payments received during bankruptcy</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Bankruptcy Types and Impact</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Bankruptcy Chapter</th>
+                <th>Impact on Account</th>
+                <th>Collection Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Chapter 7</strong></td>
+                <td>Liquidation - potential discharge</td>
+                <td>All collection activities stopped</td>
+            </tr>
+            <tr>
+                <td><strong>Chapter 11</strong></td>
+                <td>Business reorganization</td>
+                <td>Automatic stay in effect</td>
+            </tr>
+            <tr>
+                <td><strong>Chapter 13</strong></td>
+                <td>Payment plan reorganization</td>
+                <td>Collections through bankruptcy plan</td>
+            </tr>
+            <tr>
+                <td><strong>Dismissal</strong></td>
+                <td>Return to pre-bankruptcy status</td>
+                <td>Resume normal collection activities</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Business Rules and Validation</h2>
+
+    <h3>Reversal Authorization Rules</h3>
+    <ul>
+        <li><strong>Time Limits</strong>: Reversals must occur within specified time frames</li>
+        <li><strong>Authorization Levels</strong>: Higher dollar amounts require senior approval</li>
+        <li><strong>Business Justification</strong>: Valid business reason must be documented</li>
+        <li><strong>Regulatory Compliance</strong>: Must comply with banking regulations</li>
+        <li><strong>Customer Impact</strong>: Consider impact on customer relationship</li>
+    </ul>
+
+    <h3>Bankruptcy Status Rules</h3>
+    <ul>
+        <li><strong>Legal Documentation</strong>: Bankruptcy filing documentation required</li>
+        <li><strong>Court Orders</strong>: Must comply with court orders and stays</li>
+        <li><strong>Automatic Stay</strong>: Immediate stop of collection activities</li>
+        <li><strong>Status Tracking</strong>: Maintain current bankruptcy case status</li>
+        <li><strong>Discharge Handling</strong>: Proper handling of discharged debts</li>
+    </ul>
+
+    <h2>Error Handling and Validation</h2>
+
+    <h3>Validation Checks</h3>
+    <ul>
+        <li><strong>Account Status</strong>: Verify account is in correct status for operation</li>
+        <li><strong>Transaction History</strong>: Validate original transaction exists for reversals</li>
+        <li><strong>Authorization</strong>: Ensure proper authorization exists</li>
+        <li><strong>Business Rules</strong>: Enforce all applicable business rules</li>
+        <li><strong>Legal Requirements</strong>: Verify compliance with legal requirements</li>
+    </ul>
+
+    <h3>Common Error Conditions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Code</th>
+                <th>Description</th>
+                <th>Resolution</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>12</strong></td>
+                <td>Account already bankrupt</td>
+                <td>Verify account status; may need bankruptcy dismissal first</td>
+            </tr>
+            <tr>
+                <td><strong>13</strong></td>
+                <td>Account not bankrupt status</td>
+                <td>Account must be in bankruptcy status for dismissal</td>
+            </tr>
+            <tr>
+                <td><strong>Transaction Not Found</strong></td>
+                <td>Original transaction not found for reversal</td>
+                <td>Verify transaction reference and search parameters</td>
+            </tr>
+            <tr>
+                <td><strong>Authorization Missing</strong></td>
+                <td>Required authorization not provided</td>
+                <td>Obtain proper authorization before processing</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="warning">
+        <p><strong>Legal Compliance:</strong> Bankruptcy processing must strictly comply with federal bankruptcy law and automatic stay provisions. Violations can result in serious legal consequences.</p>
+    </div>
+
+    <h2>Integration with APIPAY</h2>
+
+    <h3>Input Parameters</h3>
+    <p>Receives transaction details through LONPF buffer:</p>
+    <ul>
+        <li><strong>Account Information</strong>: Branch and account number</li>
+        <li><strong>Transaction Type</strong>: RV, BK, or BD transaction code</li>
+        <li><strong>Reference Information</strong>: Original transaction reference (for reversals)</li>
+        <li><strong>Legal Documentation</strong>: Bankruptcy case information (for BK/BD)</li>
+        <li><strong>Authorization Details</strong>: Required approvals and authorization codes</li>
+    </ul>
+
+    <h3>Output Information</h3>
+    <p>Returns processing results and account updates:</p>
+    <ul>
+        <li><strong>Transaction Status</strong>: Success/failure of processing</li>
+        <li><strong>Account Changes</strong>: Updates made to account status and balances</li>
+        <li><strong>Legal Status</strong>: Updated bankruptcy or legal status information</li>
+        <li><strong>Audit Details</strong>: Complete audit trail information</li>
+    </ul>
+
+    <h2>File Dependencies</h2>
+
+    <h3>Files Read/Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master records</td><td>Read/Write</td></tr>
+            <tr><td><strong>LTP1-FILE</strong></td><td>Payment/transaction history</td><td>Read/Write</td></tr>
+            <tr><td><strong>LXE1-FILE</strong></td><td>Extended loan data</td><td>Read/Write</td></tr>
+            <tr><td><strong>BK-FILE</strong></td><td>Bankruptcy case records</td><td>Read/Write</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work/calculation file</td><td>Read/Write</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Legal and Regulatory Considerations</h2>
+
+    <h3>Bankruptcy Law Compliance</h3>
+    <ul>
+        <li><strong>Automatic Stay</strong>: Immediate cessation of collection activities</li>
+        <li><strong>Discharge Requirements</strong>: Proper handling of discharged debts</li>
+        <li><strong>Court Communications</strong>: Required communications with bankruptcy court</li>
+        <li><strong>Claim Filing</strong>: Timely filing of proofs of claim</li>
+        <li><strong>Violation Penalties</strong>: Severe penalties for stay violations</li>
+    </ul>
+
+    <h3>Reversal Compliance</h3>
+    <ul>
+        <li><strong>Banking Regulations</strong>: Compliance with federal banking laws</li>
+        <li><strong>Audit Requirements</strong>: Detailed documentation for reversals</li>
+        <li><strong>Customer Rights</strong>: Protection of customer rights and interests</li>
+        <li><strong>Truth in Lending</strong>: Accurate disclosure of changes</li>
+    </ul>
+
+    <h2>Quality Assurance and Controls</h2>
+
+    <h3>Control Mechanisms</h3>
+    <ul>
+        <li><strong>Dual Authorization</strong>: Two-person authorization for significant reversals</li>
+        <li><strong>Management Review</strong>: Management approval for bankruptcy changes</li>
+        <li><strong>Legal Review</strong>: Legal department review for complex cases</li>
+        <li><strong>Audit Trail</strong>: Complete documentation of all actions</li>
+        <li><strong>Exception Reporting</strong>: Regular reports of unusual transactions</li>
+    </ul>
+
+    <h3>Risk Management</h3>
+    <ul>
+        <li><strong>Fraud Prevention</strong>: Detection of potentially fraudulent reversals</li>
+        <li><strong>Legal Risk</strong>: Mitigation of legal compliance risks</li>
+        <li><strong>Operational Risk</strong>: Prevention of operational errors</li>
+        <li><strong>Reputation Risk</strong>: Protection of institutional reputation</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPF2 handles some of the most sensitive and legally complex transactions in the loan system. Proper execution requires strict adherence to legal requirements, comprehensive documentation, and careful validation to protect both the institution and its customers.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

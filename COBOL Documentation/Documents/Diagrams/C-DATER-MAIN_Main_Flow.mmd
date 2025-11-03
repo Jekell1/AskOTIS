@@ -1,0 +1,43 @@
+graph TD
+    A[C-DATER-MAIN Entry] --> B[CONVERT-SYS-NUM-NDTE-DATES-IN]
+    B --> C[MOVE DATER-ACTION-CODE TO SV-DATER-ACTION-CODE]
+    C --> D{EVALUATE SV-DATER-ACTION-CODE}
+    
+    D -->|"E"| E[PERFORM C-ELAPSED-TIME]
+    D -->|"N"| F[PERFORM C-CALL-NEWDATE]
+    D -->|"I"| G[PERFORM C-INCREMENT-PERIODS]
+    D -->|"C"| H[Julian to Calendar Conversion]
+    D -->|"J"| I[Calendar to Julian Conversion]
+    D -->|"W"| J[PERFORM C-WEEKDAY]
+    D -->|"D"| K[PERFORM C-DATE-COMPARE]
+    D -->|"T"| L[PERFORM C-DATE-TEST]
+    
+    H --> H1[MOVE JULIAN-DATE TO P-CJUL-JULIAN-DATE]
+    H1 --> H2[PERFORM C-CALL-CJUL]
+    H2 --> H3[MOVE P-CJUL-DATE-OUT TO NUM-DATE]
+    
+    I --> I1[MOVE NUM-DATE TO P-DATE-IN]
+    I1 --> I2[PERFORM C-CALL-JUL]
+    I2 --> I3[MOVE P-JULIAN-DATE TO JULIAN-DATE]
+    
+    E --> M[MOVE SV-DATER-ACTION-CODE TO DATER-ACTION-CODE]
+    F --> M
+    G --> M
+    H3 --> M
+    I3 --> M
+    J --> M
+    K --> M
+    L --> M
+    
+    M --> N[CONVERT-SYS-NUM-NDTE-DATES-OUT]
+    N --> O[Return to Caller]
+    
+    style A fill:#e1f5fe
+    style O fill:#c8e6c9
+    style D fill:#fff3e0
+    style E fill:#f3e5f5
+    style F fill:#f3e5f5
+    style G fill:#f3e5f5
+    style J fill:#f3e5f5
+    style K fill:#f3e5f5
+    style L fill:#f3e5f5

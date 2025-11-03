@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIM365 Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIM365 Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1>TIM365 Utility Documentation</h1>
+<p><strong>Program ID:</strong> TIM365<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2024-12-19 14:30:00</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#business-context">Business Context</a></li>
+<li><a href="#technical-specifications">Technical Specifications</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#related-components">Related Components</a></li>
+</ul>
+<h2>Overview</h2>
+<p>TIM365 is a date/time processing utility within the APIPAY system that performs elapsed time calculations using a standard 365-day year convention. This utility provides accurate time calculations for non-leap years and is commonly used for general purpose date arithmetic where a standard calendar year is required.</p>
+<h2>Purpose</h2>
+<p>The TIM365 utility provides:
+- <strong>365-Day Year Calculations</strong>: Performs time calculations using standard calendar year
+- <strong>General Date Arithmetic</strong>: Supports common date calculation requirements<br />
+- <strong>Non-Leap Year Processing</strong>: Uses standard year length for consistency
+- <strong>Integration Support</strong>: Works seamlessly with other APIPAY timing utilities</p>
+<h2>Business Context</h2>
+<p>TIM365 is essential for:
+- <strong>General Accounting</strong>: Standard calendar year calculations
+- <strong>Reporting Systems</strong>: Annual and period-based reporting
+- <strong>System Processing</strong>: Default year-based calculations
+- <strong>Compliance Requirements</strong>: Standard calendar-based processing</p>
+<p>The 365-day year convention is used for:
+- Standard accounting periods
+- General business calculations
+- Non-financial date arithmetic
+- System processing defaults</p>
+<h2>Technical Specifications</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong>: Starting date (YYYYMMDD format)</li>
+<li><strong>SYS-DATE</strong>: Ending date (YYYYMMDD format)</li>
+<li><strong>ELAPSED-YRTYPE</strong>: Set to 365 for this utility</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>ELAPSED-DAYS</strong>: Total elapsed days using 365-day year</li>
+<li><strong>ELAPSED-MONTHS</strong>: Elapsed months</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days after month calculation</li>
+<li><strong>ELAPSED-RESULTS</strong>: Comparison results (LT, GT, EQ, etc.)</li>
+</ul>
+<h3>Processing Logic</h3>
+<pre><code class="language-cobol">TIM365 SECTION.
+    MOVE 365 TO ELAPSED-YRTYPE.
+    PERFORM TIMALL.
+</code></pre>
+<h2>Implementation Details</h2>
+<h3>Core Processing Steps</h3>
+<ol>
+<li><strong>Year Type Configuration</strong></li>
+<li>Sets ELAPSED-YRTYPE to 365</li>
+<li>
+<p>Configures calculation method for standard calendar year</p>
+</li>
+<li>
+<p><strong>Calculation Delegation</strong></p>
+</li>
+<li>Calls TIMALL with 365-day parameter</li>
+<li>
+<p>Leverages common timing calculation logic</p>
+</li>
+<li>
+<p><strong>Result Generation</strong></p>
+</li>
+<li>Returns standardized elapsed time results</li>
+<li>Provides multiple output formats</li>
+</ol>
+<h3>Key Features</h3>
+<ul>
+<li><strong>Standard Calendar</strong>: Uses conventional 365-day year</li>
+<li><strong>Simple Interface</strong>: Single entry point with standard parameters</li>
+<li><strong>Consistent Results</strong>: Ensures predictable calculation outcomes</li>
+<li><strong>Integration Ready</strong>: Compatible with all APIPAY timing operations</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Basic Time Calculation</h3>
+<pre><code class="language-cobol">* Calculate elapsed time using standard calendar year
+MOVE 20240101 TO NUM-DATE
+MOVE 20241231 TO SYS-DATE
+PERFORM TIM365
+* Results available in ELAPSED-DAYS, ELAPSED-MONTHS, etc.
+</code></pre>
+<h3>Business Period Calculation</h3>
+<pre><code class="language-cobol">* Calculate business periods
+MOVE PERIOD-START-DATE TO NUM-DATE
+MOVE PERIOD-END-DATE TO SYS-DATE
+PERFORM TIM365
+* Use results for period-based processing
+</code></pre>
+<h3>General Date Processing</h3>
+<pre><code class="language-cobol">* Calculate standard date differences
+MOVE TRANSACTION-DATE TO NUM-DATE
+MOVE CURRENT-DATE TO SYS-DATE
+PERFORM TIM365
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Input Validation</h3>
+<ul>
+<li>Zero date handling managed by TIMALL</li>
+<li>Invalid date format detection</li>
+<li>Boundary condition management</li>
+</ul>
+<h3>Error Recovery</h3>
+<ul>
+<li>Graceful handling of invalid inputs</li>
+<li>Consistent error result formatting</li>
+<li>Maintains system stability</li>
+</ul>
+<h3>Common Error Scenarios</h3>
+<ul>
+<li><strong>Zero Dates</strong>: Returns zero values for elapsed time</li>
+<li><strong>Invalid Formats</strong>: Handled by underlying date routines</li>
+<li><strong>Out of Range</strong>: Managed by TIMALL processing</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Efficiency Features</h3>
+<ul>
+<li><strong>Minimal Overhead</strong>: Simple parameter setup and delegation</li>
+<li><strong>Optimized Calculation</strong>: Leverages proven TIMALL algorithms</li>
+<li><strong>Fast Execution</strong>: Direct calculation without complex logic</li>
+</ul>
+<h3>Usage Guidelines</h3>
+<ul>
+<li>Suitable for high-volume processing</li>
+<li>Consistent performance across date ranges</li>
+<li>Minimal system resource requirements</li>
+</ul>
+<h2>Related Components</h2>
+<h3>Direct Dependencies</h3>
+<ul>
+<li><strong><a href="TIMALL_Documentation.html">TIMALL</a></strong>: Core timing calculation engine</li>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE</a></strong>: Date processing foundation</li>
+</ul>
+<h3>Related Utilities</h3>
+<ul>
+<li><strong><a href="TIM360_Documentation.html">TIM360</a></strong>: 360-day year calculations</li>
+<li><strong><a href="TIM361_Documentation.html">TIM361</a></strong>: 361-day year calculations  </li>
+<li><strong><a href="TIM362_Documentation.html">TIM362</a></strong>: 362-day year calculations</li>
+<li><strong><a href="TIM999_Documentation.html">TIM999</a></strong>: Actual day calculations</li>
+</ul>
+<h3>Integration Points</h3>
+<ul>
+<li>Used throughout APIPAY for standard date calculations</li>
+<li>Integrated with general accounting modules</li>
+<li>Supports business processing systems</li>
+</ul>
+<h2>Diagrams</h2>
+<h3>Main Flow Diagram</h3>
+<p><img alt="TIM365 Main Flow" src="../Diagrams/TIM365_Main_Flow.svg" /></p>
+<h3>Call Graph</h3>
+<p><img alt="TIM365 Call Graph" src="../Diagrams/TIM365_Call_Graph.svg" /></p>
+<hr />
+<p><em>This documentation is automatically generated from the COBOL source code and is intended for system maintenance and integration purposes.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

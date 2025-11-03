@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Documentation Wiki Reader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            margin-top: 80px;
+            overflow-y: auto;
+            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header h2 {
+            color: #1e293b;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-section {
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .nav-section h3 {
+            padding: 0 1rem;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #334155;
+            border-left-color: #94a3b8;
+        }
+
+        .nav-item.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .nav-item .icon {
+            margin-right: 0.5rem;
+            width: 16px;
+            display: inline-block;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-top: 80px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        /* Content Display */
+        .content-display {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: white;
+            margin: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #64748b;
+        }
+
+        .loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .welcome {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .welcome h2 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .welcome p {
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1rem;
+        }
+
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .program-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .program-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: #c7d2fe;
+        }
+
+        .program-card h3 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .program-card p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .program-card .tag {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+            display: inline-block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                left: -100%;
+                top: 80px;
+                height: calc(100vh - 80px);
+                transition: left 0.3s ease;
+                z-index: 900;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .content-display {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Mermaid diagram styling */
+        .mermaid {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 COBOL Documentation Wiki</h1>
+            <div class="subtitle">
+                Comprehensive documentation for APIPAY and related programs
+                <span id="server-status" style="margin-left: 1rem; padding: 0.25rem 0.5rem; background: rgba(255,255,255,0.2); border-radius: 0.25rem; font-size: 0.75rem;">
+                    🔄 Checking server...
+                </span>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Navigation</h2>
+            </div>
+
+            <div class="nav-section">
+                <h3>Main Programs</h3>
+                <a class="nav-item" onclick="showHome()" id="nav-home">
+                    <span class="icon">🏠</span> Home
+                </a>
+                <a class="nav-item" onclick="loadProgram('APIPAY')" id="nav-APIPAY">
+                    <span class="icon">💳</span> APIPAY - Payment Processor
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <h3>Referenced Programs</h3>
+                <a class="nav-item" onclick="loadProgram('LONPFB')" id="nav-LONPFB">
+                    <span class="icon">🏦</span> LONPFB - Bill Pay System
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPF7')" id="nav-LONPF7">
+                    <span class="icon">🚗</span> LONPF7 - Repossession
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPF9')" id="nav-LONPF9">
+                    <span class="icon">🛡️</span> LONPF9 - Insurance
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPFC')" id="nav-LONPFC">
+                    <span class="icon">💰</span> LONPFC - Check Processing
+                </a>
+                <a class="nav-item" onclick="loadProgram('LONPF2')" id="nav-LONPF2">
+                    <span class="icon">🌐</span> LONPF2 - Wire Transfer
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <h3>Resources</h3>
+                <a class="nav-item" onclick="showDiagrams()" id="nav-diagrams">
+                    <span class="icon">📊</span> Flow Diagrams
+                </a>
+                <a class="nav-item" onclick="showAbout()" id="nav-about">
+                    <span class="icon">ℹ️</span> About
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-header">
+                <div class="breadcrumb" id="breadcrumb">
+                    <a href="#" onclick="showHome()">Home</a>
+                </div>
+                <div class="content-actions">
+                    <button class="btn" onclick="refreshContent()" title="Refresh">🔄</button>
+                    <button class="btn" onclick="toggleSidebar()" class="mobile-only" title="Menu">☰</button>
+                </div>
+            </div>
+
+            <div class="content-display" id="content">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#334155',
+                primaryBorderColor: '#cbd5e1',
+                lineColor: '#64748b'
+            }
+        });
+
+        let currentPage = 'home';
+        let contentCache = {};
+
+        // Program metadata
+        const programs = {
+            'APIPAY': {
+                title: 'APIPAY - Payment Processor',
+                description: 'Main payment processing system handling various transaction types',
+                file: 'APIPAY_Documentation.html',
+                tag: 'Core System'
+            },
+            'LONPFB': {
+                title: 'LONPFB - Bill Pay System',
+                description: 'Bill payment processing and transaction handling',
+                file: 'LONPFB_Documentation.html',
+                tag: 'Bill Processing'
+            },
+            'LONPF7': {
+                title: 'LONPF7 - Repossession Processor',
+                description: 'Asset repossession and recovery transaction processing',
+                file: 'LONPF7_Documentation.html',
+                tag: 'Asset Recovery'
+            },
+            'LONPF9': {
+                title: 'LONPF9 - Insurance Processor',
+                description: 'Insurance payment and disbursement processing',
+                file: 'LONPF9_Documentation.html',
+                tag: 'Insurance'
+            },
+            'LONPFC': {
+                title: 'LONPFC - Check Processor',
+                description: 'Check transaction processing and validation',
+                file: 'LONPFC_Documentation.html',
+                tag: 'Check Processing'
+            },
+            'LONPF2': {
+                title: 'LONPF2 - Wire Transfer Processor',
+                description: 'Wire transfer and electronic payment processing',
+                file: 'LONPF2_Documentation.html',
+                tag: 'Electronic Transfer'
+            }
+        };
+
+        // Navigation functions
+        function showHome() {
+            currentPage = 'home';
+            updateBreadcrumb('Home');
+            setActiveNav('nav-home');
+            
+            const content = `
+                <div class="welcome">
+                    <h2>Welcome to the COBOL Documentation Wiki</h2>
+                    <p>Comprehensive documentation for the APIPAY payment processing system and all related COBOL programs. Navigate through the documentation using the sidebar or select a program below.</p>
+                    
+                    <div class="program-grid">
+                        ${Object.entries(programs).map(([key, program]) => `
+                            <div class="program-card" onclick="loadProgram('${key}')">
+                                <h3>${program.title}</h3>
+                                <p>${program.description}</p>
+                                <span class="tag">${program.tag}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function loadProgram(programId) {
+            if (!programs[programId]) {
+                showError(`Program '${programId}' not found`);
+                return;
+            }
+
+            currentPage = programId;
+            const program = programs[programId];
+            updateBreadcrumb(`<a href="#" onclick="showHome()">Home</a> > ${program.title}`);
+            setActiveNav(`nav-${programId}`);
+
+            // Check cache first
+            if (contentCache[programId]) {
+                displayContent(contentCache[programId]);
+                return;
+            }
+
+            // Show loading
+            document.getElementById('content').innerHTML = '<div class="loading">Loading documentation...</div>';
+
+            // Try multiple loading methods due to browser security restrictions
+            loadContentWithFallback(program.file, programId, program.title);
+        }
+
+        function loadContentWithFallback(filename, programId, title) {
+            // Method 1: Try fetch first
+            fetch(filename)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    processLoadedContent(html, programId);
+                })
+                .catch(fetchError => {
+                    console.warn('Fetch failed, trying iframe method:', fetchError);
+                    // Method 2: Use hidden iframe as fallback
+                    loadWithIframe(filename, programId, title);
+                });
+        }
+
+        function loadWithIframe(filename, programId, title) {
+            // Create a hidden iframe to load the content
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = filename;
+            
+            iframe.onload = function() {
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (doc && doc.body) {
+                        const html = doc.body.innerHTML;
+                        if (html && html.trim().length > 0) {
+                            processLoadedContent(html, programId);
+                        } else {
+                            throw new Error('Document loaded but appears empty');
+                        }
+                    } else {
+                        throw new Error('Cannot access iframe content (security restriction)');
+                    }
+                } catch (error) {
+                    console.warn('Iframe method failed:', error);
+                    // Method 3: Show file open option
+                    showFileOpenOption(filename, title);
+                } finally {
+                    document.body.removeChild(iframe);
+                }
+            };
+            
+            iframe.onerror = function() {
+                console.warn('Iframe loading failed');
+                document.body.removeChild(iframe);
+                showFileOpenOption(filename, title);
+            };
+            
+            document.body.appendChild(iframe);
+        }
+
+        function processLoadedContent(html, programId) {
+            // Extract body content if it's a full HTML document
+            if (html.includes('<html>') || html.includes('<body>')) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                html = doc.body ? doc.body.innerHTML : html;
+            }
+            
+            // Cache content
+            contentCache[programId] = html;
+            
+            displayContent(html);
+        }
+
+        function showFileOpenOption(filename, title) {
+            const content = `
+                <div style="text-align: center; padding: 3rem; background: #fef2f2; border-radius: 0.5rem; margin: 2rem;">
+                    <h3 style="color: #dc2626; margin-bottom: 1rem;">🔒 File Access Restricted</h3>
+                    <p style="color: #64748b; margin-bottom: 2rem;">
+                        Due to browser security restrictions, the documentation file cannot be loaded automatically.<br>
+                        Please use one of the options below to view the content:
+                    </p>
+                    
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <a href="${filename}" target="_blank" class="btn btn-primary">
+                            📖 Open ${title} in New Tab
+                        </a>
+                        <button class="btn" onclick="window.open('file_manager.html', '_blank')">
+                            🛠️ Check File Status
+                        </button>
+                        <button class="btn" onclick="copyFileLocation('${filename}')">
+                            📋 Copy File Path
+                        </button>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 0.375rem; margin-top: 2rem; font-size: 0.875rem; color: #64748b;">
+                        <p><strong>Alternative:</strong> Start a local web server to avoid these restrictions.</p>
+                        <p>File location: <code style="background: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">${filename}</code></p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function copyFileLocation(filename) {
+            const fullPath = window.location.href.replace('wiki_reader.html', filename);
+            navigator.clipboard.writeText(fullPath).then(() => {
+                alert('File location copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = fullPath;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('File location copied to clipboard!');
+            });
+        }
+
+        function displayContent(html) {
+            const contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = html;
+            
+            // Process any Mermaid diagrams
+            const mermaidElements = contentDiv.querySelectorAll('.mermaid');
+            if (mermaidElements.length > 0) {
+                mermaid.run();
+            }
+            
+            // Scroll to top
+            contentDiv.scrollTop = 0;
+        }
+
+        function showDiagrams() {
+            currentPage = 'diagrams';
+            updateBreadcrumb('<a href="#" onclick="showHome()">Home</a> > Flow Diagrams');
+            setActiveNav('nav-diagrams');
+            
+            const diagramList = [
+                'APIPAY_Transaction_Processing.mmd',
+                'APIPAY_Error_Handling.mmd',
+                'APIPAY_Database_Updates.mmd',
+                'APIPAY_Complete_Call_Graph.mmd'
+            ];
+            
+            const content = `
+                <div class="welcome">
+                    <h2>📊 System Flow Diagrams</h2>
+                    <p>Visual representations of the APIPAY system processes and data flows.</p>
+                    
+                    <div class="program-grid">
+                        ${diagramList.map(diagram => `
+                            <div class="program-card" onclick="loadDiagram('${diagram}')">
+                                <h3>${diagram.replace(/_/g, ' ').replace('.mmd', '')}</h3>
+                                <p>Interactive Mermaid diagram</p>
+                                <span class="tag">Diagram</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function loadDiagram(diagramFile) {
+            const diagramName = diagramFile.replace('.mmd', '').replace(/_/g, ' ');
+            updateBreadcrumb(`<a href="#" onclick="showHome()">Home</a> > <a href="#" onclick="showDiagrams()">Diagrams</a> > ${diagramName}`);
+            
+            document.getElementById('content').innerHTML = '<div class="loading">Loading diagram...</div>';
+            
+            fetch(`diagrams/${diagramFile}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(diagramCode => {
+                    const content = `
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <h2>${diagramName}</h2>
+                            <p style="color: #64748b;">Interactive system flow diagram</p>
+                        </div>
+                        <div class="mermaid">${diagramCode}</div>
+                    `;
+                    
+                    displayContent(content);
+                })
+                .catch(error => {
+                    console.error('Error loading diagram:', error);
+                    
+                    // Show diagram access options
+                    const content = `
+                        <div style="text-align: center; padding: 3rem; background: #fef2f2; border-radius: 0.5rem; margin: 2rem;">
+                            <h3 style="color: #dc2626; margin-bottom: 1rem;">🔒 Diagram Access Restricted</h3>
+                            <p style="color: #64748b; margin-bottom: 2rem;">
+                                Cannot load diagram: ${error.message}<br>
+                                This might be due to browser security restrictions or missing files.
+                            </p>
+                            
+                            <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                                <a href="diagrams/${diagramFile}" target="_blank" class="btn btn-primary">
+                                    📊 Open ${diagramName} File
+                                </a>
+                                <button class="btn" onclick="window.open('file_manager.html', '_blank')">
+                                    🛠️ Check File Status
+                                </button>
+                                <button class="btn" onclick="showDiagrams()">
+                                    ← Back to Diagrams
+                                </button>
+                            </div>
+                            
+                            <div style="background: #f8fafc; padding: 1rem; border-radius: 0.375rem; margin-top: 2rem; font-size: 0.875rem; color: #64748b;">
+                                <p><strong>Expected location:</strong> <code style="background: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">diagrams/${diagramFile}</code></p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('content').innerHTML = content;
+                });
+        }
+
+        function showAbout() {
+            currentPage = 'about';
+            updateBreadcrumb('<a href="#" onclick="showHome()">Home</a> > About');
+            setActiveNav('nav-about');
+            
+            const content = `
+                <div class="welcome">
+                    <h2>ℹ️ About This Wiki</h2>
+                    <p>This wiki contains comprehensive documentation for the COBOL payment processing system, focusing on the APIPAY program and its related modules.</p>
+                    
+                    <div style="max-width: 800px; margin: 2rem auto; text-align: left;">
+                        <h3 style="color: #1e293b; margin-bottom: 1rem;">📋 Documentation Coverage</h3>
+                        <ul style="color: #64748b; line-height: 1.8;">
+                            <li><strong>APIPAY:</strong> Main payment processing system with detailed technical documentation</li>
+                            <li><strong>LONPF Series:</strong> Supporting programs for specialized transaction types</li>
+                            <li><strong>Flow Diagrams:</strong> Visual representations of system processes</li>
+                            <li><strong>Integration Points:</strong> How programs interact with each other</li>
+                        </ul>
+                        
+                        <h3 style="color: #1e293b; margin: 2rem 0 1rem 0;">🛠️ Features</h3>
+                        <ul style="color: #64748b; line-height: 1.8;">
+                            <li>Responsive design that works on desktop and mobile</li>
+                            <li>Interactive Mermaid diagrams</li>
+                            <li>Fast content loading with caching</li>
+                            <li>Search-friendly navigation</li>
+                            <li>Professional documentation formatting</li>
+                        </ul>
+                        
+                        <div style="background: #f8fafc; border-radius: 0.5rem; padding: 1.5rem; margin: 2rem 0;">
+                            <p style="color: #334155; margin: 0;"><strong>Note:</strong> This documentation is generated from COBOL source code analysis and is designed to help developers understand the payment processing system architecture and functionality.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function showError(message) {
+            const content = `
+                <div class="error">
+                    <h3>❌ Error</h3>
+                    <p>${message}</p>
+                    <button class="btn btn-primary" onclick="showHome()" style="margin-top: 1rem;">Return to Home</button>
+                </div>
+            `;
+            
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function updateBreadcrumb(html) {
+            document.getElementById('breadcrumb').innerHTML = html;
+        }
+
+        function setActiveNav(activeId) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to current item
+            const activeItem = document.getElementById(activeId);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
+
+        function refreshContent() {
+            // Clear cache and reload current page
+            contentCache = {};
+            
+            if (currentPage === 'home') {
+                showHome();
+            } else if (currentPage === 'diagrams') {
+                showDiagrams();
+            } else if (currentPage === 'about') {
+                showAbout();
+            } else {
+                loadProgram(currentPage);
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showHome();
+            checkServerStatus();
+        });
+
+        function checkServerStatus() {
+            const statusElement = document.getElementById('server-status');
+            
+            // Check if we're running through the server
+            if (window.location.protocol === 'http:' && window.location.hostname === 'localhost') {
+                statusElement.innerHTML = '🟢 Server Active';
+                statusElement.style.background = 'rgba(34, 197, 94, 0.8)';
+                statusElement.title = 'Running on local web server - all features available';
+            } else {
+                statusElement.innerHTML = '🔴 File Mode';
+                statusElement.style.background = 'rgba(239, 68, 68, 0.8)';
+                statusElement.title = 'Running directly from files - some features may be limited';
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const isClickInside = sidebar.contains(e.target) || e.target.onclick?.toString().includes('toggleSidebar');
+            
+            if (!isClickInside && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

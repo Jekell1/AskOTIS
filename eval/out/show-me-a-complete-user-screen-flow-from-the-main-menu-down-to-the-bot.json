@@ -1,0 +1,70 @@
+{
+  "question": "Show me a complete user screen flow from the main menu down to the bottom of the tree.",
+  "scope": "flow",
+  "expanded_query": "MAIN Show a bottom complete down flow from main me menu of screen the to tree user",
+  "aliases": {
+    "MAIN": [
+      "main",
+      "MAIN"
+    ]
+  },
+  "answer_outline": "- Identify primary entry program and key perform chain.\n- Summarize major branches / loops (if any).\n- Highlight high risk segments (risk_score).\n- Cite evidence snippets with program + line references.",
+  "diagram": "flowchart TD\n  EXIT--> FORM-PROGX\n  REFRESH-SCREEN--> CALL-WRFORM\n  SETRP--> PRU-OUT\n  SETRP--> END-PROG\n  RETURN-FROM-PRINT--> TEST-FMNO\n  GET-FMNO--> SEND-MESS\n  SETRP--> PRU-IN\n  RETURN-FROM-PRINT--> GET-FD1\n  MAIN-MODULE--> XFER-FM-FIELDS\n  MAIN-MODULE--> SEND-PRU-FORM\n  CHANGE-P-R--> SCREENIO\n  CHANGE-P-R--> SEND-MESS\n  ENTER-CK2--> CKFILE-SCAN\n  ENTER-CK2--> DONE-P-R\n  SEND-LEGEND--> SCREENIO\n  END-PROG--> CLOSE-FILES\n  CHANGE-P-R--> EXIT-ENTER-KEYS\n  ENTER-CK2--> ENTER-CK1\n  EXIT-GET-CX-PRINT--> SCREENIO\n  END-PROG--> XFER-FM-FIELDS\n  PR-FILE--> GET-GPENV\n  MENU-KEY--> MENU-SELECTION\n  GET-FMNO--> GET-FD1\n  GET-FMNO--> NOT-FOUND\n  CHANGE-P-R--> CXFILE-SCAN\n  CHANGE-P-R--> VERIFY-PASSWORD\n  GET-GLOBAL--> OPEN-GB-FILE\n  GET-GLOBAL--> READ-GB-FILE\n  MENU-KEY--> END-ROUTINE\n  ENTER-PROG--> SEND-LEGEND\n  ENTER-PROG--> SCREENIO\n  ENTER-CK2--> SCREENIO\n  EXIT--> EXIT-CXFILE-SCAN\n  EXIT--> OPEN-CX1-FILE\n  ALIGNMENT-PRINT--> XFER-FM-FIELDS\n  PR-FILE--> CLOSE-CX1-FILE\n  PR-FILE--> CLOSE-GB-FILE\n  MAIN-MODULE--> END-ROUTINE\n  MAIN-MODULE--> XFER\n  PR-FILE--> CLOSE-FD1-FILE\n  PR-FILE--> CLOSE-BR-FILE\n  PR-FILE--> CLOSE-PR-FILE\n  RETURN-FROM-PRINT--> IO-ERROR\n  ENTER-FMNO--> RESET-MESS\n  MAIN-MODULE--> ENTER-KEYS\n  ENTER-CK1--> SEND-LEGEND\n  GET-BRANCH--> SCREENIO\n  RESET-SCREEN--> REFRESH-SCREEN\n  CHANGE-P-R--> SEND-LEGEND\n  EXIT--> CLOSE-CX1-FILE\n  QCX1-WBEG-SEQNO--> START-CX1-FILE\n  NOT-FOUND--> SEND-MESS\n  SEND-PRU-FORM--> SCREENIO\n  PR-FILE--> SQL-CONNECT\n  PR-FILE--> FORM-RESET\n  RETURN-FROM-PRINT--> SEND-PRU-FORM\n  GET-FMNO--> SCREENIO\n  MAIN-MODULE--> RETURN-FROM-PRINT\n  CHANGE-P-R--> DONE-P-R\n  ENTER-CK1--> ENTER-CK2\n  NEXT-CX-PRINT-COUNT--> READ-CX1-FILE-NEXT\n  EXIT-GET-CX-PRINT--> CALL-WRFORM\n  GET-GLOBAL--> CLOSE-GB-FILE\n  GET-BRANCH--> IO-ERROR\n  RESET-SEL--> SCREENIO\n  SET-SCAN-CHFG-TABLE--> PRU-OUT\n  PR-FILE--> SCREENIO\n  MAIN-MODULE--> ENTER-FMNO\n  MAIN-MODULE--> ENTRY-MODULE\n  PR-FILE--> GET-BRANCH\n  RETURN-FROM-PRINT--> RESET-SCREEN\n  RETURN-FROM-PRINT--> SETRP\n  RETURN-FROM-PRINT--> FORM-ALIGNED-YN\n  ENTER-FMNO--> SCREENIO\n  ENTER-FMNO--> MENU-SELECTION\n  GET-FMNO--> ENTER-FMNO\n  MAIN-MODULE--> GET-CX-PRINT-COUNT\n  CHANGE-P-R--> ENTER-CK1\n  ENTER-CK1--> SCREENIO\n  DONE-P-R--> EXIT-ENTER-KEYS\n  NEXT-CX-PRINT-COUNT--> EXIT-GET-CX-PRINT\n  EXIT--> READ-CX1-FILE\n  ALIGNMENT-PRINT--> RESET-SEL\n  GET-FD1--> OPEN-FD1-FILE\n  PR-FILE--> GET-GLOBAL\n  RETURN-FROM-PRINT--> MENU-KEY\n  MENU-KEY--> ENTER-TRANS-TYPE\n  ENTER-FMNO--> SETRP\n  ENTER-FMNO--> ENTER-PROG\n  ENTER-CK1--> EXIT-ENTER-KEYS\n  ENTER-CK1--> CHANGE-P-R\n  ALIGNMENT-PRINT--> FORM-PROGX\n  GET-FD1--> READ-FD1-FILE\n  GET-BRANCH--> READ-BR-FILE\n  GET-BRANCH--> SEND-MESS\n  SETRP--> SEND-LEGEND\n  SETRP--> MENU-SELECTION\n  ENTER-FMNO--> SEND-LEGEND\n  FORM-ALIGNED-YN--> RESET-SEL\n  MAIN-MODULE--> PRINT\n  MENU-KEY--> PRU-OUT\n  ENTER-FMNO--> PRU-OUT\n  ENTER-FMNO--> END-PROG\n  TEST-FMNO--> SCREENIO\n  MAIN-MODULE--> RESET-SCREEN\n  MAIN-MODULE--> FORM-PROGX\n  ENTER-CK1--> CKFILE-SCAN\n  ENTER-CK2--> EXIT-ENTER-KEYS\n  EXIT-GET-CX-PRINT--> CLOSE-CX1-FILE\n  ALIGNMENT-PRINT--> CLOSE-FILES\n  GET-FD1--> CLOSE-FD1-FILE\n  GET-BRANCH--> OPEN-BR-FILE\n  GET-BRANCH--> CLOSE-BR-FILE",
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BCHKI0",
+      "path": "BCHKI0",
+      "line": null,
+      "snippet": "Paragraphs=61; edges=113; depth=6; cycles=Y; entries=28; exits=30; fanout_max=12; risk=0.79. Entry: WORKING-STORAGE.... High fanout: MAIN-MODULE (12)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "THE",
+      "path": "THE",
+      "line": null,
+      "snippet": "THE ; ROLE:UNKNOWN ; OUT: ; IN:CPINQ0,LONPFC ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "10199e36ef25d8fe1e21a937c1dfa89485394240",
+      "path": "cobol_src\\CL\\PGMENU.CBL",
+      "line": 572,
+      "snippet": "* IF WE CALL A MENU FROM THE F10 AND THE MENU DISPLAY ON THE"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "BBINQ",
+      "path": "BBINQ",
+      "line": null,
+      "snippet": "Paragraphs=44; edges=62; depth=5; cycles=N; entries=27; exits=26; fanout_max=15; risk=0.475. Entry: MAIN-PROGRAM.... High fanout: END-EVALUATE (15)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "FROM",
+      "path": "FROM",
+      "line": null,
+      "snippet": "FROM ; ROLE:LEAF ; OUT: ; IN:BLQUOT,CDBRRD,CDREAD,CLQUOT,GREXEC,LCFLD,LFPPO,LNPBRN,LNQUOT,SFQUOT,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "24cec6f0ecc3120748fd637313eb50b4313dec12",
+      "path": "cobol_src\\CL\\WIMENU.CBL",
+      "line": 737,
+      "snippet": "* IF WE CALL A MENU FROM THE F10 AND THE MENU DISPLAY ON THE"
+    }
+  ],
+  "meta": {
+    "ts": 1759097718.56936,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Documentation - Static HTML Version</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">COBOL Documentation - Static HTML Version</span>
+        </nav>
+        <main class="content">
+<h1>COBOL Documentation - Static HTML Version</h1>
+<p>A complete static HTML documentation system for COBOL payment processing programs. No server required!</p>
+<h2>🚀 Quick Start</h2>
+<h3><strong>Easy Start (Recommended)</strong></h3>
+<ol>
+<li>Double-click <code>view_documentation.bat</code></li>
+<li>The documentation will open in your default browser</li>
+<li>Browse through all programs and diagrams</li>
+</ol>
+<h3><strong>Manual Start</strong></h3>
+<ol>
+<li>Open <code>index.html</code> in any web browser</li>
+<li>Navigate through the documentation using the cards</li>
+</ol>
+<h2>📁 Generated Files</h2>
+<p>The static HTML system creates the following files:</p>
+<pre><code>Documents/
+├── index.html                      # Main documentation homepage
+├── diagrams.html                   # Interactive diagrams viewer
+├── APIPAY_Documentation.html       # APIPAY program documentation
+├── LONPFB_Documentation.html       # LONPFB program documentation
+├── LONPFC_Documentation.html       # LONPFC program documentation
+├── LONPF2_Documentation.html       # LONPF2 program documentation
+├── LONPF7_Documentation.html       # LONPF7 program documentation
+├── LONPF9_Documentation.html       # LONPF9 program documentation
+├── generate_static_html.py         # Generator script
+└── view_documentation.bat          # Easy launcher
+</code></pre>
+<h2>✨ Features</h2>
+<h3>🎨 <strong>Modern Design</strong></h3>
+<ul>
+<li><strong>Glassmorphism effects</strong> with beautiful gradients</li>
+<li><strong>Responsive layout</strong> that works on all devices</li>
+<li><strong>Print-friendly</strong> styling for documentation export</li>
+<li><strong>Smooth animations</strong> and hover effects</li>
+</ul>
+<h3>📚 <strong>Content Features</strong></h3>
+<ul>
+<li><strong>Complete Markdown rendering</strong> with syntax highlighting</li>
+<li><strong>Interactive Mermaid diagrams</strong> with zoom and pan</li>
+<li><strong>Table of contents</strong> with anchor links</li>
+<li><strong>Cross-references</strong> between programs</li>
+<li><strong>Code syntax highlighting</strong> for COBOL examples</li>
+</ul>
+<h3>🔧 <strong>Technical Benefits</strong></h3>
+<ul>
+<li><strong>No server required</strong> - works directly from file system</li>
+<li><strong>Completely offline</strong> - no internet needed after generation</li>
+<li><strong>Fast loading</strong> - all content is pre-rendered</li>
+<li><strong>Portable</strong> - share the entire folder to share documentation</li>
+</ul>
+<h2>📋 Available Documentation</h2>
+<h3><strong>Main Programs</strong></h3>
+<ul>
+<li>💳 <strong>APIPAY</strong> - Payment Processor (Core System)</li>
+<li>🏦 <strong>LONPFB</strong> - Bill Pay System</li>
+<li>💰 <strong>LONPFC</strong> - Check Processing</li>
+<li>🌐 <strong>LONPF2</strong> - Wire Transfer Processor</li>
+<li>🚗 <strong>LONPF7</strong> - Repossession Processor</li>
+<li>🛡️ <strong>LONPF9</strong> - Insurance Processor</li>
+</ul>
+<h3><strong>Interactive Diagrams</strong></h3>
+<ul>
+<li>APIPAY Transaction Processing Flow</li>
+<li>APIPAY Complete Call Graph</li>
+<li>APIPAY Database Updates</li>
+<li>APIPAY Error Handling</li>
+<li>LONPFC Main Flow</li>
+<li>LONPFC Transaction Processing</li>
+<li>LONPFC Error Handling</li>
+<li>LONPFC Payment Distribution</li>
+<li>LONPFC Deferment Processing</li>
+</ul>
+<h2>🛠️ Regenerating Documentation</h2>
+<p>If you need to update the documentation after changes to the Markdown files:</p>
+<h3><strong>Requirements</strong></h3>
+<ul>
+<li>Python 3.x</li>
+<li><code>markdown</code> module: <code>pip install markdown</code></li>
+</ul>
+<h3><strong>Generate HTML</strong></h3>
+<pre><code class="language-bash">python generate_static_html.py
+</code></pre>
+<p>This will:
+1. Convert all <code>.md</code> files to HTML
+2. Process Mermaid diagrams
+3. Create navigation and cross-links
+4. Generate the main index and diagrams pages</p>
+<h2>📊 Diagram System</h2>
+<p>The static HTML includes a complete interactive diagram system:</p>
+<ul>
+<li><strong>Mermaid.js integration</strong> for dynamic diagrams</li>
+<li><strong>Zoom and pan</strong> capabilities</li>
+<li><strong>Hover effects</strong> on diagram elements</li>
+<li><strong>Responsive scaling</strong> for different screen sizes</li>
+<li><strong>Print-friendly</strong> diagram rendering</li>
+</ul>
+<h2>🔍 Content Structure</h2>
+<h3><strong>Program Documentation</strong></h3>
+<p>Each program documentation includes:
+- <strong>Program Overview</strong> with business purpose
+- <strong>Technical Implementation</strong> details
+- <strong>Input/Output specifications</strong>
+- <strong>Error handling</strong> and validation
+- <strong>Integration points</strong> with other systems
+- <strong>File dependencies</strong> and data flows</p>
+<h3><strong>Navigation Features</strong></h3>
+<ul>
+<li><strong>Breadcrumb navigation</strong> with quick links</li>
+<li><strong>Program cards</strong> with icons and descriptions</li>
+<li><strong>Cross-reference links</strong> between related programs</li>
+<li><strong>Back-to-top buttons</strong> for easy navigation</li>
+<li><strong>Responsive sidebar</strong> for mobile devices</li>
+</ul>
+<h2>💡 Usage Tips</h2>
+<h3><strong>For Developers</strong></h3>
+<ul>
+<li>Use the <strong>Table of Contents</strong> to jump to specific sections</li>
+<li><strong>Cross-reference links</strong> help understand program relationships</li>
+<li><strong>Code examples</strong> show exact COBOL syntax and usage</li>
+<li><strong>Diagrams</strong> provide visual understanding of complex flows</li>
+</ul>
+<h3><strong>For Documentation</strong></h3>
+<ul>
+<li><strong>Print-friendly</strong> CSS for creating hard copies</li>
+<li><strong>Portable format</strong> - copy entire folder to share</li>
+<li><strong>No dependencies</strong> - works in any modern browser</li>
+<li><strong>Offline capability</strong> - no internet required</li>
+</ul>
+<h3><strong>For System Administration</strong></h3>
+<ul>
+<li><strong>Self-contained</strong> - no server setup required</li>
+<li><strong>Fast deployment</strong> - just copy files</li>
+<li><strong>Version control friendly</strong> - all content is in HTML</li>
+<li><strong>Backup simple</strong> - include in regular file backups</li>
+</ul>
+<h2>🔧 Customization</h2>
+<p>The generator script can be customized to:
+- <strong>Add new programs</strong> by editing the <code>programs</code> dictionary
+- <strong>Include additional diagrams</strong> by updating the <code>diagrams</code> dictionary
+- <strong>Modify styling</strong> by editing the CSS in <code>create_document_html()</code>
+- <strong>Change layout</strong> by modifying the HTML templates</p>
+<h2>📝 Source Files</h2>
+<p>The HTML is generated from these source files:
+- <strong>Markdown files</strong>: <code>*.md</code> in Documents directory
+- <strong>Mermaid diagrams</strong>: <code>*.mmd</code> in Documents/Diagrams directory
+- <strong>Generator script</strong>: <code>generate_static_html.py</code></p>
+<h2>🎯 Integration</h2>
+<p>This static documentation system is perfect for:
+- <strong>Development teams</strong> needing offline access
+- <strong>Documentation portals</strong> requiring fast loading
+- <strong>Training environments</strong> with limited connectivity
+- <strong>Archive purposes</strong> with long-term accessibility
+- <strong>Client deliverables</strong> requiring self-contained documentation</p>
+<hr />
+<p><em>Generated: July 22, 2025 | COBOL Documentation System - Static HTML Version</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

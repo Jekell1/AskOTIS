@@ -1,0 +1,65 @@
+{
+  "question": "What external programs does APIPAY call?",
+  "scope": "dependency",
+  "expanded_query": "APIPAY What call does external programs",
+  "aliases": {},
+  "answer_outline": "- List core program and its immediate callers & callees.\n- Note copybooks used and potential shared utilities.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_deps",
+      "id": "APIPAY",
+      "path": "APIPAY",
+      "line": null,
+      "snippet": "APIPAY ; ROLE:API ; OUT:C,FORM-PROGX,GP-PAYOFF-NONCASH,TO ; IN: ; COPY:ACCESS,ACCESSW,ADDONSPR,ADDONSPRW,AGEING,AGEINGW,CONAME_EXT,CONNECTW_SQL,CONNECT_SQL,DACCESS,DACCESSW,DATER,DATERW,DECLAR2,DECLARE,DEFPOL,DEFPOLW,FERRORS,FILEWK,GB01BR,GB01BR_SQL,GB01GB,GB01GB_SQL,GB01RC,GBBRGS_SQL,GBGBGS_SQL,GBGBRN,GBRC2RN,GBRCGS_SQL,GBWSGB,GBWSRC,GETENV,GETENVW,GETPRW,GL01GI,GLGI1RN,GLGIGS_SQL,GLWSGI,GPENV,LP"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "26a44d5a61c1f2691b5ae81f3b5c24515bfbe2be",
+      "path": "cobol_src\\CL\\WIMENU.CBL",
+      "line": 330,
+      "snippet": "* CALL FORM-PROGX PROGRAMS"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "TO",
+      "path": "TO",
+      "line": null,
+      "snippet": "TO ; ROLE:LEAF ; OUT: ; IN:AC1ERN,ACRERN,APIPAY,BHAGED,BHCALL,BICREA,BLQUOT,BRMAN1,BRMAN2,BRMAN3,BRMAN4,BRMAN5,BRMAN6,BRMAN7,BROPM1,BULKTR,BWCREA,CALCZ3,CALCZL,CHKSEC,CLAIM2,CLMCUP,CLQUOT,CPINQ1,CPMNMU,DATE35,EOCRON,EOEXEC,EOMAIN,GCMAIN,GIMAN1,GIMAN2,GIMAN3,GIMAN4,GIMAN5,IOCONN,LCFLD,LNAGED,LNQUOT,LONPB0,LONPF1,LONPF2,LONPF5,LONPFA,LONPFC,LONPFF,LONPFZ,LONPG4,LONPG6,LONPG8 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "9f757c0105de5e2271f09d2b4897e02e8310871a",
+      "path": "cobol_src\\SP\\APIPAY.CBL",
+      "line": 1880,
+      "snippet": "CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "C",
+      "path": "C",
+      "line": null,
+      "snippet": "C ; ROLE:LEAF ; OUT: ; IN:AC1DAY,AC2BAH,AC2DAY,ACHCRE,ACQEXT,ACRERN,ACUMEM,ADDEXT,ALFILE,ALJOIN,ALLIST,APIDRV,APILNS,APIPAY,AUFILE,AULIST,AUTOC2,BALAID,BB1535,BBINQ,BBINQ2,BHBWLN,BHLIST,BHMAIN,BIFILE,BMEXTR,BMFILE,BPBKBR,BPOTH,BPREF,BREXEC,BRFILE,BRMACH,BRMAN1,BTRACK,BWEXTR,BWFILE,BWIMP,BWLNRP,BXFILE,BYFILE,BYINQ,BYVERI,CAEXTR,CAFILE,CDBFLE,CDBMAN,CDCOPY,CDEXTR,CDFILE ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "963555c0421093309f14ceea03545485755a6ca2",
+      "path": "cobol_src\\SP\\APIPAY.CBL",
+      "line": 1663,
+      "snippet": "CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME"
+    }
+  ],
+  "meta": {
+    "ts": 1759097673.4620569,
+    "k": 6,
+    "candidate_indexes": [
+      "program_deps",
+      "calls",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

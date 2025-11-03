@@ -1,0 +1,16 @@
+      * COPYMEMBER: LIBWI/CHLEGL.CMD
+       01  LEGEND-WALK                   PIC X(50)  VALUE
+           "F1-CANCEL, ^-UP, v-DOWN, ENTER FIELD INFORMATION:".
+       01  LEGEND-01.
+           03  FILLER       PIC X(39)  VALUE
+           "F1-RESET, 'DELETE', F7-UPDATE AND EXIT,".
+           03  FILLER       PIC X(17)  VALUE
+           " P2, OR FIELD#:  ".
+       01  LEGEND-02.
+           03  FILLER       PIC X(29)  VALUE
+           "F1-RESET, F7-UPDATE AND EXIT,".
+           03  FILLER       PIC X(17)  VALUE
+           " P1, OR FIELD#:  ".
+       01  LEGEND-NEW.
+           03  FILLER       PIC X(37)  VALUE
+           " F1-CLEAR PAGE,  F7-UPDATE AND EXIT :".

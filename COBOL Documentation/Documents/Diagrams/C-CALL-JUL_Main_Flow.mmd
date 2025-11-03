@@ -1,0 +1,36 @@
+flowchart TD
+    A[Start C-CALL-JUL] --> B[Input Preparation]
+    B --> C[MOVE P-DATE-IN TO JJUL-IN]
+    C --> D[Adjust Year to 1900 Base]
+    D --> E[JWS-JUL-IN-CCYY = JJUL-IN-CCYY - 1900]
+    E --> F[Leap Year Check]
+    F --> G[MOVE JJUL-IN-CCYY TO LEAP-YEAR-CCYY]
+    G --> H[PERFORM C-LEAP-YEAR-TEST]
+    H --> I[Leap Day Adjustment]
+    
+    I --> J{Month > 2 AND Leap Year?}
+    J -->|Yes| K[JWS-EXTRA-DAY = 1]
+    J -->|No| L[JWS-EXTRA-DAY = 0]
+    
+    K --> M[Julian Calculation]
+    L --> M
+    
+    M --> N[Year Component: YEAR-1 × 1461 ÷ 4]
+    N --> O[Month Component: DYTOM MM]
+    O --> P[Day Component: DD]
+    P --> Q[Add Leap Day Adjustment]
+    
+    Q --> R[COMPUTE P-JULIAN-DATE]
+    R --> S[= Year + Month + Day + Extra]
+    S --> T[End C-CALL-JUL]
+    
+    U[Examples]
+    U --> V[20240315 → Julian 45367]
+    U --> W[20240229 → Leap day handled]
+    U --> X[19000101 → Julian 1]
+    
+    style A fill:#e1f5fe
+    style T fill:#c8e6c9
+    style J fill:#fff3e0
+    style M fill:#f3e5f5
+    style U fill:#e1f5fe

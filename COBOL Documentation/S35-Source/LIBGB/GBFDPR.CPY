@@ -1,0 +1,12 @@
+      * COPYMEMBER: LIBGB/GBFDPR
+      * FOR DOS DIRECT PRINTING
+      *FD
+      *    LABEL RECORDS ARE STANDARD.
+      *01  DPR-REC.
+      *    03  DPR-REC-CUTSHEET  PIC X(132).
+
+       FD  PR-FILE
+           LABEL RECORDS ARE STANDARD.
+       01  PR-REC.
+           03  PR-REC-CUTSHEET  PIC X(132).
+

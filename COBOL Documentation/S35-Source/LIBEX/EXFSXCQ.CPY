@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXCQ
+           SELECT XCQ-FILE ASSIGN TO XCQ-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XCQ-KEY
+                  FILE STATUS FILE-STAT.

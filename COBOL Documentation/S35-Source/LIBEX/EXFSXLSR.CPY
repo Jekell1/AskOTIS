@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBEX/EXFSXLSR
+
+           SELECT XLSR-FILE ASSIGN TO XLSR-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLSR-KEY
+                  FILE STATUS FILE-STAT.

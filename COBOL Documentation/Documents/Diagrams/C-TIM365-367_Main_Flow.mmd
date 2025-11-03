@@ -1,0 +1,30 @@
+graph TD
+    A[C-TIM365-367 Section] --> B[Perform C-TIMBEG]
+    B --> C[Calculate Year Difference]
+    C --> D[Calculate Month Difference]
+    D --> E[Calculate Day Difference]
+    E --> F{Is Day Difference < 0?}
+    F -->|Yes| G[Adjust Month and Year]
+    G --> H[Calculate Days in Month]
+    H --> I[Apply Leap Year Logic]
+    I --> J[Adjust for Negative Day Difference]
+    J --> K[Calculate Final Days]
+    F -->|No| L[Skip Adjustments]
+    K --> M[Compute Total Elapsed Days]
+    L --> M
+    M --> N[Perform C-TIMEND]
+    
+    subgraph "Leap Year Logic"
+    I --> I1[Check if Year is Divisible by 4]
+    I1 --> I2[Apply Special Century Year Rules]
+    I2 --> I3[Add Day if Necessary]
+    end
+    
+    subgraph "Negative Day Handling"
+    J --> J1[Decrement Month]
+    J1 --> J2{Month = 0?}
+    J2 -->|Yes| J3[Set Month = 12, Decrement Year]
+    J2 -->|No| J4[Keep Adjusted Month/Year]
+    J3 --> J5[Calculate Days in Previous Month]
+    J4 --> J5
+    end

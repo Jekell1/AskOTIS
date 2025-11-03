@@ -1,0 +1,36 @@
+graph TD
+    A[Branch Validation] --> B[READ-BR-FILE]
+    B --> C{Branch Found?}
+    C -->|No| D[Status 2: Branch Not Found]
+    C -->|Yes| E[Reference Code Validation]
+    
+    E --> F[OPEN-CD1-FILE]
+    F --> G[READ-CD1-FILE]
+    G --> H{Reference Code Valid?}
+    H -->|No| I[Status 3: Invalid Ref Code]
+    H -->|Yes| J[Machine Validation]
+    
+    J --> K{Branch on This Machine?}
+    K -->|No| L[Status 4: Wrong Machine]
+    K -->|Yes| M[Global Record Check]
+    
+    M --> N[READ-GB-FILE]
+    N --> O{Global Record Found?}
+    O -->|No| P[Status 5: Missing Global]
+    O -->|Yes| Q[Business Day Check]
+    
+    Q --> R[READ-RC2-FILE]
+    R --> S{Day Open?}
+    S -->|No| T[Status 6: Day Not Open]
+    S -->|Yes| U[Account Validation]
+    
+    U --> V[READ-LN1-FILE]
+    V --> W{Account Found?}
+    W -->|No| X[Status: Account Not Found]
+    W -->|Yes| Y[Validation Complete]
+    
+    style A fill:#e1f5fe
+    style C fill:#fce4ec
+    style H fill:#fce4ec
+    style K fill:#fce4ec
+    style Y fill:#e8f5e8

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMALL - Comprehensive Time Calculation Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMALL - Comprehensive Time Calculation Suite</span>
+        </nav>
+        <main class="content">
+<h1>C-TIMALL - Comprehensive Time Calculation Suite</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Section:</strong> C-TIMALL SECTION</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>C-TIMALL</strong> is a comprehensive time calculation suite that serves as the central dispatcher for all elapsed time calculations in the APIPAY system. This utility supports multiple year types and calculation methods, providing flexibility for different financial and business requirements including various day-count conventions used in the financial industry.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Function Type:</strong> Multi-method time calculation dispatcher</li>
+<li><strong>Processing Mode:</strong> Year-type driven calculation routing</li>
+<li><strong>Input Method:</strong> Uses global DATER-BUFFER and year type parameters</li>
+<li><strong>Output Method:</strong> Updates elapsed time fields with months, days, and remainders</li>
+<li><strong>Calculation Types:</strong> Supports 358, 360, 361, 362, 365, 367, 999, and 998 day year types</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>C-TIMALL provides comprehensive time calculations by:</p>
+<ol>
+<li><strong>Multi-Standard Support:</strong> Supports various financial day-count conventions</li>
+<li><strong>Accurate Calculations:</strong> Provides precise elapsed time between any two dates</li>
+<li><strong>Flexible Output:</strong> Returns results in months, days, and remainder days</li>
+<li><strong>Data Preservation:</strong> Maintains original input dates while performing calculations</li>
+<li><strong>Error Protection:</strong> Validates input dates before processing</li>
+</ol>
+<h2>Transaction Types Supported</h2>
+<p>The program supports the following year types for different calculation methods:</p>
+<table>
+<thead>
+<tr>
+<th>Year Type</th>
+<th>Description</th>
+<th>Method</th>
+<th>Business Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>358</strong></td>
+<td>358-day year</td>
+<td>C-TIM360-358</td>
+<td>Special financial calculations</td>
+</tr>
+<tr>
+<td><strong>360</strong></td>
+<td>360-day year</td>
+<td>C-TIM360-358</td>
+<td>Standard commercial year (12 × 30)</td>
+</tr>
+<tr>
+<td><strong>361</strong></td>
+<td>361-day year</td>
+<td>C-TIM361</td>
+<td>Specialized regional calculations</td>
+</tr>
+<tr>
+<td><strong>362</strong></td>
+<td>362-day year</td>
+<td>C-TIM362</td>
+<td>Mercury Alabama specific</td>
+</tr>
+<tr>
+<td><strong>365</strong></td>
+<td>365-day year</td>
+<td>C-TIM365-367</td>
+<td>Standard calendar year</td>
+</tr>
+<tr>
+<td><strong>367</strong></td>
+<td>367-day year</td>
+<td>C-TIM365-367</td>
+<td>Leap year adjusted calculations</td>
+</tr>
+<tr>
+<td><strong>998</strong></td>
+<td>Unit period</td>
+<td>C-TIM999-998</td>
+<td>Special timing calculations</td>
+</tr>
+<tr>
+<td><strong>999</strong></td>
+<td>Special timing</td>
+<td>C-TIM999-998</td>
+<td>Advanced timing methods</td>
+</tr>
+</tbody>
+</table>
+<h2>Input Parameters</h2>
+<h3>Primary Date Fields</h3>
+<ul>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Starting date in YYYYMMDD format</li>
+<li><strong>SYS-DATE</strong> (PIC 9(8)): Ending date in YYYYMMDD format</li>
+<li><strong>ELAPSED-YRTYPE</strong> (PIC 9(3)): Year type for calculation method</li>
+</ul>
+<h3>Unit Period Configuration (Default)</h3>
+<ul>
+<li><strong>DATER-UNITPER-CD</strong> (PIC X): Unit type - defaulted to "M" (months)</li>
+<li><strong>DATER-UNITPER-FREQ</strong> (PIC 9(3)): Frequency - defaulted to 1</li>
+</ul>
+<h3>Special Processing Parameters</h3>
+<ul>
+<li><strong>NDTE-DATE</strong> (PIC 9(8)): Preserved during processing</li>
+<li><strong>DATER-HOLD-NDTE-DATE</strong> (PIC 9(8)): Backup storage for NDTE-DATE</li>
+</ul>
+<h2>Output Fields</h2>
+<h3>Elapsed Time Results</h3>
+<ul>
+<li><strong>ELAPSED-MONTHS</strong> (PIC S9(7) COMP-3): Number of months between dates</li>
+<li><strong>ELAPSED-DAYS</strong> (PIC S9(9) COMP-3): Total days between dates</li>
+<li><strong>ELAPSED-REM</strong> (PIC S9(7) COMP-3): Remainder days after month calculation</li>
+</ul>
+<h3>Comparison Results</h3>
+<ul>
+<li><strong>ELAPSED-RESULTS</strong> (PIC X): Comparison relationship</li>
+<li><strong>"L"</strong>: NUM-DATE is less than SYS-DATE</li>
+<li><strong>"E"</strong>: NUM-DATE equals SYS-DATE</li>
+<li><strong>"G"</strong>: NUM-DATE is greater than SYS-DATE</li>
+</ul>
+<h3>Special Cases</h3>
+<ul>
+<li><strong>Zero Date Handling</strong>: Returns all zeros if either input date is zero</li>
+<li><strong>Negative Results</strong>: Supported for dates in reverse chronological order</li>
+</ul>
+<h2>Program Flow Diagrams</h2>
+<h3>Main Flow</h3>
+<p><a href="Diagrams/C-TIMALL_Main_Flow.mmd">C-TIMALL Main Flow</a></p>
+<h3>Year Type Processing</h3>
+<p><a href="Diagrams/C-TIMALL_Year_Type_Processing.mmd">C-TIMALL Year Type Processing</a></p>
+<h2>Data Flow Mapping</h2>
+<pre><code>Input: NUM-DATE, SYS-DATE → Zero Date Check
+       ELAPSED-YRTYPE → Method Selection
+       DATER-UNITPER-INFO → Parameter Setup
+
+Processing: Save State → Route by Year Type → Execute Calculation → Restore State
+
+Output: ELAPSED-MONTHS, ELAPSED-DAYS, ELAPSED-REM → Return to Caller
+</code></pre>
+<h3>Data Preservation Flow</h3>
+<pre><code>NDTE-DATE → DATER-HOLD-NDTE-DATE (backup)
+DATER-UNITPER-INFO → HOLD-UNITPER-INFO (backup)
+Process Calculations
+DATER-HOLD-NDTE-DATE → NDTE-DATE (restore)
+HOLD-UNITPER-INFO → DATER-UNITPER-INFO (restore)
+</code></pre>
+<h2>Referenced Programs</h2>
+<p>The following specialized time calculation routines are called by C-TIMALL:</p>
+<ul>
+<li><strong>C-TIM360-358</strong> - <a href="C-TIM360-358_Documentation.html">C-TIM360-358 Documentation</a></li>
+<li><strong>C-TIM361</strong> - <a href="C-TIM361_Documentation.html">C-TIM361 Documentation</a></li>
+<li><strong>C-TIM362</strong> - <a href="C-TIM362_Documentation.html">C-TIM362 Documentation</a></li>
+<li><strong>C-TIM365-367</strong> - <a href="C-TIM365-367_Documentation.html">C-TIM365-367 Documentation</a></li>
+<li><strong>C-TIM999-998</strong> - <a href="C-TIM999-998_Documentation.html">C-TIM999-998 Documentation</a></li>
+<li><strong>DATER-ROUTINE</strong> - Main date processing router</li>
+</ul>
+<h2>Error Handling and Validation</h2>
+<h3>Input Validation</h3>
+<ul>
+<li><strong>Zero Date Check</strong>: Returns zeros for any zero input dates</li>
+<li><strong>Date Format</strong>: Relies on DATER-ROUTINE for format validation</li>
+<li><strong>Year Type</strong>: Validates against supported year types</li>
+</ul>
+<h3>Error Processing</h3>
+<ul>
+<li><strong>Invalid Year Type</strong>: No processing performed for unsupported types</li>
+<li><strong>Date Errors</strong>: Handled by underlying date calculation routines</li>
+<li><strong>Overflow Protection</strong>: Uses COMP-3 fields for large calculations</li>
+</ul>
+<h3>Data Integrity</h3>
+<ul>
+<li><strong>State Preservation</strong>: Saves and restores NDTE-DATE and unit period info</li>
+<li><strong>Original Data</strong>: Maintains original input dates throughout processing</li>
+<li><strong>Consistent Results</strong>: Ensures output consistency across all year types</li>
+</ul>
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<pre><code class="language-cobol">Working Storage Fields:
+DATER-HOLD-NDTE-DATE     PIC 9(8)     - NDTE-DATE backup
+HOLD-UNITPER-INFO        PIC X(4)     - Unit period backup
+ELAPSED-YRTYPE           PIC 9(3)     - Year type selector
+
+Input/Output Fields:
+NUM-DATE                 PIC 9(8)     - Start date
+SYS-DATE                 PIC 9(8)     - End date  
+ELAPSED-MONTHS           PIC S9(7) COMP-3 - Month result
+ELAPSED-DAYS             PIC S9(9) COMP-3 - Day result
+ELAPSED-REM              PIC S9(7) COMP-3 - Remainder
+ELAPSED-RESULTS          PIC X        - Comparison result
+</code></pre>
+<h3>Key Algorithms</h3>
+<ol>
+<li>
+<p><strong>Zero Date Detection:</strong>
+   <code>cobol
+   IF ( NUM-DATE = 0 ) OR ( SYS-DATE = 0 )
+       MOVE 0 TO ELAPSED-DAYS, ELAPSED-MONTHS, ELAPSED-REM
+       MOVE SPACES TO ELAPSED-RESULTS</code></p>
+</li>
+<li>
+<p><strong>State Preservation Pattern:</strong>
+   <code>cobol
+   MOVE NDTE-DATE TO DATER-HOLD-NDTE-DATE
+   MOVE DATER-UNITPER-INFO TO HOLD-UNITPER-INFO
+   [Processing]
+   MOVE DATER-HOLD-NDTE-DATE TO NDTE-DATE
+   MOVE HOLD-UNITPER-INFO TO DATER-UNITPER-INFO</code></p>
+</li>
+<li>
+<p><strong>Year Type Dispatching:</strong>
+   <code>cobol
+   EVALUATE TA-YRTYPE
+   WHEN 358 PERFORM C-TIM360-358
+   WHEN 360 PERFORM C-TIM360-358
+   [... other year types ...]
+   END-EVALUATE</code></p>
+</li>
+</ol>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li>APIPAY elapsed time calculations</li>
+<li>Loan payment processing</li>
+<li>Interest calculation routines</li>
+<li>Financial reporting modules</li>
+</ul>
+<h3>Called Utilities</h3>
+<ul>
+<li>Year-specific calculation routines</li>
+<li>DATER-ROUTINE for core processing</li>
+<li>Date validation and conversion utilities</li>
+</ul>
+<h3>Global Dependencies</h3>
+<ul>
+<li>DATER-BUFFER structure</li>
+<li>TA-YRTYPE parameter</li>
+<li>System date formats</li>
+</ul>
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><a href="Diagrams/C-TIMALL_Call_Graph.mmd">C-TIMALL Call Graph</a></p>
+<h3>Processing Sequence</h3>
+<pre><code>C-TIMALL
+├── Zero Date Check
+├── State Backup
+│   ├── NDTE-DATE → DATER-HOLD-NDTE-DATE
+│   └── DATER-UNITPER-INFO → HOLD-UNITPER-INFO
+├── Parameter Setup
+│   ├── DATER-UNITPER-CD = &quot;M&quot;
+│   ├── DATER-UNITPER-FREQ = 1
+│   └── DATER-ACTION-CODE = &quot;E&quot;
+├── PERFORM DATER-ROUTINE
+├── Year-Type Specific Processing (via EVALUATE)
+│   ├── C-TIM360-358 (for 358, 360)
+│   ├── C-TIM361 (for 361)
+│   ├── C-TIM362 (for 362)
+│   ├── C-TIM365-367 (for 365, 367)
+│   └── C-TIM999-998 (for 998, 999)
+└── State Restoration
+    ├── HOLD-UNITPER-INFO → DATER-UNITPER-INFO
+    └── DATER-HOLD-NDTE-DATE → NDTE-DATE
+</code></pre>
+<h3>Historical Notes</h3>
+<ul>
+<li><strong>JTG 032487</strong>: Added logic for TIM999</li>
+<li><strong>JTG 101795</strong>: Added TIM362 for Mercury Alabama</li>
+<li><strong>JTG 040397</strong>: Added TIM361 for Jefferson NJ</li>
+<li><strong>MJD 130213</strong>: Added DATER-HOLD-NDTE-DATE for state preservation</li>
+<li><strong>MJD 130218</strong>: Added zero date test to prevent processing errors</li>
+</ul>
+<hr />
+<p><strong>Note:</strong> This utility is fundamental to all time-based calculations in the APIPAY system. The multiple year types support various financial calculation standards required by different institutions and regulatory frameworks.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

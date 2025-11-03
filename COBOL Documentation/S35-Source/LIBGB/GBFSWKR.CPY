@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSWKR
+           SELECT WK-FILE ASSIGN MKTEMP-BUF
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY WK-KEY
+                  FILE STATUS FILE-STAT.

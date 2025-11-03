@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM365-367 - Elapsed Time Calculation (365/367 Day Calendar)</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM365-367 - Elapsed Time Calculation (365/367 Day Calendar)</span>
+        </nav>
+        <main class="content">
+<h1>C-TIM365-367 - Elapsed Time Calculation (365/367 Day Calendar)</h1>
+<p><strong>Location:</strong> <code>.\C-TIM365-367.cpy</code><br />
+<strong>Program ID:</strong> C-TIM365-367<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#technical-details">Technical Details</a></li>
+<li><a href="#limitations-and-edge-cases">Limitations and Edge Cases</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+<li><a href="#notes">Notes</a></li>
+</ol>
+<h2>Overview</h2>
+<p><code>C-TIM365-367</code> is a utility section that calculates the elapsed time between two dates using either a 365-day or 367-day year type. This utility is part of the APIPAY date/time processing utilities and provides specialized date calculations that account for leap years in a more accurate way than some of the other calendar methods.</p>
+<h2>Purpose</h2>
+<p>The primary purpose of this utility is to calculate the precise elapsed time between two dates considering the actual number of days in each month and handling leap years appropriately. The utility produces outputs in terms of:
+- Elapsed months
+- Elapsed days 
+- Elapsed remainder days</p>
+<h2>Usage</h2>
+<h3>Input</h3>
+<ul>
+<li><code>WS-DATE1-CCYY</code>, <code>WS-DATE1-MM</code>, <code>WS-DATE1-DD</code>: First date (starting date) in CCYY-MM-DD format</li>
+<li><code>WS-DATE2-CCYY</code>, <code>WS-DATE2-MM</code>, <code>WS-DATE2-DD</code>: Second date (ending date) in CCYY-MM-DD format</li>
+</ul>
+<h3>Output</h3>
+<ul>
+<li><code>ELAPSED_MONTHS</code>: Number of complete months between the dates</li>
+<li><code>ELAPSED_DAYS</code>: Total number of days between the dates</li>
+<li><code>ELAPSED_REM</code>: Remainder days (depends on the specific calculation method)</li>
+</ul>
+<h3>Example Call</h3>
+<pre><code class="language-cobol">MOVE start-date TO WS-DATE1.
+MOVE end-date TO WS-DATE2.
+PERFORM C-TIM365-367.
+DISPLAY &quot;Elapsed months: &quot; ELAPSED_MONTHS.
+DISPLAY &quot;Elapsed days: &quot; ELAPSED_DAYS.
+DISPLAY &quot;Remainder: &quot; ELAPSED_REM.
+</code></pre>
+<h2>Technical Details</h2>
+<h3>Algorithm</h3>
+<p>The utility performs these steps:
+1. Initializes working storage variables via <code>C-TIMBEG</code>
+2. Calculates the difference in years, months, and days between the two dates
+3. Handles cases where the day difference is negative (requiring adjustment from previous month)
+4. Applies specialized leap year calculations and adjustments
+5. Computes the final elapsed time values
+6. Finalizes the calculation via <code>C-TIMEND</code></p>
+<h3>Leap Year Handling</h3>
+<p>The utility incorporates complex leap year handling that:
+- Uses the standard divisible-by-4 check for determining leap years
+- Makes special adjustments when dates span across February in leap years
+- Contains special handling for century years (like the year 2000)</p>
+<h3>Code History</h3>
+<p>The code contains several sections of commented-out code and developer notes that indicate this utility has undergone several revisions to handle special cases properly. Notable revisions include:
+- BHO's restoration of Veryant's code for certain leap year calculations
+- MJD's comments from 2015 questioning the leap year logic
+- Various attempts to align the COBOL implementation with the original C code</p>
+<h2>Limitations and Edge Cases</h2>
+<ul>
+<li>The utility requires careful handling when dates span across February in leap years</li>
+<li>There are special considerations for century years that may or may not be leap years</li>
+<li>The complex adjustments for negative day differences could produce unexpected results if not properly understood</li>
+</ul>
+<h2>Dependencies</h2>
+<ul>
+<li><code>C-TIMBEG</code>: Initializes the working storage variables</li>
+<li><code>C-TIMEND</code>: Finalizes the calculation</li>
+<li><code>C-LEAP-YEAR-TEST</code>: Used to determine if a year is a leap year</li>
+<li><code>DYTOM</code> function: Used for calculating days in month</li>
+</ul>
+<h2>Related Utilities</h2>
+<ul>
+<li><code>C-TIM360-358</code>: Calculates elapsed time using a 360-day or 358-day year</li>
+<li><code>C-TIM361</code>: Calculates elapsed time using a 361-day year type</li>
+<li><code>C-TIM362</code>: Calculates elapsed time using a 362-day year type</li>
+<li><code>C-TIM999-998</code>: Calculates elapsed time using Truth and Lending method (999) or elapsed unit periods (998)</li>
+</ul>
+<h2>Notes</h2>
+<p>The utility contains extensive comments about differences between implementations and potential issues to watch for during testing. There are specifically noted concerns about the correct implementation of leap year handling, especially around century years.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+       LCAP-I-L-CURRENT-PERIOD-NEWCUR.
+      * SET UP AMOUNT LATE CHARGES CAN STILL BE CALCULATED ON:
+           IF LN-PAY-SCHLD-FG = "Y"
+              MOVE LCAP-1STPYDATE TO NUM-DATE
+              MOVE LCAP-CURDATE TO SYS-DATE
+              PERFORM TIM
+              IF ELAPSED-MONTHS < 0
+                 MOVE 0 TO ELAPSED-MONTHS
+              END-IF
+              ADD 1 ELAPSED-MONTHS GIVING LCAP
+              MOVE SCHD-AMT(LCAP) TO LCAP-CURDUE
+           ELSE
+              MOVE LN-REGPYAMT TO LCAP-CURDUE
+              IF LN-1STPYAMT NOT = 0
+                 IF LCAP-CURDATE = LCAP-1STPYDATE
+                    MOVE LN-1STPYAMT TO LCAP-CURDUE.
+
+           IF LCAP-TRAMT < LCAP-CURDUE
+              SUBTRACT LCAP-TRAMT FROM LCAP-CURDUE
+              IF LCAP-CURDUE < LCAP-DELFAC
+                 MOVE 0 TO LCAP-CURDUE
+              END-IF
+           ELSE
+              MOVE 0 TO LCAP-CURDUE.
+

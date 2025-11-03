@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSEO
+           SELECT EO-FILE ASSIGN TO EO-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY EO1-KEY
+                  FILE STATUS FILE-STAT.

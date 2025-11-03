@@ -1,0 +1,35 @@
+================================================================================
+                    AZURE SEARCH INDEX AUDIT SUMMARY
+================================================================================
+
+✅ ACTIVE (9 indexes):          1,496,880 docs  | All have embeddings
+❓ UNUSED VALUABLE (8):         1,355,069 docs  | 6 have embeddings  
+🔴 LEGACY TO DELETE (4):          105,017 docs  | Can safely remove
+❔ UNKNOWN (3):                   196,815 docs  | Need investigation
+────────────────────────────────────────────────────────────────────────────────
+📊 TOTAL: 24 indexes             3,153,781 docs
+================================================================================
+
+🎯 TOP RECOMMENDATIONS:
+
+1. DELETE 4 legacy indexes → Save 105k docs
+   • cobol-facts-v3, cobol-facts-v3l, cobol-symbols, cobol-xrefs
+   • SAFE TO DELETE - all superseded by new_ indexes
+
+2. ACTIVATE 2 high-value indexes → Add powerful search capabilities
+   • new_cobol_symbol_refs (1.1M docs) - "Where is X used?"
+   • new_cobol_calls (15.8k docs) - "What calls program Y?"
+   ⚠️  First check their embedding completion status
+
+3. INVESTIGATE 6 potential duplicates → Could save 5-7 more indexes
+   • copybook_meta vs copybook_usage
+   • program_deps vs program_flows
+   • program_inventory vs program_meta
+   • menu_trees vs ui_paths
+   • code-chunks vs new_code_chunks
+   • new-cobol-files vs program_meta
+
+================================================================================
+📄 Full details in: INDEX_AUDIT_COMPLETE.md
+📄 Analysis saved in: UNUSED_INDEXES_ANALYSIS.md
+================================================================================

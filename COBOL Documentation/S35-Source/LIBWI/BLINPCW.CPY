@@ -1,0 +1,14 @@
+      * COPYMEMBER: LIBWI/BLINPCW
+      * REV:
+      *  2024.0415 BAH REMOVED BLINPC-PROCEEDS-FG
+      *  2024.0506 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  BLINPC-BUF.
+           03  BLINPC-CALC-SELECT-KEY  PIC X.
+           03  BLINPC-REGPYAMT-FG      PIC X.
+           03  BLINPC-BALLOON-FG       PIC X.
+           03  BLINPC-BALLOON-LAST-FG  PIC X.
+           03  BLINPC-SELLPR-FG        PIC X.
+           03  BLINPC-SELLPR           PIC S9(7)V99  COMP.
+           03  BLINPC-LASTPYAMT        PIC S9(7)V99  COMP.
+           03  BLINPC-REGPYAMT         PIC S9(7)V99  COMP.
+           03  BLINPC-STATUS           PIC XX.

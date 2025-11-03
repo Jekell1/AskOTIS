@@ -1,0 +1,42 @@
+flowchart TD
+    A[Start C-LEAP-YEAR-TEST] --> B[Initialize Flag to False]
+    B --> C[MOVE F TO LEAP-YEAR-FG]
+    C --> D[Test Divisible by 4]
+    D --> E[DIVIDE BY 4, CHECK REMAINDER]
+    E --> F{Remainder = 0?}
+    
+    F -->|No| G[Set Flag = F]
+    F -->|Yes| H[Test Divisible by 100]
+    
+    H --> I[DIVIDE BY 100, CHECK REMAINDER]
+    I --> J{Remainder = 0?}
+    
+    J -->|No| K[Set Flag = T]
+    J -->|Yes| L[Test Divisible by 400]
+    
+    L --> M[DIVIDE BY 400, CHECK REMAINDER]
+    M --> N{Remainder = 0?}
+    
+    N -->|No| O[Set Flag = F]
+    N -->|Yes| P[Set Flag = T]
+    
+    G --> Q[End - Not Leap Year]
+    K --> R[End - IS Leap Year]
+    O --> S[End - Not Leap Year Century]
+    P --> T[End - IS Leap Year Century]
+    
+    U[Examples]
+    U --> V[2023 → F Not div by 4]
+    U --> W[2024 → T Div by 4, not 100]
+    U --> X[1900 → F Div by 100, not 400]
+    U --> Y[2000 → T Div by 400]
+    
+    style A fill:#e1f5fe
+    style Q fill:#ffebee
+    style R fill:#c8e6c9
+    style S fill:#ffebee
+    style T fill:#c8e6c9
+    style F fill:#fff3e0
+    style J fill:#fff3e0
+    style N fill:#fff3e0
+    style U fill:#e1f5fe

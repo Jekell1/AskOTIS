@@ -1,0 +1,74 @@
+graph TD
+    A[Transaction Entry] --> B{Transaction Code}
+    
+    B -->|AL| C[Late Charge Assessment]
+    B -->|AI| D[Additional Interest]
+    B -->|AP| E[Applied Payment]
+    B -->|WL| F[Waive Late Charges]
+    B -->|WI| G[Waive Interest]
+    B -->|WO| H[Write-off Other]
+    B -->|OT| I[Other Transactions]
+    B -->|O2| J[Other Type 2]
+    B -->|W2| K[Write-off Type 2]
+    B -->|OP| L[Other Payment]
+    B -->|RE| M[Repossession Expense]
+    
+    C --> C1[Validate Loan Type]
+    C1 --> C2[Calculate Late Charges]
+    C2 --> C3[Apply Late Charge Formula]
+    C3 --> N[Update Balances]
+    
+    D --> D1[Check Interest Bearing]
+    D1 --> D2[Add Interest to Balance]
+    D2 --> N
+    
+    E --> E1[Password Check]
+    E1 --> E2[Amount Distribution]
+    E2 --> E3[Apply to Other/Interest/Late Charge]
+    E3 --> N
+    
+    F --> F1[Password Verification]
+    F1 --> F2[Validate Waiver Amount]
+    F2 --> F3[Reduce Late Charge Balance]
+    F3 --> N
+    
+    G --> G1[Password Verification]
+    G1 --> G2[Validate Waiver Amount]
+    G2 --> G3[Reduce Interest Balance]
+    G3 --> N
+    
+    H --> H1[Password Check]
+    H1 --> H2[Validate Write-off Amount]
+    H2 --> H3[Adjust Other Balance]
+    H3 --> N
+    
+    I --> I1[Password Check]
+    I1 --> I2[Amount Entry]
+    I2 --> I3[Apply to Other Charges]
+    I3 --> N
+    
+    J --> J1[Amount Entry]
+    J1 --> J2[Apply to O2 Balance]
+    J2 --> N
+    
+    K --> K1[Password Check]
+    K1 --> K2[Write-off O2 Amount]
+    K2 --> N
+    
+    L --> L1[Combine OT/AP Logic]
+    L1 --> L2[Auto Distribution]
+    L2 --> N
+    
+    M --> M1[Add Repo Expense]
+    M1 --> M2[Update Interest/Other]
+    M2 --> N
+    
+    N --> O[Calculate Current Balance]
+    O --> P[Update Paid Through Date]
+    P --> Q[Create Transaction Record]
+    Q --> R[End Processing]
+    
+    style A fill:#e3f2fd
+    style R fill:#c8e6c9
+    style B fill:#fff9c4
+    style N fill:#f3e5f5

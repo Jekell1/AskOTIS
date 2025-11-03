@@ -1,0 +1,8 @@
+       REBATE-TX-INT-UNITED-END.
+           COMPUTE REB-REBATE =
+              1.50 + LN-INTCHG + LN-EXTCHG - REBTX-CALC-INT-TOT.
+           IF REB-REBATE < 0
+              MOVE 0 TO REB-REBATE.
+           IF REB-REBATE > (LN-INTCHG + LN-EXTCHG)
+              COMPUTE REB-REBATE = LN-INTCHG + LN-EXTCHG.
+

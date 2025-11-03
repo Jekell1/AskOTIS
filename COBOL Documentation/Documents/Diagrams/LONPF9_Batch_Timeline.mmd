@@ -1,0 +1,32 @@
+gantt
+    title LONPF9 Batch Processing Timeline
+    dateFormat HH:mm
+    axisFormat %H:%M
+    
+    section System Startup
+    Initialize SQL Connection    :active, init, 00:00, 00:01
+    Load Configuration Files     :config, after init, 00:02
+    Validate Environment         :env, after config, 00:01
+    
+    section Batch Processing
+    Read Batch Input File        :batch-read, after env, 00:05
+    Validate Batch Transactions  :batch-val, after batch-read, 00:10
+    Process P&L Transactions     :pl-proc, after batch-val, 00:15
+    Generate Auto Refunds        :auto-ref, after pl-proc, 00:08
+    Update Loan Balances         :balance-upd, after auto-ref, 00:12
+    
+    section Earnings Processing
+    Calculate Earnings           :earn-calc, after balance-upd, 00:10
+    Update Accumulations         :accum-upd, after earn-calc, 00:05
+    Generate GL Entries          :gl-gen, after accum-upd, 00:08
+    
+    section Audit and Reporting
+    Write Payment History        :pay-hist, after gl-gen, 00:06
+    Update Cash Drawer           :cash-draw, after pay-hist, 00:03
+    Generate Transaction Log     :trans-log, after cash-draw, 00:04
+    Create Batch Report          :batch-rep, after trans-log, 00:05
+    
+    section System Cleanup
+    Close Database Connections   :db-close, after batch-rep, 00:02
+    Archive Processed Files      :archive, after db-close, 00:03
+    System Shutdown              :shutdown, after archive, 00:01

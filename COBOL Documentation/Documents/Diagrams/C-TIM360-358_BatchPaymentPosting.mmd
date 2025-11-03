@@ -1,0 +1,14 @@
+%% Batch Payment Posting Flow Diagram for C-TIM360-358
+%% Clickable nodes can be added in Markdown using [link text](relative/path)
+flowchart TD
+    Start[Start Batch Payment Posting]
+    Start --> ReadInput[Read Input Record]
+    ReadInput --> Validate[Validate Record]
+    Validate -->|Valid| CalcInterest[Calculate Interest]
+    Validate -->|Error| LogError[Log Error]
+    CalcInterest --> UpdateStatus[Update Status]
+    UpdateStatus --> WriteOutput[Write Output]
+    WriteOutput --> NextRecord[Next Record]
+    NextRecord -->|More| ReadInput
+    NextRecord -->|Done| End[End Batch]
+    LogError --> NextRecord

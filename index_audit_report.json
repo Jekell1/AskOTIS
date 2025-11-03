@@ -1,0 +1,769 @@
+{
+  "endpoint": "https://az-use1-ai-search.search.windows.net",
+  "index_count": 30,
+  "generated_at": "2025-09-22T14:59:56Z",
+  "indexes": [
+    {
+      "name": "cobol-calls",
+      "references": 51,
+      "files": [
+        "DEPRECATION_FLOW_EDGES.md",
+        "analyze_calls_extraction.py",
+        "backfill_vectors.py",
+        "capture_empty_index_schemas.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "check_vector_coverage.py",
+        "count_calls_index_docs.py",
+        "count_dataset_lines.py",
+        "create_indexes.py",
+        "debug_index_data.py",
+        "diff_calls_index_missing.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "fetch_calls_schema.py",
+        "gap_fill_missing_vectors.py",
+        "generate_summaries.py",
+        "incremental_update.py",
+        "ingest_all.py",
+        "ingest_cobol_calls.py",
+        "list_index_stats.py",
+        "local.settings.json",
+        "multi_index_chatbot.py",
+        "patch_vector_flags.py",
+        "post_ingestion_verify.py",
+        "progress_par_calls_xrefs.json",
+        "progress_vec_extra.json",
+        "progress_vectors.json",
+        "push_par_calls_xrefs.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "recreate_indexes_with_vectors.py",
+        "recreate_vector_indexes.py",
+        "retrieval_helpers.py",
+        "search_setup\\create_indexes.py",
+        "vector_progress.json",
+        "verify_index_vectors.py"
+      ],
+      "family_base": "cobol-calls",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-copybooks",
+      "references": 27,
+      "files": [
+        "_inspect_facts_copybooks.py",
+        "_tmp_probe_facts.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "count_dataset_lines.py",
+        "count_missing_vectors.py",
+        "create_indexes.py",
+        "diagnose_index_sample.py",
+        "embed_cobol_copybooks.py",
+        "group_copybook_variants.py",
+        "local.settings.json",
+        "migrate_indexes_v2.py",
+        "patch_copybooks_index.py",
+        "patch_vector_flags.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "show_copybooks_vector_progress.py",
+        "verify_copybooks_vectors.py"
+      ],
+      "family_base": "cobol-copybooks",
+      "version_token": "",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-copybooks-v2",
+      "references": 2,
+      "files": [
+        "diagnose_index_sample.py",
+        "migrate_indexes_v2.py"
+      ],
+      "family_base": "cobol-copybooks",
+      "version_token": "v2",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-facts",
+      "references": 76,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "_inspect_facts_copybooks.py",
+        "_tmp_probe_facts.py",
+        "audit_paragraph_coverage.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "count_dataset_lines.py",
+        "count_missing_vectors.py",
+        "create_facts_v3_index.py",
+        "create_facts_v3l_index.py",
+        "create_indexes.py",
+        "diagnose_index_sample.py",
+        "embed_cobol_facts.py",
+        "embed_facts.py",
+        "expand_facts.py",
+        "explain_program.py",
+        "extract_posting_facts.py",
+        "fact_paragraph_join.py",
+        "hybrid_fact_search.py",
+        "local.settings.json",
+        "migrate_facts_to_v3l.py",
+        "migrate_indexes_v2.py",
+        "monitor_facts_index.py",
+        "multi_index_chatbot.py",
+        "page_through_index.py",
+        "patch_facts_index.py",
+        "patch_vector_flags.py",
+        "qa_facts_probe.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "run_test_question.py",
+        "show_facts_vector_progress.py",
+        "synthesize_answer.py"
+      ],
+      "family_base": "cobol-facts",
+      "version_token": "",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-facts-v2",
+      "references": 2,
+      "files": [
+        "diagnose_index_sample.py",
+        "migrate_indexes_v2.py"
+      ],
+      "family_base": "cobol-facts",
+      "version_token": "v2",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-facts-v3",
+      "references": 9,
+      "files": [
+        "create_facts_v3_index.py",
+        "embed_facts.py",
+        "migrate_facts_to_v3l.py"
+      ],
+      "family_base": "cobol-facts",
+      "version_token": "v3",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-facts-v3l",
+      "references": 18,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "audit_paragraph_coverage.py",
+        "create_facts_v3l_index.py",
+        "expand_facts.py",
+        "explain_program.py",
+        "hybrid_fact_search.py",
+        "migrate_facts_to_v3l.py",
+        "synthesize_answer.py"
+      ],
+      "family_base": "cobol-facts",
+      "version_token": "v3l",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-file-chunks-v1",
+      "references": 6,
+      "files": [
+        "create_cobol_file_chunk_index.py",
+        "ingest_cobol_file_chunks.py",
+        "quick_vector_coverage.py"
+      ],
+      "family_base": "cobol-file-chunks",
+      "version_token": "v1",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-files",
+      "references": 49,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "_inspect_files_index.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "classify_roles_phases.py",
+        "count_dataset_lines.py",
+        "count_missing_vectors.py",
+        "count_unique_file_ids.py",
+        "create_cobol_file_index.py",
+        "create_indexes.py",
+        "embed_cobol_files.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "export_index_docs.py",
+        "extract_posting_facts.py",
+        "ingest_cobol_files.py",
+        "ingest_single_cobol.py",
+        "list_blob_files.py",
+        "local.settings.json",
+        "patch_vector_flags.py",
+        "qa_probe.py",
+        "quick_vector_coverage.py",
+        "reconcile_cobol_files_index.py",
+        "reconstruct_cobol_files.py",
+        "recreate_all_indexes.py",
+        "recreate_cobol_files_with_vectors.py",
+        "reembed_index.py",
+        "search_setup\\create_indexes.py",
+        "verify_cobol_files_vectors.py"
+      ],
+      "family_base": "cobol-files",
+      "version_token": "",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-files-v1",
+      "references": 12,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "create_cobol_file_index.py",
+        "ingest_cobol_files.py",
+        "quick_vector_coverage.py"
+      ],
+      "family_base": "cobol-files",
+      "version_token": "v1",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-flow-edges-v2",
+      "references": 32,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "DEPRECATION_FLOW_EDGES.md",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "count_dataset_lines.py",
+        "count_missing_vectors.py",
+        "create_indexes.py",
+        "embed_flow_edges.py",
+        "generate_summaries.py",
+        "local.settings.json",
+        "multi_index_chatbot.py",
+        "patch_flow_edges_index.py",
+        "patch_vector_flags.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "resolve_flow_edges.py",
+        "retrieval_helpers.py",
+        "show_flow_index.py",
+        "show_flow_vector_progress.py",
+        "upload_enriched_flow_edges.py",
+        "verify_flow_edges_vectors.py"
+      ],
+      "family_base": "cobol-flow-edges",
+      "version_token": "v2",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-paragraphs",
+      "references": 77,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "DEPRECATION_FLOW_EDGES.md",
+        "analyze_source_uniqueness.py",
+        "audit_paragraph_coverage.py",
+        "backfill_vectors.py",
+        "capture_empty_index_schemas.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "check_vector_coverage.py",
+        "classify_roles_phases.py",
+        "count_dataset_lines.py",
+        "create_facts_v3_index.py",
+        "create_indexes.py",
+        "create_paragraphs_v3_index.py",
+        "diagnose_index_sample.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "expand_facts.py",
+        "extract_posting_facts.py",
+        "fact_paragraph_join.py",
+        "gap_fill_missing_vectors.py",
+        "incremental_update.py",
+        "ingest_all.py",
+        "ingest_cobol_paragraphs.py",
+        "ingest_single_cobol.py",
+        "list_index_stats.py",
+        "local.settings.json",
+        "migrate_indexes_v2.py",
+        "multi_index_chatbot.py",
+        "patch_vector_flags.py",
+        "post_ingestion_verify.py",
+        "progress_par_calls_xrefs.json",
+        "progress_vec_extra.json",
+        "progress_vectors.json",
+        "push_par_calls_xrefs.py",
+        "qa_facts_probe.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "recreate_indexes_with_vectors.py",
+        "recreate_vector_indexes.py",
+        "retrieval_helpers.py",
+        "run_test_question.py",
+        "search_setup\\create_indexes.py",
+        "synthesize_answer.py",
+        "vector_progress.json",
+        "verify_index_vectors.py"
+      ],
+      "family_base": "cobol-paragraphs",
+      "version_token": "",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-paragraphs-v2",
+      "references": 6,
+      "files": [
+        "diagnose_index_sample.py",
+        "ingest_single_cobol.py",
+        "migrate_indexes_v2.py"
+      ],
+      "family_base": "cobol-paragraphs",
+      "version_token": "v2",
+      "is_latest_in_family": false,
+      "newer_exists": true,
+      "retain_reasons": [
+        "referenced_in_repo"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-paragraphs-v3",
+      "references": 12,
+      "files": [
+        "AZURE-OPENAI-INTEGRATION.md",
+        "audit_paragraph_coverage.py",
+        "create_facts_v3_index.py",
+        "create_paragraphs_v3_index.py",
+        "expand_facts.py",
+        "synthesize_answer.py"
+      ],
+      "family_base": "cobol-paragraphs",
+      "version_token": "v3",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-routine-aliases",
+      "references": 18,
+      "files": [
+        "chatbot_index_readiness.py",
+        "cobol_routine_aliases_schema.json",
+        "count_missing_vectors.py",
+        "create_indexes.py",
+        "create_routine_alias_index_with_vectors.py",
+        "export_routine_aliases.py",
+        "fetch_routine_alias_schema.py",
+        "generate_aliases.py",
+        "generate_summaries.py",
+        "ingest_routine_alias_vectors.py",
+        "local.settings.json",
+        "patch_vector_flags.py",
+        "recreate_routine_aliases_with_vectors.py",
+        "retrieval_helpers.py"
+      ],
+      "family_base": "cobol-routine-aliases",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-symbols",
+      "references": 55,
+      "files": [
+        "DEPRECATION_FLOW_EDGES.md",
+        "analyze_source_uniqueness.py",
+        "backfill_progress.json",
+        "backfill_vectors.py",
+        "capture_empty_index_schemas.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "check_vector_coverage.py",
+        "count_dataset_lines.py",
+        "create_indexes.py",
+        "debug_index_data.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "gap_fill_missing_vectors.py",
+        "gap_fill_symbols.py",
+        "incremental_update.py",
+        "ingest_all.py",
+        "ingest_cobol_symbols.py",
+        "ingest_single_cobol.py",
+        "list_index_stats.py",
+        "local.settings.json",
+        "multi_index_chatbot.py",
+        "patch_vector_flags.py",
+        "post_ingestion_verify.py",
+        "push_chunks_symbols.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "recreate_indexes_with_vectors.py",
+        "recreate_vector_indexes.py",
+        "search_setup\\create_indexes.py",
+        "test_retrieval_coverage.py",
+        "vector_progress.json",
+        "verify_index_vectors.py"
+      ],
+      "family_base": "cobol-symbols",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "cobol-xrefs",
+      "references": 45,
+      "files": [
+        "DEPRECATION_FLOW_EDGES.md",
+        "analyze_source_uniqueness.py",
+        "backfill_vectors.py",
+        "capture_empty_index_schemas.py",
+        "chatbot_index_readiness.py",
+        "check_index_counts.py",
+        "check_vector_coverage.py",
+        "count_dataset_lines.py",
+        "create_indexes.py",
+        "debug_index_data.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "gap_fill_missing_vectors.py",
+        "incremental_update.py",
+        "ingest_all.py",
+        "ingest_cobol_xrefs.py",
+        "list_index_stats.py",
+        "local.settings.json",
+        "multi_index_chatbot.py",
+        "patch_vector_flags.py",
+        "post_ingestion_verify.py",
+        "progress_par_calls_xrefs.json",
+        "progress_vec_extra.json",
+        "progress_vectors.json",
+        "push_par_calls_xrefs.py",
+        "qa_probe.py",
+        "recreate_all_indexes.py",
+        "recreate_indexes_with_vectors.py",
+        "recreate_vector_indexes.py",
+        "search_setup\\create_indexes.py",
+        "vector_progress.json",
+        "verify_index_vectors.py"
+      ],
+      "family_base": "cobol-xrefs",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "code-chunks",
+      "references": 104,
+      "files": [
+        "analyze_source_uniqueness.py",
+        "backfill_progress.json",
+        "backfill_vectors.py",
+        "capture_empty_index_schemas.py",
+        "chatbot_index_readiness.py",
+        "chatbot_smoke_test.py",
+        "check_index_counts.py",
+        "check_vector_coverage.py",
+        "classify_roles_phases.py",
+        "count_dataset_lines.py",
+        "create_indexes.py",
+        "debug_index_data.py",
+        "enhanced_reconstruct_cobol_files.py",
+        "extract_posting_facts.py",
+        "gap_fill_missing_vectors.py",
+        "incremental_update.py",
+        "ingest_all.py",
+        "ingest_code_chunks.py",
+        "ingest_single_cobol.py",
+        "list_index_stats.py",
+        "local.settings.json",
+        "multi_index_chatbot.py",
+        "patch_vector_flags.py",
+        "post_ingestion_verify.py",
+        "push_chunks_symbols.py",
+        "qa_probe.py",
+        "reconstruct_cobol_files.py",
+        "recreate_all_indexes.py",
+        "recreate_indexes_with_vectors.py",
+        "recreate_vector_indexes.py",
+        "search_setup\\create_indexes.py",
+        "test_chunks_index.py",
+        "test_code_chunks_function.py",
+        "test_retrieval_coverage.py",
+        "vector_progress.json",
+        "verify_index_vectors.py"
+      ],
+      "family_base": "code-chunks",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "referenced_in_repo",
+        "latest_version"
+      ],
+      "delete_reason": null
+    },
+    {
+      "name": "rag-1750705704292",
+      "references": 0,
+      "files": [],
+      "family_base": "rag-1750705704292",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "test-admin-probe",
+      "references": 0,
+      "files": [],
+      "family_base": "test-admin-probe",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-libex-6698413774341033812",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-libex-6698413774341033812",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-libgb-15348970331881423905",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-libgb-15348970331881423905",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-libgl-4602471711281268119",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-libgl-4602471711281268119",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-liblp-7039729866598665107",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-liblp-7039729866598665107",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-libwi-12265414380486348411",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-libwi-12265414380486348411",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-libwi-8602067593498413514",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-libwi-8602067593498413514",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-lp-6768251260835612686",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-lp-6768251260835612686",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-lp-821922878718562086",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-lp-821922878718562086",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-lp-8408883677879487839",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-lp-8408883677879487839",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    },
+    {
+      "name": "vector-sp-12018138830471187900",
+      "references": 0,
+      "files": [],
+      "family_base": "vector-sp-12018138830471187900",
+      "version_token": "",
+      "is_latest_in_family": true,
+      "newer_exists": false,
+      "retain_reasons": [
+        "latest_version"
+      ],
+      "delete_reason": "unused_unreferenced"
+    }
+  ],
+  "summary": {
+    "keep_count": 18,
+    "delete_candidate_count": 12,
+    "delete_candidates": [
+      "rag-1750705704292",
+      "test-admin-probe",
+      "vector-libex-6698413774341033812",
+      "vector-libgb-15348970331881423905",
+      "vector-libgl-4602471711281268119",
+      "vector-liblp-7039729866598665107",
+      "vector-libwi-12265414380486348411",
+      "vector-libwi-8602067593498413514",
+      "vector-lp-6768251260835612686",
+      "vector-lp-821922878718562086",
+      "vector-lp-8408883677879487839",
+      "vector-sp-12018138830471187900"
+    ]
+  }
+}

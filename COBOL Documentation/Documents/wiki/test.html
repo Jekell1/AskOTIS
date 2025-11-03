@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Documentation Wiki - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { border-left: 4px solid #28a745; }
+        .error { border-left: 4px solid #dc3545; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wiki Navigation Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Navigation Links</h2>
+        <p>Click these buttons to test if the documentation files can be accessed:</p>
+        
+        <button onclick="testFile('APIPAY_Documentation.html')">Test APIPAY</button>
+        <button onclick="testFile('LONPFB_Documentation.html')">Test LONPFB</button>
+        <button onclick="testFile('LONPF7_Documentation_New.html')">Test LONPF7</button>
+        <button onclick="testFile('LONPF9_Documentation_New.html')">Test LONPF9</button>
+        <button onclick="testFile('LONPFC_Documentation_New.html')">Test LONPFC</button>
+        <button onclick="testFile('LONPF2_Documentation_New.html')">Test LONPF2</button>
+    </div>
+    
+    <div class="test-section" id="results">
+        <h2>Test Results</h2>
+        <p>Test results will appear here...</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Direct Links</h2>
+        <p>Try opening the documentation files directly:</p>
+        <ul>
+            <li><a href="APIPAY_Documentation.html" target="_blank">APIPAY Documentation</a></li>
+            <li><a href="LONPFB_Documentation.html" target="_blank">LONPFB Documentation</a></li>
+            <li><a href="LONPF7_Documentation_New.html" target="_blank">LONPF7 Documentation</a></li>
+            <li><a href="LONPF9_Documentation_New.html" target="_blank">LONPF9 Documentation</a></li>
+            <li><a href="LONPFC_Documentation_New.html" target="_blank">LONPFC Documentation</a></li>
+            <li><a href="LONPF2_Documentation_New.html" target="_blank">LONPF2 Documentation</a></li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>Return to Main Wiki</h2>
+        <p><a href="index.html">← Back to Main Wiki</a></p>
+    </div>
+    
+    <script>
+        function testFile(filename) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Test Results</h2><p>Testing ' + filename + '...</p>';
+            
+            fetch(filename)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    const size = html.length;
+                    resultsDiv.innerHTML = `
+                        <h2>Test Results</h2>
+                        <div class="success">
+                            <h3>✅ ${filename} - SUCCESS</h3>
+                            <p>File loaded successfully. Size: ${size} characters</p>
+                            <p>Content preview: ${html.substring(0, 200)}...</p>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    resultsDiv.innerHTML = `
+                        <h2>Test Results</h2>
+                        <div class="error">
+                            <h3>❌ ${filename} - FAILED</h3>
+                            <p>Error: ${error.message}</p>
+                            <p>The file may not exist or cannot be accessed.</p>
+                        </div>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>

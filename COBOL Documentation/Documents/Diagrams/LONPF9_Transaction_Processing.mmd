@@ -1,0 +1,70 @@
+graph TD
+    A[Transaction Input] --> B{Transaction Code?}
+    
+    B -->|JD| C[Judgment Decision Processing]
+    B -->|PL/P2/P3| D[P&L Processing]
+    B -->|PI| E[Principal Interest Processing]
+    B -->|PW| F[Principal Write-off Processing]
+    B -->|P4/P5| G[Extended P&L Processing]
+    B -->|RP| H[Repo Payment Processing]
+    B -->|IR| I[Insurance Reversal Processing]
+    B -->|AC| J[Acceleration Processing]
+    B -->|BK| K[Set Bankruptcy Status]
+    B -->|BD| L[Remove Bankruptcy Status]
+    
+    C --> M[Validate JD Conditions]
+    M --> N[Apply Judgment Decision]
+    N --> O[Update Account Status]
+    
+    D --> P{Auto-PL Enabled?}
+    P -->|Yes| Q[Calculate Refund Amount]
+    P -->|No| R[Standard P&L Processing]
+    Q --> S[Generate AC Transaction]
+    S --> T[Update Earnings]
+    T --> U[Apply Refund]
+    R --> V[Update P&L Balances]
+    U --> V
+    
+    E --> W[Validate PI Transaction]
+    W --> X[Update Principal/Interest]
+    
+    F --> Y[Validate Write-off Authority]
+    Y --> Z[Process Principal Write-off]
+    
+    G --> AA[Process Dealer Reserve]
+    AA --> BB[Update Extended Balances]
+    
+    H --> CC[Validate Repo Status]
+    CC --> DD[Process Repo Payment]
+    
+    I --> EE[Validate Insurance Reversal]
+    EE --> FF[Process Reversal]
+    
+    J --> GG[Calculate Acceleration]
+    GG --> HH[Update Earnings to Income]
+    
+    K --> II[Set BK Status Flag]
+    L --> JJ[Clear BK Status Flag]
+    
+    O --> KK[Common Update Processing]
+    V --> KK
+    X --> KK
+    Z --> KK
+    BB --> KK
+    DD --> KK
+    FF --> KK
+    HH --> KK
+    II --> KK
+    JJ --> KK
+    
+    KK --> LL[Validate Balance Consistency]
+    LL --> MM{Validation Passed?}
+    MM -->|Yes| NN[Commit Transaction]
+    MM -->|No| OO[Set Error Code]
+    NN --> PP[Return Success]
+    OO --> QQ[Return Error]
+    
+    style A fill:#e1f5fe
+    style KK fill:#fff3e0
+    style NN fill:#c8e6c9
+    style OO fill:#ffcdd2

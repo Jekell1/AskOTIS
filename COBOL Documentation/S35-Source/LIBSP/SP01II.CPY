@@ -1,0 +1,48 @@
+      * COPYMEMBER: LIBSP/SP01II
+      ******************************************************************
+      *
+      * DESCRIPTION: IRS IDENTIFICATION FILE
+      *
+      *    II-KEY = II-KEY
+      *
+      *=================================================================
+      * REV:
+      * 012799 BAH CHANGES AS PER IRS
+      * 021217 BAH ADDED II-CONTACT-EMAIL (PER NEW IRS FIELD)
+      * 12/13/2016 BAH ADDED II-TAX-YEAR, II-CURRENT-LAST, II-LASER-FORM
+      *            FOR THE 1098 FORM TO KNOW WHAT TO PRINT PR#5221
+      *
+      * KEC 2016.1223 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *          CHANGED II-FILE FROM RELATIVE TO INDEXED.
+      *          ADDED II-SIZE = 999.
+      *  CS 190606 ADD FUTURE FIELDS
+      *  BAH 20200323 CLEANED UP FUTURE FIELDS, REMOVED GROUP LEVELS
+      *  BAH 20210427 REMOVED FUTURE FIELDS
+      * BAH 20230612 ADDED FILLER
+      ******************************************************************
+       78  II-SIZE                       VALUE 340.
+       01  II-REC.
+           03  II-KEY                    PIC 9(2).
+
+      $XFD DATE=YYYYMMDD
+           03  II-LTOUCH-DATE            PIC 9(8) COMP-3.
+           03  II-EMPLOYER-ID            PIC 9(9) COMP-3.
+           03  II-NAME-CONTROL-NO        PIC X(4).
+           03  II-TRANS-CONTROL-CODE     PIC X(5).
+           03  II-FOREIGN-CORP           PIC X.
+           03  II-TRANSFER-AGENT-FG      PIC X.
+           03  II-PAYER-NAME             PIC X(40).
+           03  II-SECOND-PAYER           PIC X(40).
+           03  II-PAYER-ADDRESS          PIC X(40).
+           03  II-PAYER-CITY             PIC X(29).
+           03  II-PAYER-STATE            PIC X(2).
+           03  II-PAYER-ZIP              PIC X(9).
+           03  II-PAYER-PHONE            PIC 9(10).
+           03  II-PAYER-EXT              PIC X(5).
+           03  II-CONTACT                PIC X(40).
+           03  II-CONTACT-EMAIL          PIC X(45).
+           03  II-TAX-YEAR               PIC 9(4).
+           03  II-CURRENT-LAST           PIC X.
+           03  II-LASER-FORM             PIC X.
+
+           03  FILLER                    PIC X(51).

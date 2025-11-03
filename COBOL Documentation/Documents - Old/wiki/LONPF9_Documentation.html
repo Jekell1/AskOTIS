@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPF9 Profit & Loss Processor Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #dc3545;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #dc3545;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY</a> > LONPF9 P&L Processor
+    </div>
+
+    <div class="header">
+        <h1>LONPF9 Profit & Loss Processor</h1>
+        <div class="meta">
+            <strong>Payment Types:</strong> PL, P2, P3 (Profit & Loss Variants)<br>
+            <strong>Purpose:</strong> Charge-off to Profit & Loss Processing<br>
+            <strong>Called From:</strong> APIPAY Program
+        </div>
+    </div>
+
+    <h2>Program Overview</h2>
+    
+    <p><strong>LONPF9</strong> is a critical financial processor responsible for handling profit and loss (P&L) transactions, primarily charge-offs of uncollectible loan accounts. This program manages the complex accounting and regulatory requirements associated with writing off loan balances and transferring them to profit and loss accounts.</p>
+
+    <div class="danger">
+        <p><strong>Critical Process:</strong> This processor handles irreversible financial transactions that impact the institution's profit and loss statements. All transactions require careful validation and approval.</p>
+    </div>
+
+    <h3>Key Responsibilities</h3>
+    <ul>
+        <li><strong>Charge-off Processing</strong>: Transfers uncollectible accounts to P&L</li>
+        <li><strong>Account Status Management</strong>: Updates account status to reflect charge-off</li>
+        <li><strong>Financial Reporting</strong>: Generates entries for financial statements</li>
+        <li><strong>Regulatory Compliance</strong>: Ensures charge-offs meet regulatory requirements</li>
+        <li><strong>Audit Trail</strong>: Maintains detailed records of all P&L transactions</li>
+    </ul>
+
+    <h2>Transaction Types Supported</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Description</th>
+                <th>Business Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>PL</strong></td>
+                <td>Profit & Loss</td>
+                <td>Standard charge-off of uncollectible loan balances to P&L</td>
+            </tr>
+            <tr>
+                <td><strong>P2</strong></td>
+                <td>Profit & Loss Type 2</td>
+                <td>Alternative P&L processing for special circumstances</td>
+            </tr>
+            <tr>
+                <td><strong>P3</strong></td>
+                <td>Profit & Loss Type 3</td>
+                <td>Third P&L option for specific business scenarios</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Charge-off Processing Logic</h2>
+
+    <h3>Pre-Charge-off Validation</h3>
+    <ol>
+        <li><strong>Account Eligibility</strong>
+            <ul>
+                <li>Verify account qualifies for charge-off</li>
+                <li>Check delinquency status and time requirements</li>
+                <li>Validate business rules for charge-off eligibility</li>
+            </ul>
+        </li>
+        <li><strong>Financial Analysis</strong>
+            <ul>
+                <li>Calculate total charge-off amount</li>
+                <li>Determine recoverable amounts</li>
+                <li>Assess collateral values if applicable</li>
+            </ul>
+        </li>
+        <li><strong>Regulatory Compliance</strong>
+            <ul>
+                <li>Ensure charge-off timing meets regulations</li>
+                <li>Verify proper documentation exists</li>
+                <li>Check approval requirements are met</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h3>Charge-off Execution</h3>
+    <ol>
+        <li><strong>Balance Transfer</strong>
+            <ul>
+                <li>Transfer principal balance to P&L</li>
+                <li>Transfer accrued interest to P&L</li>
+                <li>Transfer fees and charges to P&L</li>
+            </ul>
+        </li>
+        <li><strong>Account Updates</strong>
+            <ul>
+                <li>Update account status to charged-off</li>
+                <li>Zero out active balances</li>
+                <li>Set charge-off date and amounts</li>
+            </ul>
+        </li>
+        <li><strong>Accounting Entries</strong>
+            <ul>
+                <li>Generate P&L accounting entries</li>
+                <li>Create allowance adjustments</li>
+                <li>Update financial reporting data</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Business Rules and Policies</h2>
+
+    <h3>Charge-off Eligibility Criteria</h3>
+    <ul>
+        <li><strong>Delinquency Period</strong>: Account must be delinquent for specified period</li>
+        <li><strong>Collection Efforts</strong>: All reasonable collection efforts must be exhausted</li>
+        <li><strong>Account Status</strong>: Account cannot be in active payment plans</li>
+        <li><strong>Legal Restrictions</strong>: No pending legal actions preventing charge-off</li>
+        <li><strong>Management Approval</strong>: Required approvals must be obtained</li>
+    </ul>
+
+    <h3>Charge-off Amount Calculations</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Description</th>
+                <th>Treatment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Principal Balance</strong></td>
+                <td>Outstanding loan principal</td>
+                <td>Charged off to P&L</td>
+            </tr>
+            <tr>
+                <td><strong>Accrued Interest</strong></td>
+                <td>Unpaid interest charges</td>
+                <td>Charged off to P&L</td>
+            </tr>
+            <tr>
+                <td><strong>Late Fees</strong></td>
+                <td>Unpaid late charges</td>
+                <td>Charged off to P&L</td>
+            </tr>
+            <tr>
+                <td><strong>Court Costs</strong></td>
+                <td>Legal and collection costs</td>
+                <td>Charged off to P&L</td>
+            </tr>
+            <tr>
+                <td><strong>Collateral Value</strong></td>
+                <td>Recoverable collateral amount</td>
+                <td>Offset against charge-off</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Error Handling and Validation</h2>
+
+    <h3>Critical Validation Checks</h3>
+    <ul>
+        <li><strong>Account Status</strong>: Account must not already be charged off</li>
+        <li><strong>Balance Verification</strong>: Charge-off amounts must match account balances</li>
+        <li><strong>Approval Validation</strong>: Required approvals must be present</li>
+        <li><strong>Regulatory Compliance</strong>: All regulatory requirements must be met</li>
+        <li><strong>System Integrity</strong>: Accounting entries must balance</li>
+    </ul>
+
+    <h3>Error Recovery Procedures</h3>
+    <ul>
+        <li><strong>Validation Failures</strong>: Transaction rejected with specific error codes</li>
+        <li><strong>System Errors</strong>: Automatic rollback of partial transactions</li>
+        <li><strong>Accounting Errors</strong>: Manual intervention required for resolution</li>
+        <li><strong>Approval Issues</strong>: Transaction held pending proper authorization</li>
+    </ul>
+
+    <div class="warning">
+        <p><strong>Important:</strong> Failed charge-off transactions may require manual review and correction to ensure proper financial reporting and regulatory compliance.</p>
+    </div>
+
+    <h2>Integration with APIPAY</h2>
+
+    <h3>Input Parameters</h3>
+    <p>Receives charge-off details through LONPF buffer:</p>
+    <ul>
+        <li><strong>Account Information</strong>: Branch and account number</li>
+        <li><strong>Charge-off Amount</strong>: Total amount to be charged off</li>
+        <li><strong>Charge-off Type</strong>: PL, P2, or P3 transaction type</li>
+        <li><strong>Authorization Details</strong>: Approval codes and authorization</li>
+        <li><strong>Effective Date</strong>: Date of charge-off transaction</li>
+    </ul>
+
+    <h3>Output Information</h3>
+    <p>Returns charge-off processing results:</p>
+    <ul>
+        <li><strong>Transaction Status</strong>: Success/failure of charge-off</li>
+        <li><strong>Charge-off Details</strong>: Amounts charged off by category</li>
+        <li><strong>Account Status</strong>: Updated account status information</li>
+        <li><strong>Accounting Entries</strong>: Generated P&L accounting records</li>
+    </ul>
+
+    <h2>File Dependencies</h2>
+
+    <h3>Files Read/Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master records</td><td>Read/Write</td></tr>
+            <tr><td><strong>LTP1-FILE</strong></td><td>Payment/transaction history</td><td>Write</td></tr>
+            <tr><td><strong>LXE1-FILE</strong></td><td>Extended loan data</td><td>Read/Write</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work/calculation file</td><td>Read/Write</td></tr>
+            <tr><td><strong>GL-FILE</strong></td><td>General ledger entries</td><td>Write</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Regulatory and Compliance Requirements</h2>
+
+    <h3>Federal Regulations</h3>
+    <ul>
+        <li><strong>FFIEC Guidelines</strong>: Federal Financial Institutions Examination Council requirements</li>
+        <li><strong>GAAP Standards</strong>: Generally Accepted Accounting Principles compliance</li>
+        <li><strong>Call Report Requirements</strong>: Proper reporting on regulatory forms</li>
+        <li><strong>Fair Credit Reporting Act</strong>: Accurate credit bureau reporting</li>
+    </ul>
+
+    <h3>Documentation Requirements</h3>
+    <ul>
+        <li><strong>Charge-off Authorization</strong>: Management approval documentation</li>
+        <li><strong>Collection Documentation</strong>: Evidence of collection efforts</li>
+        <li><strong>Financial Analysis</strong>: Uncollectibility determination</li>
+        <li><strong>Audit Trail</strong>: Complete transaction documentation</li>
+    </ul>
+
+    <h2>Financial Impact and Reporting</h2>
+
+    <h3>Income Statement Impact</h3>
+    <ul>
+        <li><strong>Provision Expense</strong>: Increase in loan loss provisions</li>
+        <li><strong>Net Charge-offs</strong>: Direct reduction to loan balances</li>
+        <li><strong>Recovery Potential</strong>: Future recovery accounting setup</li>
+        <li><strong>Tax Implications</strong>: Deductible loss for tax purposes</li>
+    </ul>
+
+    <h3>Balance Sheet Impact</h3>
+    <ul>
+        <li><strong>Loan Portfolio</strong>: Reduction in total loan balances</li>
+        <li><strong>Allowance Account</strong>: Adjustment to loan loss allowance</li>
+        <li><strong>Asset Quality</strong>: Improvement in asset quality ratios</li>
+        <li><strong>Equity Impact</strong>: Net effect on institution equity</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPF9 handles one of the most significant financial transactions in loan processing. Proper execution ensures accurate financial reporting and regulatory compliance while managing the institution's credit risk exposure.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

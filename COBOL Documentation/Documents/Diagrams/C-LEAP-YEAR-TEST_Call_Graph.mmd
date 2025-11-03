@@ -1,0 +1,35 @@
+flowchart LR
+    A[Calling Programs] --> B[C-LEAP-YEAR-TEST]
+    C[C-CALL-JUL] --> B
+    D[C-CALL-NEWDATE] --> B
+    E[C-TIM360-358] --> B
+    F[C-TIM361] --> B
+    G[C-TIM362] --> B
+    H[C-TIM365-367] --> B
+    
+    I[Input] --> B
+    J[LEAP-YEAR-CCYY] --> B
+    
+    B --> K[Mathematical Operations Only]
+    B --> L[No External Calls]
+    
+    B --> M[Output]
+    M --> N[LEAP-YEAR-FG T or F]
+    
+    O[Usage Context] --> B
+    P[Julian Date Conversion] --> B
+    Q[February Validation] --> B
+    R[Calendar Calculations] --> B
+    S[Year Type Processing] --> B
+    
+    style B fill:#4fc3f7
+    style A fill:#ffb74d
+    style C fill:#ffb74d
+    style D fill:#ffb74d
+    style E fill:#ffb74d
+    style F fill:#ffb74d
+    style G fill:#ffb74d
+    style H fill:#ffb74d
+    style K fill:#81c784
+    style L fill:#81c784
+    style N fill:#c8e6c9

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSGB
+           SELECT GB-FILE ASSIGN TO GB-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY GB-KEY
+                  FILE STATUS FILE-STAT.

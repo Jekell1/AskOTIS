@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Search - Local Server</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .server-status {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .server-status.error {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .search-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .examples {
+            margin-bottom: 20px;
+        }
+        
+        .example-btn {
+            background: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+            padding: 6px 12px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .results {
+            margin-top: 25px;
+        }
+        
+        .result-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .file-path {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .line-info {
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .code {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            border-left: 4px solid #667eea;
+            overflow-x: auto;
+        }
+        
+        .symbols {
+            margin-top: 10px;
+        }
+        
+        .symbol-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        .calls-tag {
+            background: #28a745;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 COBOL Code Search</h1>
+            <p>Powered by Azure AI Search - Local Server Interface</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">1.3M+</div>
+                    <div class="stat-label">Code Lines</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">9,952</div>
+                    <div class="stat-label">COBOL Files</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">Real-time</div>
+                    <div class="stat-label">Search</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div id="serverStatus" class="server-status">
+                🔄 Checking server connection...
+            </div>
+            
+            <div class="search-form">
+                <div class="examples">
+                    <h4 style="margin-bottom: 10px;">💡 Quick Examples:</h4>
+                    <button class="example-btn" onclick="setExample('count')">📊 Document Count</button>
+                    <button class="example-btn" onclick="setExample('programs')">🔧 Find Programs</button>
+                    <button class="example-btn" onclick="setExample('variables')">📝 Find Variables</button>
+                    <button class="example-btn" onclick="setExample('customer')">🔍 Search CUSTOMER</button>
+                    <button class="example-btn" onclick="setExample('calls')">📞 CALL Statements</button>
+                </div>
+                
+                <form onsubmit="performSearch(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>🔍 Search Query</label>
+                            <input type="text" id="search" placeholder="e.g., CUSTOMER, *, PROGRAM-ID" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🔽 Filter</label>
+                            <select id="filter">
+                                <option value="">All types</option>
+                                <option value="symbol_kind eq 'program'">Programs</option>
+                                <option value="symbol_kind eq 'variable'">Variables</option>
+                                <option value="symbol_kind eq 'procedure'">Procedures</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 0.4;">
+                            <label>📋 Max Results</label>
+                            <input type="number" id="top" value="20" min="0" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>📄 Fields to Return</label>
+                            <input type="text" id="select" value="repo_path,line,code,symbol_name,symbol_kind" 
+                                   placeholder="repo_path,line,code,symbol_name,symbol_kind">
+                        </div>
+                        <div class="form-group" style="flex: 0.3;">
+                            <label>🔢 Include Count</label>
+                            <select id="count">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                        <div style="flex: 0;">
+                            <button type="submit" id="searchBtn">🔍 Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+        let serverHealthy = false;
+        
+        // Check server health on load
+        checkServerHealth();
+        
+        async function checkServerHealth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('serverStatus').innerHTML = 
+                        `✅ Server connected successfully! API: ${data.api_base}`;
+                    document.getElementById('serverStatus').className = 'server-status';
+                    serverHealthy = true;
+                    document.getElementById('searchBtn').disabled = false;
+                } else {
+                    throw new Error('Server not responding');
+                }
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = 
+                    `❌ Server connection failed. Make sure the Flask server is running at http://localhost:5000`;
+                document.getElementById('serverStatus').className = 'server-status error';
+                serverHealthy = false;
+                document.getElementById('searchBtn').disabled = true;
+            }
+        }
+        
+        function setExample(type) {
+            const examples = {
+                count: { search: '*', filter: '', top: 0, count: true, select: '' },
+                programs: { search: '*', filter: "symbol_kind eq 'program'", top: 10, count: false, select: 'repo_path,line,code,symbol_name' },
+                variables: { search: 'CUSTOMER', filter: "symbol_kind eq 'variable'", top: 15, count: false, select: 'repo_path,line,code,symbol_name,symbol_kind' },
+                customer: { search: 'CUSTOMER', filter: '', top: 20, count: false, select: 'repo_path,line,code,symbol_name,symbol_kind' },
+                calls: { search: 'CALL', filter: '', top: 15, count: false, select: 'repo_path,line,code,calls' }
+            };
+            
+            const example = examples[type];
+            document.getElementById('search').value = example.search;
+            document.getElementById('filter').value = example.filter;
+            document.getElementById('top').value = example.top;
+            document.getElementById('count').value = example.count.toString();
+            document.getElementById('select').value = example.select;
+        }
+        
+        async function performSearch(event) {
+            event.preventDefault();
+            
+            if (!serverHealthy) {
+                alert('Server is not available. Please start the Flask server first.');
+                return;
+            }
+            
+            const requestBody = {
+                search: document.getElementById('search').value
+            };
+            
+            const filter = document.getElementById('filter').value;
+            const select = document.getElementById('select').value;
+            const top = parseInt(document.getElementById('top').value);
+            const count = document.getElementById('count').value === 'true';
+            
+            if (filter) requestBody.filter = filter;
+            if (select) requestBody.select = select;
+            if (top > 0) requestBody.top = top;
+            if (count) requestBody.count = count;
+            
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+        
+        function showLoading() {
+            document.getElementById('results').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>🔍 Searching through COBOL code...</p>
+                </div>
+            `;
+        }
+        
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            const items = data.value || [];
+            const totalCount = data['@odata.count'];
+            
+            let html = `
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 10px 0;">📊 Search Results</h3>
+                    <p style="margin: 0;">
+                        ${totalCount !== undefined ? `Total matches: <strong>${totalCount.toLocaleString()}</strong> | ` : ''}
+                        Displaying: <strong>${items.length}</strong> results
+                    </p>
+                </div>
+            `;
+            
+            if (items.length === 0) {
+                html += `
+                    <div class="result-item">
+                        <h4>❌ No results found</h4>
+                        <p>Try a different search term, remove filters, or use broader keywords.</p>
+                    </div>
+                `;
+            } else {
+                items.forEach((item, index) => {
+                    html += `
+                        <div class="result-item">
+                            <div class="file-path">📁 ${item.repo_path || 'Unknown file'}</div>
+                            ${item.line ? `<div class="line-info">📍 Line ${item.line}</div>` : ''}
+                            ${item.code ? `<div class="code">${escapeHtml(item.code)}</div>` : ''}
+                            <div class="symbols">
+                                ${item.symbol_name ? `<span class="symbol-tag">${item.symbol_name}</span>` : ''}
+                                ${item.symbol_kind ? `<span class="symbol-tag">${item.symbol_kind}</span>` : ''}
+                                ${item.calls && item.calls.length ? 
+                                    `<span class="symbol-tag calls-tag">Calls: ${item.calls.join(', ')}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        function displayError(message) {
+            document.getElementById('results').innerHTML = `
+                <div class="error">
+                    <h4>❌ Search Error</h4>
+                    <p><strong>Details:</strong> ${escapeHtml(message)}</p>
+                    <p>Please check the server logs or try a different query.</p>
+                </div>
+            `;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Set default example
+        setExample('count');
+        
+        // Refresh server status every 30 seconds
+        setInterval(checkServerHealth, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMEND Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMEND Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-TIMEND Documentation</h1>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-TIMEND<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Elapsed Time Calculation Finalization and Sign Correction<br />
+<strong>Source File:</strong> <code>C-TIMEND.cpy</code><br />
+<strong>Usage:</strong> Final processing routine for elapsed time calculations  </p>
+<h2>Purpose and Description</h2>
+<p>C-TIMEND is the companion utility to C-TIMBEG that performs final processing and sign correction for elapsed time calculations. The program applies proper mathematical signs to calculated elapsed time values and handles different year-type calculation methodologies.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Sign Correction</strong> - Applies appropriate positive/negative signs to elapsed time results</li>
+<li><strong>Month Calculation</strong> - Computes elapsed months and remainder days based on year type</li>
+<li><strong>Year Type Processing</strong> - Handles different calculation methods (998, 365, etc.)</li>
+<li><strong>Date Restoration</strong> - Restores original date order when calculations were performed on reversed dates</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-XDAYS</strong> - Calculated elapsed days (unsigned)</li>
+<li><strong>WS-XSIGN</strong> - Sign indicator from C-TIMBEG (-1 or +1)</li>
+<li><strong>TA-YRTYPE</strong> - Year type calculation method (998, 365, etc.)</li>
+<li><strong>WS-JUL-1, WS-JUL-2</strong> - Julian date values</li>
+<li><strong>WS-DATE1, WS-DATE2</strong> - Working dates</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>WS-XDAYS</strong> - Signed elapsed days</li>
+<li><strong>WS-XMONTHS</strong> - Elapsed months</li>
+<li><strong>WS-XREM</strong> - Remainder days after month calculation</li>
+<li><strong>WS-DATE1, WS-DATE2</strong> - Dates restored to original order if needed</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-TIMEND Main Flow" src="Diagrams/C-TIMEND_Main_Flow.mmd" /></p>
+<h4>Calculation Steps</h4>
+<ol>
+<li>
+<p><strong>Sign Application</strong>
+   <code>cobol
+   COMPUTE WS-XDAYS = WS-XSIGN * WS-XDAYS</code></p>
+</li>
+<li>
+<p><strong>Year Type 998 Processing</strong>
+   <code>cobol
+   IF TA-YRTYPE = 998
+      COMPUTE WS-XMONTHS = WS-XMONTHS * WS-XSIGN
+      COMPUTE WS-XREM = WS-XDAYS - (WS-XMONTHS * 30)</code></p>
+</li>
+<li>
+<p><strong>Standard Month Calculation</strong>
+   <code>cobol
+   ELSE
+      DIVIDE WS-XDAYS BY 30 GIVING WS-XMONTHS
+                         REMAINDER WS-XREM</code></p>
+</li>
+<li>
+<p><strong>365-Day Year Special Handling</strong>
+   <code>cobol
+   IF TA-YRTYPE = 365
+      COMPUTE WS-XDAYS = WS-XSIGN * (WS-JUL-2 - WS-JUL-1)</code></p>
+</li>
+<li>
+<p><strong>Date Order Restoration</strong>
+   <code>cobol
+   IF (WS-XSIGN &lt; 0)
+      MOVE WS-DATE2 TO WS-HOLDDATE
+      MOVE WS-DATE1 TO WS-DATE2
+      MOVE WS-HOLDDATE TO WS-DATE1</code></p>
+</li>
+</ol>
+<h2>Year Type Processing</h2>
+<p><img alt="C-TIMEND Year Type Processing" src="Diagrams/C-TIMEND_Year_Type_Processing.mmd" /></p>
+<h3>Supported Year Types</h3>
+<table>
+<thead>
+<tr>
+<th>Year Type</th>
+<th>Description</th>
+<th>Month Calculation Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>998</td>
+<td>Unit Period Method</td>
+<td>Pre-calculated months with 30-day adjustment</td>
+</tr>
+<tr>
+<td>365</td>
+<td>Standard Calendar</td>
+<td>Direct Julian difference</td>
+</tr>
+<tr>
+<td>Other</td>
+<td>Standard Method</td>
+<td>30-day month division</td>
+</tr>
+</tbody>
+</table>
+<h3>Calculation Formulas</h3>
+<h4>Standard Method (Non-998)</h4>
+<pre><code>Months = Days ÷ 30 (integer division)
+Remainder = Days MOD 30
+</code></pre>
+<h4>Unit Period Method (998)</h4>
+<pre><code>Months = Pre-calculated value × Sign
+Remainder = Days - (Months × 30)
+</code></pre>
+<h4>365-Day Year Method</h4>
+<pre><code>Days = Sign × (Julian2 - Julian1)
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>C-TIMALL</strong> - After elapsed time calculations</li>
+<li><strong>C-ELAPSED-TIME</strong> - For final result processing</li>
+<li><strong>Month-based calculation routines</strong></li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li>No external routines (self-contained processing)</li>
+</ul>
+<p><img alt="C-TIMEND Call Graph" src="Diagrams/C-TIMEND_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-XDAYS</td>
+<td>NUMERIC</td>
+<td>Elapsed days (input/output)</td>
+</tr>
+<tr>
+<td>WS-XMONTHS</td>
+<td>NUMERIC</td>
+<td>Calculated elapsed months</td>
+</tr>
+<tr>
+<td>WS-XREM</td>
+<td>NUMERIC</td>
+<td>Remainder days after month calculation</td>
+</tr>
+<tr>
+<td>WS-XSIGN</td>
+<td>NUMERIC</td>
+<td>Sign indicator from C-TIMBEG</td>
+</tr>
+<tr>
+<td>TA-YRTYPE</td>
+<td>NUMERIC</td>
+<td>Year calculation type</td>
+</tr>
+<tr>
+<td>WS-JUL-1</td>
+<td>NUMERIC</td>
+<td>Julian date 1</td>
+</tr>
+<tr>
+<td>WS-JUL-2</td>
+<td>NUMERIC</td>
+<td>Julian date 2</td>
+</tr>
+<tr>
+<td>WS-HOLDDATE</td>
+<td>DATE</td>
+<td>Temporary storage for date swapping</td>
+</tr>
+<tr>
+<td>WS-HOLDJUL</td>
+<td>NUMERIC</td>
+<td>Temporary storage for Julian swapping</td>
+</tr>
+</tbody>
+</table>
+<h3>Sign Processing Results</h3>
+<table>
+<thead>
+<tr>
+<th>Input Sign</th>
+<th>Result</th>
+<th>Date Order Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+1</td>
+<td>Positive elapsed time</td>
+<td>No date reordering</td>
+</tr>
+<tr>
+<td>-1</td>
+<td>Negative elapsed time</td>
+<td>Restore original date order</td>
+</tr>
+</tbody>
+</table>
+<h2>Error Handling</h2>
+<p>C-TIMEND performs mathematical operations that are generally safe, but considerations include:</p>
+<h3>Potential Issues</h3>
+<ul>
+<li><strong>Division by Zero</strong> - Not applicable (dividing by constant 30)</li>
+<li><strong>Overflow Conditions</strong> - Large date differences may cause numeric overflow</li>
+<li><strong>Invalid Year Types</strong> - Unrecognized TA-YRTYPE values default to standard processing</li>
+</ul>
+<h3>Validation Checks</h3>
+<ul>
+<li>Sign consistency verification</li>
+<li>Year type validation</li>
+<li>Remainder calculation bounds checking</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Conditional Processing</strong> - Only processes 998-type calculations when needed</li>
+<li><strong>In-Place Operations</strong> - Modifies values directly without additional storage</li>
+<li><strong>Minimal Branching</strong> - Efficient conditional logic paths</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - All operations are constant time</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage usage</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Positive Elapsed Time</h3>
+<pre><code class="language-cobol">* Setup from C-TIMBEG: WS-XSIGN = +1, WS-XDAYS = 45
+PERFORM C-TIMEND
+* Result: WS-XDAYS = +45, WS-XMONTHS = +1, WS-XREM = +15
+</code></pre>
+<h3>Negative Elapsed Time (Reversed Dates)</h3>
+<pre><code class="language-cobol">* Setup from C-TIMBEG: WS-XSIGN = -1, WS-XDAYS = 45
+PERFORM C-TIMEND
+* Result: WS-XDAYS = -45, WS-XMONTHS = -1, WS-XREM = -15
+* Dates restored to original order
+</code></pre>
+<h3>Unit Period Calculation (Type 998)</h3>
+<pre><code class="language-cobol">* Setup: TA-YRTYPE = 998, WS-XMONTHS = 2, WS-XDAYS = 75
+PERFORM C-TIMEND
+* Result: WS-XMONTHS = 2 * WS-XSIGN, WS-XREM = 75 - (2 * 30) = 15
+</code></pre>
+<h2>Dependencies</h2>
+<h3>Required Data Elements</h3>
+<ul>
+<li>Proper setup from <strong><a href="C-TIMBEG_Documentation.html">C-TIMBEG</a></strong></li>
+<li>Valid TA-YRTYPE configuration</li>
+<li>Initialized working storage variables</li>
+</ul>
+<h3>Integration Requirements</h3>
+<ul>
+<li>Must be called after elapsed time calculations are complete</li>
+<li>Requires sign and date information from preceding routines</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Finalization Pattern</strong> - Completes processing started by C-TIMBEG</li>
+<li><strong>Sign Management Pattern</strong> - Consistently applies mathematical signs</li>
+<li><strong>Conditional Processing Pattern</strong> - Handles different calculation methods</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Maintain year type processing consistency</li>
+<li>Preserve sign logic for backward compatibility</li>
+<li>Ensure month calculation accuracy for financial applications</li>
+</ul>
+<h3>Testing Considerations</h3>
+<ul>
+<li>Test all supported year types (998, 365, standard)</li>
+<li>Verify sign handling for both positive and negative scenarios</li>
+<li>Validate month/remainder calculations for edge cases</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-TIMBEG_Documentation.html">C-TIMBEG</a></strong> - Companion initialization routine</li>
+<li><strong><a href="C-TIM-RESULTS_Documentation.html">C-TIM-RESULTS</a></strong> - Date comparison result processing</li>
+<li><strong><a href="C-TIMALL_Documentation.html">C-TIMALL</a></strong> - Main timing calculation controller</li>
+<li><strong><a href="C-ELAPSED-TIME_Documentation.html">C-ELAPSED-TIME</a></strong> - Elapsed time calculation utility</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

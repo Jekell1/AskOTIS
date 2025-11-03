@@ -1,0 +1,624 @@
+      * COPYMEMBER: LIBUP/UP1534_FS.CPY
+      ******************************************************************
+      *
+      * IDENTIFICATION: LIBUP/UG1534_FS.CPY
+      *
+      * DESCRIPTION   : FS FOR SOURCE (A15) & TARGET (A34) GLOBAL FILES
+      *
+      * REV:
+      *
+      ******************************************************************
+
+      * GLOBALS
+      *COPY "LIBGL/GLFSAL.CPY".
+      *COPY "LIBLP/LPFSBY.CPY".
+      *COPY "LIBLP/LPFSCD.CPY".
+      *COPY "LIBLP/LPFSCDB.CPY".
+      *COPY "LIBLP/LPFSCL.CPY".
+      *COPY "LIBSP/SPFSCP.CPY".
+      *COPY "LIBLP/LPFSEA.CPY".
+      *COPY "LIBSP/SPFSEP.CPY".
+      *COPY "LIBSP/SPFSEW.CPY".
+      *COPY "LIBLP/LPFSFD.CPY".
+      *COPY "LIBLP/LPFSFDB.CPY".
+      *COPY "LIBGL/GLFSFS.CPY".
+      *COPY "LIBGL/GLFSGI.CPY".
+      *COPY "LIBGL/GLFSGL.CPY".
+      *COPY "LIBGL/GLFSGT.CPY".
+      *COPY "LIBSP/SPFSII.CPY".
+      *COPY "LIBLP/LPFSIR.CPY".
+      *COPY "LIBGL/GLFSJD.CPY".
+      *COPY "LIBLP/LPFSLC.CPY".
+      *COPY "LIBGB/GBFSPE.CPY".
+      *COPY "LIBGB/GBFSPW.CPY".
+      *COPY "LIBLP/LPFSRB.CPY".
+      *COPY "LIBGB/GBFSRC.CPY".
+      *COPY "LIBGB/GBFSSE.CPY".
+      *COPY "LIBLP/LPFSSM.CPY".
+      *COPY "LIBGB/GBFSSN.CPY".
+      *COPY "LIBLP/LPFSSP.CPY".
+      *COPY "LIBLP/LPFSSS.CPY".
+      *COPY "LIBLP/LPFSST.CPY".
+      *COPY "LIBSP/SPFSTRWINFO.CPY".
+      *COPY "LIBLP/LPFSTZ.CPY".
+      *COPY "LIBSP/SPFSWR.CPY".
+
+      * LOCALS
+      *COPY "LIBLP/LPFSBM.CPY".
+      *COPY "LIBLP/LPFSBW.CPY".
+      *COPY "LIBLP/LPFSBX.CPY".
+      *COPY "LIBLP/LPFSCA.CPY".
+      *COPY "LIBLP/LPFSCI.CPY".
+      *COPY "LIBSP/SPFSCJ.CPY".
+      *COPY "LIBLP/LPFSCK.CPY".
+      *COPY "LIBLP/LPFSCX.CPY".
+      *COPY "LIBLP/LPFSDL.CPY".
+      *COPY "LIBLP/LPFSDM.CPY".
+      *COPY "LIBLP/LPFSDT.CPY".
+      *COPY "LIBLP/LPFSES.CPY".
+      *COPY "LIBGB/GBFSGB.CPY".
+      *COPY "LIBLP/LPFSIC.CPY".
+      *COPY "LIBLP/LPFSIX.CPY".
+      *COPY "LIBLP/LPFSLE.CPY".
+      *COPY "LIBLP/LPFSLH.CPY".
+      *COPY "LIBLP/LPFSLM.CPY".
+      *COPY "LIBLP/LPFSLN.CPY".
+      *COPY "LIBLP/LPFSLP.CPY".
+      *COPY "LIBLP/LPFSLSD.CPY".
+      *COPY "LIBLP/LPFSLSF.CPY".
+      *COPY "LIBLP/LPFSLSG.CPY".
+      *COPY "LIBLP/LPFSLSJ.CPY".
+      *COPY "LIBLP/LPFSLSL.CPY".
+      *COPY "LIBLP/LPFSLSM.CPY".
+      *COPY "LIBLP/LPFSLSP.CPY".
+      *COPY "LIBLP/LPFSLSR.CPY".
+      *COPY "LIBLP/LPFSLSX.CPY".
+      *COPY "LIBLP/LPFSLTA.CPY".
+      *COPY "LIBLP/LPFSLTB.CPY".
+      *COPY "LIBLP/LPFSLTC.CPY".
+      *COPY "LIBLP/LPFSLTD.CPY".
+      *COPY "LIBLP/LPFSLTF.CPY".
+      *COPY "LIBLP/LPFSLTI.CPY".
+      *COPY "LIBLP/LPFSLTL.CPY".
+      *COPY "LIBLP/LPFSLTP.CPY".
+      *COPY "LIBLP/LPFSLX.CPY".
+      *COPY "LIBLP/LPFSLXE.CPY".
+      *COPY "LIBLP/LPFSLXG.CPY".
+      *COPY "LIBLP/LPFSML.CPY".
+      *COPY "LIBLP/LPFSMP.CPY".
+      *COPY "LIBLP/LPFSPA.CPY".
+      *COPY "LIBLP/LPFSPC.CPY".
+      *COPY "LIBLP/LPFSPD.CPY".
+      *COPY "LIBLP/LPFSRX.CPY".
+      *COPY "LIBLP/LPFSTY.CPY".
+
+      ******************************************************************
+      *
+      *    S O U R C E - F I L E S - A 1 5
+      *
+      ******************************************************************
+
+      *=================================================================
+      * GLOBALS:
+      *=================================================================
+
+      * COPYMEMBER: LIBGL/GLFSAL
+           SELECT OAL-FILE ASSIGN OAL-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OAL1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSBY
+           SELECT OBY-FILE ASSIGN TO OBY-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OBY1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSCD
+           SELECT OCD-FILE ASSIGN TO OCD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCD1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSCL
+           SELECT OCL-FILE ASSIGN TO OCL-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCL1-KEY
+                  ALTERNATE RECORD KEY OCL2-KEY
+                               = OCL-GROUP-ID
+                                 OCL-DESC
+                            WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSCP
+           SELECT OCP-FILE ASSIGN TO OCP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCP1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSEA
+           SELECT OEA-FILE ASSIGN TO OEA-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OEA1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSEP
+      *    SELECT OEP-FILE ASSIGN TO OEP-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OEP1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSEW
+      *    SELECT OEW-FILE ASSIGN TO OEW-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OEW1-KEY
+      *           ALTERNATE RECORD KEY OEW2-KEY WITH DUPLICATES
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSFD
+      *    SELECT OFD-FILE ASSIGN OFD-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OFD1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSOFT
+      *    SELECT OFT-FILE ASSIGN OFT-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OFT1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGL/GLFSFS
+      *    SELECT OFS-FILE ASSIGN TO OFS-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS MODE DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OFS1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGL/GLFSGI
+           SELECT OGI-FILE ASSIGN TO OGI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OGI1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGL/GLFSGL
+           SELECT OGL-FILE ASSIGN TO OGL-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OGL1-KEY
+                  ALTERNATE RECORD KEY OGL2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGL/GLFSGT
+           SELECT OGT-FILE ASSIGN TO OGT-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OGT1-KEY
+                  ALTERNATE RECORD KEY OGT2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OGT3-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OGT4-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSII 
+           SELECT OII-FILE ASSIGN OII-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY OII-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSIR
+           SELECT OIR-FILE ASSIGN TO OIR-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY OIR-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGL/GLFSJD
+      *    SELECT OJD-FILE ASSIGN OJD-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OJD1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSLC
+           SELECT OLC-FILE ASSIGN TO OLC-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLC1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSPE
+           SELECT OPE-FILE ASSIGN TO OPE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OPE1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSPW
+           SELECT OPW-FILE ASSIGN TO OPW-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OPW1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSRB
+      *    SELECT ORB-FILE ASSIGN TO ORB-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY ORB1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSRC
+           SELECT ORC-FILE ASSIGN TO ORC-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ORC1-KEY
+                  ALTERNATE RECORD KEY ORC2-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSSE
+           SELECT OSE-FILE ASSIGN TO OSE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSE1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSSM
+           SELECT OSM-FILE ASSIGN TO OSM-PATH
+                  WITH COMPRESSION
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSM1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSSN
+           SELECT OSN-FILE ASSIGN TO OSN-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSN1-KEY
+                  ALTERNATE RECORD KEY OSN2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSSP
+           SELECT OSP-FILE ASSIGN TO OSP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSP1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSSS
+           SELECT OSS-FILE ASSIGN TO OSS-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSS1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSST
+           SELECT OST-FILE ASSIGN TO OST-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OST1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSSU
+           SELECT OSU-FILE ASSIGN TO OSU-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSU1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSTRWINFO
+           SELECT OTRW-INFO-FILE ASSIGN TO OTRW-INFO-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OTRW-INFO-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSTZ
+           SELECT OTZ-FILE ASSIGN TO OTZ-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OTZ1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBSP/SPFSWR 
+         SELECT OWR-FILE ASSIGN TO OWR-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OWR1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBGB/GBFSAU  AUDIT CHANGES FILE
+           SELECT OAU-FILE ASSIGN TO OAU-PATH
+                  WITH COMPRESSION
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OAU1-KEY
+                  FILE STATUS FILE-STAT.
+
+
+      *=================================================================
+      * LOCALS:
+      *=================================================================
+
+           SELECT OBM-FILE ASSIGN TO OBM-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OBM1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OBW-FILE ASSIGN TO OBW-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OBW1-KEY
+                  ALTERNATE RECORD KEY OBW2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OBW3-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OBW4-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OBX-FILE ASSIGN TO OBX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OBX1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OCA-FILE ASSIGN TO OCA-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCA1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OCI-FILE ASSIGN TO OCI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCI1-KEY
+                  ALTERNATE RECORD KEY OCI2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OCI3-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OCJ-FILE ASSIGN TO OCJ-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCJ1-KEY
+                  ALTERNATE RECORD KEY OCJ2-KEY
+                             = OCJ-BRNO
+                               OCJ-ACCTNO
+                               OCJ-DATE
+                               OCJ-START-TIME
+                             WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OCK-FILE ASSIGN TO OCK-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCK1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSCX
+           SELECT OCX-FILE ASSIGN TO OCX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OCX1-KEY
+                  ALTERNATE RECORD KEY OCX2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT ODL-FILE ASSIGN TO ODL-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ODL1-KEY
+                  ALTERNATE RECORD KEY ODL2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      *    SELECT ODM-FILE ASSIGN TO ODM-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY ODM1-KEY
+      *           FILE STATUS FILE-STAT.
+
+           SELECT ODT-FILE ASSIGN TO ODT-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ODT1-KEY
+                  ALTERNATE RECORD KEY ODT2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY ODT3-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY ODT4-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+      *    SELECT OES-FILE ASSIGN TO OES-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OES1-KEY
+      *           FILE STATUS FILE-STAT.
+
+           SELECT OGB-FILE ASSIGN TO OGB-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY OGB-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OIC-FILE ASSIGN TO OIC-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OIC1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OIX-FILE ASSIGN TO OIX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OIX1-KEY
+                  ALTERNATE RECORD KEY OIX2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLE-FILE ASSIGN TO OLE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLE1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLH-FILE ASSIGN TO OLH-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLH1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLM-FILE ASSIGN TO OLM-PATH
+                  WITH COMPRESSION
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLM1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLN-FILE ASSIGN TO OLN-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLN1-KEY
+                  ALTERNATE RECORD KEY OLN2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OLN3-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OLN4-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OLN5-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OLN6-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY OLN7-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLP-FILE ASSIGN TO OLP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLP1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLS-FILE ASSIGN TO OLS-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLS1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLT-FILE ASSIGN TO OLT-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLT1-KEY
+                  FILE STATUS FILE-STAT.
+
+           SELECT OLX-FILE ASSIGN TO OLX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OLX1-KEY
+                  FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSML
+      *    SELECT OML-FILE ASSIGN TO OML-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OML1-KEY
+      *           ALTERNATE RECORD KEY OML2-KEY WITH DUPLICATES
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSMP
+      *    SELECT OMP-FILE ASSIGN TO OMP-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OMP1-KEY
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSPC
+      *    SELECT OPC-FILE ASSIGN TO OPC-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OPC1-KEY
+      *           ALTERNATE RECORD KEY OPC2-KEY WITH DUPLICATES
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSPD
+      *    SELECT OPD-FILE ASSIGN TO OPD-PATH
+      *           ORGANIZATION INDEXED
+      *           ACCESS DYNAMIC
+      *           LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+      *           RECORD KEY OPD1-KEY
+      *           ALTERNATE RECORD KEY OPD2-KEY WITH DUPLICATES
+      *           FILE STATUS FILE-STAT.
+
+      * COPYMEMBER: LIBLP/LPFSRX
+           SELECT ORX-FILE ASSIGN TO ORX-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ORX1-KEY
+                  ALTERNATE RECORD KEY ORX2-KEY WITH DUPLICATES
+                  ALTERNATE RECORD KEY ORX3-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.
+
+           SELECT OTY-FILE ASSIGN TO OTY-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OTY1-KEY
+                  FILE STATUS FILE-STAT.
+

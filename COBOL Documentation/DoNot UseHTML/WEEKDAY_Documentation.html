@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEEKDAY - Day of Week Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">WEEKDAY - Day of Week Calculator</span>
+        </nav>
+        <main class="content">
+<h1>WEEKDAY - Day of Week Calculator</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Program ID:</strong> WEEKDAY<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#program-flow">Program Flow</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#day-of-week-logic">Day-of-Week Logic</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> WEEKDAY<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Day of Week Determination<br />
+<strong>Source Location:</strong> APIPAY_Inlined.CBL lines 16571-16574<br />
+<strong>Usage:</strong> Determine which day of the week a given date falls on  </p>
+<h2>Purpose and Description</h2>
+<p>WEEKDAY is a calendar utility that determines which day of the week corresponds to any given date. It provides both numeric day-of-week values and boolean flags for each day, making it useful for business logic that depends on specific weekdays.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Day Calculation</strong> - Determine the day of the week for any valid date</li>
+<li><strong>Multiple Output Formats</strong> - Provide both numeric and flag-based results</li>
+<li><strong>Calendar Integration</strong> - Work with standard YYYYMMDD date formats</li>
+<li><strong>Business Logic Support</strong> - Enable weekday-specific processing rules</li>
+</ol>
+<h3>Day-of-Week System</h3>
+<p>The WEEKDAY utility implements a standard 7-day week system:
+- <strong>Sunday</strong>: Day 1, DAY-IS-SUN flag
+- <strong>Monday</strong>: Day 2, DAY-IS-MON flag<br />
+- <strong>Tuesday</strong>: Day 3, DAY-IS-TUE flag
+- <strong>Wednesday</strong>: Day 4, DAY-IS-WED flag
+- <strong>Thursday</strong>: Day 5, DAY-IS-THU flag
+- <strong>Friday</strong>: Day 6, DAY-IS-FRI flag
+- <strong>Saturday</strong>: Day 7, DAY-IS-SAT flag</p>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - Calendar date in YYYYMMDD format</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>DAY--OF-WEEK</strong> - Numeric day value (1-7)</li>
+<li><strong>Day flags</strong> - Boolean indicators for each day of the week</li>
+<li>DAY-IS-SUN, DAY-IS-MON, DAY-IS-TUE, DAY-IS-WED</li>
+<li>DAY-IS-THU, DAY-IS-FRI, DAY-IS-SAT</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="WEEKDAY Main Flow" src="Diagrams/WEEKDAY_Main_Flow.mmd" /></p>
+<h4>Core Implementation</h4>
+<pre><code class="language-cobol">WEEKDAY SECTION.
+    MOVE &quot;W&quot; TO DATER-ACTION-CODE.
+    PERFORM DATER-ROUTINE.
+</code></pre>
+<h3>Algorithm Steps</h3>
+<ol>
+<li><strong>Set Action Code</strong></li>
+<li>
+<p>Assigns "W" to DATER-ACTION-CODE to specify weekday calculation</p>
+</li>
+<li>
+<p><strong>Delegate Processing</strong></p>
+</li>
+<li>Calls DATER-ROUTINE which contains the day-of-week algorithm</li>
+<li>
+<p>DATER-ROUTINE applies modular arithmetic to determine weekday</p>
+</li>
+<li>
+<p><strong>Result Setting</strong></p>
+</li>
+<li>DATER-ROUTINE updates DAY--OF-WEEK with numeric value</li>
+<li>Corresponding day flags (DAY-IS-xxx) are set appropriately</li>
+</ol>
+<h2>Input/Output Specifications</h2>
+<h3>Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NUM-DATE</td>
+<td>Numeric</td>
+<td>YYYYMMDD</td>
+<td>Standard calendar date</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DAY--OF-WEEK</td>
+<td>Numeric</td>
+<td>1-7</td>
+<td>Numeric day of week (1=Sunday)</td>
+</tr>
+<tr>
+<td>DAY-IS-SUN</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Sunday</td>
+</tr>
+<tr>
+<td>DAY-IS-MON</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Monday</td>
+</tr>
+<tr>
+<td>DAY-IS-TUE</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Tuesday</td>
+</tr>
+<tr>
+<td>DAY-IS-WED</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Wednesday</td>
+</tr>
+<tr>
+<td>DAY-IS-THU</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Thursday</td>
+</tr>
+<tr>
+<td>DAY-IS-FRI</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Friday</td>
+</tr>
+<tr>
+<td>DAY-IS-SAT</td>
+<td>Boolean</td>
+<td>88-level</td>
+<td>True if date is Saturday</td>
+</tr>
+</tbody>
+</table>
+<h3>Data Validation</h3>
+<ul>
+<li><strong>NUM-DATE Requirements</strong>: Must be valid YYYYMMDD format</li>
+<li><strong>Date Range</strong>: Limited by DATER-ROUTINE's supported date range</li>
+<li><strong>Error Handling</strong>: Invalid dates may return unpredictable weekday values</li>
+</ul>
+<h2>Program Flow</h2>
+<p><img alt="WEEKDAY Call Graph" src="Diagrams/WEEKDAY_Call_Graph.mmd" /></p>
+<h3>Execution Flow</h3>
+<ol>
+<li><strong>Entry Point</strong>: WEEKDAY SECTION called by external routines</li>
+<li><strong>Setup Phase</strong>: DATER-ACTION-CODE set to "W"</li>
+<li><strong>Processing Phase</strong>: DATER-ROUTINE performs weekday calculation</li>
+<li><strong>Flag Setting</strong>: Day-specific boolean flags updated</li>
+<li><strong>Completion</strong>: Control returns to caller with results</li>
+</ol>
+<h3>Call Chain</h3>
+<pre><code>Calling Program → WEEKDAY → DATER-ROUTINE → [Weekday Algorithm] → Return
+</code></pre>
+<h2>Day-of-Week Logic</h2>
+<h3>Mathematical Foundation</h3>
+<p>The weekday calculation typically uses modular arithmetic based on a known reference date:</p>
+<ol>
+<li><strong>Reference Point</strong>: Use a known date/weekday combination</li>
+<li><strong>Day Difference</strong>: Calculate days between reference and target date</li>
+<li><strong>Modular Division</strong>: Apply MOD 7 operation to find weekday offset</li>
+<li><strong>Day Mapping</strong>: Map numeric result to day names and flags</li>
+</ol>
+<h3>Algorithm Details</h3>
+<pre><code>Steps:
+1. Convert input date to Julian day number
+2. Calculate difference from reference Julian date
+3. Apply MOD 7 to difference
+4. Map result to weekday (1=Sunday, 2=Monday, etc.)
+5. Set corresponding DAY-IS-xxx flag to TRUE
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>Business day processing</strong> - Skip weekends in calculations</li>
+<li><strong>Report scheduling</strong> - Generate reports on specific weekdays</li>
+<li><strong>Batch job scheduling</strong> - Run processes on designated days</li>
+<li><strong>Holiday calculations</strong> - Determine if date falls on weekend</li>
+<li><strong>Payment processing</strong> - Handle weekend payment adjustments</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong>DATER-ROUTINE</strong> - Centralized date processing engine</li>
+<li><strong>Julian date functions</strong> - Through DATER-ROUTINE for date arithmetic</li>
+<li><strong>Calendar validation</strong> - Through DATER-ROUTINE</li>
+</ul>
+<h3>Usage Patterns</h3>
+<h4>Business Day Logic</h4>
+<pre><code class="language-cobol">PERFORM WEEKDAY
+IF DAY-IS-SAT OR DAY-IS-SUN
+   PERFORM SKIP-WEEKEND-PROCESSING
+ELSE
+   PERFORM BUSINESS-DAY-PROCESSING
+END-IF
+</code></pre>
+<h4>Day-Specific Processing</h4>
+<pre><code class="language-cobol">PERFORM WEEKDAY
+EVALUATE TRUE
+   WHEN DAY-IS-MON
+        PERFORM MONDAY-BATCH-JOBS
+   WHEN DAY-IS-FRI  
+        PERFORM FRIDAY-REPORTS
+   WHEN DAY-IS-SAT OR DAY-IS-SUN
+        PERFORM WEEKEND-MAINTENANCE
+END-EVALUATE
+</code></pre>
+<h2>Usage Examples</h2>
+<h3>Basic Weekday Determination</h3>
+<pre><code class="language-cobol">MOVE 20240315 TO NUM-DATE    * March 15, 2024
+PERFORM WEEKDAY
+* Check the results
+IF DAY-IS-FRI
+   DISPLAY &quot;March 15, 2024 is a Friday&quot;
+END-IF
+DISPLAY &quot;Day of week number: &quot; DAY--OF-WEEK
+</code></pre>
+<h3>Business Day Validation</h3>
+<pre><code class="language-cobol">MOVE TRANSACTION-DATE TO NUM-DATE
+PERFORM WEEKDAY
+IF DAY-IS-SAT OR DAY-IS-SUN
+   MOVE &quot;WEEKEND - INVALID BUSINESS DATE&quot; TO ERROR-MSG
+   PERFORM ERROR-HANDLING
+ELSE
+   PERFORM PROCESS-BUSINESS-TRANSACTION
+END-IF
+</code></pre>
+<h3>Weekly Report Scheduling</h3>
+<pre><code class="language-cobol">MOVE CURRENT-DATE TO NUM-DATE
+PERFORM WEEKDAY
+EVALUATE TRUE
+   WHEN DAY-IS-MON
+        PERFORM WEEKLY-SALES-REPORT
+   WHEN DAY-IS-FRI
+        PERFORM WEEKLY-FINANCIAL-REPORT  
+   WHEN DAY-IS-SUN
+        PERFORM WEEKLY-MAINTENANCE-REPORT
+END-EVALUATE
+</code></pre>
+<h3>Payment Date Adjustment</h3>
+<pre><code class="language-cobol">MOVE DUE-DATE TO NUM-DATE
+PERFORM WEEKDAY
+* If due date is weekend, move to next Monday
+IF DAY-IS-SAT
+   PERFORM JUL                   * Convert to Julian
+   ADD 2 TO JULIAN-DATE         * Add 2 days
+   PERFORM CJUL                 * Convert back
+   MOVE NUM-DATE TO ADJUSTED-DUE-DATE
+ELSE IF DAY-IS-SUN
+   PERFORM JUL
+   ADD 1 TO JULIAN-DATE         * Add 1 day
+   PERFORM CJUL
+   MOVE NUM-DATE TO ADJUSTED-DUE-DATE
+ELSE
+   MOVE DUE-DATE TO ADJUSTED-DUE-DATE
+END-IF
+</code></pre>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) operation - constant time calculation</li>
+<li><strong>Memory Usage</strong>: Minimal working storage for flags</li>
+<li><strong>Delegation</strong>: Actual computation done by optimized DATER-ROUTINE</li>
+<li><strong>Flag Access</strong>: Direct boolean flag checks are very fast</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Validation Requirements</h3>
+<ul>
+<li>Input date must be valid calendar date</li>
+<li>Weekday calculation must be mathematically accurate</li>
+<li>Only one day flag should be true at a time</li>
+<li>DAY--OF-WEEK numeric value must match active flag</li>
+</ul>
+<h3>Test Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Test Date</th>
+<th>Expected Day</th>
+<th>Expected Flag</th>
+<th>Numeric Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20240101</td>
+<td>Monday</td>
+<td>DAY-IS-MON</td>
+<td>2</td>
+</tr>
+<tr>
+<td>20240107</td>
+<td>Sunday</td>
+<td>DAY-IS-SUN</td>
+<td>1</td>
+</tr>
+<tr>
+<td>20240229</td>
+<td>Thursday</td>
+<td>DAY-IS-THU</td>
+<td>5</td>
+</tr>
+<tr>
+<td>20241225</td>
+<td>Wednesday</td>
+<td>DAY-IS-WED</td>
+<td>4</td>
+</tr>
+<tr>
+<td>20241231</td>
+<td>Tuesday</td>
+<td>DAY-IS-TUE</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h3>Cross-Validation</h3>
+<ul>
+<li>Test against known calendar dates</li>
+<li>Verify consistency across date ranges</li>
+<li>Confirm leap year handling</li>
+<li>Validate flag/numeric correspondence</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Common Issues</h3>
+<ul>
+<li><strong>Invalid Input Date</strong>: May produce unpredictable weekday results</li>
+<li><strong>Date Range Limits</strong>: Dates outside DATER-ROUTINE range may fail</li>
+<li><strong>Flag Conflicts</strong>: Multiple day flags should never be true simultaneously</li>
+</ul>
+<h3>Error Prevention</h3>
+<pre><code class="language-cobol">* Validate date before weekday calculation
+PERFORM DATE-VALIDATION
+IF DATE-IS-VALID
+   PERFORM WEEKDAY
+   * Process weekday results
+ELSE
+   PERFORM HANDLE-INVALID-DATE
+END-IF
+</code></pre>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="JUL_Documentation.html">JUL Documentation</a></strong> - Calendar to Julian conversion</li>
+<li><strong><a href="CJUL_Documentation.html">CJUL Documentation</a></strong> - Julian to calendar conversion  </li>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE Documentation</a></strong> - Core date processing engine</li>
+<li><strong><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a></strong> - Complete utilities listing</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Delegation Pattern</strong> - Core logic delegated to DATER-ROUTINE</li>
+<li><strong>Action Code Pattern</strong> - Uses action codes to specify operation type</li>
+<li><strong>Flag Pattern</strong> - Multiple boolean flags for easy conditional logic</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Maintain consistency between numeric and flag outputs  </li>
+<li>Preserve the Sunday=1 weekday numbering convention</li>
+<li>Ensure only one day flag is true at a time</li>
+<li>Test weekday accuracy against known calendar dates</li>
+<li>Coordinate changes with DATER-ROUTINE dependencies</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

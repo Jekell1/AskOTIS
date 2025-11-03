@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSVGB
+           SELECT VGB-FILE ASSIGN TO VGB-PATH  
+                  ORGANIZATION INDEXED 
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VGB-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,18 @@
+      * COPYMEMBER: LIBUP/UPFSALTP
+           SELECT ALTP-FILE ASSIGN TO ALTP-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY ALTP-KEY
+                  FILE STATUS FILE-STAT.
+           SELECT ALTP-DONE-FILE ASSIGN ALTP-DONE-PATH
+                  ORGANIZATION LINE SEQUENTIAL
+                  FILE STATUS FILE-STAT.
+~
+~
+~
+~
+~
+~
+~
+~

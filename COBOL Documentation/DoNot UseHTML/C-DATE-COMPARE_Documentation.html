@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-DATE-COMPARE - Date Comparison Utility</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-DATE-COMPARE - Date Comparison Utility</span>
+        </nav>
+        <main class="content">
+<h1>C-DATE-COMPARE - Date Comparison Utility</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Section:</strong> C-DATE-COMPARE SECTION</p>
+<h2>Program Overview</h2>
+<p><strong>C-DATE-COMPARE</strong> is a utility that compares two dates (SYS-DATE and NUM-DATE) and returns a result indicating their relationship. This utility has been simplified in recent versions to use direct numeric comparison instead of Julian date conversion.</p>
+<h2>Input Parameters</h2>
+<ul>
+<li><strong>SYS-DATE</strong> (PIC 9(8)): First date for comparison in YYYYMMDD format</li>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Second date for comparison in YYYYMMDD format</li>
+</ul>
+<h2>Output Fields</h2>
+<ul>
+<li><strong>ELAPSED-RESULTS</strong> (PIC X): Comparison result</li>
+<li><strong>"E"</strong>: SYS-DATE equals NUM-DATE</li>
+<li><strong>"G"</strong>: SYS-DATE is greater than NUM-DATE</li>
+<li><strong>"L"</strong>: SYS-DATE is less than NUM-DATE</li>
+</ul>
+<h2>Processing Logic</h2>
+<ol>
+<li>Direct comparison of SYS-DATE with NUM-DATE</li>
+<li>Set ELAPSED-RESULTS based on comparison</li>
+<li>Simplified logic implemented 2017/02/02</li>
+</ol>
+<h2>Technical Implementation</h2>
+<pre><code class="language-cobol">IF SYS-DATE = NUM-DATE
+   MOVE &quot;E&quot; TO ELAPSED-RESULTS
+ELSE
+IF SYS-DATE &gt; NUM-DATE
+   MOVE &quot;G&quot; TO ELAPSED-RESULTS
+ELSE
+   MOVE &quot;L&quot; TO ELAPSED-RESULTS
+</code></pre>
+<h2>Historical Notes</h2>
+<ul>
+<li><strong>MJD 130514</strong>: Added zero date handling</li>
+<li><strong>MJD 140124</strong>: Added A15 compatibility logic</li>
+<li><strong>MJD 151110</strong>: Fixed for CCYY format</li>
+<li><strong>2017/02/02</strong>: Simplified to direct numeric comparison</li>
+</ul>
+<p>This utility is fundamental for all date comparison operations in the APIPAY system.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

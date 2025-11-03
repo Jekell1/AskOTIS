@@ -1,0 +1,19 @@
+graph TD
+    A[TIMUPER Entry] --> B[Save NDTE-DATE]
+    B --> C[Set ELAPSED-YRTYPE = 999]
+    C --> D[Set DATER-ACTION-CODE = E]
+    D --> E[Call DATER-ROUTINE]
+    E --> F[Unit Period Calculation]
+    F --> G[Calculate ELAPSED-UNITPER]
+    G --> H[Calculate ELAPSED-UNITPER-REM]
+    H --> I[Calculate ELAPSED-RESULT]
+    I --> J[Set ELAPSED-DAYS/MONTHS/REM]
+    J --> K[Restore NDTE-DATE]
+    K --> L[Return Results]
+    
+    style A fill:#e1f5fe
+    style L fill:#e8f5e8
+    style E fill:#f3e5f5
+    style F fill:#fff3e0
+    style B fill:#e8f5e8
+    style K fill:#e8f5e8

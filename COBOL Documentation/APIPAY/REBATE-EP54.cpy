@@ -1,0 +1,130 @@
+      ********************************************
+      * GEORGIA 4% CLOSING FEE EARLY PROVISION
+      *
+      * NOTE: THE AMOUNT OF THE CLOSING FEE IS STORED IN THE
+      *       LN-POINTS FIELD AND ALSO INCLUDED IN THE SERVICE CHARGE
+      *
+      *  ***
+      *  ** THIS EARLY PROVISION IS NOT STAND ALONE, IT IS CALLED FROM
+      *  **  REBATE FORMULA "I" WHEN SERVICE CHARGE FORMULA = "54"
+      *  ***
+      *
+      * REBATE AMOUNT IS PASSED BACK IN THE REB-WORK2 FIELD AND WILL BE
+      *  ADDED TO REB-REBATE IN THE CALLING SECTION.
+      *
+      * IF THE LOAN PAYS  OFF IN THE FIRST 90 DAYS FROM DATE OF LOAN,
+      * THE CUSTOMER IS ENTITLED TO A DAILY PRORATA REFUND OF THE CLOSING
+      * FEE WITH A MINIMUM RETENTION OF $25.00.  THEREFORE, IF THE SERVICE
+      * CHARGE IS GREATER THAN $25.00, MEANING $25.01 OR GREATER, THEN
+      * THE CUSTOMER IS ENTITLED TO A REFUND OF THE DAILY PRORATA AMOUNT
+      * GREATER THAN $25.00.  IF THE SERVICE CHARGE IS $25.00 OR LESS,
+      * NO REFUND IS REQUIRED.
+      *
+      * SCENARIO ONE
+      *    LOAN AMOUNT: $1250, CLOSING FEE OF $50
+      *    LOAN TERM: 12 MONTHS, 360 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+      *
+      *    $1250 X 4% = $50, $50 / 360 = .13888, .13888 X 90 = 12.4999,
+      *    $12.50 IS EARNED,
+      *    $37.50 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $25.00,
+      *    THE REFUND TO THE BORROWER IS $25.00
+      *
+      * SCENARIO TWO
+      *    LOAN AMOUNT: $1250, CLOSING FEE OF $50
+      *    LOAN TERM: 4 MONTHS, 120 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+      *    $1250 X 4% = $50, $50 / 120 = .41666 X 90 = 37.4994,
+      *    $37.50 IS EARNED,
+      *    $12.50 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $37.50,
+      *    THE REFUND OR CREDIT TO THE BORROWER IS $12.50
+      *
+      * SCENARIO THREE
+      *    LOAN AMOUNT: $500, CLOSING FEE OF $20
+      *    LOAN TERM: 6 MONTHS, 180 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+      *    $500 X 4% = $20, $20 / 180 = .11111 X 90 = 9.99999,
+      *    $10.00 IS EARNED,
+      *    $10.00 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $20.00,
+      *    THE REFUND TO THE BORROWER IS $00.00
+      *
+      * SCENARIO FOUR
+      *    LOAN AMOUNT: $1000, CLOSING FEE OF $40
+      *    LOAN TERM: 6 MONTHS, 180 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+      *    $1000 X 4% = $40, $40 / 180 = .22222 X 90 = 19.99999,
+      *    $20.00 IS EARNED,
+      *    $20.00 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $25.00,
+      *    THE REFUND OR CREDIT TO THE BORROWER IS $15.00
+      ********************************************
+       REBATE-EP54 SECTION.
+           MOVE 0 TO REB-EP54-AMT.
+
+           IF SP-SCFRMLA NOT = 54
+              GO TO REBATE-EP54-EXIT.
+
+      * GET ELAPSED DAYS FROM LOAN DATE TO REFUND DATE.
+           MOVE 360 TO ELAPSED-YRTYPE
+           MOVE REB-LN-LOANDATE TO NUM-DATE
+           MOVE REB-PAYDATE TO SYS-DATE
+           PERFORM TIMALL
+           MOVE ELAPSED-DAYS TO REBX-DAYS-REMAINING
+
+      * IF COMPANY PAYOFF AND ELAPSED > 90, NO EARLY PROVISION
+           IF (REB-LPTRCD = "PB" OR "RN" OR "SC"
+                               OR "RB" OR "RO")
+              PERFORM TIMALL
+              IF ELAPSED-DAYS > 90
+                 GO TO REBATE-EP54-EXIT
+              END-IF
+           ELSE
+      * IF
+              IF REB-SUB NOT = 8
+                 GO TO REBATE-EP54-EXIT
+              ELSE
+      * IF CUSTOMER PAYOFF AND ELAPSED > 90, NO EARLY PROVISION
+                 IF ELAPSED-DAYS > 90
+                    GO TO REBATE-EP54-EXIT.
+
+      * DETERMINE DAYS IN ORG TERM:
+           MOVE "Y" TO MDTE-FLAG
+                       MDTE-ORGTERM-FG.
+           PERFORM MATURITY-DATE-CALCULATION.
+           MOVE MDTE-DATE TO SYS-DATE.
+           MOVE REB-LN-INTDATE TO NUM-DATE.
+           PERFORM TIM360.
+           MOVE ELAPSED-DAYS TO REBX-DAYS-IN-TERM.
+
+      * COMPUTE EARNED:
+           COMPUTE REB-EP54-AMT ROUNDED =
+                  (REBX-DAYS-REMAINING * LN-POINTS)/
+                        REBX-DAYS-IN-TERM
+
+           IF REB-EP54-AMT < 0
+              MOVE 0 TO REB-EP54-AMT
+           END-IF.
+
+      * TEST FOR MINIMUM EARNED OF $25.00
+           IF REB-EP54-AMT < 25.00
+              MOVE 25.00 TO REB-EP54-AMT
+           END-IF.
+
+      * COMPUTE REBATE:
+           COMPUTE REB-EP54-AMT ROUNDED =  LN-POINTS - REB-EP54-AMT.
+
+           IF REB-EP54-AMT < 0
+              MOVE 0 TO REB-EP54-AMT
+           END-IF.
+
+       REBATE-EP54-EXIT.
+           EXIT.
+
+
+      ***********************************************
+      *              ( 0 8 )
+      *    WISCONSIN CPI INSURANCE REFUND FORMULA
+      ***********************************************

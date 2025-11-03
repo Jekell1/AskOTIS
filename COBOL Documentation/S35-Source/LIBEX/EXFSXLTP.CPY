@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXLTP
+           SELECT XLTP-FILE ASSIGN TO XLTP-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLTP-KEY
+                  FILE STATUS FILE-STAT.

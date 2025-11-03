@@ -1,0 +1,1 @@
+"""Minimal hybrid RAG package."""

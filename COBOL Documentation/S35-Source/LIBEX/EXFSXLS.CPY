@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXLS
+           SELECT XLS-FILE ASSIGN TO XLS-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLS-KEY
+                  FILE STATUS FILE-STAT.

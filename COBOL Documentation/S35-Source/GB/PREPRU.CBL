@@ -1,0 +1,97 @@
+      * A30
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.  PREPRU.
+      *********************************************
+      *  DIR : GB
+      *  DESC: PREPARE PRINT DEVICES
+      *        THIS ROUTINE EXECUTED AFTER PRINT DEVICE
+      *        HAS BEEN OPENED. FOR TRANSPARENT PRINT,
+      *        SET TERMINAL ACCORDINGLY. FOR SCREEN PRINT,
+      *        SWITCH TERMINAL TO 132 COLUMNS
+      *
+      *  MG  991007 FIXED VDUSTATUS/IO-FG/STAT PER DEVELOPMENT MEETING.
+      * BLM 140506 CHANGED TO USE CALL-SYSTEM INSTEAD OF C$SYSTEM, VERYANT
+      * BLM 140506 CHANGED BACK TO C$SYSTEM, DIFFERENT CALL & ONLY USING
+      *            SYSTEM-BUF, NOT SYSTEM-BUFFER (SO NO >/DEV/NULL).
+      *            USING CALL "SYSTEM" BOTH WITH & WITHOUT DEV/NULL ARGUMENT
+      *            DOESN'T WORK, PRINTS 80 CHARACTERS INSTEAD OF 132 &
+      *            PRINTS GARBAGE CHARACTERS
+      * BLM 140808 HEY, WHEN WE TOOK THE DOS STUFF OUT OF A30, WE REMOVED
+      *            THE OPSYS CALL, WHICH SET STAT TO "00" (INITIAL VALUE
+      *            WAS SPACES).  IF LOCAL-PRINT-FG IS Y, REPORTS WERE
+      *            PERFORMING CREATE-SPOOL THEN CHECKING FOR STAT OF "00".
+      *            THIS SET IT TO SPACES & SO WENT TO NEXT BR AND DIDN'T
+      *            PROCESS.  SO INITIALIZE STAT.  BARB & CINDY
+      *********************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(37) VALUE
+           "@(#)GB/PREPRU S35 02/13/24-11:27:15 >".
+
+       COPY "LIBGB/FILEWK.CPY".
+       01  EXT-EOBUF-MESS   REDEFINES MESS PIC X(61).
+      * PRINT ON:
+       01  CMD-TPUT-MC5  PIC X(8)  VALUE "TPUT MC5".
+       COPY "LIBGB/GETPRW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+
+       COPY "LIBGB/GETFMW.CPY".
+
+      * MUST MATCH SIZE OF PRU-PATH IN LIBGB/GETPRW
+       01  PRU-PATHX    PIC X(90).
+       01  STATX        PIC XX.
+       COPY "LIBGB/PRU_LNK.CPY".
+
+       PROCEDURE DIVISION
+           USING STATX PRU-PATHX FORM-PATHNAME PRU-LINK EXIT-PATHNAME.
+
+      **********************************
+       MAIN-PROGRAM SECTION.
+      **********************************
+      D    STOP MESS.
+           MOVE "00" TO STAT.
+           MOVE PRU-PATHX TO PRU-PATH.
+
+           IF NOT Q-POS-VALID
+              GO TO END-PROG.
+           IF NOT P-POS-VALID
+              GO TO END-PROG.
+
+           IF (Q-BUF = "N" AND P-BUF = "00") OR
+               (Q-BUF = "P" AND P-BUF = "00")
+              GO TO PRINT-PRU.
+
+           GO TO END-PROG.
+
+
+      * SWITCH TO AUXILIARY PORT, ENSURE THAT DC1-DC3 CONTROL IS ENABLED
+       PRINT-PRU.
+
+      * TPUT MC5; STTY IXON
+           CALL "C$TOLOWER" USING CMD-TPUT-MC5, VALUE 8.
+           MOVE CMD-TPUT-MC5 TO SYSTEM-BUF.
+      * THIS MUST STAY C$SYSTEM OR GARBAGE PRINTS, NO IDEA WHY
+      *    PERFORM SYSTEM-CALL.
+      *    CALL "SYSTEM" USING SYSTEM-BUF GIVING STAT-99.
+           CALL "C$SYSTEM" USING SYSTEM-BUF 2 GIVING STAT-99.
+
+      * STTY IXON
+      *    MOVE CMD-IXON TO SYSTEM-BUF.
+      *    CALL "C$SYSTEM" USING SYSTEM-BUF 2 GIVIGN STAT-99.
+
+           GO TO END-PROG.
+
+      **************************************
+       MISC SECTION.
+      **************************************
+       COPY "LIBGB/SYSTEM.CPY".
+       END-PROG.
+           MOVE STAT TO STATX.
+           MOVE PRU-PATH TO PRU-PATHX.
+       EXIT-PROG.
+           EXIT PROGRAM.

@@ -1,0 +1,34 @@
+flowchart TD
+    A[Leap Year Decision Process] --> B[Step 1: Divisible by 4?]
+    
+    B -->|No| C[NOT Leap Year]
+    B -->|Yes| D[Step 2: Divisible by 100?]
+    
+    D -->|No| E[IS Leap Year]
+    D -->|Yes| F[Step 3: Divisible by 400?]
+    
+    F -->|No| G[NOT Leap Year - Century Rule]
+    F -->|Yes| H[IS Leap Year - Century Exception]
+    
+    I[Rule Examples]
+    I --> J[Rule 1: 2021, 2022, 2023 → Not Leap]
+    I --> K[Rule 2: 2020, 2024, 2028 → Leap Year]
+    I --> L[Rule 3: 1900, 2100, 2200 → Not Leap]
+    I --> M[Rule 4: 2000, 2400, 2800 → Leap Year]
+    
+    N[Result Flags]
+    C --> O[LEAP-YEAR-FG = F]
+    E --> P[LEAP-YEAR-FG = T]
+    G --> Q[LEAP-YEAR-FG = F]
+    H --> R[LEAP-YEAR-FG = T]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style D fill:#fff3e0
+    style F fill:#fff3e0
+    style C fill:#ffebee
+    style E fill:#c8e6c9
+    style G fill:#ffebee
+    style H fill:#c8e6c9
+    style I fill:#e1f5fe
+    style N fill:#f3e5f5

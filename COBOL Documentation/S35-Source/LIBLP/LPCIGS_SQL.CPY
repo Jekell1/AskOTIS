@@ -1,0 +1,136 @@
+      * COPYMEMBER: LIBLP/LPCIGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - CIFILE
+      *
+      *=================================================================
+      * REV:
+      * BAH 2021-0510 ***NEW***
+      *
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD CI-REC FROM QCI-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-CI-FIELDS.
+           MOVE QCI-BRNO TO CI-BRNO.
+           MOVE QCI-ACCTNO TO CI-ACCTNO.
+           MOVE QCI-SSNO TO CI-SSNO.
+           MOVE QCI-SSNO-2 TO CI-SSNO-2.
+
+           IF ( QCI-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO CI-LTOUCH-DATE
+           ELSE
+              MOVE QCI-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO CI-LTOUCH-DATE.
+
+
+           IF ( QCI-DATE-UPDATED = "1900-01-01" )
+              MOVE ZEROES TO CI-DATE-UPDATED
+           ELSE
+              MOVE QCI-DATE-UPDATED TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO CI-DATE-UPDATED.
+
+           MOVE QCI-AMT-REQUESTED TO CI-AMT-REQUESTED.
+           MOVE QCI-MARITAL-STAT TO CI-MARITAL-STAT.
+           MOVE QCI-YEARS-IN-AREA TO CI-YEARS-IN-AREA.
+
+           IF ( QCI-DATE-AT-PRESENT-ADR = "1900-01-01" )
+              MOVE ZEROES TO CI-DATE-AT-PRESENT-ADR
+           ELSE
+              MOVE QCI-DATE-AT-PRESENT-ADR TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO CI-DATE-AT-PRESENT-ADR.
+
+           MOVE QCI-MONTHLY-RENT-MTG TO CI-MONTHLY-RENT-MTG.
+           MOVE QCI-FAIR-MARKET-VALUE TO CI-FAIR-MARKET-VALUE.
+           MOVE QCI-MTG-BALANCE TO CI-MTG-BALANCE.
+           MOVE QCI-CHECKING-ACCOUNT TO CI-CHECKING-ACCOUNT.
+           MOVE QCI-SAVINGS-ACCOUNT TO CI-SAVINGS-ACCOUNT.
+           MOVE QCI-TOTAL-MO-INCOME TO CI-TOTAL-MO-INCOME.
+           MOVE QCI-LESS-MO-PAY TO CI-LESS-MO-PAY.
+
+           IF ( QCI-DATE-HIRE-1 = "1900-01-01" )
+              MOVE ZEROES TO CI-DATE-HIRE-1
+           ELSE
+              MOVE QCI-DATE-HIRE-1 TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO CI-DATE-HIRE-1.
+
+           MOVE QCI-POSITION-CODE-1 TO CI-POSITION-CODE-1.
+           MOVE QCI-GROSS-MO-INCOME-1 TO CI-GROSS-MO-INCOME-1.
+
+           IF ( QCI-DATE-HIRE-2 = "1900-01-01" )
+              MOVE ZEROES TO CI-DATE-HIRE-2
+           ELSE
+              MOVE QCI-DATE-HIRE-2 TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO CI-DATE-HIRE-2.
+
+           MOVE QCI-POSITION-CODE-2 TO CI-POSITION-CODE-2.
+           MOVE QCI-GROSS-MO-INCOME-2 TO CI-GROSS-MO-INCOME-2.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QCI-REC FROM CI-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-CI-FIELDS.
+           MOVE CI-BRNO TO QCI-BRNO.
+           MOVE CI-ACCTNO TO QCI-ACCTNO.
+           MOVE CI-SSNO TO QCI-SSNO.
+           MOVE CI-SSNO-2 TO QCI-SSNO-2.
+
+           IF ( CI-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QCI-LTOUCH-DATE
+           ELSE
+              MOVE CI-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QCI-LTOUCH-DATE.
+
+
+           IF ( CI-DATE-UPDATED = ZEROES )
+              MOVE "1900-01-01" TO QCI-DATE-UPDATED
+           ELSE
+              MOVE CI-DATE-UPDATED TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QCI-DATE-UPDATED.
+
+           MOVE CI-AMT-REQUESTED TO QCI-AMT-REQUESTED.
+           MOVE CI-MARITAL-STAT TO QCI-MARITAL-STAT.
+           MOVE CI-YEARS-IN-AREA TO QCI-YEARS-IN-AREA.
+
+           IF ( CI-DATE-AT-PRESENT-ADR = ZEROES )
+              MOVE "1900-01-01" TO QCI-DATE-AT-PRESENT-ADR
+           ELSE
+              MOVE CI-DATE-AT-PRESENT-ADR TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QCI-DATE-AT-PRESENT-ADR.
+
+           MOVE CI-MONTHLY-RENT-MTG TO QCI-MONTHLY-RENT-MTG.
+           MOVE CI-FAIR-MARKET-VALUE TO QCI-FAIR-MARKET-VALUE.
+           MOVE CI-MTG-BALANCE TO QCI-MTG-BALANCE.
+           MOVE CI-CHECKING-ACCOUNT TO QCI-CHECKING-ACCOUNT.
+           MOVE CI-SAVINGS-ACCOUNT TO QCI-SAVINGS-ACCOUNT.
+           MOVE CI-TOTAL-MO-INCOME TO QCI-TOTAL-MO-INCOME.
+           MOVE CI-LESS-MO-PAY TO QCI-LESS-MO-PAY.
+
+           IF ( CI-DATE-HIRE-1 = ZEROES )
+              MOVE "1900-01-01" TO QCI-DATE-HIRE-1
+           ELSE
+              MOVE CI-DATE-HIRE-1 TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QCI-DATE-HIRE-1.
+
+           MOVE CI-POSITION-CODE-1 TO QCI-POSITION-CODE-1.
+           MOVE CI-GROSS-MO-INCOME-1 TO QCI-GROSS-MO-INCOME-1.
+
+           IF ( CI-DATE-HIRE-2 = ZEROES )
+              MOVE "1900-01-01" TO QCI-DATE-HIRE-2
+           ELSE
+              MOVE CI-DATE-HIRE-2 TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QCI-DATE-HIRE-2.
+
+           MOVE CI-POSITION-CODE-2 TO QCI-POSITION-CODE-2.
+           MOVE CI-GROSS-MO-INCOME-2 TO QCI-GROSS-MO-INCOME-2.
+ 

@@ -1,0 +1,51 @@
+graph TD
+    A[Transaction Start] --> B[Parse Transaction Code]
+    B --> C{Transaction Type}
+    
+    C -->|RP| D[Setup for Rebate Processing]
+    C -->|PL/P2/P3| E[Setup for Principal Processing]
+    C -->|RE/O2/OT| F[Setup for Repo/Other Processing]
+    C -->|PY/PA| G[Setup for Standard Processing]
+    C -->|RV/BK/BD| H[Setup for Reversal/Bank Processing]
+    
+    D --> D1[MOVE 'LP/LONPFB' TO FORM-NAM]
+    E --> E1[MOVE 'LP/LONPF9' TO FORM-NAM]
+    F --> F1[MOVE 'LP/LONPF7' TO FORM-NAM]
+    G --> G1[MOVE 'LP/LONPFC' TO FORM-NAM]
+    H --> H1[MOVE 'LP/LONPF2' TO FORM-NAM]
+    
+    D1 --> I[CALL Specialized Processor]
+    E1 --> I
+    F1 --> I
+    G1 --> I
+    H1 --> I
+    
+    I --> J{Processing Result}
+    J -->|Error| K[Check Error Type]
+    J -->|Success| L[Call LONPF2 for Updates]
+    
+    K --> K1{LONPFB Error?}
+    K1 -->|Yes| K2[Return Code 67]
+    K1 -->|No| K3{General Error?}
+    K3 -->|Yes| K4[Return Code 68]
+    
+    L --> M{Update Success?}
+    M -->|Error| N[Return Code 69]
+    M -->|Success| O[Log Success]
+    
+    K2 --> P[Create Error Log]
+    K4 --> P
+    N --> P
+    O --> Q[Return Success Code 0]
+    P --> R[Return Error Code]
+    
+    Q --> S[Transaction Complete]
+    R --> S
+    
+    classDef successPath fill:#d4f4dd
+    classDef errorPath fill:#ffd4d4
+    classDef processPath fill:#e1f3ff
+    
+    class O,Q,S successPath
+    class K,K2,K4,N,P,R errorPath
+    class D1,E1,F1,G1,H1,I,L processPath

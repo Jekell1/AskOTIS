@@ -1,0 +1,287 @@
+      *================================================================*
+      * END COPYBOOK: LIBLP\LPIBPC.CPY                                *
+      *================================================================*
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBLP\LPRATE.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBLP/LPRATE
+      **************************************************************
+      *         SET INTEREST RATE AND INTEREST START DATE
+      *                  (FOR IB ACCOUNTS)
+      *
+      *   NAME: LPRATE            (SET-PY-RATE             )
+      *         WITH LPINDU LOGIC (INTEREST-DUE-CALCULATION)
+      *   DESC: THIS ROUTINE IS USED TO DETERMINE
+      *         THE INTEREST START DATE FOR CALCULATION,
+      *         THE INTEREST BEARING RATE TO BE USED
+      *         AND A CODE TO IDENTIFY IT'S MAKEUP.
+      *         IT'S MAKEUP.
+      *   IN  : RATE-DATE      (DATE OF PAYMENT)
+      *         RATE-MAKERCD   LN-MAKERCD(X)
+      *         RATE-LPTRCD    CURRENT TRANSACTION CODE.
+      *   OUT :
+      *   USED: LN-APRATE, LN-JDCD, LN-JDRATE, LN-INTREDU
+      *         LN-ENDORATE, LN-OV, LPIBPC, LPIBPCW
+      *         LN-INTPDTH-DATE, LN-INTDATE, LN-JDDATE
+      *   COPY TIM, TIMW, LPRATEW, LPIBPC, LPIBPCW
+      *
+      * REV :
+      *  042988 SLC ADDED THE REDUCTION, ACCELERATION,
+      *             JUDGEMENT, AND EXPIRATION LOGIC.
+      *             LPRATE NOW CALLS LPIBPC, LNINDU.
+      *  012489 JTG SET IBPC-DATE FROM RATE-DATE
+      *  012589 SLC LPINDU IS NOW PART OF THIS COPYFILE!
+      *  110789 SLC COMPARE IS NOW DONE ON SP-MAX-IB-ACR-DAYS, NOT
+      *             SP-IBINTACRFRMLA.
+      *  051890 BAH REPLACES LN-DATE-PAID-LAST WITH LN-INTPDTH-DATE
+      *             (INTERST ASSESSED THRU DATE 9(6)).
+      *  111992 JTG ADDED LOGIC FOR SP-RBSPOPT1 = 9, WAGNER NC
+      *  060495 SLC INDU-CURBAL (LN-CURBAL - LN-OT2BAL)
+      *  111296 JTG CHANGED LN-INSTBL (LEVEL'S 9 & 10) TO FILLER
+      *  012297 JTG ADDED SP-EXPR-FRMLA-ORIG TO USE THE LESSOR RATE
+      *             (BETWEEN LN-OVRDRATE & EXPIRED RATES) ON ACCOUNTS
+      *             NOT IN JUDGEMENT, ACCELERATED OR REDUCED
+      *             --ADVANCED MORTGAGE, JUDY BRANIFF
+      *  050697 JTG ADDED USE OF SETCTBL COPY MEMBER
+      *  042798  CS ADDED RENEWAL CODES "RB" AND "RO"
+      *  000107 JTG ADDED SP-RBREDUC = 9999.04 WISCONSIN IB REAL ESTATE
+      *             PREPAY PENALTY, WISCONSIN #1031
+      *  000225 MJD ADDED SP-RBREDUC = 9999.05 NEW SOUTH FLAT $75.00
+      *             PREPAY PENALTY, (NEWS PR#1101)
+      *  000406 GLB ADDED SP-RBREDUC = 9999.06 CAROLINA FINANCE(71252),
+      *             NORTH CAROLINA 10% OR $25.00 (WHICHEVER IS < )
+      *             PREPAY PENALTY, (CAROLINA PR#1149)
+      *  000804 BAH NEW SOUTH, RBREDUC = 9999.03, WAS NOT STORING THE
+      *             PENALTY IN INDU-PENALTY, IT WAS ADDING IT DIRECTLY
+      *             INTO INDU-INTEREST,,,FAX FROM KEVIN
+      *  JTG 000822 ADDED LOGIC FOR KENTUCKY 60 DAY NO CHARGE LAW, ADDED
+      *             SP-RBSPOPT1() = 19, WORLD #233
+      *  JTG 000914 CORRECTED BUG IN PASS TO SETCTBL, ROUTINE WAS PASSING
+      *             LN-LNAMT INSTEAD OF INTEREST CHARGEABLE  WORLD #J011
+      *  JTG 020722 CHANGED FOR (MIP) MONTHLY INSURANCE PREMIUMS   REGENCY #1801
+      *  BAH 020828 ALLOWED RBREDUC(7) = 9999.01 TO WORK FOR IB'S, ADD PENALTY
+      *             TO INDU-INTEREST, PIKCO PR# 1900
+      *  JTG 021025 ALLOW WORLD TO ENTER 999.998 IN SP-ACC-RATE(1)
+      *             AND IF DETECTED HERE SKIP USAGE OF ACCELERATION RATE
+      *             TABLE AND FORCE LN-SMPRATE RE: LN-ACCRATE 999.998 WORLD     
+      *  BAH 021216 PIKCO CHANGE (020828) CALCULATED A PENALTY ON EVERY
+      *             PAYMENT !! NEEDS TO CHECK FOR "PO" AND "PA" ONLY
+      *  BAH 040615 SP-RBSPOPT1(7) = 8, NEEDED TO INCLUDE LN-INTBAL BEFORE
+      *             TESTING THE MINRET AMOUNT, PACESETTER PL# 446
+      *
+      *  JTG 041021 ADDED NEW LOGIC WHEN TESTING FOR INDU-MAX-ACCRUE = 1,
+      *             THAT INDICATES THE ACCRUAL WANTS TO ESTABLISH
+      *             THE MAXIMUM INTEREST TO ACCRUAL (W-MAX). THE ACCRUAL
+      *             INCREMENTS LN-INTPDTH-DATE WITH SP-MAX-IB-ACR-DAYS
+      *             TO ESTABLISH RATE-DATE FOR DETERMINING (W-MAX),
+      *             THIS IS INCORRECT WHEN ACCOUNTS HAD STATUS CHANGE
+      *             DONE AFTER LN-INTPDTH-DATE, EXAMPLE "JD" WHICH MAKES THE
+      *             JUDGEMENT DATE THE NEW ASSESS FROM DATE THAT SHOULD
+      *             BE INCREMENTED WITH SP-MAX-IB-ACR-DAYS.                           *                                                             REGWAN #0450
+      *   CS 050518 ADD SP-EXPR-FRMLA 'C'   FINANCIAL MGT [PR#484]
+      *             [HAVE QUESTIONS WAITING FOR JUDY R TO RESPOND]
+      *   CS 050614 FIXED SP-EXPR-FRMLA 'C', IF REDUCTION FORMULA WAS TO
+      *             CONTINUE REDUCED RATE WAS STILL PERFORMING EXPIRED RATES
+      *  MJD 060906 ADDED LOGIC TO USE THE CORRECT INTEREST ASSESSED THROUGH
+      *             DATE WHEN THE LOAN IS EXPIRED AND IN JUDGMENT,
+      *             ACCELERATED OR REDUCTION STATUS.  THE DATE USED SHOULD
+      *             BE THE DATE OF THE JUDGMENT, ACCELERATION OR REDUCTION IF
+      *             THAT DATE IS GREATER THEN THE INTEREST PAID THROUGH DATE.
+      *                                                             REGENCY #531
+      *  MJD 061227 ADDED LOGIC FOR OHIO PREPAYMENT PENALTY (RBSPOPT1 = 25)
+      *                                                            REGENCY #2878
+      *  MJD 081210 TESTING LOGIC FOR MAKING MFEE'S WORK WITH IB
+      *   CS 100609 ADDED INDU-ASSESS-PENALTY-16, ACCOUNTS THAT HAD AN INTEREST
+      *             CALCULATION FROM LN-INTPDTH-DATE TO EXPIR DATE & THEN EXPIRED
+      *             INT CALC THRU PAY DATE BOTH GO THRU INTEREST-DUE-CALCULATION
+      *             AT END OF INTEREST-DUE-CALCUATION IT CALCULATES PENALTY &
+      *             WAS CALCULATED TWICE RBSPOPT1 = 16  REGENCY PL689
+      *   CS 100610 ABOVE ALSO HAPPENS WITH SP-RBREDUC(7) = 9999.03 USED THE
+      *             FLAG INDU-ASSESS-PENALTY TO STOP MULTIPLE ASSESSMENTS OF
+      *             PENALTY.  THIS SHOULD BE OK SINCE ONLY ONE PENALTY CAN BE
+      *             ASSESSED & THEN IT EXITS THE PENALTY SECTION.  EVEN IF THE
+      *             SPR IS SET UP WITH BOTH, IT WILL NEVER HIT BOTH PENALTY
+      *             LOGIC. APPLIES TO SPECIAL OPTION1 = 16, 21, AND 25
+      *             REDUCTION AMOUNTS 9999.03,9999.01 REGENCY PL#689
+      *             ALSO ADDED HOLD-INDU-PENALTY
+      *  MJD 120321 ADDED SP-OPT-CAL-CHGABLE = "3" THIS WILL USE PROCEEDS,
+      *             SVC CHG, AND ALL INSURANCES EXCEPT FOR O3
+      *   CS 120730 IF SP-LC-INT-ON-REPO-NON-PL = 'N' FORCE 0 TO LATE CHARGE
+      *             RATE, AND 0 TO LATE CHARGE MINIMUM, WE WANT TO ADVANCE
+      *             LCPDTH DATE EVEN THOUGH NOT COLLECTING OR ASSESSING THEM
+      *                                                 REGACC PR#314
+      *  BAH 160921 ADDED LT-REC ON THE CALL OF REBA01, LINKAGE ERROR AT
+      *             CUSTOMER REBA01 WAS CHANGED 6 YEARS AGO! FIRST METRO #949
+      *  BAH 180702 CHANGED A01 PASSING FIELDS TO BE IN LPRATEW SO REBATE 
+      *             COPY MEMBERS DO NOT NEED TO BE IN HERE!
+      *  CS 211123 AT THE BEGINNING OF SET-PY-RATE, SET INDU-ASSESS-PENALTY
+      *            TO SPACES.
+      *  BAH 2022.0131 ADDED CANCEL FORM-PROGX AFTER REBA02
+      **************************************************************************
+       SET-PY-RATE SECTION.
+           MOVE SP-INTMETHOD TO INDU-INTMETHOD.
+           MOVE SP-YEARTYPE TO INDU-YEARTYPE.
+           MOVE 0 TO RATE-EXP-INT
+                     INDU-INTEREST
+                     INDU-INTEREST-2.
+      *ADDED THIS, WHEN RUN IN EXTRACTIONS, AC1DAY, LNAGIB
+      *FLAG WAS NOT GETTING RESET EVERY TIME
+           MOVE SPACES TO INDU-ASSESS-PENALTY.
+
+           IF SP-LC-INT-ON-REPO-NON-PL = "N"
+              IF LN-REPOCD = "X" OR "S"
+                IF LN-PLDATE = ZEROS
+                  MOVE 0 TO INDU-INTEREST
+                  GO TO SET-PY-RATE-EXIT.
+
+      *------------------------------------------------
+      *    999.999 - DEFAULT TO SPR RATES:
+      *------------------------------------------------
+           MOVE 999.999 TO INDU-RATE.
+
+      *------------------------------------------------
+      *    GET IBPC STATUS OF ACCOUNT
+      *------------------------------------------------
+           MOVE RATE-DATE TO IBPC-DATE.
+           PERFORM IBPC-TEST.
+
+      *------------------------------------------------
+      *    SKIP PC ACCOUNTS THAT HAVE NOT EXPIRED
+      *------------------------------------------------
+           IF IBPC-FG = "P" AND IBPC-EXPIRED-FLAG = " "
+              GO TO SET-PY-RATE-EXIT.
+
+      *------------------------------------------------
+      *    SETUP RATE FOR INTEREST CALCULATION
+      *------------------------------------------------
+
+      * IF JUDGEMENT SET RATE IF NOT (999.999):
+      * APPLIES TO ACCELERATED, RATE CHANGED/REDUCED
+      * AND EXPIRED LOANS THAT HAVE BECOME JUDGEMENTS.
+           IF (IBPC-STAT = "J" AND IBPC-STAT-2 = " ") OR
+              (IBPC-STAT-2 = "J" AND SP-EXPR-FRMLA NOT = "C")
+              PERFORM LPRATE-JUDGEMENT
+           ELSE
+      * TEST FOR ACCOUNT IN EXPIRATION AND NO STATUS SET:
+           IF SP-EXPR-FRMLA-USE-EXPIRED
+                 AND (
+                       (IBPC-STAT = "E" AND IBPC-STAT-2 = " ")
+                       OR (IBPC-STAT = "J" AND IBPC-STAT-2 = "E"
+                                            AND SP-JUDGFRMLA = "A")
+                        OR
+                             (IBPC-STAT = "A" AND IBPC-STAT-2 = "E"
+                                             AND SP-ACC-FRMLA = "A")
+                         OR
+                              (IBPC-STAT = "R" AND IBPC-STAT-2 = "E"
+                                        AND SP-EXPR-REDU-FRMLA = "A")
+
+                         OR (IBPC-STAT = "E" AND IBPC-STAT-2 = "J")
+                               AND (SP-EXPR-FRMLA = "C"
+                                            AND SP-JUDGFRMLA = "A")
+
+
+                     )
+              PERFORM LPRATE-USE-EXPIRED-RATES
+              GO TO SET-PY-RATE-EXIT
+           ELSE
+           IF IBPC-STAT = "J" AND IBPC-STAT-2 = "E"
+              PERFORM LPRATE-JUDGEMENT
+           ELSE
+           IF IBPC-STAT = "A" AND IBPC-STAT-2 = "E"
+              PERFORM LPRATE-ACCELERATION
+           ELSE
+           IF IBPC-STAT = "R" AND IBPC-STAT-2 = "E"
+              MOVE LN-REDURATE TO INDU-RATE
+           ELSE
+           IF (IBPC-STAT = "A" AND IBPC-STAT-2 = " ")
+                                      OR IBPC-STAT-2 = "A"
+              PERFORM LPRATE-ACCELERATION
+           ELSE
+           IF (IBPC-STAT = "R" AND IBPC-STAT-2 = " ")
+                                      OR IBPC-STAT-2 = "R"
+              MOVE LN-REDURATE TO INDU-RATE
+           ELSE
+           IF IBPC-STAT = "E"
+              MOVE LN-OVRDRATE TO INDU-RATE
+           ELSE
+           IF RATE-MAKERCD = "E"
+              IF LN-ENDORATE NOT = 999.999
+                 MOVE LN-ENDORATE TO INDU-RATE
+              ELSE
+              IF LN-OVRDRATE NOT = 999.999
+                 MOVE LN-OVRDRATE TO INDU-RATE
+              ELSE
+                 NEXT SENTENCE
+           ELSE
+              IF LN-OVRDRATE NOT = 999.999
+                 MOVE LN-OVRDRATE TO INDU-RATE.
+
+      * SETUP (INDU-DATE-1) INTEREST START DATE:
+           PERFORM LPRATE-SET-INTPDTH-DATE.
+
+           IF (IBPC-STAT = "J" AND IBPC-STAT-2 = " ")
+                 OR (IBPC-STAT-2 = "J")
+                  OR (IBPC-STAT = "J"
+                        AND IBPC-STAT-2 = "E"
+                         AND (SP-JUDGFRMLA = " "
+                                 OR (SP-JUDGFRMLA = "A"
+                                         AND SP-EXPR-FRMLA-CONT)
+                             )
+                     )
+              MOVE INDU-DATE-1 TO NUM-DATE
+              MOVE LN-JDDATE   TO SYS-DATE
+              IF SYS-DATE > NUM-DATE
+                 MOVE LN-JDDATE TO INDU-DATE-1.
+
+           IF (IBPC-STAT = "A" AND IBPC-STAT-2 = " ")
+                 OR (IBPC-STAT-2 = "A")
+                  OR (IBPC-STAT = "A"
+                          AND IBPC-STAT-2 = "E"
+                           AND (SP-ACC-FRMLA = " "
+                                   OR (SP-ACC-FRMLA = "A"
+                                           AND SP-EXPR-FRMLA-CONT)
+                               )
+                     )
+              MOVE INDU-DATE-1  TO NUM-DATE
+              MOVE LN-ACCELDATE TO SYS-DATE
+              IF SYS-DATE > NUM-DATE
+                 MOVE LN-ACCELDATE TO INDU-DATE-1.
+
+           IF (IBPC-STAT = "R" AND IBPC-STAT-2 = " ")
+                 OR (IBPC-STAT-2 = "R")
+                  OR (IBPC-STAT = "R"
+                        AND IBPC-STAT-2 = "E"
+                         AND (SP-EXPR-REDU-FRMLA = " "
+                                 OR (SP-EXPR-REDU-FRMLA = "A"
+                                         AND SP-EXPR-FRMLA-CONT)
+                             )
+                     )
+              MOVE INDU-DATE-1 TO NUM-DATE
+              MOVE LN-REDUDATE TO SYS-DATE
+              IF SYS-DATE > NUM-DATE
+                 MOVE LN-REDUDATE TO INDU-DATE-1.
+
+           MOVE RATE-LPTRCD TO INDU-LPTRCD.
+           COMPUTE INDU-CURBAL = LN-CURBAL - LN-OT2BAL.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEW LOGIC TESTING FOR INDU-MAX-ACCRUE = 1, WHICH INDICATES
+      *    THE ACCRUAL LP/AC1ERN WANTS TO ESTABLISH (W-MAX) THE MAXIMUM
+      *    INTEREST TO ACCRUAL PER SP-MAX-IB-ACR-DAYS.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           IF ( INDU-MAX-ACCRUE = 1 AND SP-MAX-IB-ACR-DAYS NOT = 0 )
+              IF ( SP-MAX-IB-ACR-DAYS NOT = 999 )
+                 MOVE INDU-DATE-1        TO NDTE-DATE
+                 MOVE SP-MAX-IB-ACR-DAYS TO NDTE-HOLD
+                 PERFORM INCREMENT-DAYS
+                 MOVE NDTE-DATE TO RATE-DATE.
+
+           MOVE RATE-DATE TO INDU-DATE-2.
+           PERFORM INTEREST-DUE-CALCULATION.
+
+       SET-PY-RATE-EXIT.
+           EXIT.
+
+      ************************************************
+      *    USE EXPIRED RATES
+      ************************************************

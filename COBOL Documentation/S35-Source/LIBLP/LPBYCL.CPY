@@ -1,0 +1,193 @@
+      * COPYMEMBER: LIBLP/LPBYCL
+      ******************************************************************
+      *
+      * DESCRIPTION: BRANCH STATISTICS FILE CLEAR - A THRU B
+      *
+      *=================================================================
+      * REV:
+      *  053095 SLC ADDED OT2 FIGURES
+      *  060295 JTG ADDED REPO FIELDS
+      *  MJD 100695 ADDED BY-IB-ACCRUED.
+      *  MJD 111696 REDUCED BY-DEL-BUCKETS TO OCCURS 10.
+      *  MJD 011696 ADDED O2, INT, SOLD, TRANS, PURCH, PL, AND DEALER
+      *             RESERVE TBL CLEARS.
+      *  MJD 012396 ADDED PL RECOVERY PRIN/INT/LATE COLLECTED
+      *  MJD 012696 CHANGED DLR RESERVE TO NET GAIN/LOSS-VOLUME TABLE.
+      *             ADDED BY-PL-O2COL.
+      *  KEC 030697 REVISED FOR LOAN APPLICATIONS.
+      *  KEC 030697 ADDED CLEAR OF FIELDS: BY-MISC-VOL-TBL
+      *  JTG 032097 ADDED CLEAR OF BY-NO-TURNUSDOWN
+      *  KEC 051297 ADDED CLEAR OF BY-NO-MADE
+      *  MJD 070297 ADDED CLEAR OF BY-DLDISC(1-3)
+      *  MJD 082797 ADDED BY-PROJ-INCREASE, BY-PROJ-PROFIT, BY-30-DAY-MOVED
+      *             AND BY-STD-POS.
+      *  MJD 051898 ADDED BANKRUPTCY TABLE, CHANGED EXREB TO PART-CHGOFF
+      *  MJD 051898 ADDED BY-UNITS-BNKRPT AND BY-OUTBAL-BNKRPT.
+      *             CHANGED EXREB TO BE PART-CHGOFF
+      *  JTG 060998 CORRECTED TO CLEAR BY-OUTBAL-BNKRPT.
+      *  JTG 000323 MODIFIED TO CLEAR UNEARNED STATISTICS, MERCURY #223
+      *  MJD 000330 ADDED BY-PROCEEDS.
+      *  MJD 000929 ADDED BY-LOCKBOX (MFC PR#237)
+      *  BAH 010620 ADDED CLEAR OF BY-LOCKBOX(2), IS NOT PART OF THE SAME
+      *             MTD-YTD TABLE AS BY-ALLOTMENTS, NEEDS ITS OWN CLEAR !!
+      * KEC 190205 ***NEW*** TO A32; REMOVED THE LOAN APPS AREA
+      * BAH 20190711 MISSING BY-FUTURE-AMT AND UNITS
+      * AMM 20210429 REMOVED FUTURE FIELDS, RESIZED FILE
+      ******************************************************************
+       CLEAR-BY-FILE SECTION.
+           MOVE " " TO BY-REC.
+           MOVE 0 TO BY-BRNO
+                     BY-CLASS.
+
+      * BY-MTD-YTD-LMO-LYR:
+
+           PERFORM CLEAR-BY-PL-RECOVERY
+                     VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 5.
+
+           MOVE 0 TO BY-NO-SOLD(1) BY-AMT-SOLD(1)
+                     BY-NO-TRANS(1) BY-AMT-TRANS(1)
+                     BY-NO-PURCH(1) BY-AMT-PURCH(1)
+                     BY-OTHCOL(1)   BY-OT2COL(1)
+                     BY-INTCOL(1)   BY-LATECOL(1)  BY-PRINCOL(1)
+                     BY-DEFCOL(1)   BY-RNPRIN(1)   BY-INTREB(1)
+                     BY-CLREB1(1)   BY-CLREB2(1)   BY-CLREB3(1)
+                     BY-CLREB4(1)   BY-AHREB(1)    BY-PPREB(1)
+                     BY-O1REB(1)    BY-O2REB(1)    BY-O3REB(1)
+                     BY-O4REB(1)    BY-O5REB(1)
+                     BY-O6REB(1)    BY-O7REB(1)    BY-SCREB(1)
+                     BY-MFREB(1)    BY-DFREB(1)    BY-PART-CHGOFF(1)
+                     BY-UN7-REB(1)  BY-UN8-REB(1)  BY-UN9-REB(1)
+                     BY-UN10-REB(1)
+                     BY-ALLOTMENTS(1) BY-LOCKBOX(1) BY-LOCKBOX(2)
+                     BY-PROCEEDS(1) BY-PROCEEDS(2).
+
+           MOVE 0 TO BY-INS-NO-ELIG(1 1)
+                     BY-INS-NO-WROTE(1 1)
+                     BY-INS-NO-NOTWROTE(1 1)
+                     BY-INS-AMT-WROTE(1 1).
+
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 2).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 3).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 4).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 5).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 6).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 7).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 8).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 9).
+           MOVE BY-INS-TYPE(1 1) TO BY-INS-TYPE(1 10).
+
+           PERFORM VARYING BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 2
+              AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 3
+                 MOVE 0 TO BY-FEE-NO-ELIG(BYSUB1 BYSUB2)
+                 MOVE 0 TO BY-FEE-NO-WROTE(BYSUB1 BYSUB2)
+                 MOVE 0 TO BY-FEE-NO-NOTWROTE(BYSUB1 BYSUB2)
+                 MOVE 0 TO BY-FEE-AMT-WROTE(BYSUB1 BYSUB2)
+           END-PERFORM.
+
+           MOVE 0 TO BY-OTH-NO-COL(1)
+                     BY-OT2-NO-COL(1)
+                     BY-INT-NO-COL(1)
+                     BY-LATE-NO-COL(1).
+
+           MOVE 0 TO BY-OTH-NO-WAIVED(1)
+                     BY-OT2-NO-WAIVED(1)
+                     BY-INT-NO-WAIVED(1)
+                     BY-LATE-NO-WAIVED(1).
+
+           MOVE 0 TO BY-OTH-AMT-WAIVED(1)
+                     BY-OT2-AMT-WAIVED(1)
+                     BY-INT-AMT-WAIVED(1)
+                     BY-LATE-AMT-WAIVED(1).
+
+           MOVE BY-MTD-YTD(1) TO BY-MTD-YTD(2).
+
+           MOVE 0 TO BY-PROJ-INCREASE  BY-STD-POS
+                     BY-PROJ-PROFIT BY-30-DAY-MOVED
+                     BY-LTOUCH-DATE.
+
+      * BY-PERIOD-TBL:
+           PERFORM CLEAR-BY-PERIOD-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 11
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * BY-DEL-BUCKETS:
+           PERFORM CLEAR-BY-DEL-BUCKETS VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * BY-REPO-ACTIVITY-TBL:
+           PERFORM CLEAR-BY-REPO-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 5
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * BY-PL-ACTIVITY-TBL:
+           PERFORM CLEAR-BY-PL-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * BY-DLR-ACTIVITY-TBL:
+           PERFORM CLEAR-BY-DLR-ACTIVITY-TBL VARYING
+               BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 3
+                  AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                    AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3.
+
+      * MISC:
+           MOVE 0 TO BY-SUMWGTTM
+                     BY-SUMWGTAV
+                     BY-SUMWGTTA.
+
+           MOVE 0 TO BY-IB-ACCRUED.
+
+      * BY-UNEARNED-ACTIVITY:
+           PERFORM VARYING BYSUB3 FROM 1 BY 1 UNTIL BYSUB3 > 10
+                     AFTER BYSUB2 FROM 1 BY 1 UNTIL BYSUB2 > 2
+                     AFTER BYSUB1 FROM 1 BY 1 UNTIL BYSUB1 > 3
+               MOVE 0 TO BY-UNEARNED-AMT(BYSUB1 BYSUB2 BYSUB3)
+           END-PERFORM.
+
+
+           GO TO CLEAR-BY-FILE-EXIT.
+
+
+       CLEAR-BY-PL-RECOVERY.
+           MOVE 0 TO BY-PL-PRINCOL(1 BYSUB1)
+                     BY-PL-INTCOL(1 BYSUB1)
+                     BY-PL-LATECOL(1 BYSUB1)
+                     BY-PL-O2COL(1 BYSUB1).
+
+       CLEAR-BY-PERIOD-TBL.
+           MOVE 0 TO BY-NO(BYSUB1 BYSUB2 BYSUB3)
+                     BY-AMT(BYSUB1 BYSUB2 BYSUB3)
+                     BY-O2(BYSUB1 BYSUB2 BYSUB3)
+                     BY-INT(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-BY-DEL-BUCKETS.
+           MOVE 0 TO BY-UNITS(BYSUB1 BYSUB2 BYSUB3)
+                     BY-OUTBAL(BYSUB1 BYSUB2 BYSUB3)
+                     BY-UNITS-BNKRPT(BYSUB1 BYSUB2 BYSUB3)
+                     BY-OUTBAL-BNKRPT(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-BY-REPO-ACTIVITY-TBL.
+           MOVE 0 TO BY-NO-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     BY-AMT-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     BY-O2-REPO(BYSUB1 BYSUB2 BYSUB3)
+                     BY-INT-REPO(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-BY-PL-ACTIVITY-TBL.
+           MOVE 0 TO BY-NO-PL(BYSUB1 BYSUB2 BYSUB3)
+                     BY-AMT-PL(BYSUB1 BYSUB2 BYSUB3)
+                     BY-O2-PL(BYSUB1 BYSUB2 BYSUB3)
+                     BY-INT-PL(BYSUB1 BYSUB2 BYSUB3).
+
+       CLEAR-BY-DLR-ACTIVITY-TBL.
+           MOVE 0 TO BY-DLRVPRIN(BYSUB1 BYSUB2 BYSUB3)
+                     BY-DLRVCHGS(BYSUB1 BYSUB2 BYSUB3)
+                     BY-DLPARVHELD(BYSUB1 BYSUB2)
+                     BY-DLDISC(BYSUB1).
+
+       CLEAR-BY-FILE-EXIT.
+           EXIT.

@@ -1,0 +1,64 @@
+flowchart TD
+    A[Start C-CALL-NEWDATE] --> B[Initialize Variables]
+    B --> C[Analyze Input Length]
+    C --> D{Input Length > 0?}
+    D -->|No| E[Set Error - Empty Input]
+    D -->|Yes| F[Scan for Separators]
+    
+    F --> G[Check Separator Types]
+    G --> H{Contains / or - or Space?}
+    H -->|Yes| I[Separated Date Format]
+    H -->|No| J[Numeric Only Format]
+    
+    I --> K[Parse with Separators]
+    K --> L[Extract MM/DD/YY Components]
+    J --> M[Parse Numeric String]
+    M --> N[Extract by Position]
+    
+    L --> O[Validate Components]
+    N --> O
+    O --> P{Month Valid 01-12?}
+    P -->|No| Q[Set Error - Invalid Month]
+    P -->|Yes| R{Day Valid for Month?}
+    
+    R -->|No| S[Set Error - Invalid Day]
+    R -->|Yes| T[Process Year]
+    T --> U{2-digit or 4-digit Year?}
+    U -->|2-digit| V[Apply Century Logic]
+    U -->|4-digit| W[Use As-Is]
+    
+    V --> X[Year Pivot Analysis]
+    X --> Y{Year < Pivot Point?}
+    Y -->|Yes| Z[Add 2000]
+    Y -->|No| AA[Add 1900]
+    
+    W --> BB[Final Validation]
+    Z --> BB
+    AA --> BB
+    BB --> CC{Year Reasonable?}
+    CC -->|No| DD[Set Error - Invalid Year]
+    CC -->|Yes| EE[Assemble Output]
+    
+    EE --> FF[Format CCYYMMDD]
+    FF --> GG[Set Success Return Code]
+    GG --> HH[End C-CALL-NEWDATE]
+    
+    E --> II[Set Error Return Code]
+    Q --> II
+    S --> II
+    DD --> II
+    II --> HH
+    
+    style A fill:#e1f5fe
+    style HH fill:#c8e6c9
+    style D fill:#fff3e0
+    style H fill:#fff3e0
+    style P fill:#fff3e0
+    style R fill:#fff3e0
+    style U fill:#fff3e0
+    style Y fill:#fff3e0
+    style CC fill:#fff3e0
+    style E fill:#ffebee
+    style Q fill:#ffebee
+    style S fill:#ffebee
+    style DD fill:#ffebee

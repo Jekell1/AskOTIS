@@ -1,0 +1,16 @@
+      * COPYMEMBER: LIBUP/UPFSALTI
+           SELECT ALTI-FILE ASSIGN TO ALTI-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY ALTI-KEY
+                  FILE STATUS FILE-STAT.
+           SELECT ALTI-DONE-FILE ASSIGN ALTI-DONE-PATH
+                  ORGANIZATION LINE SEQUENTIAL
+                  FILE STATUS FILE-STAT.
+~
+~
+~
+~
+~
+~

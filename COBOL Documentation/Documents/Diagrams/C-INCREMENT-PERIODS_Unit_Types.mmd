@@ -1,0 +1,39 @@
+flowchart TD
+    A[Unit Period Types] --> B[Direct Units]
+    A --> C[Converted Units]
+    
+    B --> D[M - Months 1:1]
+    B --> E[S - Semi-months 1:1]
+    B --> F[D - Days 1:1]
+    
+    C --> G[W - Weeks × 7 days]
+    C --> H[B - Bi-weeks × 14 days]
+    C --> I[Y - Years × 12 months]
+    
+    D --> J[C-INCR-MONTHS]
+    E --> K[C-INCR-HALF-MONTHS]
+    F --> L[C-INCR-DAYS]
+    
+    G --> M[Convert to Days]
+    H --> N[Convert to Days]
+    I --> O[Convert to Months]
+    
+    M --> L
+    N --> L
+    O --> J
+    
+    P[Examples]
+    P --> Q[M: Monthly payments]
+    P --> R[S: Bi-weekly payroll]
+    P --> S[W: Weekly reports]
+    P --> T[B: Bi-weekly schedules]
+    P --> U[D: Daily interest]
+    P --> V[Y: Annual renewals]
+    
+    style A fill:#e1f5fe
+    style B fill:#e8f5e8
+    style C fill:#fff9c4
+    style J fill:#81c784
+    style K fill:#81c784
+    style L fill:#81c784
+    style P fill:#f3e5f5

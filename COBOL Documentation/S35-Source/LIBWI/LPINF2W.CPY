@@ -1,0 +1,9 @@
+      * COPYMEMBER: LIBWI/LPINF2W
+      * REV:
+      *  2024.0425 BAH MADE LEVEL 01 AND CALL, NOT WINDOW
+       01  LPINF2-BUF.
+           07  LPINF2-LP-BRNO    PIC 9(4).
+           07  LPINF2-LP-ACCTNO  PIC 9(8).
+           07  LPINF2-LP-SEQNO   PIC 9(5).
+           07  LPINF2-ARCHIVE-FG PIC X.
+           07  LPINF2-VDUSTATUS  PIC XX.

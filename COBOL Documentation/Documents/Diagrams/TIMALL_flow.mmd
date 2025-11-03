@@ -1,0 +1,10 @@
+%% Mermaid: TIMALL Driver Flow
+flowchart TD
+    Begin([Begin TIMALL]) --> CheckZero{NUM-DATE = 0 or SYS-DATE = 0?}
+    CheckZero -- Yes --> SetZero[Set outputs to 0, exit]
+    CheckZero -- No --> SaveState[Save NDTE-DATE, HOLD-UNITPER-INFO]
+    SaveState --> SetUnit[Set DATER-UNITPER-CD = 'M', FREQ = 1]
+    SetUnit --> SetAction[Set DATER-ACTION-CODE = 'E']
+    SetAction --> PerformDater[PERFORM DATER-ROUTINE]
+    PerformDater --> RestoreState[Restore NDTE-DATE, HOLD-UNITPER-INFO]
+    RestoreState --> End([End TIMALL])

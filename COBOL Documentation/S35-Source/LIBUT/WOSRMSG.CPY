@@ -1,0 +1,22 @@
+       WINOTIS-SEND-ERROR.
+           MOVE WO-ERR-DESC TO WOS-BUFFER.
+           MOVE 90 TO WOR-BUFFER-LEN.
+           MOVE OTCS-ERROR TO WOS-MSG-ID.
+           PERFORM WINOTIS-SEND-MESSAGE.
+
+       WINOTIS-SEND-MESSAGE.
+ 	       MOVE 0 TO WINOTIS-ERROR.
+           CALL "WOSBLK" USING WOS-MSG-ID
+               WOS-BUFFER-LEN
+               WOS-BUFFER-VALUE          
+               WINOTIS-ERROR.
+           CANCEL "WOSBLK".
+
+
+       WINOTIS-RECV-MESSAGE.
+	       MOVE 0 TO WINOTIS-ERROR.
+           CALL "WORBLK" USING WOR-MSG-ID
+               WOR-BUFFER-LEN
+               WOR-BUFFER-VALUE
+               WINOTIS-ERROR.
+           CANCEL "WORBLK".

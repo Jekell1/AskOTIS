@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXCD
+           SELECT XCD-FILE ASSIGN TO XCD-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XCD-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBWI/BWSCANW
+      *  2024.0503 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  BWSCAN-BUF.
+           03  BWSCAN-NO         PIC 9(9).
+           03  BWSCAN-NAME       PIC X(22).
+           03  BWSCAN-SCAN-TYPE  PIC X.
+           03  BWSCAN-STATUS     PIC XX.

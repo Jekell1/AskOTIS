@@ -1,0 +1,59 @@
+If a documentation file doesn’t already exist in C:\Users\jeff.childers\Documents\COBOL Documentation\Documents, fully document 
+the {file_name} program in APIPAY_Inlined.CBL.  If the file created, make sure it is linked correctly in APIPAY_Documentation.md.  
+This documentation is intended for a reader unfamiliar with COBOL or this system. Use both the code and embedded comments to construct a comprehensive, wiki-ready design document.
+This document should be detailed and clear for someone who has no prior knowledge of the program. The output must be written 
+in Markdown format, suitable for a wiki system, and saved in a file. 
+
+Create a title 
+
+Create a documentation header after the title and before the Table of Contents using the following format, with each item on its own line and bolded field names. Fill in the values as appropriate for the program:
+
+**Location:** <relative path to source file>  
+**Generated on:** <current date>  
+**Program ID:** <program name>  
+**Date Written:** <authoring date or "See source comments">
+
+Documentation Requirements:
+
+Include the following sections:
+1.	Table of Contents - include hyperlinks to all sections
+2.	Program Overview
+3.	Transaction Types Supported
+4.	Input Parameters
+5.	Output Fields
+6.	Program Flow Diagrams (Mermaid)
+o	High-level flow using Mermaid graph TD syntax
+o	Detailed flow for each transaction type or paragraph in separate .mmd files
+o	Use clickable links in the main document to link to detailed diagrams
+7.	Batch or Sequential Process Timeline
+o	Use Mermaid gantt diagrams to show the sequence and duration of batch steps. Put the applicable mermaid chart in the appropriate document section.
+8.	Paragraph-Level Flow Explanation
+o	Describe what each paragraph does
+o	Show how control moves between them via PERFORM, IF, and GOTO
+9.	Data Flow Mapping
+o	Show how key data fields are passed and modified throughout the program using embedded mermaid diagrams.
+10.	Referenced Programs
+o	For each CALL, find the program in the file if present
+o	Create a separate document for each and link it from the APIPAY documentation
+o	List ALL reference programs. Do not use, various, etc., or similar words.
+11.	Error Handling Flow
+12.	Error Handling and Validation
+13.	Common Error Conditions
+14.	Technical Implementation
+o	Include data structures, working-storage, file handling, and key algorithms
+15.	Integration Points
+16.	File Dependencies
+o	Input/output files, external datasets, and copybooks used
+17.	Call Graph of PERFORMed Paragraphs
+o	Use Mermaid diagrams to show paragraph call relationships (e.g., MAIN --> INIT --> PROCESS)
+Output and File Organization:
+•	Place all documentation files in: .\Documents
+•	Place all Mermaid diagram files in: .\Documents\Diagrams
+•	Embed or link diagrams using relative paths in the Markdown output
+•	Diagrams must be clear, professional, and easy to understand
+Additional Instructions:
+•	If the program includes batch processes, highlight dependencies and flow using Mermaid gantt charts.
+If the file already exists overwrite the file with the new data.
+Mak sure all memaid diagrams are embedded and displayed in the document. Do not link any mermaid diagrams.
+
+Run generate_static_html.py after finishing.

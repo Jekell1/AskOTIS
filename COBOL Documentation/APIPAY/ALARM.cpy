@@ -1,0 +1,2 @@
+       ALARM.
+      *    DISPLAY OMITTED WITH BEEP.

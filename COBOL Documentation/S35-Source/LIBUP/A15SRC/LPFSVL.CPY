@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSVL
+           SELECT VL-FILE ASSIGN TO VL-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VL1-KEY
+                  FILE STATUS FILE-STAT.

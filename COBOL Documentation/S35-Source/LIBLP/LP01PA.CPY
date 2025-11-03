@@ -1,0 +1,49 @@
+      * COPYMEMBER: LIBLP/LP01PA
+      ***********************************************************************
+      *  PAYEE FILE (FOR MISC. CHECK WRITING)
+      *
+      *  PA1-KEY - PA-BRNO, PA-NUMBER
+      *  PA2-KEY - PA-BRNO, PA-SORTKEY (NON CONTIGUOUS)
+      *
+      *  REV:
+      *  BLM 090526 ADD PA-VAT-PERC AND PA-RFC (WORLD MEXICO TAX ID),
+      *             WORLD PR# 638
+      *  BLM 120307 ADD PA-CURP FOR WORLD MEXICO, NEED FOR PAYMENT FOR
+      *             REFERRALS, WORLD PR# 795
+      *  AMM 190130 LOCAL TO GLOBAL CHANGES 
+      *   CS 190508 ADD FUTURE FIELDS
+      *  BAH 20200324 CLEANED UP FUTURE FIELDS, REMOVED GROUP LEVELS
+      *  BAH 20230600 ADDED FILLER
+      ***********************************************************************
+       78  PA-SIZE             VALUE 465.
+       01  PA-REC.
+           03  PA1-KEY.
+               05  PA-BRNO        PIC 9(4).
+               05  PA-NUMBER      PIC 9(6).
+           03  PA-NAME            PIC X(30).
+           03  PA-ADR1            PIC X(30).
+           03  PA-ADR2            PIC X(30).
+           03  PA-CITY            PIC X(20).
+           03  PA-STATE           PIC X(2).
+           03  PA-ZIP             PIC X(10).
+           03  PA-LCHECK          PIC 9(6)     COMP-3.
+      $XFD DATE=YYYYMMDD
+           03  PA-LCDATE          PIC 9(8)     COMP-3.
+           03  PA-LAMT            PIC S9(7)V99 COMP-3.
+           03  PA-YTD-PAID        PIC S9(7)V99 COMP-3.
+           03  PA-LYTD-PAID       PIC S9(7)V99 COMP-3.
+           03  PA-SORTKEY         PIC X(10).
+           03  PA-CUSNO           PIC X(12).
+           03  PA-CONTACT         PIC X(30).
+           03  PA-PHONE           PIC 9(10)    COMP-3.
+           03  PA-FAX             PIC 9(10)    COMP-3.
+           03  PA-1099-FLAG       PIC X.
+           03  PA-1099-ID         PIC X(12).
+           03  PA-LEGAL-NAME1     PIC X(50).
+           03  PA-LEGAL-NAME2     PIC X(50).
+           03  PA-VAT-PERC        PIC 99V99    COMP-3.
+           03  PA-RFC             PIC X(13).
+           03  PA-CURP            PIC X(18).
+      $XFD DATE=YYYYMMDD
+           03  PA-LTOUCH-DATE     PIC 9(8)  COMP-3.
+           03  FILLER                 PIC X(93).

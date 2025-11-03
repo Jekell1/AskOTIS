@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPLCAP - Late Charge Application Processing - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > LPLCAP Late Charge Application
+    </div>
+
+    <div class="header">
+        <h1>LPLCAP - Late Charge Application Processing</h1>
+        <div class="meta">
+            <strong>Module:</strong> LPLCAP<br>
+            <strong>Type:</strong> Copy Member (Routine)<br>
+            <strong>Location:</strong> LIBLP/LPLCAP.CPY<br>
+            <strong>Purpose:</strong> Late Charge Apply Routine for Payment Processing<br>
+            <strong>Used By:</strong> LONPFC, Payment Processing Programs<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#purpose">Purpose and Functionality</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-parameters">Output Parameters</a></li>
+                <li><a href="#formulas">Late Charge Formulas</a></li>
+                <li><a href="#processing-flow">Processing Flow</a></li>
+                <li><a href="#special-features">Special Features</a></li>
+                <li><a href="#usage-examples">Usage Examples</a></li>
+                <li><a href="#technical-details">Technical Implementation</a></li>
+                <li><a href="#revision-history">Revision History</a></li>
+                <li><a href="#integration">Integration Points</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p><strong>LPLCAP</strong> (Late Charge Apply Routine) is a comprehensive copy member that calculates late charge assessments and applications for loan payments. It determines how much of a payment should be applied to late charges, how much late charge is still owed, and provides an updated late charge paid-through date.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>Late Charge Calculation:</strong> Calculates late charges based on various formulas</li>
+                <li><strong>Payment Application:</strong> Determines how payment amounts apply to late charges</li>
+                <li><strong>Paid-Through Dating:</strong> Updates late charge paid-through dates</li>
+                <li><strong>Deficiency Tracking:</strong> Tracks remaining late charge balances</li>
+                <li><strong>Formula Support:</strong> Supports multiple late charge calculation formulas (A-M)</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Usage Context:</strong> LPLCAP is called during payment processing to properly apply payments to late charges and maintain accurate late charge balances and paid-through dates.</p>
+            </div>
+        </section>
+
+        <section id="purpose">
+            <h2>Purpose and Functionality</h2>
+            
+            <h3>Primary Functions</h3>
+            <table>
+                <tr>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Impact</th>
+                </tr>
+                <tr>
+                    <td><strong>Late Charge Assessment</strong></td>
+                    <td>Calculates late charges due based on payment patterns</td>
+                    <td>Determines total late charge liability</td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Allocation</strong></td>
+                    <td>Allocates payment amounts to late charges</td>
+                    <td>Reduces late charge balances</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Management</strong></td>
+                    <td>Updates late charge paid-through dates</td>
+                    <td>Maintains accurate payment history</td>
+                </tr>
+                <tr>
+                    <td><strong>Balance Tracking</strong></td>
+                    <td>Tracks remaining late charge deficiencies</td>
+                    <td>Provides accurate account status</td>
+                </tr>
+            </table>
+
+            <h3>Business Logic Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Payment Received] --> B[Determine Current Late Charges]
+                B --> C[Apply Formula Logic]
+                C --> D{Formula Type}
+                D -->|A-M| E[Execute Formula-Specific Logic]
+                E --> F[Calculate Late Charge Applied]
+                F --> G[Calculate Late Charge Owed]
+                G --> H[Update Paid-Through Date]
+                H --> I[Set Output Parameters]
+                I --> J[Return to Calling Program]
+            </div>
+        </section>
+
+        <section id="input-parameters">
+            <h2>Input Parameters</h2>
+            
+            <h3>Required Input Fields</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Source</th>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-TRAMT</strong></td>
+                    <td>Amount</td>
+                    <td>Transaction amount (payment amount)</td>
+                    <td>LP-TRAMT</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-1STPYDATE</strong></td>
+                    <td>Date</td>
+                    <td>First payment date of the loan</td>
+                    <td>LN-1STPYDATE</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-PAYDATE</strong></td>
+                    <td>Date</td>
+                    <td>Current payment date</td>
+                    <td>LP-PAYDATE</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-LPTRCD</strong></td>
+                    <td>Code</td>
+                    <td>Late payment transaction code</td>
+                    <td>LP-TRCD</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-LPAPLC</strong></td>
+                    <td>Amount</td>
+                    <td>Late payment applied to late charges</td>
+                    <td>LP-APLC</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-LPAPINT</strong></td>
+                    <td>Amount</td>
+                    <td>Late payment applied to interest</td>
+                    <td>LP-APINT</td>
+                </tr>
+            </table>
+
+            <h3>Optional Input Fields</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-POFF-LPTRCD</strong></td>
+                    <td>Code</td>
+                    <td>Payoff late payment transaction code</td>
+                    <td>Required for payoff processing</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-BATCH-REFCD</strong></td>
+                    <td>Flag</td>
+                    <td>Batch refund code payment flag</td>
+                    <td>Special batch processing</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-BATCH-REFCD-LC-FG</strong></td>
+                    <td>Flag</td>
+                    <td>Batch refund code late charge flag</td>
+                    <td>Batch late charge handling</td>
+                </tr>
+            </table>
+
+            <h3>System Dependencies</h3>
+            <ul>
+                <li><strong>LN-TOTPAYMNTD:</strong> Total payments made to date</li>
+                <li><strong>LN-LCPAID:</strong> Late charges paid to date</li>
+                <li><strong>LN-REGPYAMT:</strong> Regular payment amount</li>
+                <li><strong>LN-1STPYAMT:</strong> First payment amount</li>
+                <li><strong>LN-TOTNODEF:</strong> Total number of deferments</li>
+                <li><strong>LN-LCPDTH-DATE:</strong> Late charge paid-through date</li>
+                <li><strong>LN-PARTIALS:</strong> Partial payment information</li>
+                <li><strong>SP-LCFRMLA:</strong> Late charge formula code</li>
+                <li><strong>SP-YEARTYPE:</strong> Year type for calculations</li>
+            </ul>
+        </section>
+
+        <section id="output-parameters">
+            <h2>Output Parameters</h2>
+            
+            <h3>Primary Output Fields</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-OWE</strong></td>
+                    <td>Amount</td>
+                    <td>Late charge amount still owed (deficiency)</td>
+                    <td>Account balance tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-APP</strong></td>
+                    <td>Amount</td>
+                    <td>Late charge amount applied from payment</td>
+                    <td>Payment allocation reporting</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-LCPDTH-DATE</strong></td>
+                    <td>Date</td>
+                    <td>Updated late charge paid-through date</td>
+                    <td>Payment history maintenance</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-PARTIALS</strong></td>
+                    <td>Table</td>
+                    <td>Partial payment information</td>
+                    <td>Detailed payment tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-LCPAID</strong></td>
+                    <td>Amount</td>
+                    <td>Total late charges paid</td>
+                    <td>Cumulative tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LCAP-NOLCHG</strong></td>
+                    <td>Flag</td>
+                    <td>No late charge assessment flag</td>
+                    <td>Special condition handling</td>
+                </tr>
+            </table>
+
+            <h3>Status and Control Fields</h3>
+            <ul>
+                <li><strong>Return Codes:</strong> Success/failure indicators for processing</li>
+                <li><strong>Error Flags:</strong> Specific error condition indicators</li>
+                <li><strong>Processing Flags:</strong> Special processing condition indicators</li>
+                <li><strong>Calculation Results:</strong> Intermediate calculation values for audit</li>
+            </ul>
+        </section>
+
+        <section id="formulas">
+            <h2>Late Charge Formulas</h2>
+            
+            <h3>Supported Formula Types</h3>
+            <table>
+                <tr>
+                    <th>Formula</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Key Features</th>
+                </tr>
+                <tr>
+                    <td><strong>A</strong></td>
+                    <td>Basic</td>
+                    <td>Standard late charge calculation</td>
+                    <td>Simple percentage or flat fee</td>
+                </tr>
+                <tr>
+                    <td><strong>B</strong></td>
+                    <td>Percentage Based</td>
+                    <td>Percentage of payment amount</td>
+                    <td>Uses LCPAID for calculation</td>
+                </tr>
+                <tr>
+                    <td><strong>C</strong></td>
+                    <td>Graduated</td>
+                    <td>Graduated late charge scale</td>
+                    <td>Increases with delinquency period</td>
+                </tr>
+                <tr>
+                    <td><strong>D</strong></td>
+                    <td>Payment Schedule</td>
+                    <td>Based on payment schedule</td>
+                    <td>Mullen late charges, payment schedules</td>
+                </tr>
+                <tr>
+                    <td><strong>E</strong></td>
+                    <td>Contractual</td>
+                    <td>Contractual payment based</td>
+                    <td>Waits for contractual catch-up</td>
+                </tr>
+                <tr>
+                    <td><strong>F</strong></td>
+                    <td>Custom F</td>
+                    <td>Custom formula F implementation</td>
+                    <td>Uses LCAP-TRAMT</td>
+                </tr>
+                <tr>
+                    <td><strong>G</strong></td>
+                    <td>Payment Schedule G</td>
+                    <td>Advanced payment schedule logic</td>
+                    <td>Works with pay schedule, uses LCPAID</td>
+                </tr>
+                <tr>
+                    <td><strong>H</strong></td>
+                    <td>Custom H</td>
+                    <td>Custom formula H implementation</td>
+                    <td>Special calculation method</td>
+                </tr>
+                <tr>
+                    <td><strong>I</strong></td>
+                    <td>Full Period</td>
+                    <td>Full late charge for whole due periods</td>
+                    <td>Period-based assessment</td>
+                </tr>
+                <tr>
+                    <td><strong>J</strong></td>
+                    <td>Alternative B</td>
+                    <td>Alternative to formula B</td>
+                    <td>Uses LCPAID, same as B</td>
+                </tr>
+                <tr>
+                    <td><strong>K</strong></td>
+                    <td>Alternative G</td>
+                    <td>Alternative to formula G</td>
+                    <td>Uses LCPAID, same as G</td>
+                </tr>
+                <tr>
+                    <td><strong>L</strong></td>
+                    <td>Mercury UCCC</td>
+                    <td>Mercury UCCC implementation</td>
+                    <td>Similar to I, Mercury specific</td>
+                </tr>
+                <tr>
+                    <td><strong>M</strong></td>
+                    <td>Mercury LA</td>
+                    <td>Mercury Louisiana implementation</td>
+                    <td>Louisiana specific requirements</td>
+                </tr>
+            </table>
+
+            <h3>Formula-Specific Features</h3>
+            <div class="warning">
+                <p><strong>Special Cases:</strong></p>
+                <ul>
+                    <li><strong>Formula D & G:</strong> Support SP-LCTYPE = "M" for monthly assessments</li>
+                    <li><strong>Formula B & J:</strong> Support SP-LCTYPE = "M" for monthly calculations</li>
+                    <li><strong>"AL" Transaction Code:</strong> Assesses all possible late charges with sufficient LCAP-TRAMT</li>
+                    <li><strong>Payment Schedule Integration:</strong> Formulas D and G work with LT-PAY-SCHLD-TBL (17 entries)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="processing-flow">
+            <h2>Processing Flow</h2>
+            
+            <h3>Main Processing Logic</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[LPLCAP Entry] --> B[Initialize Variables]
+                B --> C{LCAP-LPTRCD = 'AL'?}
+                C -->|Yes| D[Set Large LCAP-TRAMT]
+                C -->|No| E[Use Provided LCAP-TRAMT]
+                D --> F[Determine Formula Type]
+                E --> F
+                F --> G{Formula Type}
+                G -->|A| H[Execute Formula A Logic]
+                G -->|B/J| I[Execute Formula B/J Logic]
+                G -->|C| J[Execute Formula C Logic]
+                G -->|D| K[Execute Formula D Logic]
+                G -->|E| L[Execute Formula E Logic]
+                G -->|F| M[Execute Formula F Logic]
+                G -->|G/K| N[Execute Formula G/K Logic]
+                G -->|H| O[Execute Formula H Logic]
+                G -->|I| P[Execute Formula I Logic]
+                G -->|L| Q[Execute Formula L Logic]
+                G -->|M| R[Execute Formula M Logic]
+                H --> S[Calculate Late Charge Applied]
+                I --> S
+                J --> S
+                K --> S
+                L --> S
+                M --> S
+                N --> S
+                O --> S
+                P --> S
+                Q --> S
+                R --> S
+                S --> T[Calculate Late Charge Owed]
+                T --> U[Update Paid-Through Date]
+                U --> V[Set Output Parameters]
+                V --> W[Exit LPLCAP]
+            </div>
+
+            <h3>Payment Application Logic</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Payment Amount] --> B[Check Current Late Charges]
+                B --> C{Late Charges Exist?}
+                C -->|No| D[No Late Charge Application]
+                C -->|Yes| E[Calculate Late Charge Due]
+                E --> F{Payment >= Late Charge?}
+                F -->|Yes| G[Apply Full Late Charge]
+                F -->|No| H[Apply Partial Late Charge]
+                G --> I[Update Paid-Through Date]
+                H --> J[Partial Application]
+                I --> K[Set LCAP-APP = Late Charge]
+                J --> L[Set LCAP-APP = Payment Amount]
+                K --> M[Set LCAP-OWE = 0]
+                L --> N[Set LCAP-OWE = Remainder]
+                M --> O[Exit Successfully]
+                N --> O
+                D --> P[Set LCAP-APP = 0, LCAP-OWE = 0]
+                P --> O
+            </div>
+
+            <h3>Date Management Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Current LCPDTH Date] --> B[Calculate New Paid-Through]
+                B --> C{Formula Requirements}
+                C -->|Advance by Period| D[Add Payment Period]
+                C -->|Advance by Days| E[Add Days]
+                C -->|Formula Specific| F[Apply Formula Logic]
+                D --> G[Validate New Date]
+                E --> G
+                F --> G
+                G --> H{Date Valid?}
+                H -->|Yes| I[Update LCAP-LCPDTH-DATE]
+                H -->|No| J[Use Previous Date]
+                I --> K[Return Updated Date]
+                J --> K
+            </div>
+        </section>
+
+        <section id="special-features">
+            <h2>Special Features</h2>
+            
+            <h3>Advanced Processing Features</h3>
+            <ul>
+                <li><strong>Allotment Conditions:</strong> Tests for no late charge conditions under allotment scenarios</li>
+                <li><strong>Payment Schedule Integration:</strong> Works with complex payment schedules (17-entry tables)</li>
+                <li><strong>Deferment Handling:</strong> Considers deferments in late charge calculations</li>
+                <li><strong>Interest Integration:</strong> Coordinates with interest calculations and applications</li>
+                <li><strong>Partial Payment Support:</strong> Handles partial payments and maintains payment history</li>
+            </ul>
+
+            <h3>State-Specific Implementations</h3>
+            <table>
+                <tr>
+                    <th>State/Region</th>
+                    <th>Formula</th>
+                    <th>Special Requirements</th>
+                </tr>
+                <tr>
+                    <td><strong>Mercury UCCC</strong></td>
+                    <td>L</td>
+                    <td>UCCC compliance requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Mercury Louisiana</strong></td>
+                    <td>M</td>
+                    <td>Louisiana state regulations</td>
+                </tr>
+                <tr>
+                    <td><strong>Mullen</strong></td>
+                    <td>D</td>
+                    <td>Payment schedule integration</td>
+                </tr>
+                <tr>
+                    <td><strong>Rose Shanis</strong></td>
+                    <td>Various</td>
+                    <td>LN-LC-CODE support</td>
+                </tr>
+            </table>
+
+            <h3>Integration Points</h3>
+            <ul>
+                <li><strong>LPLCAS/LPLCASW:</strong> Late charge assessment routines</li>
+                <li><strong>INCRMM:</strong> Month increment routines</li>
+                <li><strong>DATEWK:</strong> Date working storage</li>
+                <li><strong>LPNDTEW/LPNDTE:</strong> Next due date calculations</li>
+                <li><strong>LPLCHGW/LPLCHG:</strong> Late charge working storage</li>
+                <li><strong>LPMDTEW/LPMDTE:</strong> Maturity date calculations</li>
+                <li><strong>JULW/TIMW/JUL:</strong> Julian date and time routines</li>
+            </ul>
+        </section>
+
+        <section id="usage-examples">
+            <h2>Usage Examples</h2>
+            
+            <h3>Basic Late Charge Application</h3>
+            <pre><code>* Set up input parameters
+MOVE LP-TRAMT TO LCAP-TRAMT
+MOVE LN-1STPYDATE TO LCAP-1STPYDATE  
+MOVE LP-PAYDATE TO LCAP-PAYDATE
+MOVE LP-TRCD TO LCAP-LPTRCD
+MOVE LP-APLC TO LCAP-LPAPLC
+MOVE LP-APINT TO LCAP-LPAPINT
+
+* Call late charge apply routine
+PERFORM LCAP-LATE-CHG-APPLY
+
+* Process results
+MOVE LCAP-APP TO LP-APLC
+MOVE LCAP-OWE TO LATE-CHG-BALANCE
+MOVE LCAP-LCPDTH-DATE TO LN-LCPDTH-DATE</code></pre>
+
+            <h3>Payoff Processing</h3>
+            <pre><code>* Set up for payoff late charges
+MOVE PAYOFF-AMOUNT TO LCAP-TRAMT
+MOVE LN-1STPYDATE TO LCAP-1STPYDATE
+MOVE PAYOFF-DATE TO LCAP-PAYDATE
+MOVE "AL" TO LCAP-LPTRCD
+MOVE POFF-LPTRCD TO LCAP-POFF-LPTRCD
+
+* Apply late charges for payoff
+PERFORM LCAP-LATE-CHG-APPLY
+
+* Check if late charges fully paid
+IF LCAP-OWE > 0
+   DISPLAY "Remaining late charge: " LCAP-OWE
+ELSE
+   DISPLAY "Late charges paid in full"
+END-IF</code></pre>
+
+            <h3>Batch Processing</h3>
+            <pre><code>* Set up for batch refund processing
+MOVE BATCH-PAYMENT-AMT TO LCAP-TRAMT
+MOVE LN-1STPYDATE TO LCAP-1STPYDATE
+MOVE BATCH-DATE TO LCAP-PAYDATE
+MOVE BATCH-TRCD TO LCAP-LPTRCD
+SET LCAP-BATCH-REFCD TO TRUE
+SET LCAP-BATCH-REFCD-LC-FG TO TRUE
+
+* Process batch late charges
+PERFORM LCAP-LATE-CHG-APPLY
+
+* Update batch totals
+ADD LCAP-APP TO BATCH-LC-TOTAL
+ADD LCAP-OWE TO BATCH-LC-OUTSTANDING</code></pre>
+        </section>
+
+        <section id="technical-details">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Performance Considerations</h3>
+            <ul>
+                <li><strong>Efficient Calculations:</strong> Optimized mathematical routines for various formulas</li>
+                <li><strong>Memory Management:</strong> Efficient use of working storage variables</li>
+                <li><strong>Date Arithmetic:</strong> Fast date calculation and validation routines</li>
+                <li><strong>Table Processing:</strong> Efficient payment schedule table processing</li>
+            </ul>
+
+            <h3>Data Structures</h3>
+            <table>
+                <tr>
+                    <th>Structure</th>
+                    <th>Purpose</th>
+                    <th>Size</th>
+                </tr>
+                <tr>
+                    <td><strong>LCAP Working Storage</strong></td>
+                    <td>Main processing variables</td>
+                    <td>Variable</td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Schedule Table</strong></td>
+                    <td>Payment schedule data</td>
+                    <td>17 entries</td>
+                </tr>
+                <tr>
+                    <td><strong>Partials Table</strong></td>
+                    <td>Partial payment tracking</td>
+                    <td>Variable</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Work Areas</strong></td>
+                    <td>Date calculation space</td>
+                    <td>Multiple fields</td>
+                </tr>
+            </table>
+
+            <h3>Error Handling</h3>
+            <ul>
+                <li><strong>Input Validation:</strong> Validates all input parameters before processing</li>
+                <li><strong>Date Validation:</strong> Ensures all dates are valid and in proper sequence</li>
+                <li><strong>Amount Validation:</strong> Validates monetary amounts for reasonableness</li>
+                <li><strong>Formula Validation:</strong> Ensures formula codes are supported</li>
+                <li><strong>Graceful Degradation:</strong> Handles unsupported scenarios gracefully</li>
+            </ul>
+        </section>
+
+        <section id="revision-history">
+            <h2>Revision History</h2>
+            
+            <h3>Major Revisions</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+                <tr>
+                    <td><strong>01/07/87</strong></td>
+                    <td>Added LATE-CHARGE-AL-CHECK routine</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>06/02/87</strong></td>
+                    <td>Added logic for formula "D"</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>10/12/87</strong></td>
+                    <td>Added generic routine for formula "E"</td>
+                    <td>AMW</td>
+                </tr>
+                <tr>
+                    <td><strong>05/20/88</strong></td>
+                    <td>Added LCAP-LPTRCD for "AL" processing</td>
+                    <td>BAW</td>
+                </tr>
+                <tr>
+                    <td><strong>05/31/88</strong></td>
+                    <td>Added logic for formula "G"</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>06/12/90</strong></td>
+                    <td>Added logic for formulas "H" & "I"</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>09/13/90</strong></td>
+                    <td>Added Mullen late charges for formula D</td>
+                    <td>SLC</td>
+                </tr>
+                <tr>
+                    <td><strong>10/06/92</strong></td>
+                    <td>Added formulas "J" and "K"</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>02/03/93</strong></td>
+                    <td>Updated for LT-PAY-SCHLD-TBL (17 entries)</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>06/05/92</strong></td>
+                    <td>Added LN-LC-CODE support (Rose Shanis)</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>07/06/95</strong></td>
+                    <td>Added formula 'L' for Mercury 'UCCC'</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>08/25/95</strong></td>
+                    <td>Added formula 'M' for Mercury 'LA'</td>
+                    <td>JTG</td>
+                </tr>
+            </table>
+
+            <div class="note">
+                <p><strong>Evolution:</strong> LPLCAP has evolved significantly over time to support increasingly complex late charge calculation requirements, regulatory compliance, and state-specific implementations.</p>
+            </div>
+        </section>
+
+        <section id="integration">
+            <h2>Integration Points</h2>
+            
+            <h3>Calling Programs</h3>
+            <ul>
+                <li><strong>LONPFC:</strong> Primary loan payment processing</li>
+                <li><strong>Payment Processors:</strong> Various payment processing programs</li>
+                <li><strong>Payoff Programs:</strong> Loan payoff processing</li>
+                <li><strong>Batch Processors:</strong> Batch payment processing systems</li>
+            </ul>
+
+            <h3>Data Dependencies</h3>
+            <ul>
+                <li><strong>Loan Master:</strong> Loan terms and payment information</li>
+                <li><strong>Payment History:</strong> Historical payment data</li>
+                <li><strong>State Parameters:</strong> Late charge formula and rate information</li>
+                <li><strong>Payment Schedules:</strong> Scheduled payment information</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance</h3>
+            <ul>
+                <li><strong>Formula Updates:</strong> Monitor regulatory changes requiring formula modifications</li>
+                <li><strong>State Compliance:</strong> Ensure compliance with state-specific late charge regulations</li>
+                <li><strong>Performance Monitoring:</strong> Monitor calculation performance for high-volume processing</li>
+                <li><strong>Testing:</strong> Regular testing of all formula variations and edge cases</li>
+            </ul>
+
+            <h3>Critical Considerations</h3>
+            <div class="warning">
+                <p><strong>Important:</strong></p>
+                <ul>
+                    <li><strong>Regulatory Compliance:</strong> Late charge calculations must comply with federal and state regulations</li>
+                    <li><strong>Accuracy:</strong> Mathematical precision is critical for financial accuracy</li>
+                    <li><strong>Audit Trail:</strong> Maintain detailed audit trails for all late charge calculations</li>
+                    <li><strong>Testing:</strong> Comprehensive testing required for any formula modifications</li>
+                </ul>
+            </div>
+
+            <h3>Future Enhancements</h3>
+            <ul>
+                <li><strong>New Formula Support:</strong> Framework for adding new late charge formulas</li>
+                <li><strong>Enhanced Reporting:</strong> Detailed late charge calculation reporting</li>
+                <li><strong>Performance Optimization:</strong> Continued optimization for high-volume processing</li>
+                <li><strong>Regulatory Updates:</strong> Support for evolving regulatory requirements</li>
+            </ul>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Initialize Mermaid
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

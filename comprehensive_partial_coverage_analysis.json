@@ -1,0 +1,102 @@
+{
+  "analysis_date": "2025-10-12T21:24:15.096793",
+  "expected_programs": 9678,
+  "results": [
+    {
+      "index": "new_cobol_paragraphs",
+      "vector_field": "para_vector",
+      "has_vector_flag": true,
+      "total_docs": 224655,
+      "programs_with_data": 3974,
+      "programs_missing": 5704,
+      "coverage_pct": 41.0622029344906,
+      "docs_with_embeddings": 224655,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    },
+    {
+      "index": "new_cobol_program_copybook_edges",
+      "vector_field": null,
+      "has_vector_flag": false,
+      "total_docs": 107569,
+      "programs_with_data": 9678,
+      "programs_missing": 0,
+      "coverage_pct": 100.0,
+      "docs_with_embeddings": null,
+      "docs_without_embeddings": null,
+      "embedding_pct": null
+    },
+    {
+      "index": "new_cobol_screen_nodes",
+      "vector_field": "summary_vector",
+      "has_vector_flag": true,
+      "total_docs": 46825,
+      "programs_with_data": 3926,
+      "programs_missing": 5752,
+      "coverage_pct": 40.56623269270511,
+      "docs_with_embeddings": 46825,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    },
+    {
+      "index": "new_cobol_copybook_usage",
+      "vector_field": "context_vector",
+      "has_vector_flag": true,
+      "total_docs": 115399,
+      "programs_with_data": 1950,
+      "programs_missing": 7728,
+      "coverage_pct": 20.148791072535648,
+      "docs_with_embeddings": 115399,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "vector_field": null,
+      "has_vector_flag": false,
+      "total_docs": 106669,
+      "programs_with_data": 1646,
+      "programs_missing": 8032,
+      "coverage_pct": 17.007646207894194,
+      "docs_with_embeddings": null,
+      "docs_without_embeddings": null,
+      "embedding_pct": null
+    },
+    {
+      "index": "new_cobol_data_items",
+      "vector_field": "vector",
+      "has_vector_flag": true,
+      "total_docs": 536058,
+      "programs_with_data": 1673,
+      "programs_missing": 8005,
+      "coverage_pct": 17.286629468898532,
+      "docs_with_embeddings": 536058,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    },
+    {
+      "index": "new_cobol_flow_edges_v2",
+      "vector_field": "edge_vector",
+      "has_vector_flag": true,
+      "total_docs": 366650,
+      "programs_with_data": 1610,
+      "programs_missing": 8068,
+      "coverage_pct": 16.635668526555072,
+      "docs_with_embeddings": 366650,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "vector_field": "excerpt_vector",
+      "has_vector_flag": true,
+      "total_docs": 1104574,
+      "programs_with_data": 460,
+      "programs_missing": 9218,
+      "coverage_pct": 4.753048150444307,
+      "docs_with_embeddings": 1104574,
+      "docs_without_embeddings": 0,
+      "embedding_pct": 100.0
+    }
+  ]
+}

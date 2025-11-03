@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSIL
+           SELECT IL-FILE ASSIGN IL-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY IL-KEY
+                  FILE STATUS FILE-STAT.

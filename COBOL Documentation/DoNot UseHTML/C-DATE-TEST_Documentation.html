@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-DATE-TEST Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-DATE-TEST Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-DATE-TEST Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-DATE-TEST.cpy</code><br />
+<strong>Program ID:</strong> C-DATE-TEST<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#algorithm-details">Algorithm Details</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-DATE-TEST<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Date Validation and Format Verification<br />
+<strong>Source File:</strong> <code>C-DATE-TEST.cpy</code><br />
+<strong>Usage:</strong> Validate date formats and return corrected or zero values  </p>
+<h2>Purpose and Description</h2>
+<p>C-DATE-TEST is a critical date validation utility that ensures date integrity throughout the payment processing system. The program performs comprehensive validation by checking both format validity and logical date consistency through Julian conversion round-trip testing.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Format Validation</strong> - Verify month and day values are within valid ranges</li>
+<li><strong>Logical Validation</strong> - Confirm date consistency through Julian conversion testing</li>
+<li><strong>Error Correction</strong> - Return zero for invalid dates or corrected dates for valid ones</li>
+<li><strong>Round-Trip Testing</strong> - Ensure date survives Julian conversion and back-conversion</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - Date in CCYYMMDD format to be validated</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - Same date if valid, or 0 if invalid</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-DATE-TEST Main Flow" src="Diagrams/C-DATE-TEST_Main_Flow.mmd" /></p>
+<h4>Validation Steps</h4>
+<ol>
+<li>
+<p><strong>Initial Format Check</strong>
+   <code>cobol
+   MOVE NUM-DATE TO WS-NDTE
+   IF (NOT WS-NDTE-MM-VALID) OR (NOT WS-NDTE-DD-VALID)
+      MOVE 0 TO NUM-DATE</code></p>
+</li>
+<li>
+<p><strong>Julian Conversion Test</strong>
+   <code>cobol
+   MOVE NUM-DATE TO P-DATE-IN
+   PERFORM C-CALL-JUL
+   MOVE P-JULIAN-DATE TO WS-JUL-WK</code></p>
+</li>
+<li>
+<p><strong>Round-Trip Verification</strong>
+   <code>cobol
+   MOVE WS-JUL-WK TO P-CJUL-JULIAN-DATE
+   PERFORM C-CALL-CJUL
+   MOVE P-CJUL-DATE-OUT TO NUM-DATE</code></p>
+</li>
+<li>
+<p><strong>Consistency Check</strong>
+   <code>cobol
+   IF WS-NDTE NOT = NUM-DATE
+      MOVE 0 TO NUM-DATE
+   ELSE
+      MOVE WS-NDTE TO NUM-DATE</code></p>
+</li>
+</ol>
+<h3>Validation Criteria</h3>
+<p><img alt="C-DATE-TEST Validation Process" src="Diagrams/C-DATE-TEST_Validation_Process.mmd" /></p>
+<table>
+<thead>
+<tr>
+<th>Check Type</th>
+<th>Description</th>
+<th>Action if Invalid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Month Range</td>
+<td>MM must be 01-12</td>
+<td>Set NUM-DATE to 0</td>
+</tr>
+<tr>
+<td>Day Range</td>
+<td>DD must be valid for month</td>
+<td>Set NUM-DATE to 0</td>
+</tr>
+<tr>
+<td>Julian Conversion</td>
+<td>Date must convert to valid Julian</td>
+<td>Set NUM-DATE to 0</td>
+</tr>
+<tr>
+<td>Round-Trip Test</td>
+<td>Julian back-conversion must match</td>
+<td>Set NUM-DATE to 0</td>
+</tr>
+</tbody>
+</table>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>C-DATER-MAIN</strong> - Date processing router</li>
+<li><strong>DATER-ROUTINE</strong> - Date processing routines</li>
+<li><strong>GET-GPENV</strong> - Environment configuration</li>
+<li><strong>Transaction validation routines</strong></li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong>C-CALL-JUL</strong> - Julian date conversion</li>
+<li><strong>C-CALL-CJUL</strong> - Julian to date conversion</li>
+</ul>
+<p><img alt="C-DATE-TEST Call Graph" src="Diagrams/C-DATE-TEST_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NUM-DATE</td>
+<td>CCYYMMDD</td>
+<td>Input/output date</td>
+</tr>
+<tr>
+<td>WS-NDTE</td>
+<td>DATE</td>
+<td>Working copy of input date</td>
+</tr>
+<tr>
+<td>WS-NDTE-MM-VALID</td>
+<td>CONDITION</td>
+<td>Month validity flag</td>
+</tr>
+<tr>
+<td>WS-NDTE-DD-VALID</td>
+<td>CONDITION</td>
+<td>Day validity flag</td>
+</tr>
+<tr>
+<td>P-DATE-IN</td>
+<td>DATE</td>
+<td>Julian conversion input</td>
+</tr>
+<tr>
+<td>P-JULIAN-DATE</td>
+<td>NUMERIC</td>
+<td>Converted Julian date</td>
+</tr>
+<tr>
+<td>WS-JUL-WK</td>
+<td>NUMERIC</td>
+<td>Working Julian storage</td>
+</tr>
+<tr>
+<td>P-CJUL-JULIAN-DATE</td>
+<td>NUMERIC</td>
+<td>Back-conversion Julian input</td>
+</tr>
+<tr>
+<td>P-CJUL-DATE-OUT</td>
+<td>DATE</td>
+<td>Back-converted date</td>
+</tr>
+</tbody>
+</table>
+<h3>Validation Flags</h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Values</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-NDTE-MM-VALID</td>
+<td>TRUE/FALSE</td>
+<td>Month is 01-12</td>
+</tr>
+<tr>
+<td>WS-NDTE-DD-VALID</td>
+<td>TRUE/FALSE</td>
+<td>Day is valid for month</td>
+</tr>
+</tbody>
+</table>
+<h2>Error Handling</h2>
+<h3>Validation Failures</h3>
+<table>
+<thead>
+<tr>
+<th>Failure Type</th>
+<th>Cause</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid Month</td>
+<td>MM &lt; 01 or MM &gt; 12</td>
+<td>NUM-DATE = 0</td>
+</tr>
+<tr>
+<td>Invalid Day</td>
+<td>DD invalid for month/year</td>
+<td>NUM-DATE = 0</td>
+</tr>
+<tr>
+<td>Julian Conversion</td>
+<td>Date cannot convert to Julian</td>
+<td>NUM-DATE = 0</td>
+</tr>
+<tr>
+<td>Round-Trip Failure</td>
+<td>Back-converted date differs</td>
+<td>NUM-DATE = 0</td>
+</tr>
+</tbody>
+</table>
+<h3>Common Invalid Dates</h3>
+<ul>
+<li><strong>February 30</strong> - Invalid day for month</li>
+<li><strong>April 31</strong> - Invalid day for month  </li>
+<li><strong>February 29</strong> on non-leap years</li>
+<li><strong>Month 00 or 13+</strong> - Invalid month values</li>
+<li><strong>Day 00 or 32+</strong> - Invalid day values</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Early Exit</strong> - Format check prevents unnecessary Julian conversion</li>
+<li><strong>Single Pass</strong> - One round-trip test validates both conversion directions</li>
+<li><strong>Minimal Storage</strong> - Reuses variables efficiently</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Constant time operations</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Valid Date Processing</h3>
+<pre><code class="language-cobol">MOVE 20240315 TO NUM-DATE
+PERFORM C-DATE-TEST
+* Result: NUM-DATE = 20240315 (unchanged)
+</code></pre>
+<h3>Invalid Date Detection</h3>
+<pre><code class="language-cobol">MOVE 20240231 TO NUM-DATE  
+PERFORM C-DATE-TEST
+* Result: NUM-DATE = 0 (February 31 invalid)
+</code></pre>
+<h3>Edge Case Handling</h3>
+<pre><code class="language-cobol">MOVE 20240229 TO NUM-DATE  
+PERFORM C-DATE-TEST
+* Result: NUM-DATE = 20240229 (valid leap year date)
+
+MOVE 20230229 TO NUM-DATE
+PERFORM C-DATE-TEST  
+* Result: NUM-DATE = 0 (invalid non-leap year date)
+</code></pre>
+<h3>Transaction Validation Pattern</h3>
+<pre><code class="language-cobol">MOVE TRANSACTION-DATE TO NUM-DATE
+PERFORM C-DATE-TEST
+IF NUM-DATE = 0
+   MOVE &quot;INVALID DATE&quot; TO ERROR-MESSAGE
+   PERFORM ERROR-HANDLING
+ELSE
+   PERFORM PROCESS-TRANSACTION
+END-IF
+</code></pre>
+<h2>Dependencies</h2>
+<h3>Required Utilities</h3>
+<ul>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Date to Julian conversion</li>
+<li><strong><a href="C-CALL-CJUL_Documentation.html">C-CALL-CJUL</a></strong> - Julian to date conversion</li>
+</ul>
+<h3>Data Requirements</h3>
+<ul>
+<li>Input date in CCYYMMDD format</li>
+<li>Proper working storage initialization</li>
+<li>Julian conversion utilities available</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Round-Trip Testing Strategy</h3>
+<p>The round-trip validation ensures:
+1. <strong>Input date converts to valid Julian</strong>
+2. <strong>Julian converts back to same date</strong>
+3. <strong>No data loss during conversions</strong>
+4. <strong>Leap year handling is correct</strong>
+5. <strong>Month boundary handling is accurate</strong></p>
+<h3>Test Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Test Category</th>
+<th>Examples</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Dates</td>
+<td>20240315, 20241231, 20200229</td>
+<td>Original date</td>
+</tr>
+<tr>
+<td>Invalid Months</td>
+<td>20240013, 20240000</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Invalid Days</td>
+<td>20240231, 20240431, 20230229</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Boundary Dates</td>
+<td>19000101, 99991231</td>
+<td>Depends on Julian limits</td>
+</tr>
+</tbody>
+</table>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Validation Pattern</strong> - Multiple validation layers for comprehensive checking</li>
+<li><strong>Round-Trip Pattern</strong> - Conversion and back-conversion for consistency verification</li>
+<li><strong>Zero-on-Error Pattern</strong> - Consistent error indication with zero value</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Maintain round-trip testing for any validation changes</li>
+<li>Preserve zero-return convention for invalid dates</li>
+<li>Ensure month/day validation remains consistent with Julian conversion limits</li>
+</ul>
+<h3>Performance Monitoring</h3>
+<ul>
+<li>Track validation failure rates for data quality assessment</li>
+<li>Monitor Julian conversion performance</li>
+<li>Identify common invalid date patterns for upstream prevention</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Julian date conversion utility</li>
+<li><strong><a href="C-CALL-CJUL_Documentation.html">C-CALL-CJUL</a></strong> - Julian to date conversion utility</li>
+<li><strong><a href="C-DATER-MAIN_Documentation.html">C-DATER-MAIN</a></strong> - Main date processing router</li>
+<li><strong><a href="C-LEAP-YEAR-TEST_Documentation.html">C-LEAP-YEAR-TEST</a></strong> - Leap year validation utility</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+      * BLM 130213 A30 CONVERSION, FIXED LOGUID TO NOT CALL C PROGRAM
+      ******************************************************************
+      *         STANDARD PROGRAM LOADER
+      *
+      *   NAME: LOADCO
+      *   DESC: THIS ROUTINE ALLOWS FOR A COBOL SUB-PROGRAM
+      *         TO BE LOADED AND EXECUTED, VIA CALL.
+      *         1. THE ROUTINE TESTS FOR MISSING PROGRAM.
+      *            THE CALLING PROGRAM MUST PROVIDE FOR
+      *            A MISSING PROGRAM RECOVERY POINT,
+      *            LABELED "LOAD-RESTART".
+      *         2. THE ROUTINE ALLOWS FOR PROGRAM RELOAD.
+      *            THE CALLING PROGRAM MUST PROVIDE FOR
+      *            A RELOAD POINT, LABELED "LOAD-POST".
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    LOGIC TO SUBSTITUTE FORM-PATH CALL VIA. ENVIRONMENT
+      *
+      *    EXAMPLE OF USE OF THIS LOGIC:
+      *      YOU NEED TO RUN A DEBUG VERSION OF LONPF0.C ON THE LIVE
+      *      CUSTOMERS MACHINE.
+      *
+      *      SET ENVIRONMENT:
+      *          1. ALT       = /USR/A15/CO/LP/LONPF0
+      *          2. ALT_PATH  = /USR/A15/CO/DB/LONPF0
+      *
+      *          3. ALT2      = /USR/A15/CO/LP/LONPF0
+      *          4. ALT2_PATH = /USR/A15/CO/LP/DBUGF0
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *   IN  : PLACE PATH NAME OF PROGRAM TO BE EXECUTED
+      *         INTO FORM-PATH.
+      *         PROVIDE RETURN POINTS IN THE PROGRAM:
+      *         1. LOAD-RESTART (MISSING PROGRAM RECOVERY)
+      *         2. LOAD-POST    (RETRY PROGRAM LOAD)
+      *   OUT : PROGRAM IS CANCELED FROM MEMORY.
+      *         FORM-NAM = " "  (EXIT TCLP)
+      *         FORM-OBJ = "  " (FORM MISSING)
+      *                  = "3Z" (            )
+      *                  = "3O" (OPTION NOT PURCHASED)
+      *                  = "3S" (SECURITY VIOLATION)
+      *   COPY: LOADCOW, ACCESS, ACCESSW
+      *
+      *=================================================================
+      * REV :
+      * BLV 061098 ADD NEW FIELDS FOR CHANGES TO H_LOGUID.C
+      *            LOGUID NO LONGER DOES ANOTHER ACCESS-CALL &
+      *            WILL NOW WRITE TO /USR/TMP/ULFILE, NOT RTS_UTMP,
+      *            REMOVED STATUS CHECK ON LOGUID
+      * BLV 061198 ADD INTERBR TO LOG BR# FOR INTER BRANCH PMTS
+      *            AND BULK TRANSFER UPDATE FOR H_LOGUID.C
+      * JTG 990708 ADDED LOGIC TO SUBSTITUTE FORM-PATH CALL VIA. ENVIRONMENT
+      * JTG 991201 ADDED LOGIC TO SUBSTITUTE FORM-PATH CALL VIA. ENVIRONMENT
+      *            EITHER LOADCO_ALT & LOADCO_ALT_PATH  (OR)  ALT & ALT-PATH
+      * JTG 030107 ADDED LOGIC TO SUBSTITUTE FORM-PATH CALL VIA. ENVIRONMENT
+      *             REMOVED LOADCO_ALT
+      *            CHANGED TO ALT2 & ALT2_PATH  (OR)  ALT & ALT-PATH
+      * JTG 031014 ADDED MOVE " " TO MESS FOR ALT2 TEST
+      * BAH 121107 CHANGED USING FORM-PATHNAME TO FORM-PATH-LINK
+      * BLM 130213 FIXED LOGUID TO NOT CALL C PROGRAM
+      * BLM 130305 FIX LOAD-OVERFLOW, WAS DISPLAYING BLANK ERRMSG BOX
+      * MJD 131206 CHANGED TO SAVE FORM-PATH PRIOR TO THE CALL AND
+      *            CANCEL THE CORRECT SAVED COPY AND NOT THE VALUE
+      *            IT HAS WHEN IT COMES BACK.  THE VALUE WHEN IT COMES
+      *            BACK MAY NOT BE THE SAME AS WHEN IT WAS CALLED AS
+      *            THE CALLED PROGRAM MAY CHANGE IT RESULTING IN THE
+      *            CALLED PROGRAM NOT BEING CANCELLED CORRECTLY.
+      * MJD 141014 ADDED LOGIC TO CHECK FORM-NAME AFTER A PROGRAM IS CALLED.  
+      *            IF THE FORM-NAM COMES BACK AS "GB/TCLP" THEM FORCE 
+      *            IT TO BE "LP/LPMENU".  I AM ATTEMPTING TO PREVENT 
+      *            THE INFINITE LOOP WE HAVE ENCOUNTERRED WHEN EXECURTING A 
+      *            PROGRAM FROM THE COMMAND LINE I.E.
+      *             "TCLP {PATH}/{PROGRAM NAME}".
+      * BLM 150616 FIX CALL OF LOGUID FOR CHANGED ARGUMENTS, FIX
+      *            CANCEL OF FORM-PROGX, GET RID OF SECURITY
+      *            ERROR CHECKS NOW IN CHKSEC, GET RID OF LOADCO-OP1,
+      *            ALT-PATH LOGIC
+      * JKC 210111 ADDED LOGIC FOR USE OF CALLED-FORM-NAM;
+      *            NEED IT FOR USE IN USING NON-OTIS PROGRAMS;
+      *            WORKING WITH ACUSQL TEST PROGRAM THAT LACK ALL NORMAL
+      *            OTIS LOGIC TO PROPERLY EXIT A PROGRAM AND RETURN TO
+      *            GB/TCLP; NEED TO CHECK CALLED-FORM-NAM TO FORM-NAM
+      *            TO SEE IF THEY ARE EQUAL OTHERWISE IT WILL BE IN
+      *            AN INFINITE LOOP SINCE FORM-NAM IS NOT CHANGED WITHIN
+      *            THE ACUSQL TEST PROGRAM; SHOULD HAVE SOME DEFAULT
+      *            TO PREVENT BEING IN A LOOP LIKE THIS.
+      *
+      *  BAH 20220816 COMMENTED OUT LOGUID
+      ******************************************************************
+       LOAD-IT.
+           MOVE "CO" TO FORM-OBJ.
+      * LOGUID:
+      *    CALL "LOGUID" USING FORM-PATHNAME
+      *                           FORM-PROGX
+      *                           EXIT-PATHNAME.
+      *    CANCEL "LOGUID".
+
+      * CALL PROGRAM:
+           MOVE FORM-NAM TO CALLED-FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME
+                ON OVERFLOW GO TO LOAD-OVERFLOW.
+           CANCEL FORM-PROGX.
+
+      * MJD TEST LOGIC TO CATCH PROGRAM CALLED VIA "TCLP {PROGNAME}"
+      *       AND PREVENT HAVING TO KILL THE PROCESS.  ATTEMPTING
+      *       TO FORCE IT TO RETURN TO LP/LPMENU
+      * JKC TEST IF CALLED PROGRAM HAS THE SAME NAME (FORM-NAM) WHEN
+      *     RETURNING FROM CALL; DONE FOR TEST ACUCOBOL NON-OTIS
+      *     PROGRAMS; ADDED WHILE DEVELOPING ACUSQL
+           IF ( FORM-NAM        = "GB/TCLP" ) OR
+              ( CALLED-FORM-NAM = FORM-NAM  )
+              MOVE "LP/LPMENU" TO FORM-NAM.
+
+      **************************************
+      *    CHECK FOR SECURITY ERRORS     
+      **************************************
+           IF FORM-OBJ = "3Z"
+              GO TO LOAD-OVERFLOW.
+      *  END SECURITY ERROR CHECK
+
+           IF FORM-NAM = " "
+              GO TO STOP-RUN.
+           GO TO LOAD-POST.
+
+       LOAD-OVERFLOW.
+           MOVE "CALL ERROR" TO ERRMSG-HEAD.
+           MOVE "CA," TO FILE-STAT-DISP.
+           CALL "C$CALLERR" USING FILE-STATD2.
+           MOVE FILE-STAT-DISP TO ERRMSG-MSG1.
+           MOVE FORM-PATH      TO ERRMSG-MSG2.
+           MOVE SPACES         TO ERRMSG-MSG3.
+           PERFORM CALL-ERRMSG.
+           GO TO STOP-RUN.

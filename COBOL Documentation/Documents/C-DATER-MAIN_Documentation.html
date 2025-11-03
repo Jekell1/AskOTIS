@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-DATER-MAIN Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-DATER-MAIN Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-dater-main-utility-documentation">C-DATER-MAIN Utility Documentation</h1>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#transaction-types">Transaction Types</a></li>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#program-flow-diagram">Program Flow Diagram</a></li>
+<li><a href="#batch-timeline-diagram">Batch Timeline Diagram</a></li>
+<li><a href="#data-flow-diagram">Data Flow Diagram</a></li>
+<li><a href="#call-graph">Call Graph</a></li>
+<li><a href="#business-rules">Business Rules</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#cross-references">Cross-References</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#revision-history">Revision History</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>C-DATER-MAIN is a COBOL utility embedded in the APIPAY_Inlined.CBL program. It is responsible for date calculations, comparisons, and manipulations within the APIPAY payment processing workflow. The utility supports various transaction types and interacts with multiple data files and copybooks. This documentation is intended for non-COBOL readers and provides a comprehensive, wiki-ready reference.</p>
+<h2 id="transaction-types">Transaction Types</h2>
+<ul>
+<li>Date comparison</li>
+<li>Date increment/decrement</li>
+<li>Leap year calculation</li>
+<li>Elapsed time computation</li>
+<li>Batch payment posting</li>
+</ul>
+<h2 id="parameters">Parameters</h2>
+<ul>
+<li>Input: Date strings, transaction identifiers, batch record data</li>
+<li>Output: Updated date values, status codes, log messages</li>
+</ul>
+<h2 id="program-flow-diagram">Program Flow Diagram</h2>
+<p><a href="Diagrams/C-DATER-MAIN_Flow.mmd">Click to view diagram</a></p>
+<div class="mermaid">flowchart TD
+    Start --> ValidateInput
+    ValidateInput --> DateOperation{Date Operation}
+    DateOperation -->|Compare| CompareDates
+    DateOperation -->|Increment| IncrementDate
+    DateOperation -->|Decrement| DecrementDate
+    DateOperation -->|LeapYear| CheckLeapYear
+    DateOperation -->|Elapsed| ComputeElapsed
+    CompareDates --> LogResult
+    IncrementDate --> LogResult
+    DecrementDate --> LogResult
+    CheckLeapYear --> LogResult
+    ComputeElapsed --> LogResult
+    LogResult --> End
+</div>
+<h2 id="batch-timeline-diagram">Batch Timeline Diagram</h2>
+<p><a href="Diagrams/C-DATER-MAIN_BatchTimeline.mmd">Click to view diagram</a></p>
+<div class="mermaid">gantt
+    title Batch Timeline for C-DATER-MAIN
+    section Initialization
+    Start :a1, 2024-01-01, 1d
+    section Processing
+    Validate Input :a2, after a1, 1d
+    Date Operation :a3, after a2, 2d
+    Log Result :a4, after a3, 1d
+    End :a5, after a4, 1d
+</div>
+<h2 id="data-flow-diagram">Data Flow Diagram</h2>
+<p><a href="Diagrams/C-DATER-MAIN_DataFlow.mmd">Click to view diagram</a></p>
+<div class="mermaid">flowchart LR
+    InputData --> C-DATER-MAIN
+    C-DATER-MAIN --> DateFiles
+    C-DATER-MAIN --> LogFile
+    DateFiles --> OutputData
+    LogFile --> OutputData
+</div>
+<h2 id="call-graph">Call Graph</h2>
+<p><a href="Diagrams/C-DATER-MAIN_CallGraph.mmd">Click to view diagram</a></p>
+<div class="mermaid">graph TD
+    APIPAY_Inlined.CBL --> C-DATER-MAIN
+    C-DATER-MAIN --> DateCompare
+    C-DATER-MAIN --> DateIncrement
+    C-DATER-MAIN --> DateDecrement
+    C-DATER-MAIN --> LeapYearCheck
+    C-DATER-MAIN --> ElapsedTime
+</div>
+<h2 id="business-rules">Business Rules</h2>
+<ul>
+<li>All date operations must validate input formats.</li>
+<li>Leap year calculations follow Gregorian calendar rules.</li>
+<li>Batch posting logs all operations and errors.</li>
+<li>Only valid transactions are processed; invalid data triggers error handling.</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<ul>
+<li>Invalid date format: Returns error code and logs message.</li>
+<li>Transaction failure: Logs error and aborts operation.</li>
+<li>File access issues: Logs error and returns status code.</li>
+</ul>
+<h2 id="cross-references">Cross-References</h2>
+<ul>
+<li><a href="APIPAY_Documentation.html">APIPAY_Documentation.md</a></li>
+<li>Related utilities: C-DATE-COMPARE, C-INCR-DAYS, C-LEAP-YEAR-TEST</li>
+</ul>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<p>C-DATER-MAIN is called by APIPAY_Inlined.CBL for date calculations and batch payment processing.</p>
+<ul>
+<li><a href="./APIPAY_Documentation.html">APIPAY Utility Documentation</a></li>
+</ul>
+<p>No other external programs are called directly by C-DATER-MAIN.</p>
+<h2 id="revision-history">Revision History</h2>
+<ul>
+<li>2025-07-30: Initial automated documentation generated from APIPAY_Inlined.CBL</li>
+</ul>
+<hr />
+<p><em>This documentation was generated automatically for wiki-readiness and clarity for non-COBOL readers.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

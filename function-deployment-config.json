@@ -1,0 +1,8 @@
+﻿{
+    "functionUrl":  "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse",
+    "resourceGroup":  "Azure_AI_RG",
+    "functionAppName":  "cobol-parser-func-1474",
+    "fullUrl":  "https://cobol-parser-func-1474.azurewebsites.net/api/cobol-parse?code=X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA==",
+    "functionKey":  "X38B4_cTI2Bb2Wc1lkgFW9aWKrSLIHwIdASTQipNAc8KAzFuiDgINA==",
+    "deploymentTime":  "9/4/2025 10:59:18 AM"
+}

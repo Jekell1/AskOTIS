@@ -1,0 +1,189 @@
+      ******************************************************************
+      *================================================================*
+      * EMBEDDED COPYBOOK: LIBGB\CONNECT_SQL.CPY                           *
+      *================================================================*
+      * COPYMEMBER: LIBGB/CONNECT_SQL.CPY
+      ******************************************************************
+      *
+      * IDENTIFICATION: LIBGB/CONNECT_SQL
+      * DESCRIPTION   : SQL SERVER CONNECTION ROUTINES
+      *
+      * NEEDED COPYS  : LIBGB/FILEWK
+      *                 LIBGB/DECLARE   -OR-
+      *                 LIBGB/DECLAREOD -OR-
+      *                 LIBGB/DECLRP
+      *
+      *=================================================================
+      * REV:
+      * JKC 2021-0115 ***NEW***
+      * JKC 2021-0223 CLEANING UP SOME OF THE CODE.
+      * JKC 2021-0324 ADDED SQL-GET-DATE & SQL-SET-DATE.
+      * JKC 2021-0430 CHANGES MADE WHILE WORKING ON DECLARE ROUTINES.
+      * JKC 2021-0511 CHANGED NAME FROM SQLCONNECT TO CONNECT_SQL
+      * JKC 2021-0714 ADDED DISPLAY OF PROGRAM NAME IN SQL-ERROR;
+      *               FORM-PATHNAME(16:6)
+      * JKC 2020-0726 ADDED EXT-SQL-CONNECT-STAT FOR CHECKING IF 
+      *               CONNECTION TO SQL SERVER HAS ALREADY BEEN MADE;
+      *               USED TO ONLY CONNECT ONE-TIME INSTEAD OF MULTIPLE
+      *               TIMES IN EVERY PROGRAM.
+      *
+      * JKC 2021-0816 CHANGED SQL-GET-DATE AND SQL-SET-DATE TO CHECK
+      *               FOR ZERO DATES & '1900-01-01'.
+      *
+      * JKC 2021-0817 UPDATED FROM XPC/IOCONN.PRE FOR LATEST CHANGES.
+      * JKC 2021-0927 CHANGED SQL-ERROR SECTION TO ALWAYS DISPLAY
+      *               E-KEYX NO MATTER WHAT IO TYPE (E-MSG4).
+      *
+      * JKC 2022-0209 MADE CHANGE TO SET SQL CONNECTION FIELDS AT THE
+      *               START OF THE 'SQL-CONNECT' PARAGRAPH FOR POTENTIAL
+      *               FUTURE USE OF HAVING MULTIPLE CONNECTIONS.
+      *               DID SOME CLEANUP OF UNNEED CODE THAT WAS USED
+      *               FOR A TWO-STEP COMPILE PROCESS; WE USE A ONE-STEP
+      *               COMPILE GOING FORWARD AT THIS POINT.
+      *
+      * JKC 2022-0214 MADE CHANGE TO SQL-DISCONNECT TO 
+      *               `MOVE STAT---BAD TO EXT-ACUSQL-CONNECT-STAT`
+      *               DUE TO ISSUE FOUND WITH CLOSING CURSORS VIA
+      *               SQL-ERROR;
+      *               IN SQL-IO-VALIDATION ROUTINE ADDED A CHECK TO SEE
+      *               IF THE SQL CONNECTION (EXT-ACUSQL-CONNECT-STAT)
+      *               IS OPEN (GOOD) THEN `PERFORM CLOSE-FILES`;
+      *               NEED TO ONLY CLOSE FILES/TABLES WHEN THERE IS
+      *               AN SQL CONNECTION OTHERWISE YOU CAN GET INTO
+      *               AN INIFITE LOOP DUE TO THE SQL-DISCONNECT IN
+      *               SQL-ERROR WHICH THEN YOU CANNOT CLOSE CURSORS
+      *               IF THE CONNECTION HAS BEEN CLOSED.
+      *
+      * JKC 2022-0622 MOVED THIS FROM LIBIO TO LIBGB; LIBIO WAS REMOVED
+      * BAH 2022.0627 RENAMED EXT-ACUSQL-ODBC-NAME TO EXT-ACUSQL-DSN-NAME
+      * JKC 2022-0804 REMOVED `SQL-CONNECT-VERIFY' PARAGRAPH; REPLACED
+      *          IT WITH `SELECT 1 INTO :QGP-KEY`.
+      *
+      * JKC 2022-0805 CHANGED :QGP-KEY TO BE :SQL-CONNECT-VERIFY.
+      * JKC 2022-0912 ADDED SQL-TEXT-DECREMENT AND SQL-TEXT-INCREMENT
+      *          ROUTINES; USED IN CERTAIN IO START PARAGRAPH;
+      *          NEEDED FOR SQL WHERE CONSTRAINTS SO TO GET THE
+      *          START PARAGRAPHS TO ACT LIKE THE VISION FILES.
+      * JKC 2022-0913 ADDED SQL-DATE-DECREMENT AND SQL-DATE-INCREMENT
+      *          ROUTINES; USED IN CERTAIN IO START PARAGRAPH;
+      *          NEEDED FOR SQL WHERE CONSTRAINTS SO TO GET THE
+      *          START PARAGRAPHS TO ACT LIKE THE VISION FILES.
+      * JKC 2022-1013 CHANGE SQL-TEXT-INCREMENT ROUTINE; ADDED
+      *          SQL-TEXT-INCREMENT-ALPHA.
+      *
+      * JKC 2023-0815 ADDED SQL-TEXT-ASCII; HAS ALL HEX VALUES OF
+      *          ALL CHARACTERS (ALPHA, NUMBERS, SPECIAL); THERE WAS AN
+      *          ISSUE IN THE TEXT INCREMENT ROUTINE WHERE A "60+" WAS
+      *          BEING INCREMENTED TO "60 " WHICH RESETS FROM THE START
+      *          GIVING BAD RESULTS IN SCAN WINDOW; NEEDED TO ALLOW THE
+      *          USE OF SPECIAL CHARACTERS TO INCREMENT OR DECREMENT.
+      *
+      * JKC 2023-0815 FIXED ONE ISSUE IN SQL-TEXT-INCREMENT SO THAT
+      *          IT INCREMENTS A TEXT WHEN THE LAST CHARACTER IS NOT
+      *          IN THE POSITION OF THE MAX SIZE; "M  " NOW WILL BE
+      *          "N  " INSTEAD OF "M! ".
+      *
+      * JKC 2023-1006 FIXED SQL-TEXT-INCREMENT FOR PROPERLY INCREMENT
+      *          THE LAST NON-SPACE CHARACTER IF IT IS NOT THAT
+      *          LAST CHARACTER OF THE SIZE OF THE TEXT FIELD.
+      *
+      * MB  2023-1129 ADDED SQL-SWAP-UPDATE-CONNECTION - USED TO
+      *          SET/SWAP CONNECTION (CURRENTLY BETWEEN C1 AND
+      *          UDDATE_CONNECT)
+      *
+      * JKC 2024-0123 CHANGED THE DISPLAY OF THE ERROR WINDOW FOR
+      *          THE PROGRAM TO NOT USE THE FULL PATH WITHIN
+      *          E-PROG BUT SUBSTRING IT TO BE E-PROG(16:7)
+      *
+      * JKC 2024-0124 ADDED OTIS TRACE LOGGING LOGIC
+      *
+      * JKC 2024-0501 ADDED USE OF EXT-API-SCREEN-DISABLE AND
+      *         EXT-API-MESS FOR SUPPRESS SCREEN INTERACTIONS FOR
+      *         USE IN API PROGRAMS WITHOUT SCREENS.
+      *
+      * JKC 2024-0716 ADDED SQL-ERROR-DISPLAY; NEEDED FOR SUPPRESSING
+      *          ERROR MESSAGE WINDOW DISPLAYING WHEN EXECUTING VIA
+      *          BATCH (EOEXEC/EOCRON); CANNOT USE EXT-ROUTE-BUF SINCE
+      *          NOT ALL PROGRAMS THAT USE CONNECT_SQL DOES NOT HAVE
+      *          CONAME_EXT WHICH IS NEEDED; S35Q-88
+      *
+      ******************************************************************
+      *
+      *    S Q L - C O N N E C T
+      *
+      *=================================================================
+      * IN  : EXT-ACUSQL-CONNECT-WORKERS
+      * OUT : SQL-CONNECT-WORKERS
+      *       IO-FG    [0 = GOOD; 9 = BAD]
+      * DESC: MAKE CONNECTION TO THE SQL SERVER:
+      *       1. CHECK CONNECTION STATUS
+      *          A. BAD THEN MAKE CONNECTION
+      *          B. GOOD THEN CONTINUE
+      *       2. VERIFY CONNECTION
+      *          A. BAD THEN CONTINUE
+      *          B. GOOD THEN EXIT PARAGRAPH
+      *       3. MAKE CONNECTION
+      *       4. VERIFY CONNECTIONSTATUS
+      *          A. BAD THEN ERROR PROCEDURE
+      *          B. GOOD THEN EXIT PARAGRAPH
+      ******************************************************************
+       SQL-CONNECT.
+
+           IF ( EXT-TCLP-TRACE-UPDATE )
+              MOVE "PROGRAM START (LIBGB/CONNECT_SQL)"
+                TO EXT-TCLP-TRACE-MESS
+              CALL "TRACE" USING FORM-PATHNAME
+              CANCEL "TRACE".
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEED TO SET THE SQL CONNECTION FIELDS RIGHT AWAY;
+      *    IF WE MAKE MULTIPLE CONNNECTIONS FOR EACH/SEPERATE TABLES
+      *    THEN THESE SQL CONNECTION FIELDS NEED TO BE SET SO THAT
+      *    THEY CAN BE USED FOR EACH IO ROUTINE NEEDED;
+      *    SQL CONNECTION FIELDS WERE ONLY BEING POPULATED WHEN
+      *    GOING INTO 'SQL-CONNECT-MAKE' WHICH MAY NOT BE DONE IF
+      *    THE CONNECT STAT WAS GOOD.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE EXT-ACUSQL-DSN-NAME  TO SQL-CONNECT-SERVER.
+           MOVE EXT-ACUSQL-LOGIN     TO SQL-CONNECT-USERID.
+           MOVE EXT-ACUSQL-PSWD      TO SQL-CONNECT-PSWD.
+      *??? MOVE "WAAZA34SQL-DEV'     TO SQL-CONNECT-SERVER
+      *??? MOVE "DB_OWNER"    	     TO SQL-CONNECT-OWNER
+      *??? MOVE "OTIS"               TO SQL-CONNECT-DATABASE
+
+           IF ( EXT-ACUSQL-CONNECT-STAT-BAD )
+              PERFORM SQL-CONNECT-MAKE
+              IF ( SQLCODE < 0 )
+                 PERFORM SQL-CONNECT-ERROR
+                 EXIT PARAGRAPH.
+
+      * VERIFY SQL SERVER CONNECTION EXISTS
+           EXEC SQL
+                SELECT 1 INTO :SQL-CONNECT-VERIFY
+           END-EXEC.
+
+           IF ( SQLCODE = 0 )
+              PERFORM SQL-CONNECT-WHENEVER
+              MOVE STAT---GOOD TO EXT-ACUSQL-CONNECT-STAT
+              EXIT PARAGRAPH.
+
+           PERFORM SQL-CONNECT-MAKE.
+
+           IF ( SQLCODE < 0 )
+              PERFORM SQL-CONNECT-ERROR
+              MOVE STAT---BAD TO EXT-ACUSQL-CONNECT-STAT
+              EXIT PARAGRAPH.
+
+           PERFORM SQL-CONNECT-WHENEVER.
+           MOVE STAT---GOOD TO EXT-ACUSQL-CONNECT-STAT.
+
+
+      ******************************************************************
+      *
+      *    S Q L - O P E N - U P D A T E - C O N N E C T I O N
+      *
+      *=================================================================
+      * IN  : SQL-UPDATE-CONN-OPEN-SW
+      * OUT : SQL-UPDATE-CONN-OPEN-SW
+      * DESC: USED TO SWITCH CONNECTION FOR DOING UPDATES
+      ******************************************************************

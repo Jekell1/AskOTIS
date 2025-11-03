@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSAC
+           SELECT AC-FILE ASSIGN TO AC-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY AC-KEY
+                  FILE STATUS FILE-STAT.

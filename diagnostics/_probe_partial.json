@@ -1,0 +1,136 @@
+{
+  "api_version": "2025-08-01-preview",
+  "timestamp": 1759087870.4773242,
+  "symbols": [
+    "BT-BRANCH",
+    "DS-BRANCH",
+    "TIM360",
+    "IRMAIN"
+  ],
+  "symbol_details": [
+    {
+      "symbol": "BT-BRANCH",
+      "keyword_count": 5,
+      "keyword_sample": [
+        {
+          "@search.score": 10.995403,
+          "ref_id": "fd74836192a97f6fb347977260a6758282238285",
+          "program_id": "4E6FDA870237265F844F243B48F4A8166F77C788",
+          "symbol_name": "BT-PATH",
+          "line_number": 472,
+          "file_path": "",
+          "paragraph_name": "",
+          "excerpt": "01  BT-PATH."
+        },
+        {
+          "@search.score": 10.995403,
+          "ref_id": "69fd99c6c232cc2ec9e20ae2b15d2ae66dd833c1",
+          "program_id": "F63938D72D90990A97BA56CDE29029A22A242EA7",
+          "symbol_name": "BT-REC",
+          "line_number": 93,
+          "file_path": "",
+          "paragraph_name": "",
+          "excerpt": "01  BT-REC."
+        }
+      ],
+      "filter_count": 0,
+      "filter_sample": []
+    },
+    {
+      "symbol": "DS-BRANCH",
+      "keyword_count": 5,
+      "keyword_sample": [
+        {
+          "@search.score": 10.218794,
+          "ref_id": "b547f4afff9a4b612c5f83405a4cf53c2bc9d4d3",
+          "program_id": "A5F61A9CE5CD94E193700F68E2B2CF6041CE3F1B",
+          "symbol_name": "BRANCH",
+          "line_number": 739,
+          "file_path": "",
+          "paragraph_name": "",
+          "excerpt": "\"STOP!!! CALL BRANCH SUPPORT IMMEDIATELY!!!\""
+        },
+        {
+          "@search.score": 9.321579,
+          "ref_id": "24a658df73a8c039ecc4f5333f780dd1a5241538",
+          "program_id": "23913768C434CADB8AB62735ABAC8374FCBCB607",
+          "symbol_name": "LEGEND-BEG-BRANCH",
+          "line_number": 183,
+          "file_path": "",
+          "paragraph_name": "",
+          "excerpt": "01  LEGEND-BEG-BRANCH."
+        }
+      ],
+      "filter_count": 0,
+      "filter_sample": []
+    },
+    {
+      "symbol": "TIM360",
+      "keyword_count": 0,
+      "keyword_sample": [],
+      "filter_count": 0,
+      "filter_sample": []
+    },
+    {
+      "symbol": "IRMAIN",
+      "keyword_count": 0,
+      "keyword_sample": [],
+      "filter_count": 0,
+      "filter_sample": []
+    }
+  ],
+  "program_coverage": {
+    "total": 80,
+    "missing": 1,
+    "missing_list": [
+      "AC2BAH"
+    ]
+  },
+  "copybook_coverage": {
+    "total": 40,
+    "missing": 40,
+    "missing_list": [
+      "A2MAIN_DEF",
+      "A2MAIN_EVA",
+      "A2MAIN_SCN",
+      "A2MAIN_WKS",
+      "AC1DAY_DEF",
+      "AC1DAY_EVA",
+      "AC1DAY_SCN",
+      "AC1DAY_WKS",
+      "AC2DAY_DEF",
+      "AC2DAY_EVA",
+      "AC2DAY_SCN",
+      "AC2DAY_WKS",
+      "AC9DAY_CMD",
+      "ACCESS",
+      "ACCESSW",
+      "ACHCRE_DEF",
+      "ACHCRE_EVA",
+      "ACHCRE_SCN",
+      "ACHCRE_WKS",
+      "ACLIST_DEF",
+      "ACLIST_EVA",
+      "ACLIST_SCN",
+      "ACLIST_WKS",
+      "ACMAIN_DEF",
+      "ACMAIN_EVA",
+      "ACMAIN_SCN",
+      "ACMAIN_WKS",
+      "ACQEXT_DEF",
+      "ACQEXT_EVA",
+      "ACQEXT_SCN",
+      "ACQEXT_WKS",
+      "ACRERN_DEF",
+      "ACRERN_EVA",
+      "ACRERN_SCN",
+      "ACRERN_WKS",
+      "ACTIO2_DEF",
+      "ACTIO2_EVA",
+      "ACTIO2_SCN",
+      "ACTIO2_WKS",
+      "ACTION_DEF"
+    ]
+  },
+  "errors": []
+}

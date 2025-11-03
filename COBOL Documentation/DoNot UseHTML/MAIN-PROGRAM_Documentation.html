@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIN-PROGRAM - APIPAY Payment Processing Main Control</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">MAIN-PROGRAM - APIPAY Payment Processing Main Control</span>
+        </nav>
+        <main class="content">
+<h1>MAIN-PROGRAM - APIPAY Payment Processing Main Control</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> MAIN-PROGRAM<br />
+<strong>Program Type:</strong> Primary Program Control and Initialization</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>MAIN-PROGRAM</strong> is the primary control section of the APIPAY single payment reference codes processing system. This section orchestrates the entire payment processing workflow, from initial environment setup through final transaction posting and cleanup.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Entry point for APIPAY batch payment processing</li>
+<li><strong>Input Method:</strong> Processes command-line input string parameters for single payment transactions</li>
+<li><strong>Processing Type:</strong> Comprehensive payment validation, processing, and posting</li>
+<li><strong>Output:</strong> Updates multiple loan databases and creates transaction logs</li>
+<li><strong>Error Handling:</strong> Extensive validation with specific error codes and logging</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>MAIN-PROGRAM serves as the central coordinator by:</p>
+<ol>
+<li><strong>System Initialization:</strong> Sets up environment variables and establishes database connections</li>
+<li><strong>Input Validation:</strong> Processes and validates payment input parameters</li>
+<li><strong>Business Rule Enforcement:</strong> Applies complex business logic for payment processing</li>
+<li><strong>Database Operations:</strong> Manages file operations and database updates</li>
+<li><strong>Transaction Processing:</strong> Routes payments to appropriate processing modules</li>
+<li><strong>Audit and Logging:</strong> Maintains comprehensive transaction logs and error reporting</li>
+<li><strong>Resource Management:</strong> Handles file opening/closing and system cleanup</li>
+</ol>
+<h3>Processing Scope</h3>
+<p>MAIN-PROGRAM handles various payment types including:
+- Regular loan payments
+- Payoff transactions
+- Reversal transactions (RV)
+- Other charges (OT)
+- Repossession transactions (RE)
+- Bankruptcy posting</p>
+<hr />
+<h2>Transaction Types Supported</h2>
+<h3>Primary Transaction Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Processing Module</th>
+<th>Validation Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard Payment</td>
+<td>Regular loan payment</td>
+<td>PAYMENT-POSTING</td>
+<td>Amount validation, account status</td>
+</tr>
+<tr>
+<td>99 (Payoff)</td>
+<td>Loan payoff transaction</td>
+<td>PAYOFF-POSTING</td>
+<td>Balance verification, rebate calculation</td>
+</tr>
+<tr>
+<td>RV</td>
+<td>Reversal transaction</td>
+<td>REVERSAL-POSTING</td>
+<td>Original transaction verification</td>
+</tr>
+<tr>
+<td>OT</td>
+<td>Other charges</td>
+<td>OTHER-CHG-POSTING</td>
+<td>Charge type validation</td>
+</tr>
+<tr>
+<td>RE</td>
+<td>Repossession</td>
+<td>Special validation</td>
+<td>Repo status verification, interest bearing check</td>
+</tr>
+</tbody>
+</table>
+<h3>Reference Code Processing</h3>
+<p>The system processes various reference codes through the CD1 file:
+- <strong>BR Reference Codes:</strong> Branch-specific payment types
+- <strong>Payoff Indicators:</strong> CD-BR-PAYOFF-FG = "Y" for payoff transactions
+- <strong>Special Options:</strong> Late charge flags, allowance settings</p>
+<hr />
+<h2>Input Parameters</h2>
+<h3>Command Line Input (INPUT-STRING → BT-REC)</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Required</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BT-ACCTNO</td>
+<td>Account Number</td>
+<td>Loan account number</td>
+<td>Yes</td>
+<td>Must exist in LN1 file</td>
+</tr>
+<tr>
+<td>BT-AMT</td>
+<td>Payment Amount</td>
+<td>Transaction amount</td>
+<td>Yes</td>
+<td>Must be positive</td>
+</tr>
+<tr>
+<td>BT-REFCD</td>
+<td>Reference Code</td>
+<td>Payment type code</td>
+<td>Yes</td>
+<td>Must exist in CD1 file</td>
+</tr>
+<tr>
+<td>BT-PAYDATE</td>
+<td>Payment Date</td>
+<td>Date of payment (MMDDYY)</td>
+<td>Yes</td>
+<td>Converted to YYYYMMDD</td>
+</tr>
+<tr>
+<td>BT-TRCD</td>
+<td>Transaction Code</td>
+<td>Type of transaction</td>
+<td>Yes</td>
+<td>See transaction types</td>
+</tr>
+<tr>
+<td>BT-BRANCH</td>
+<td>Branch Number</td>
+<td>Processing branch</td>
+<td>Yes</td>
+<td>Must exist in BR file</td>
+</tr>
+</tbody>
+</table>
+<h3>Environment Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POSTNAME</td>
+<td>Original user posting name</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>GPENV</td>
+<td>Global parameter environment</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>FIL</td>
+<td>File path configuration</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Output Fields</h2>
+<h3>Return Status Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+<th>Action Taken</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Successful update</td>
+<td>Transaction posted successfully</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Branch not on file</td>
+<td>Invalid branch number</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Reference code not on file</td>
+<td>Invalid reference code</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Branch not on this machine</td>
+<td>Cross-machine validation failed</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Global record missing</td>
+<td>Required global data not found</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Day not open</td>
+<td>Business day not open for posting</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Could not open day</td>
+<td>File access error</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Repo options not enabled</td>
+<td>Repository processing not allowed</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Account not repo status</td>
+<td>Invalid repo status for RE transaction</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Account not interest bearing</td>
+<td>Required for RE transactions</td>
+</tr>
+<tr>
+<td>18-19</td>
+<td>Repo batch validation</td>
+<td>Repository batch record validation</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Already zero balance</td>
+<td>Cannot post to zero balance loan</td>
+</tr>
+<tr>
+<td>55-57</td>
+<td>Payment amount validation</td>
+<td>Various overpayment scenarios</td>
+</tr>
+<tr>
+<td>58</td>
+<td>Missing G/L interface</td>
+<td>General ledger interface record missing</td>
+</tr>
+<tr>
+<td>59</td>
+<td>Generic posting error</td>
+<td>General transaction posting failure</td>
+</tr>
+</tbody>
+</table>
+<h3>Log Messages</h3>
+<p>Comprehensive logging with specific error messages for troubleshooting and audit trails.</p>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3><a href="Diagrams/MAIN-PROGRAM_Main_Flow.mmd">Main Program Flow</a></h3>
+<h3><a href="Diagrams/MAIN-PROGRAM_Environment_Setup.mmd">Environment Setup Flow</a></h3>
+<h3><a href="Diagrams/MAIN-PROGRAM_Validation_Processing.mmd">Validation Processing</a></h3>
+<h3><a href="Diagrams/MAIN-PROGRAM_Transaction_Routing.mmd">Transaction Routing</a></h3>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<h3><a href="Diagrams/MAIN-PROGRAM_Batch_Timeline.mmd">MAIN-PROGRAM Processing Timeline</a></h3>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>1. Environment and System Setup (Lines 13847-13870)</h3>
+<p><strong>Purpose:</strong> Initialize system environment and establish database connections</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Stop Message Display:</strong> <code>STOP MESS</code> (debug mode only)
+2. <strong>Environment Setup:</strong> Call GB/SETENV for external variables
+3. <strong>SQL Connection:</strong> Establish database connection
+4. <strong>GP Environment:</strong> Retrieve global parameters via GET-GPENV
+5. <strong>Input Processing:</strong> Parse INPUT-STRING into BT-REC structure</p>
+<h3>2. Input Data Transformation (Lines 13870-13885)</h3>
+<p><strong>Purpose:</strong> Convert input data into internal processing format</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Data Movement:</strong> Move BT fields to BP (Batch Payment) structure
+2. <strong>Date Conversion:</strong> Convert MMDDYY to YYYYMMDD format
+3. <strong>Account Setup:</strong> Prepare account number for processing</p>
+<h3>3. Core System Initialization (Lines 13885-13895)</h3>
+<p><strong>Purpose:</strong> Initialize core processing components</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Program Initialization:</strong> PERFORM INITIALIZATION
+2. <strong>Error Check:</strong> Validate initialization success
+3. <strong>Early Exit:</strong> GO TO END-PROGRAM if errors detected</p>
+<h3>4. Branch Validation (Lines 13895-13905)</h3>
+<p><strong>Purpose:</strong> Validate branch information and access</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Branch File Read:</strong> Locate and validate branch record
+2. <strong>Branch Validation:</strong> Ensure branch exists and is accessible
+3. <strong>Error Logging:</strong> Create specific error messages for missing branches</p>
+<h3>5. Reference Code Processing (Lines 13905-13930)</h3>
+<p><strong>Purpose:</strong> Validate and process payment reference codes</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>CD1 File Access:</strong> Open certificate/code file
+2. <strong>Reference Code Lookup:</strong> Find and validate reference code
+3. <strong>Payoff Detection:</strong> Check for payoff transaction indicators
+4. <strong>Permission Setting:</strong> Set payment and payoff permissions based on code</p>
+<h3>6. Machine and Path Configuration (Lines 13930-13950)</h3>
+<p><strong>Purpose:</strong> Ensure transaction is processed on correct machine</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Machine Validation:</strong> Verify branch is assigned to current machine
+2. <strong>Path Configuration:</strong> Set up file paths for branch-specific data
+3. <strong>Override Settings:</strong> Configure path overrides for file access</p>
+<h3>7. Global Configuration Setup (Lines 13950-13975)</h3>
+<p><strong>Purpose:</strong> Load global configuration data</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Global File Access:</strong> Read GB file for global parameters
+2. <strong>Global Validation:</strong> Ensure required global data exists
+3. <strong>Configuration Loading:</strong> Load system-wide settings</p>
+<h3>8. File System Preparation (Lines 13975-14000)</h3>
+<p><strong>Purpose:</strong> Open required data files and prepare file system</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Core File Opening:</strong> Open LN1 (loan) and BW1 (work) files
+2. <strong>Environment Update:</strong> Update environment variables for branch
+3. <strong>User Context:</strong> Set user and branch context for processing</p>
+<h3>9. Business Day Validation (Lines 14000-14030)</h3>
+<p><strong>Purpose:</strong> Ensure business day is open for processing</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Day Status Check:</strong> Verify business day is open
+2. <strong>Access Control:</strong> Reserve processing files to prevent day closure
+3. <strong>File Locking:</strong> Implement file locking for concurrent access control</p>
+<h3>10. Account and Loan Validation (Lines 14030-14200)</h3>
+<p><strong>Purpose:</strong> Comprehensive validation of loan account and payment parameters</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Account Lookup:</strong> Find and validate loan account
+2. <strong>Account Status:</strong> Check account status and availability
+3. <strong>Payment Date Processing:</strong> Handle payment date defaulting
+4. <strong>Balance Validation:</strong> Verify account balances and payment amounts</p>
+<h3>11. Transaction-Specific Validation (Lines 14200-14600)</h3>
+<p><strong>Purpose:</strong> Apply transaction-specific business rules</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Transaction Code Validation:</strong> Validate specific transaction types
+2. <strong>Repository Processing:</strong> Special validation for repo transactions
+3. <strong>Interest Bearing Check:</strong> Verify account characteristics
+4. <strong>Business Rule Application:</strong> Apply complex payment validation rules</p>
+<h3>12. Payment Amount Validation (Lines 14600-14750)</h3>
+<p><strong>Purpose:</strong> Comprehensive payment amount validation and payoff detection</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Overpayment Detection:</strong> Check for payments exceeding balances
+2. <strong>Payoff Calculation:</strong> Determine if payment constitutes a payoff
+3. <strong>Other Balance Handling:</strong> Manage Other 2 (O2) balance considerations
+4. <strong>Manual Processing Triggers:</strong> Identify transactions requiring manual review</p>
+<h3>13. General Ledger Interface (Lines 14750-14770)</h3>
+<p><strong>Purpose:</strong> Validate general ledger interface requirements</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>G/L Interface Lookup:</strong> Verify general ledger interface record
+2. <strong>Class Validation:</strong> Ensure proper loan classification</p>
+<h3>14. Transaction Routing (Lines 14770-14800)</h3>
+<p><strong>Purpose:</strong> Route transactions to appropriate processing modules</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Transaction Type Determination:</strong> Identify processing module needed
+2. <strong>Module Dispatch:</strong> Call appropriate posting routine:
+   - BANKRUPT-POSTING for bankruptcy files
+   - REVERSAL-POSTING for reversals
+   - OTHER-CHG-POSTING for other charges
+   - PAYOFF-POSTING for payoffs
+   - PAYMENT-POSTING for regular payments</p>
+<h3>15. Completion and Cleanup (Lines 14800-14811)</h3>
+<p><strong>Purpose:</strong> Complete processing and clean up resources</p>
+<p><strong>Processing Logic:</strong>
+1. <strong>Success Verification:</strong> Check posting results
+2. <strong>Success Logging:</strong> Log successful completion
+3. <strong>File Cleanup:</strong> Close files and release resources
+4. <strong>Resource Management:</strong> Clean up temporary files and locks</p>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Input Data Flow</h3>
+<pre><code>INPUT-STRING → BT-REC → BP-REC (Batch Payment Record)
+    ↓
+Environment Variables (POSTNAME, GPENV, FIL)
+    ↓
+File System (BR, CD1, GB, LN1, BW1, RC2, GI1, OP)
+</code></pre>
+<h3>Processing Data Flow</h3>
+<pre><code>Branch Validation → Reference Code Processing → Account Validation
+    ↓
+Business Rule Application → Payment Validation → Transaction Routing
+    ↓
+Module-Specific Processing → Database Updates → Audit Logging
+</code></pre>
+<h3>Output Data Flow</h3>
+<pre><code>Updated Database Files ← Transaction Posting Modules
+    ↓
+Log Files ← Audit Trail Creation
+    ↓
+Return Status ← Success/Error Indication
+</code></pre>
+<hr />
+<h2>Referenced Programs</h2>
+<h3>External Program Calls</h3>
+<h4>GB/SETENV</h4>
+<p><strong>Purpose:</strong> Environment configuration setup
+<strong>Location:</strong> External system utility
+<strong>Parameters:</strong> FORM-PATHNAME, EXIT-PATHNAME</p>
+<h4>Payment Processing Modules</h4>
+<ul>
+<li><strong>PAYMENT-POSTING:</strong> Regular payment processing</li>
+<li><strong>PAYOFF-POSTING:</strong> Payoff transaction processing</li>
+<li><strong>REVERSAL-POSTING:</strong> Payment reversal processing</li>
+<li><strong>OTHER-CHG-POSTING:</strong> Other charge processing</li>
+<li><strong>BANKRUPT-POSTING:</strong> Bankruptcy transaction processing</li>
+</ul>
+<h3>Internal Section Calls</h3>
+<h4>GET-GPENV</h4>
+<p><strong>Purpose:</strong> Global parameter environment retrieval
+<strong>Location:</strong> Lines 16237+ in same program
+<strong>Function:</strong> Retrieves system configuration from environment</p>
+<h4>INITIALIZATION</h4>
+<p><strong>Purpose:</strong> System initialization and setup
+<strong>Location:</strong> Lines 15902+ in same program
+<strong>Function:</strong> Initializes working storage and system components</p>
+<h4>Utility Sections</h4>
+<ul>
+<li><strong>CREATE-LOG:</strong> Error and audit logging</li>
+<li><strong>CONVERT-MMDDYY-TO-YYYYMMDD:</strong> Date format conversion</li>
+<li><strong>SQL-CONNECT:</strong> Database connection establishment</li>
+<li><strong>File Management Routines:</strong> Various OPEN/READ/CLOSE operations</li>
+</ul>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Error Categories</h3>
+<h4>1. System Configuration Errors (Status 2-7)</h4>
+<p><strong>Scenarios:</strong>
+- Missing or invalid branch
+- Invalid reference codes
+- Machine/system configuration issues
+- File access problems</p>
+<p><strong>Handling:</strong>
+- Immediate termination with specific error code
+- Detailed error logging with context
+- Resource cleanup before exit</p>
+<h4>2. Business Rule Violations (Status 15-19)</h4>
+<p><strong>Scenarios:</strong>
+- Repository processing not enabled
+- Invalid account status for transaction type
+- Business day not open</p>
+<p><strong>Handling:</strong>
+- Business rule validation
+- Specific error messages
+- Transaction rejection</p>
+<h4>3. Payment Validation Errors (Status 46, 55-57)</h4>
+<p><strong>Scenarios:</strong>
+- Zero balance accounts
+- Overpayment situations
+- Complex balance scenarios</p>
+<p><strong>Handling:</strong>
+- Mathematical validation
+- Balance verification
+- Special case handling for payoffs</p>
+<h4>4. System Interface Errors (Status 58-59)</h4>
+<p><strong>Scenarios:</strong>
+- Missing general ledger interface
+- Generic posting failures</p>
+<p><strong>Handling:</strong>
+- Interface validation
+- Fallback error handling
+- System administration notification</p>
+<h3>Validation Sequence</h3>
+<ol>
+<li><strong>Environmental Validation:</strong> System setup and configuration</li>
+<li><strong>Data Validation:</strong> Input parameter verification</li>
+<li><strong>Business Rule Validation:</strong> Complex business logic application</li>
+<li><strong>Transaction Validation:</strong> Transaction-specific requirements</li>
+<li><strong>Posting Validation:</strong> Final verification before database updates</li>
+</ol>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4>Primary Working Storage</h4>
+<ul>
+<li><strong>BT-REC:</strong> Batch transaction input record</li>
+<li><strong>BP-REC:</strong> Batch payment processing record</li>
+<li><strong>LN-REC:</strong> Loan record from LN1 file</li>
+<li><strong>BR-REC:</strong> Branch record from BR file</li>
+<li><strong>CD-REC:</strong> Code/certificate record from CD1 file</li>
+<li><strong>GP-REC:</strong> Global parameter record</li>
+</ul>
+<h4>File Structures</h4>
+<ul>
+<li><strong>LN1-FILE:</strong> Loan master file</li>
+<li><strong>BR-FILE:</strong> Branch master file</li>
+<li><strong>CD1-FILE:</strong> Certificate/code file</li>
+<li><strong>GB-FILE:</strong> Global batch file</li>
+<li><strong>RC2-FILE:</strong> Reference code status file</li>
+<li><strong>GI1-FILE:</strong> General ledger interface file</li>
+<li><strong>OP-FILE:</strong> Output processing file</li>
+</ul>
+<h3>Key Algorithms</h3>
+<h4>Payment Amount Validation</h4>
+<pre><code class="language-cobol">COMPUTE TEST-AMT = BP-TRAMT - POFF-INTDUE - POFF-LCDUE
+IF TEST-AMT &gt;= (LN-CURBAL - TOT-POFF-REBATES)
+   * Payoff logic
+ELSE
+   * Regular payment logic
+</code></pre>
+<h4>Date Processing</h4>
+<pre><code class="language-cobol">MOVE BT-PAYDATE TO DATE-MMDDYY
+PERFORM CONVERT-MMDDYY-TO-YYYYMMDD
+MOVE DATE-YYYYMMDD TO BP-PAYDATE
+</code></pre>
+<h4>Machine Validation</h4>
+<pre><code class="language-cobol">IF BR-MACHINE NOT = EXT-FILPATH-MACHINE
+   MOVE 4 TO RETURN-STATUS
+   * Error handling
+</code></pre>
+<h3>Performance Characteristics</h3>
+<ul>
+<li><strong>File I/O:</strong> Multiple file reads and updates</li>
+<li><strong>Validation Overhead:</strong> Extensive business rule checking</li>
+<li><strong>Error Handling:</strong> Comprehensive validation with early termination</li>
+<li><strong>Resource Management:</strong> Proper file opening/closing sequences</li>
+</ul>
+<hr />
+<h2>Integration Points</h2>
+<h3>Database Integration</h3>
+<ul>
+<li><strong>Loan Master (LN1):</strong> Primary account data</li>
+<li><strong>Branch Master (BR):</strong> Branch configuration and validation</li>
+<li><strong>Code Master (CD1):</strong> Reference code definitions</li>
+<li><strong>Global Batch (GB):</strong> System-wide parameters</li>
+</ul>
+<h3>System Integration</h3>
+<ul>
+<li><strong>Environment Variables:</strong> POSTNAME, GPENV, FIL</li>
+<li><strong>SQL Database:</strong> Connection and transaction management</li>
+<li><strong>File Locking:</strong> Concurrent access control</li>
+<li><strong>Audit System:</strong> Comprehensive logging and error reporting</li>
+</ul>
+<h3>Module Integration</h3>
+<ul>
+<li><strong>Payment Processing Modules:</strong> LONPF series programs</li>
+<li><strong>Utility Modules:</strong> Date conversion, file management</li>
+<li><strong>Logging System:</strong> Error and audit trail creation</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Type</th>
+<th>Critical</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BR-FILE</td>
+<td>Branch master data</td>
+<td>Read</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>CD1-FILE</td>
+<td>Reference code definitions</td>
+<td>Read</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>GB-FILE</td>
+<td>Global batch parameters</td>
+<td>Read</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>LN1-FILE</td>
+<td>Loan master data</td>
+<td>Read/Update</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>RC2-FILE</td>
+<td>Reference code status</td>
+<td>Read</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>GI1-FILE</td>
+<td>General ledger interface</td>
+<td>Read</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>BW1-FILE</td>
+<td>Work file</td>
+<td>Read/Write</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Type</th>
+<th>Updates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LN1-FILE</td>
+<td>Updated loan data</td>
+<td>Write</td>
+<td>Account balances, status</td>
+</tr>
+<tr>
+<td>BW1-FILE</td>
+<td>Work transactions</td>
+<td>Write</td>
+<td>Processing records</td>
+</tr>
+<tr>
+<td>OP-FILE</td>
+<td>Output processing</td>
+<td>Write</td>
+<td>Transaction log</td>
+</tr>
+<tr>
+<td>LOG-FILE</td>
+<td>Audit trail</td>
+<td>Write</td>
+<td>Error and success messages</td>
+</tr>
+</tbody>
+</table>
+<h3>Copybooks</h3>
+<table>
+<thead>
+<tr>
+<th>Copybook</th>
+<th>Library</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LIBGB/GPENVW.CPY</td>
+<td>LIBGB</td>
+<td>Global parameter working storage</td>
+</tr>
+<tr>
+<td>LIBGB/GB01GP.CPY</td>
+<td>LIBGB</td>
+<td>Global parameter record structure</td>
+</tr>
+<tr>
+<td>LIBLP/LPEDPATH.CPY</td>
+<td>LIBLP</td>
+<td>Path definitions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<h3><a href="Diagrams/MAIN-PROGRAM_Call_Graph.mmd">MAIN-PROGRAM Call Graph</a></h3>
+<h3>Primary Call Sequence</h3>
+<pre><code>MAIN-PROGRAM SECTION
+├── GET-GPENV
+├── INITIALIZATION
+├── READ-BR-FILE
+├── OPEN-CD1-FILE / READ-CD1-FILE
+├── OPEN-GB-FILE / READ-GB-FILE / CLOSE-GB-FILE
+├── OPEN-LN1-FILE / OPEN-BW1-FILE
+├── OPEN-RC2-FILE / READ-RC2-FILE / CLOSE-RC2-FILE
+├── LOAD-OPEN-FILE / ACCESS-CALL / OPEN-OP-FILE
+├── READ-LN1-FILE
+├── CONVERT-MMDDYY-TO-YYYYMMDD
+├── READ-GI1-FILE
+├── Transaction-Specific Processing:
+│   ├── BANKRUPT-POSTING
+│   ├── REVERSAL-POSTING
+│   ├── OTHER-CHG-POSTING
+│   ├── PAYOFF-POSTING
+│   └── PAYMENT-POSTING
+├── CREATE-LOG
+├── CLOSE-OP-FILE
+└── REMOVE-WORKFILE
+</code></pre>
+<h3>Conditional Execution Paths</h3>
+<ul>
+<li><strong>Error Paths:</strong> Early termination with specific error codes</li>
+<li><strong>Transaction Routing:</strong> Based on transaction type and validation results</li>
+<li><strong>File Management:</strong> Conditional file operations based on processing needs</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

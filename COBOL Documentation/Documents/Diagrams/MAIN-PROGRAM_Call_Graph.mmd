@@ -1,0 +1,39 @@
+graph TD
+    A[MAIN-PROGRAM SECTION] --> B[GET-GPENV]
+    A --> C[INITIALIZATION]
+    A --> D[READ-BR-FILE]
+    A --> E[OPEN-CD1-FILE]
+    A --> F[READ-CD1-FILE]
+    A --> G[OPEN-GB-FILE]
+    A --> H[READ-GB-FILE]
+    A --> I[CLOSE-GB-FILE]
+    A --> J[OPEN-LN1-FILE]
+    A --> K[OPEN-BW1-FILE]
+    A --> L[OPEN-RC2-FILE]
+    A --> M[READ-RC2-FILE]
+    A --> N[CLOSE-RC2-FILE]
+    A --> O[LOAD-OPEN-FILE]
+    A --> P[ACCESS-CALL]
+    A --> Q[OPEN-OP-FILE]
+    A --> R[READ-LN1-FILE]
+    A --> S[CONVERT-MMDDYY-TO-YYYYMMDD]
+    A --> T[READ-GI1-FILE]
+    
+    A --> U{Transaction Type}
+    U -->|Bankruptcy| V[BANKRUPT-POSTING]
+    U -->|Reversal| W[REVERSAL-POSTING]
+    U -->|Other Charges| X[OTHER-CHG-POSTING]
+    U -->|Payoff| Y[PAYOFF-POSTING]
+    U -->|Regular| Z[PAYMENT-POSTING]
+    
+    A --> AA[CREATE-LOG]
+    A --> BB[CLOSE-OP-FILE]
+    A --> CC[REMOVE-WORKFILE]
+    
+    style A fill:#e1f5fe
+    style U fill:#fff3e0
+    style V fill:#f3e5f5
+    style W fill:#f3e5f5
+    style X fill:#f3e5f5
+    style Y fill:#f3e5f5
+    style Z fill:#f3e5f5

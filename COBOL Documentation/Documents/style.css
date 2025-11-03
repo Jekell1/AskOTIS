@@ -1,0 +1,238 @@
+/* COBOL Documentation Styles - Professional Theme */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: #f4f6fa;
+    color: #232946;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 4px 24px rgba(44, 62, 80, 0.08);
+    min-height: 100vh;
+    border-radius: 14px;
+}
+
+.breadcrumb {
+    background: #e9eef6;
+    padding: 12px 28px;
+    border-bottom: 1.5px solid #d1d9e6;
+    font-size: 15px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.breadcrumb a {
+    color: #2a5d9f;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+    color: #1b3a5d;
+}
+
+.current {
+    font-weight: bold;
+    color: #232946;
+}
+
+.content {
+    padding: 32px 28px 28px 28px;
+}
+
+h1 {
+    color: #2a5d9f;
+    border-bottom: 3px solid #6ea8fe;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+    font-size: 2.1em;
+    letter-spacing: 0.5px;
+}
+
+h2 {
+    color: #1b3a5d;
+    margin-top: 36px;
+    margin-bottom: 18px;
+    border-left: 5px solid #6ea8fe;
+    padding-left: 14px;
+    background: #f4f8fc;
+    border-radius: 5px;
+}
+
+h3 {
+    color: #2a5d9f;
+    margin-top: 28px;
+}
+
+h4 {
+    color: #6ea8fe;
+    margin-top: 22px;
+}
+
+code {
+    background: #e9eef6;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'Fira Mono', 'Courier New', Consolas, monospace;
+    font-size: 92%;
+    color: #1b3a5d;
+}
+
+pre {
+    background: #f4f8fc;
+    border: 1.5px solid #d1d9e6;
+    border-radius: 8px;
+    padding: 18px;
+    overflow-x: auto;
+    margin: 18px 0;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    font-size: 90%;
+    color: #232946;
+}
+
+.diagram-container {
+    margin: 24px 0;
+    border: 1.5px solid #6ea8fe;
+    border-radius: 8px;
+    padding: 18px;
+    background: #f4f8fc;
+}
+
+.diagram-title {
+    color: #2a5d9f;
+    margin: 0 0 16px 0;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.mermaid {
+    text-align: center;
+    background: #fff;
+    border-radius: 7px;
+    padding: 12px;
+    border: 1.5px solid #6ea8fe;
+}
+
+.diagram-error {
+    color: #d90429;
+    background: #ffe0e6;
+    border: 1.5px solid #d90429;
+    padding: 12px;
+    border-radius: 7px;
+    margin: 12px 0;
+}
+
+.diagram-missing {
+    color: #b8860b;
+    background: #fffbe6;
+    border: 1.5px solid #b8860b;
+    padding: 12px;
+    border-radius: 7px;
+    margin: 12px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    background: #f8fafc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1.5px solid #d1d9e6;
+    padding: 14px;
+    text-align: left;
+}
+
+th {
+    background: #e9eef6;
+    font-weight: bold;
+    color: #2a5d9f;
+}
+
+ul, ol {
+    margin: 12px 0;
+    padding-left: 34px;
+}
+
+li {
+    margin: 7px 0;
+}
+
+blockquote {
+    border-left: 5px solid #6ea8fe;
+    margin: 18px 0;
+    padding: 12px 18px;
+    background: #f4f8fc;
+    color: #232946;
+    border-radius: 5px;
+}
+
+a {
+    color: #2a5d9f;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #1b3a5d;
+}
+
+footer {
+    text-align: center;
+    padding: 24px;
+    background: #e9eef6;
+    border-top: 1.5px solid #d1d9e6;
+    color: #232946;
+    font-size: 13px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+}
+
+/* Program card styling for index */
+.program-card {
+    background: #fff;
+    border: 1.5px solid #6ea8fe;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 18px 0;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.10);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.program-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(44, 62, 80, 0.18);
+}
+
+.program-title {
+    color: #2a5d9f;
+    margin: 0 0 12px 0;
+    font-size: 20px;
+}
+
+.program-description {
+    color: #232946;
+    margin: 0 0 18px 0;
+    line-height: 1.6;
+}
+
+.program-links a {
+    display: inline-block;
+    margin-right: 18px;
+    color: #1b3a5d;
+    font-weight: 600;
+}

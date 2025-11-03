@@ -1,0 +1,9 @@
+{
+  "initial_missing_total": 1459538,
+  "embedded_so_far": 396638,
+  "last_remaining": 1092452,
+  "updated_at": 1759420165.4029553,
+  "force": false,
+  "batch": 512,
+  "embed_batch": 64
+}

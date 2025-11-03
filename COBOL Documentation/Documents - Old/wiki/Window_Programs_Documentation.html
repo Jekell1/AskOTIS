@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFC Window Programs - User Interface Components Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .program-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > Window Programs
+    </div>
+
+    <div class="header">
+        <h1>LONPFC Window Programs - User Interface Components</h1>
+        <div class="meta">
+            <strong>Programs:</strong> MEMOSC, TITLEW, ESAPPL, MAKERS<br>
+            <strong>Type:</strong> Window-based User Interface Programs<br>
+            <strong>Locations:</strong> WI/*.CBL, LIBWI/*.CPY<br>
+            <strong>Purpose:</strong> Interactive user interface components for loan processing<br>
+            <strong>Used By:</strong> LONPFC and other loan processing programs<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#memosc">MEMOSC - Memo Entry Window</a></li>
+                <li><a href="#titlew">TITLEW - Title Processing Window</a></li>
+                <li><a href="#esappl">ESAPPL - Escrow Application Window</a></li>
+                <li><a href="#makers">MAKERS - Borrower Information Display</a></li>
+                <li><a href="#common-features">Common Window Features</a></li>
+                <li><a href="#user-interface">User Interface Standards</a></li>
+                <li><a href="#technical-implementation">Technical Implementation</a></li>
+                <li><a href="#integration">Integration with LONPFC</a></li>
+                <li><a href="#maintenance">Maintenance and Support</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>The LONPFC Window Programs are specialized user interface components that provide interactive functionality for loan processing operations. These window-based programs offer focused, context-sensitive interfaces for specific loan processing tasks.</p>
+            
+            <h3>Program Categories</h3>
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Programs</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>Documentation</strong></td>
+                    <td>MEMOSC</td>
+                    <td>Memo entry and management for loan documentation</td>
+                </tr>
+                <tr>
+                    <td><strong>Collateral</strong></td>
+                    <td>TITLEW</td>
+                    <td>Title processing for payoffs and collateral management</td>
+                </tr>
+                <tr>
+                    <td><strong>Escrow</strong></td>
+                    <td>ESAPPL</td>
+                    <td>Escrow application and management interface</td>
+                </tr>
+                <tr>
+                    <td><strong>Information</strong></td>
+                    <td>MAKERS</td>
+                    <td>Borrower and co-maker information display</td>
+                </tr>
+            </table>
+
+            <h3>Common Design Principles</h3>
+            <ul>
+                <li><strong>Window-Based Interface:</strong> Modal windows with focused functionality</li>
+                <li><strong>Context-Sensitive:</strong> Tailored to specific loan processing contexts</li>
+                <li><strong>User-Friendly:</strong> Intuitive navigation and data entry</li>
+                <li><strong>Data Validation:</strong> Real-time validation and error handling</li>
+                <li><strong>Integration:</strong> Seamless integration with main loan processing flow</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Usage Context:</strong> These window programs are typically called from LONPFC during payment processing to handle specialized tasks that require user interaction and data entry.</p>
+            </div>
+        </section>
+
+        <section id="memosc">
+            <h2>MEMOSC - Memo Entry Window</h2>
+            <div class="program-card">
+                <h3>Program Details</h3>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Program ID</strong></td>
+                        <td>MEMOSC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>WI/MEMOSC.CBL</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Memo Inquiry / Input</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Date Written</strong></td>
+                        <td>122391</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Functionality</h3>
+            <p>MEMOSC provides comprehensive memo management capabilities for loan accounts, allowing users to enter, view, edit, and delete various types of memos associated with loan processing activities.</p>
+
+            <h4>Memo Types Supported</h4>
+            <table>
+                <tr>
+                    <th>Memo Type</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Special Features</th>
+                </tr>
+                <tr>
+                    <td><strong>General Memos</strong></td>
+                    <td>Standard</td>
+                    <td>General purpose loan memos</td>
+                    <td>60 character limit (51 for Regency)</td>
+                </tr>
+                <tr>
+                    <td><strong>Collection Memos</strong></td>
+                    <td>Collection</td>
+                    <td>Collection-specific memos</td>
+                    <td>No date/sequence stopping</td>
+                </tr>
+                <tr>
+                    <td><strong>Notes Memos</strong></td>
+                    <td>Notes</td>
+                    <td>Extended notes with 2000 character dates</td>
+                    <td>Enhanced date handling</td>
+                </tr>
+                <tr>
+                    <td><strong>Investor Memos</strong></td>
+                    <td>Investor</td>
+                    <td>Investor-related memos</td>
+                    <td>2000 character date support</td>
+                </tr>
+                <tr>
+                    <td><strong>Dealer Memos</strong></td>
+                    <td>Dealer</td>
+                    <td>Dealer-specific memos</td>
+                    <td>Toggle based on GP flag</td>
+                </tr>
+                <tr>
+                    <td><strong>Reversal Memos</strong></td>
+                    <td>R</td>
+                    <td>Transaction reversal memos</td>
+                    <td>Auto-generated change memos</td>
+                </tr>
+                <tr>
+                    <td><strong>Collateral Memos</strong></td>
+                    <td>T</td>
+                    <td>Collateral-related memos</td>
+                    <td>Collateral tracking</td>
+                </tr>
+            </table>
+
+            <h4>Key Features</h4>
+            <ul>
+                <li><strong>Password Protection:</strong> Deletion of backdated memos requires password verification</li>
+                <li><strong>Automatic Generation:</strong> Can auto-generate change memos for reversals</li>
+                <li><strong>User ID Integration:</strong> Includes user ID in memos (Regency implementation)</li>
+                <li><strong>Phone Format Display:</strong> Contact phone numbers displayed in proper format</li>
+                <li><strong>Sequence Management:</strong> Handles memo sequencing including sequence 99 handling</li>
+            </ul>
+
+            <h4>Special Implementations</h4>
+            <ul>
+                <li><strong>Regency:</strong> Uses smaller 51-character memos to include user ID</li>
+                <li><strong>First Metro:</strong> Special form WI/MEMOFM with FMETRO-MEMO field</li>
+                <li><strong>Modern:</strong> Court number validation with LIBSP/COURTW</li>
+                <li><strong>PCCREDIT:</strong> Collateral memo support</li>
+            </ul>
+
+            <h3>User Interface</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Open MEMOSC Window] --> B[Display Existing Memos]
+                B --> C{User Action}
+                C -->|Add New| D[Enter New Memo]
+                C -->|Edit Existing| E[Modify Memo]
+                C -->|Delete| F[Password Verification]
+                C -->|View Only| G[Display Memo Details]
+                D --> H[Validate Entry]
+                E --> H
+                F --> I{Password OK?}
+                I -->|Yes| J[Delete Memo]
+                I -->|No| K[Return to Display]
+                H --> L{Valid?}
+                L -->|Yes| M[Save Memo]
+                L -->|No| N[Show Error]
+                M --> O[Update Display]
+                N --> C
+                J --> O
+                K --> C
+                G --> C
+                O --> P[Continue or Exit]
+            </div>
+        </section>
+
+        <section id="titlew">
+            <h2>TITLEW - Title Processing Window</h2>
+            <div class="program-card">
+                <h3>Program Details</h3>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Program ID</strong></td>
+                        <td>TITLEW</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>WI/TITLEW.CBL</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Payoff Title Processing (F9-Collateral, Page 3)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Window Type</strong></td>
+                        <td>Modal Window</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Functionality</h3>
+            <p>TITLEW handles title processing for loan payoffs, managing collateral title information, lien release processing, and title forwarding instructions.</p>
+
+            <h4>Core Functions</h4>
+            <table>
+                <tr>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Usage Context</th>
+                </tr>
+                <tr>
+                    <td><strong>Title Information Entry</strong></td>
+                    <td>Capture title details for payoff processing</td>
+                    <td>Loan payoff scenarios</td>
+                </tr>
+                <tr>
+                    <td><strong>Lien Release Processing</strong></td>
+                    <td>Manage lien release documentation</td>
+                    <td>Collateral release</td>
+                </tr>
+                <tr>
+                    <td><strong>Title Forwarding</strong></td>
+                    <td>Set up title forwarding instructions</td>
+                    <td>Customer or lienholder delivery</td>
+                </tr>
+                <tr>
+                    <td><strong>Corporate Printing</strong></td>
+                    <td>Arrange corporate title printing</td>
+                    <td>Regency implementation</td>
+                </tr>
+            </table>
+
+            <h4>Data Fields Managed</h4>
+            <ul>
+                <li><strong>LT-L-SEND-ASAP:</strong> Expedited title processing flag</li>
+                <li><strong>LT-L-TITLE-SEND-FMNO:</strong> Title forwarding form number</li>
+                <li><strong>LT-L-TITLE-ADR2:</strong> Additional address information</li>
+                <li><strong>LT-L-RELEASE-TYPE:</strong> Type of lien release</li>
+                <li><strong>LT-L-CARRIER-TYPE:</strong> Shipping carrier information</li>
+                <li><strong>LT-L-CARRIER-ACCTNO:</strong> Carrier account number</li>
+            </ul>
+
+            <h4>Special Processing</h4>
+            <ul>
+                <li><strong>Posting Mode:</strong> In posting mode (PO/IN), updates lienholder information</li>
+                <li><strong>Non-Posting Mode:</strong> Modifies display without updating send-to information</li>
+                <li><strong>Address Validation:</strong> Forces entry of complete address information</li>
+                <li><strong>Memo Generation:</strong> Automatically creates memos with title processing details</li>
+            </ul>
+
+            <h3>Processing Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Open Title Window] --> B{Posting Mode?}
+                B -->|Yes| C[Update Send Title To]
+                B -->|No| D[Display Only Mode]
+                C --> E{Lienholder Exists?}
+                E -->|Yes| F[Use Lienholder Info]
+                E -->|No| G[Force Address Entry]
+                F --> H[Set Corporate Printing]
+                G --> I[Validate Address Fields]
+                I --> J{Complete Address?}
+                J -->|No| K[Require Missing Fields]
+                J -->|Yes| L[Accept Address]
+                K --> I
+                L --> H
+                H --> M[Generate LM Memo]
+                M --> N[Save Title Information]
+                D --> O[Display Current Info]
+                N --> P[Exit Window]
+                O --> P
+            </div>
+        </section>
+
+        <section id="esappl">
+            <h2>ESAPPL - Escrow Application Window</h2>
+            <div class="program-card">
+                <h3>Program Details</h3>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Program ID</strong></td>
+                        <td>ESAPPL</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>LIBWI/ESAPPL_*.CPY (Screen definitions)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Escrow Application Window</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Components</strong></td>
+                        <td>Screen, Evaluation, Definition, Working Storage</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Functionality</h3>
+            <p>ESAPPL provides an interface for managing escrow applications and escrow account processing within the loan management system.</p>
+
+            <h4>Core Capabilities</h4>
+            <ul>
+                <li><strong>Escrow Account Setup:</strong> Initial escrow account configuration</li>
+                <li><strong>Payment Allocation:</strong> Allocation of payments to escrow accounts</li>
+                <li><strong>Escrow Analysis:</strong> Periodic escrow account analysis</li>
+                <li><strong>Shortage/Surplus Handling:</strong> Management of escrow imbalances</li>
+                <li><strong>Disbursement Processing:</strong> Escrow fund disbursements</li>
+            </ul>
+
+            <h4>Copy Member Components</h4>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>File</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>Screen Definition</strong></td>
+                    <td>ESAPPL_SCN.CPY</td>
+                    <td>Window layout and field definitions</td>
+                </tr>
+                <tr>
+                    <td><strong>Evaluation Logic</strong></td>
+                    <td>ESAPPL_EVA.CPY</td>
+                    <td>Field validation and processing logic</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Definitions</strong></td>
+                    <td>ESAPPL_DEF.CPY</td>
+                    <td>Data structure definitions</td>
+                </tr>
+                <tr>
+                    <td><strong>Working Storage</strong></td>
+                    <td>ESAPPL_WKS.CPY</td>
+                    <td>Working storage variables</td>
+                </tr>
+            </table>
+
+            <h3>Integration Points</h3>
+            <ul>
+                <li><strong>Payment Processing:</strong> Integrates with payment allocation routines</li>
+                <li><strong>Account Management:</strong> Links to customer account information</li>
+                <li><strong>Reporting:</strong> Supports escrow reporting requirements</li>
+                <li><strong>Regulatory Compliance:</strong> Ensures RESPA compliance for escrow handling</li>
+            </ul>
+        </section>
+
+        <section id="makers">
+            <h2>MAKERS - Borrower Information Display</h2>
+            <div class="program-card">
+                <h3>Program Details</h3>
+                <table>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Program ID</strong></td>
+                        <td>MAKERS</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>WI/MAKERS.CBL</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Purpose</strong></td>
+                        <td>Window Makers Display</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control</strong></td>
+                        <td>Ctrl+N from Inquiry and Payment Posting</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Functionality</h3>
+            <p>MAKERS provides a comprehensive display window for borrower and co-maker information, including contact details, collateral information, and phone numbers.</p>
+
+            <h4>Information Displayed</h4>
+            <table>
+                <tr>
+                    <th>Information Type</th>
+                    <th>Source</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td><strong>Borrower Information</strong></td>
+                    <td>BW Records</td>
+                    <td>Primary borrower details and contact information</td>
+                </tr>
+                <tr>
+                    <td><strong>Co-Maker Information</strong></td>
+                    <td>BW Records</td>
+                    <td>Co-signer and guarantor information</td>
+                </tr>
+                <tr>
+                    <td><strong>Contact Information</strong></td>
+                    <td>BW Records</td>
+                    <td>Phone numbers and contact preferences</td>
+                </tr>
+                <tr>
+                    <td><strong>Collateral Information</strong></td>
+                    <td>LTC Records</td>
+                    <td>Vehicle and household goods collateral</td>
+                </tr>
+            </table>
+
+            <h4>Special Features</h4>
+            <ul>
+                <li><strong>Collateral Display:</strong> Shows both household goods and vehicle collateral</li>
+                <li><strong>Multiple Vehicles:</strong> Displays information for multiple cars</li>
+                <li><strong>Phone Integration:</strong> Ctrl+N access to phone numbers window</li>
+                <li><strong>Contact Management:</strong> Links to contact phone management</li>
+                <li><strong>Record 3 Display:</strong> Shows collateral from record 3</li>
+            </ul>
+
+            <h4>Navigation Features</h4>
+            <ul>
+                <li><strong>Ctrl+N:</strong> Opens phone numbers window (WI/PHONES or WI/PHONE2)</li>
+                <li><strong>Contact Detection:</strong> Automatically determines appropriate phone window</li>
+                <li><strong>Borrower Contact Phones:</strong> Displays contact phones from BW-REC</li>
+                <li><strong>Multiple Contact Options:</strong> Supports various contact methods</li>
+            </ul>
+
+            <h3>Display Layout</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Open MAKERS Window] --> B[Load Borrower Information]
+                B --> C[Load Co-Maker Information]
+                C --> D[Load Collateral Information]
+                D --> E[Display Contact Information]
+                E --> F[Show Window]
+                F --> G{User Action}
+                G -->|Ctrl+N| H[Open Phone Window]
+                G -->|View Only| I[Continue Display]
+                G -->|Exit| J[Close Window]
+                H --> K{Contact Exists?}
+                K -->|Yes| L[Open WI/PHONE2]
+                K -->|No| M[Open WI/PHONES]
+                L --> N[Return to MAKERS]
+                M --> N
+                N --> F
+                I --> F
+            </div>
+        </section>
+
+        <section id="common-features">
+            <h2>Common Window Features</h2>
+            
+            <h3>Standard Window Controls</h3>
+            <table>
+                <tr>
+                    <th>Control</th>
+                    <th>Function</th>
+                    <th>Standard Behavior</th>
+                </tr>
+                <tr>
+                    <td><strong>F1</strong></td>
+                    <td>Help</td>
+                    <td>Context-sensitive help information</td>
+                </tr>
+                <tr>
+                    <td><strong>F3</strong></td>
+                    <td>Exit/Cancel</td>
+                    <td>Exit window without saving changes</td>
+                </tr>
+                <tr>
+                    <td><strong>F7</strong></td>
+                    <td>Save/Exit</td>
+                    <td>Save changes and exit window</td>
+                </tr>
+                <tr>
+                    <td><strong>F9</strong></td>
+                    <td>Special Function</td>
+                    <td>Program-specific functionality</td>
+                </tr>
+                <tr>
+                    <td><strong>Ctrl+N</strong></td>
+                    <td>Navigate</td>
+                    <td>Navigate to related information</td>
+                </tr>
+                <tr>
+                    <td><strong>Enter</strong></td>
+                    <td>Confirm</td>
+                    <td>Confirm field entry or action</td>
+                </tr>
+                <tr>
+                    <td><strong>Tab/Shift+Tab</strong></td>
+                    <td>Navigation</td>
+                    <td>Move between fields</td>
+                </tr>
+            </table>
+
+            <h3>Data Validation Standards</h3>
+            <ul>
+                <li><strong>Real-time Validation:</strong> Field validation as data is entered</li>
+                <li><strong>Required Field Checking:</strong> Ensures all required fields are completed</li>
+                <li><strong>Format Validation:</strong> Validates data format (dates, phone numbers, etc.)</li>
+                <li><strong>Range Checking:</strong> Validates numeric ranges and limits</li>
+                <li><strong>Cross-field Validation:</strong> Validates relationships between fields</li>
+            </ul>
+
+            <h3>Error Handling</h3>
+            <ul>
+                <li><strong>Field-level Errors:</strong> Highlights problematic fields</li>
+                <li><strong>Error Messages:</strong> Clear, actionable error messages</li>
+                <li><strong>Recovery Options:</strong> Provides options to correct errors</li>
+                <li><strong>Context Preservation:</strong> Maintains user context during error correction</li>
+            </ul>
+        </section>
+
+        <section id="user-interface">
+            <h2>User Interface Standards</h2>
+            
+            <h3>Window Design Principles</h3>
+            <table>
+                <tr>
+                    <th>Principle</th>
+                    <th>Implementation</th>
+                    <th>Benefits</th>
+                </tr>
+                <tr>
+                    <td><strong>Consistency</strong></td>
+                    <td>Standardized layouts and controls</td>
+                    <td>Reduced learning curve, user confidence</td>
+                </tr>
+                <tr>
+                    <td><strong>Clarity</strong></td>
+                    <td>Clear labels and logical field grouping</td>
+                    <td>Improved data entry accuracy</td>
+                </tr>
+                <tr>
+                    <td><strong>Efficiency</strong></td>
+                    <td>Keyboard shortcuts and quick navigation</td>
+                    <td>Faster data entry and processing</td>
+                </tr>
+                <tr>
+                    <td><strong>Feedback</strong></td>
+                    <td>Visual feedback for actions and errors</td>
+                    <td>User confidence and error reduction</td>
+                </tr>
+            </table>
+
+            <h3>Accessibility Features</h3>
+            <ul>
+                <li><strong>Keyboard Navigation:</strong> Full keyboard support for all functions</li>
+                <li><strong>Clear Visual Indicators:</strong> Highlighted fields and selection indicators</li>
+                <li><strong>Consistent Labeling:</strong> Standardized field labels and descriptions</li>
+                <li><strong>Error Prevention:</strong> Input validation to prevent common errors</li>
+            </ul>
+
+            <h3>Performance Considerations</h3>
+            <ul>
+                <li><strong>Fast Display:</strong> Optimized window rendering and data loading</li>
+                <li><strong>Responsive Interface:</strong> Quick response to user inputs</li>
+                <li><strong>Efficient Data Access:</strong> Minimal database calls and optimized queries</li>
+                <li><strong>Memory Management:</strong> Efficient memory usage for window operations</li>
+            </ul>
+        </section>
+
+        <section id="technical-implementation">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Architecture Overview</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Main Program] --> B[Window Program Call]
+                B --> C[Initialize Window]
+                C --> D[Load Data]
+                D --> E[Display Window]
+                E --> F[User Interaction Loop]
+                F --> G{User Action}
+                G -->|Data Entry| H[Validate Input]
+                G -->|Function Key| I[Process Function]
+                G -->|Navigation| J[Handle Navigation]
+                H --> K{Valid?}
+                K -->|Yes| L[Update Display]
+                K -->|No| M[Show Error]
+                I --> N[Execute Function]
+                J --> O[Navigate/Display]
+                L --> F
+                M --> F
+                N --> F
+                O --> F
+                F --> P{Exit Requested?}
+                P -->|No| F
+                P -->|Yes| Q[Save/Cleanup]
+                Q --> R[Return to Main Program]
+            </div>
+
+            <h3>Copy Member Organization</h3>
+            <table>
+                <tr>
+                    <th>Copy Type</th>
+                    <th>Suffix</th>
+                    <th>Purpose</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><strong>Screen Definition</strong></td>
+                    <td>_SCN.CPY</td>
+                    <td>Window layout and field positions</td>
+                    <td>MEMOSC_SCN.CPY</td>
+                </tr>
+                <tr>
+                    <td><strong>Working Storage</strong></td>
+                    <td>_WKS.CPY or W.CPY</td>
+                    <td>Working storage variables</td>
+                    <td>MEMOSCW.CPY</td>
+                </tr>
+                <tr>
+                    <td><strong>Evaluation Logic</strong></td>
+                    <td>_EVA.CPY</td>
+                    <td>Field validation routines</td>
+                    <td>TITLEW_EVA.CPY</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Definitions</strong></td>
+                    <td>_DEF.CPY</td>
+                    <td>Data structure definitions</td>
+                    <td>MAKERS_DEF.CPY</td>
+                </tr>
+            </table>
+
+            <h3>File Dependencies</h3>
+            <ul>
+                <li><strong>Loan Files:</strong> LP01LN (loan master), LP01BW (borrower), LP01LTC (collateral)</li>
+                <li><strong>System Files:</strong> Form management, memo files, parameter files</li>
+                <li><strong>Working Storage:</strong> Program-specific working storage copy members</li>
+                <li><strong>Common Libraries:</strong> Shared utility routines and data structures</li>
+            </ul>
+
+            <h3>Performance Optimization</h3>
+            <ul>
+                <li><strong>Efficient Queries:</strong> Optimized database access patterns</li>
+                <li><strong>Memory Management:</strong> Proper allocation and deallocation</li>
+                <li><strong>Screen Updates:</strong> Minimal screen refresh operations</li>
+                <li><strong>Data Caching:</strong> Strategic caching of frequently accessed data</li>
+            </ul>
+        </section>
+
+        <section id="integration">
+            <h2>Integration with LONPFC</h2>
+            
+            <h3>Calling Sequence</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[LONPFC Processing] --> B{Window Required?}
+                B -->|Yes| C[Determine Window Type]
+                B -->|No| D[Continue Processing]
+                C --> E{Window Type}
+                E -->|Memo Entry| F[CALL MEMOSC]
+                E -->|Title Processing| G[CALL TITLEW]
+                E -->|Escrow Application| H[CALL ESAPPL]
+                E -->|Borrower Info| I[CALL MAKERS]
+                F --> J[Process Window Results]
+                G --> J
+                H --> J
+                I --> J
+                J --> K{Success?}
+                K -->|Yes| L[Continue LONPFC]
+                K -->|No| M[Handle Error]
+                M --> N[User Correction]
+                N --> C
+                L --> D
+                D --> O[Complete LONPFC Processing]
+            </div>
+
+            <h3>Data Exchange</h3>
+            <table>
+                <tr>
+                    <th>Direction</th>
+                    <th>Data Type</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>To Window</strong></td>
+                    <td>Context information, current data values</td>
+                    <td>Initialize window with current state</td>
+                </tr>
+                <tr>
+                    <td><strong>From Window</strong></td>
+                    <td>User entries, status codes, updated data</td>
+                    <td>Apply user changes to processing</td>
+                </tr>
+                <tr>
+                    <td><strong>Bidirectional</strong></td>
+                    <td>Validation results, error conditions</td>
+                    <td>Coordinate validation and error handling</td>
+                </tr>
+            </table>
+
+            <h3>State Management</h3>
+            <ul>
+                <li><strong>Context Preservation:</strong> Maintains LONPFC processing context during window operations</li>
+                <li><strong>Data Integrity:</strong> Ensures data consistency between main processing and window operations</li>
+                <li><strong>Transaction Coordination:</strong> Coordinates database transactions across programs</li>
+                <li><strong>Error Recovery:</strong> Provides rollback mechanisms for failed window operations</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance and Support</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <table>
+                <tr>
+                    <th>Task</th>
+                    <th>Frequency</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><strong>User Interface Testing</strong></td>
+                    <td>Quarterly</td>
+                    <td>Test all window functions and navigation</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Validation Review</strong></td>
+                    <td>Semi-annually</td>
+                    <td>Review and update validation rules</td>
+                </tr>
+                <tr>
+                    <td><strong>Performance Monitoring</strong></td>
+                    <td>Monthly</td>
+                    <td>Monitor window response times and performance</td>
+                </tr>
+                <tr>
+                    <td><strong>Error Log Review</strong></td>
+                    <td>Weekly</td>
+                    <td>Review window-related errors and issues</td>
+                </tr>
+            </table>
+
+            <h3>Troubleshooting Common Issues</h3>
+            <ul>
+                <li><strong>Window Display Problems:</strong> Check screen copy members and display logic</li>
+                <li><strong>Data Entry Issues:</strong> Verify validation routines and field definitions</li>
+                <li><strong>Navigation Problems:</strong> Review function key handling and control logic</li>
+                <li><strong>Integration Issues:</strong> Check calling sequences and parameter passing</li>
+            </ul>
+
+            <h3>Enhancement Considerations</h3>
+            <div class="note">
+                <p><strong>Future Enhancements:</strong></p>
+                <ul>
+                    <li><strong>Modern UI Standards:</strong> Consider updating to modern interface standards</li>
+                    <li><strong>Accessibility Improvements:</strong> Enhance accessibility features</li>
+                    <li><strong>Mobile Compatibility:</strong> Evaluate mobile access requirements</li>
+                    <li><strong>Integration Enhancement:</strong> Improve integration with modern systems</li>
+                </ul>
+            </div>
+
+            <h3>Documentation Maintenance</h3>
+            <ul>
+                <li><strong>Screen Documentation:</strong> Keep screen layouts and field descriptions current</li>
+                <li><strong>User Guides:</strong> Maintain user documentation for window operations</li>
+                <li><strong>Technical Documentation:</strong> Update technical specifications as changes are made</li>
+                <li><strong>Integration Documentation:</strong> Document calling sequences and data exchange</li>
+            </ul>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Initialize Mermaid
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

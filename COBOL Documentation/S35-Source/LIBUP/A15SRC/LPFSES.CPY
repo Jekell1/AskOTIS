@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSES
+           SELECT ES-FILE ASSIGN TO ES-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ES1-KEY
+                  FILE STATUS FILE-STAT.

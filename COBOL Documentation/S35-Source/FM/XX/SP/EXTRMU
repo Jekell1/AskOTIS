@@ -1,0 +1,308 @@
+p
+1. PITNEY BOWES MARKETING TEXT ONLY
+4
+2
+y
+p
+16. SET TEXT-OPT IN/PRIVACY FROM FILE
+4
+41
+y
+p
+2. WELLS FARGO ASCII EXTRACTION
+5
+2
+y
+p
+17. REPAY LOAN/PAYMENT EXTRACT
+5
+41
+y
+p
+3. DATA WAREHOUSE EXTRACTION MENU
+6
+2
+y
+p
+18. UPDATE PHONE STATUS FROM FILE
+6
+41
+y
+p
+4. INACTIVE P&&L UPDATE
+7
+2
+y
+p
+19. ILLINOIS NIGHTLY SET MISPAY
+7
+41
+y
+p
+5. BORROWER EMAIL UPLOAD
+8
+2
+y
+p
+20. ILLINOIS NEW SMALL LOAN EXTRACTION
+8
+41
+y
+p
+6. MONTHLY IRS TIN EXTRACTION
+9
+2
+y
+p
+21. ILLINOIS UPDATED SMALL LOAN EXTRACT
+9
+41
+y
+p
+7. INSURANCE UNEARNED EXTRACT
+10
+2
+y
+p
+22. ILLINOIS UPDATED MISPAY EXTRACT
+10
+41
+y
+p
+8. PROCESS RETURNED TEXTING FILE
+11
+2
+y
+p
+23. SET MISC FIELD(15) VERITEC
+11
+41
+y
+p
+9. LEXIS/NEXIS EXTRACTION
+12
+2
+y
+p
+24. NEW VERITEC MISC FIELD(15) UPDATE
+12
+41
+y
+p
+10. PAYMENT REPORT/EXTRACT BY REFNO
+13
+1
+y
+p
+25. RIGHT TO CURE EXTRACT
+13
+41
+y
+p
+11. CHARGE-OFF TRANSACTION EXTRACTION
+14
+1
+y
+p
+12. UPLOAD/IMPORT LOAN MEMOS
+15
+1
+y
+p
+27. BUYBACKS SAME MONTH ONLY
+15
+41
+y
+p
+13. HIERARCHY (BRANCH/GROUP) EXTRACT
+16
+1
+y
+p
+28. BUYBACKS FROM ANY MONTH/NOT CURRENT
+16
+41
+y
+p
+14. WELLS FARGO EXTRACT NEW FIELDS
+17
+1
+y
+p
+29. AD&&D MONITORING EXTRACTION
+17
+41
+y
+p
+15. UPDATE ACTIONCD FROM FILE
+18
+1
+y
+p
+F7 - OPTIONAL MENU
+21
+58
+y
+p
+F6 - VIEW REPORTS
+22
+58
+y
+p
+ENTER SELECTION :
+23
+29
+y
+f
+CONAME
+
+X(40)
+1
+21
+y
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+EXITPROG
+SP/EXTRMU
+N(9)
+0
+0
+y
+n
+y
+n
+n
+y
+n
+n
+n
+n
+y
+f
+KEYS
+                                                  
+N(50)
+0
+0
+n
+n
+n
+n
+n
+y
+n
+n
+n
+n
+y
+f
+MAIL
+`
+N(4)
+23
+1
+y
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+SEL
+
+DD
+23
+47
+y
+y
+y
+n
+y
+n
+n
+n
+n
+n
+y
+f
+SYSDATE
+
+X(8)
+1
+1
+y
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+SYSTIME
+`
+N(8)
+1
+10
+n
+n
+y
+n
+n
+n
+n
+n
+n
+n
+y
+f
+TITLE
+MISCELLANEOUS FILE EXTRACTION MENU
+N(40)
+2
+28
+n
+n
+y
+y
+n
+n
+n
+n
+n
+n
+y
+f
+USERID
+          
+N(10)
+0
+0
+n
+n
+y
+n
+n
+y
+n
+n
+n
+n
+y

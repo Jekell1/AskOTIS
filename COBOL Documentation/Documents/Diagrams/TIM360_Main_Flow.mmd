@@ -1,0 +1,18 @@
+graph TD
+    A[TIM360 Entry] --> B[Set ELAPSED-YRTYPE = 360]
+    B --> C[Call TIMALL]
+    C --> D[Date Validation Check]
+    D --> E{Valid Dates?}
+    E -->|No| F[Set Zero Values]
+    E -->|Yes| G[Perform Date Calculations]
+    G --> H[Calculate Elapsed Days]
+    H --> I[Calculate Elapsed Months]
+    I --> J[Calculate Remainder]
+    J --> K[Set Comparison Results]
+    K --> L[Return Results]
+    F --> L
+    
+    style A fill:#e1f5fe
+    style L fill:#e8f5e8
+    style E fill:#fff3e0
+    style F fill:#ffebee

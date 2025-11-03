@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "index": "new_cobol_flow_edges_v2",
+      "total": 366650,
+      "with_vector": 326966,
+      "coverage_pct": 89.18
+    }
+  ],
+  "failures": [],
+  "ok": true
+}

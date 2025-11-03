@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAYOFX Payoff Calculator - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > PAYOFX Payoff Calculator
+    </div>
+
+    <div class="header">
+        <h1>PAYOFX Payoff Calculator</h1>
+        <div class="meta">
+            <strong>Program ID:</strong> PAYOFX<br>
+            <strong>Purpose:</strong> Calculates Prior Loan Payoff Without Updating<br>
+            <strong>Type:</strong> Calculation Utility<br>
+            <strong>Date Written:</strong> 040987<br>
+            <strong>Called From:</strong> Multiple loan processing programs<br>
+            <strong>File Location:</strong> c:\Users\jeff.childers\Documents\COBOL Documentation\S35-Source\LP\PAYOFX.CBL<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#calling-programs">Calling Programs</a></li>
+                <li><a href="#calculation-logic">Calculation Logic</a></li>
+                <li><a href="#technical-implementation">Technical Implementation</a></li>
+                <li><a href="#copy-members">Copy Members Used</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#revision-history">Revision History</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Program Overview</h2>
+            <p><strong>PAYOFX</strong> is a critical calculation utility that computes prior loan payoff amounts without updating any loan records. This program is called by numerous loan processing programs to determine accurate payoff figures for various scenarios including renewals, refinances, and standard payoffs.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>Payoff Calculation:</strong> Computes accurate payoff amounts based on specified dates</li>
+                <li><strong>Interest Calculation:</strong> Calculates accrued interest up to payoff date</li>
+                <li><strong>Rebate Processing:</strong> Handles various types of rebates (insurance, service charges, etc.)</li>
+                <li><strong>Fee Assessment:</strong> Includes applicable fees and charges in payoff amount</li>
+                <li><strong>Multi-Program Integration:</strong> Provides payoff services to multiple calling programs</li>
+                <li><strong>Non-Destructive Operation:</strong> Performs calculations without updating loan records</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Important:</strong> PAYOFX is a calculation-only program that does not update any loan records. It provides payoff information that calling programs can use for decision-making and processing.</p>
+            </div>
+        </section>
+
+        <section id="input-parameters">
+            <h2>Input Parameters</h2>
+            <p>PAYOFX receives input through the PASS-PAYOFF-FLDS structure:</p>
+
+            <h3>Required Input Fields</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>PASS-PRLNNO</td>
+                    <td>Account Number</td>
+                    <td>Prior loan account number to calculate payoff for</td>
+                </tr>
+                <tr>
+                    <td>PASS-TRANS-DATE</td>
+                    <td>Date</td>
+                    <td>Payoff date for calculation purposes</td>
+                </tr>
+                <tr>
+                    <td>PASS-CURRENT-PD-SRCD</td>
+                    <td>Source Code</td>
+                    <td>Source code (PB/RN/SC) indicating payoff type</td>
+                </tr>
+                <tr>
+                    <td>PASS-SSNO</td>
+                    <td>Social Security</td>
+                    <td>Social Security Number for maker validation (auto renewals)</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRIOR-SUB-CLASS</td>
+                    <td>Classification</td>
+                    <td>Prior loan sub-classification for special handling</td>
+                </tr>
+            </table>
+
+            <h3>Program Entry Points</h3>
+            <table>
+                <tr>
+                    <th>Entry Method</th>
+                    <th>Parameters</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>PROCEDURE DIVISION USING</td>
+                    <td>FORM-PATHNAME PASS-PAYOFF-FLDS EXIT-PATHNAME</td>
+                    <td>Standard program entry with form handling</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="output-fields">
+            <h2>Output Fields</h2>
+            <p>PAYOFX returns calculated payoff information through the PASS-PAYOFF-FLDS structure:</p>
+
+            <h3>Calculated Output Fields</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Description</th>
+                    <th>Content</th>
+                </tr>
+                <tr>
+                    <td>PASS-PRBAL</td>
+                    <td>Prior Balance</td>
+                    <td>Total payoff amount including all charges</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRINTDUE</td>
+                    <td>Principal Due</td>
+                    <td>Principal amount required for payoff</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRFINCHGRB</td>
+                    <td>Finance Charge Rebate</td>
+                    <td>Finance charge rebate amount</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRINSRB</td>
+                    <td>Insurance Rebate</td>
+                    <td>Insurance rebate amount</td>
+                </tr>
+                <tr>
+                    <td>PASS-INT-REB</td>
+                    <td>Interest Rebate</td>
+                    <td>Interest rebate calculation</td>
+                </tr>
+                <tr>
+                    <td>PASS-SC-REB</td>
+                    <td>Service Charge Rebate</td>
+                    <td>Service charge rebate amount</td>
+                </tr>
+                <tr>
+                    <td>PASS-MF-REB</td>
+                    <td>Miscellaneous Fee Rebate</td>
+                    <td>Other fee rebates</td>
+                </tr>
+                <tr>
+                    <td>PASS-NETDUE</td>
+                    <td>Net Amount Due</td>
+                    <td>Final net payoff amount after rebates</td>
+                </tr>
+                <tr>
+                    <td>PASS-CDEL-ARREARAGE</td>
+                    <td>Collection Arrearage</td>
+                    <td>Outstanding collection amounts</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRIOR-LOAN-STATE</td>
+                    <td>Loan State</td>
+                    <td>State classification of prior loan</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRIOR-LOAN-CLASS</td>
+                    <td>Loan Class</td>
+                    <td>Classification code of prior loan</td>
+                </tr>
+                <tr>
+                    <td>PASS-PRIOR-LOAN-DATE</td>
+                    <td>Loan Date</td>
+                    <td>Original loan date</td>
+                </tr>
+                <tr>
+                    <td>PASS-STAT-FG</td>
+                    <td>Status Flag</td>
+                    <td>Calculation status (Y=Success, L=Loan Error, S=Service Account)</td>
+                </tr>
+            </table>
+
+            <h3>Status Codes</h3>
+            <table>
+                <tr>
+                    <th>Status Code</th>
+                    <th>Meaning</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>Y</td>
+                    <td>Calculation successful</td>
+                    <td>Payoff amounts are valid and usable</td>
+                </tr>
+                <tr>
+                    <td>L</td>
+                    <td>Loan error or invalid</td>
+                    <td>Loan not found, closed, or invalid for payoff</td>
+                </tr>
+                <tr>
+                    <td>S</td>
+                    <td>Service account</td>
+                    <td>Account flagged as service account for quoters</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="calling-programs">
+            <h2>Calling Programs</h2>
+            <p>PAYOFX is called by numerous programs throughout the system for payoff calculations:</p>
+
+            <h3>Core Loan Programs</h3>
+            <ul>
+                <li><strong>CL/GASC12:</strong> General Application System Controller</li>
+                <li><strong>CL/GASC13:</strong> General Application System Controller</li>
+                <li><strong>LP/LONPF1:</strong> Loan Processing Program</li>
+                <li><strong>LP/LONPFC:</strong> Loan Payment Processing</li>
+                <li><strong>LP/LONPB0:</strong> Loan Processing Program</li>
+                <li><strong>LP/LONPF9:</strong> Loan Processing Program</li>
+                <li><strong>LP/LONPFG:</strong> Loan Processing Program</li>
+            </ul>
+
+            <h3>Renewal and Refinance Programs</h3>
+            <ul>
+                <li><strong>LP/XONPC0:</strong> Renewal Processing</li>
+                <li><strong>LP/VONPB0:</strong> Renewal Processing</li>
+                <li><strong>LP/ZONPC0:</strong> Renewal Processing</li>
+                <li><strong>LP/VONPC0:</strong> Renewal Processing</li>
+            </ul>
+
+            <h3>Quote Generation Programs</h3>
+            <ul>
+                <li><strong>WI/BLQUOT:</strong> Business Loan Quote</li>
+                <li><strong>WI/CLQUOT:</strong> Consumer Loan Quote</li>
+                <li><strong>WI/LNQUOT:</strong> Loan Quote Processing</li>
+                <li><strong>WI/SFQUOT:</strong> Special Finance Quote</li>
+            </ul>
+        </section>
+
+        <section id="calculation-logic">
+            <h2>Calculation Logic</h2>
+            
+            <h3>Payoff Calculation Process</h3>
+            <ol>
+                <li><strong>Loan Validation</strong>
+                    <ul>
+                        <li>Verify loan account exists and is valid</li>
+                        <li>Check loan status and payoff eligibility</li>
+                        <li>Validate payoff date parameters</li>
+                    </ul>
+                </li>
+                <li><strong>Interest Calculation</strong>
+                    <ul>
+                        <li>Calculate accrued interest to payoff date</li>
+                        <li>Apply appropriate interest rate and formula</li>
+                        <li>Handle special interest calculation rules</li>
+                    </ul>
+                </li>
+                <li><strong>Fee Assessment</strong>
+                    <ul>
+                        <li>Include outstanding late charges</li>
+                        <li>Add applicable collection fees</li>
+                        <li>Calculate any special charges</li>
+                    </ul>
+                </li>
+                <li><strong>Rebate Calculation</strong>
+                    <ul>
+                        <li>Calculate insurance rebates</li>
+                        <li>Determine service charge rebates</li>
+                        <li>Apply finance charge rebates</li>
+                        <li>Handle special rebate formulas (including SP-SCFRMLA = 54)</li>
+                    </ul>
+                </li>
+                <li><strong>Net Amount Determination</strong>
+                    <ul>
+                        <li>Sum all amounts due</li>
+                        <li>Subtract applicable rebates</li>
+                        <li>Calculate final net payoff amount</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Special Calculation Features</h3>
+            <ul>
+                <li><strong>Rescission Handling:</strong> Special processing for rescission scenarios (LN-POCD)</li>
+                <li><strong>MIP Processing:</strong> Monthly Insurance Premium calculations</li>
+                <li><strong>O3 Rebate Logic:</strong> Special rebate calculation for O3 type</li>
+                <li><strong>Formula 54 Support:</strong> Enhanced service charge formula with 4% addition</li>
+                <li><strong>Auto Renewal Validation:</strong> Maker comparison for automatic renewals</li>
+            </ul>
+        </section>
+
+        <section id="technical-implementation">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Program Structure</h3>
+            <ul>
+                <li><strong>IDENTIFICATION DIVISION:</strong> Program metadata and revision history</li>
+                <li><strong>ENVIRONMENT DIVISION:</strong> System configuration</li>
+                <li><strong>DATA DIVISION:</strong> Working storage and copy member includes</li>
+                <li><strong>PROCEDURE DIVISION:</strong> Main calculation logic</li>
+            </ul>
+
+            <h3>Key Processing Sections</h3>
+            <ul>
+                <li><strong>MAIN-PROGRAM:</strong> Primary control and initialization</li>
+                <li><strong>MAIN-INIT-SCREEN:</strong> Screen and data initialization</li>
+                <li><strong>SQL-CONNECT:</strong> Database connectivity</li>
+                <li><strong>GET-GPENV:</strong> Environment setup</li>
+            </ul>
+
+            <h3>Database Integration</h3>
+            <ul>
+                <li><strong>SQL Connectivity:</strong> Uses SQL for database operations</li>
+                <li><strong>Read-Only Operations:</strong> Only reads loan data, no updates</li>
+                <li><strong>Multiple File Access:</strong> Accesses loan, state, branch, and global files</li>
+            </ul>
+        </section>
+
+        <section id="copy-members">
+            <h2>Copy Members Used</h2>
+            
+            <h3>Loan Processing Copy Members</h3>
+            <ul>
+                <li><strong>LIBLP/LP01LN.CPY:</strong> Loan record layout</li>
+                <li><strong>LIBLP/LP01SP.CPY, LP01SPA.CPY, LP01SPB.CPY, LP01SPC.CPY:</strong> State parameter layouts</li>
+                <li><strong>LIBLP/LP01LP.CPY:</strong> Loan payment layout</li>
+                <li><strong>LIBLP/LP01LTI.CPY, LP01LTP.CPY:</strong> Loan transaction layouts</li>
+                <li><strong>LIBLP/LPPOFFW.CPY:</strong> Payoff working storage</li>
+                <li><strong>LIBLP/ADDONSPRW.CPY:</strong> Add-ons and SPR processing</li>
+                <li><strong>LIBLP/PAYOFXW.CPY:</strong> PAYOFX working storage</li>
+            </ul>
+
+            <h3>Calculation Copy Members</h3>
+            <ul>
+                <li><strong>LIBLP/LPITRMW.CPY:</strong> Interest term working storage</li>
+                <li><strong>LIBLP/LPIBPCW.CPY:</strong> Interest BPC working storage</li>
+                <li><strong>LIBLP/LPRATEW.CPY:</strong> Rate calculation working storage</li>
+                <li><strong>LIBLP/LPLCAPW.CPY:</strong> Late charge application working storage</li>
+                <li><strong>LIBGB/REBATEW.CPY:</strong> Rebate calculation working storage</li>
+                <li><strong>LIBLP/LPAPRZW.CPY, LPAPRSW.CPY:</strong> APR calculation working storage</li>
+            </ul>
+
+            <h3>General and Utility Copy Members</h3>
+            <ul>
+                <li><strong>LIBGB/GB01BR.CPY, GB01GB.CPY:</strong> Branch and global parameter layouts</li>
+                <li><strong>LIBGB/DATERW.CPY:</strong> Date calculation working storage</li>
+                <li><strong>LIBGB/TIMEWK.CPY:</strong> Time working storage</li>
+                <li><strong>LIBGB/CONNECTW_SQL.CPY:</strong> SQL connection working storage</li>
+                <li><strong>LIBGB/FILEWK.CPY:</strong> File working storage</li>
+                <li><strong>LIBGB/MESSWK.CPY:</strong> Message working storage</li>
+            </ul>
+        </section>
+
+        <section id="error-handling">
+            <h2>Error Handling</h2>
+            
+            <h3>Validation Checks</h3>
+            <ul>
+                <li><strong>Loan Existence:</strong> Verifies loan account exists (IO-FG = 9)</li>
+                <li><strong>Loan Status:</strong> Checks for non-loan payoff codes (LN-POCD-NONLOAN)</li>
+                <li><strong>Rescission Status:</strong> Handles rescission payoff codes (LN-POCD-PB-RESC)</li>
+                <li><strong>Date Validation:</strong> Validates payoff date parameters</li>
+            </ul>
+
+            <h3>Status Flag Processing</h3>
+            <table>
+                <tr>
+                    <th>Condition</th>
+                    <th>Status Flag</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Loan not found</td>
+                    <td>L</td>
+                    <td>Invalid loan number or loan not accessible</td>
+                </tr>
+                <tr>
+                    <td>Non-loan payoff code</td>
+                    <td>L</td>
+                    <td>Loan has payoff code indicating non-loan status</td>
+                </tr>
+                <tr>
+                    <td>Rescission loan</td>
+                    <td>L</td>
+                    <td>Loan is in rescission status</td>
+                </tr>
+                <tr>
+                    <td>Service account</td>
+                    <td>S</td>
+                    <td>Account flagged as service account</td>
+                </tr>
+                <tr>
+                    <td>Successful calculation</td>
+                    <td>Y</td>
+                    <td>Payoff calculation completed successfully</td>
+                </tr>
+            </table>
+
+            <h3>Error Recovery</h3>
+            <ul>
+                <li><strong>Graceful Handling:</strong> Program continues with status flags rather than abending</li>
+                <li><strong>Zero Initialization:</strong> All output fields initialized to zero on entry</li>
+                <li><strong>Clear Status Reporting:</strong> Status flags provide clear indication of results</li>
+            </ul>
+        </section>
+
+        <section id="revision-history">
+            <h2>Revision History</h2>
+            
+            <h3>Major Revisions</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+                <tr>
+                    <td>040987</td>
+                    <td>Initial program creation for payoff calculations</td>
+                    <td>Original development</td>
+                </tr>
+                <tr>
+                    <td>111496</td>
+                    <td>Changed LN-POCD for rescission handling</td>
+                    <td>KEC</td>
+                </tr>
+                <tr>
+                    <td>120296</td>
+                    <td>Enhanced service account flagging while allowing payoff computation</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>120696</td>
+                    <td>Added PASS-SSNO for XONPC0 auto renewals maker testing</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>050797</td>
+                    <td>Added SETCTBLW and SETCTBL copy members</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td>051597</td>
+                    <td>Added LPPOF2 copy member (separated from LPPOFF)</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td>052097</td>
+                    <td>Added LIBLP/ADDONSPR for correct SPR regarding insurance rebate</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>060397</td>
+                    <td>Added logic for 'O3' rebate processing</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>030619</td>
+                    <td>Added PASS-PRIOR-SUB-CLASS for enhanced processing</td>
+                    <td>BAH - LENDMARK PR# 2101</td>
+                </tr>
+                <tr>
+                    <td>060627</td>
+                    <td>Added MIP-CLPAID and AHPAID to PASS-PRBAL</td>
+                    <td>BAH - REGENCY PR# 538</td>
+                </tr>
+                <tr>
+                    <td>130131</td>
+                    <td>A30 Conversion completed</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>130604</td>
+                    <td>Added logic for SP-SCFRMLA = 54 with 4% addition based on total note</td>
+                    <td>MJD - WORLD #0874</td>
+                </tr>
+                <tr>
+                    <td>20220818</td>
+                    <td>Removed GLOBRD, read GB-FILE directly instead</td>
+                    <td>BAH</td>
+                </tr>
+            </table>
+
+            <h3>Recent Enhancements</h3>
+            <ul>
+                <li><strong>Formula 54 Support:</strong> New service charge formula calculation method</li>
+                <li><strong>MIP Integration:</strong> Monthly Insurance Premium handling</li>
+                <li><strong>A30 Conversion:</strong> Modernization for current platform</li>
+                <li><strong>Enhanced Sub-Classification:</strong> Support for prior sub-class processing</li>
+                <li><strong>Direct File Access:</strong> Improved performance with direct GB-FILE access</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Formula Validation:</strong> Verify calculation formulas match business requirements</li>
+                <li><strong>Rate Table Updates:</strong> Ensure interest and rebate rates are current</li>
+                <li><strong>Performance Monitoring:</strong> Monitor calculation performance and response times</li>
+                <li><strong>Integration Testing:</strong> Test with all calling programs after changes</li>
+            </ul>
+
+            <h3>Special Considerations</h3>
+            <ul>
+                <li><strong>Non-Destructive Nature:</strong> Always verify program doesn't update loan records</li>
+                <li><strong>Multiple Callers:</strong> Changes must be tested with all calling programs</li>
+                <li><strong>Rebate Logic:</strong> Complex rebate calculations require careful testing</li>
+                <li><strong>State-Specific Rules:</strong> Different states may have varying calculation requirements</li>
+            </ul>
+
+            <h3>Testing Requirements</h3>
+            <ul>
+                <li><strong>Calculation Accuracy:</strong> Verify all payoff calculations are mathematically correct</li>
+                <li><strong>Rebate Verification:</strong> Test all rebate scenarios and formulas</li>
+                <li><strong>Status Flag Testing:</strong> Verify all error conditions return appropriate status flags</li>
+                <li><strong>Integration Testing:</strong> Test with representative calling programs</li>
+                <li><strong>Performance Testing:</strong> Ensure acceptable response times under load</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Critical:</strong> PAYOFX is a calculation-only utility that must never update loan records. Any modifications should preserve this read-only characteristic and maintain compatibility with all calling programs.</p>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

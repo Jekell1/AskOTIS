@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-INCR-HALF-MONTHS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-INCR-HALF-MONTHS Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-INCR-HALF-MONTHS Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-INCR-HALF-MONTHS.cpy</code><br />
+<strong>Program ID:</strong> C-INCR-HALF-MONTHS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#program-information">Program Information</a></li>
+<li><a href="#functional-description">Functional Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Overview</h2>
+<p>The <strong>C-INCR-HALF-MONTHS</strong> module is a specialized date arithmetic utility within the APIPAY system that performs precise half-month-based date calculations. This module adds or subtracts half-month increments to/from a given date, implementing a hybrid approach that combines month-level operations with 15-day adjustments to simulate half-month periods.</p>
+<h2>Program Information</h2>
+<ul>
+<li><strong>Module Name</strong>: C-INCR-HALF-MONTHS</li>
+<li><strong>Type</strong>: COBOL Copy Member / Utility Module</li>
+<li><strong>Primary Function</strong>: Half-month-based date arithmetic using 15-day periods</li>
+<li><strong>Location</strong>: APIPAY/C-INCR-HALF-MONTHS.cpy</li>
+<li><strong>Dependencies</strong>: C-INCR-MONTHS (for full month operations)</li>
+</ul>
+<h2>Functional Description</h2>
+<h3>Purpose</h3>
+<p>C-INCR-HALF-MONTHS serves as the half-month arithmetic engine for the APIPAY system, enabling precise date calculations for bi-monthly operations. The module implements a logical half-month model where:
+- First half of month: Days 1-15
+- Second half of month: Days 16-end of month
+- Half-month increment: Either advance to next half or add 15 days</p>
+<h3>Key Features</h3>
+<ol>
+<li><strong>Half-Month Segmentation</strong>: Treats months as two distinct periods (1-15, 16-end)</li>
+<li><strong>Hybrid Processing</strong>: Combines full month operations with day adjustments</li>
+<li><strong>Intelligent Day Logic</strong>: Handles day positioning within half-month boundaries</li>
+<li><strong>Bidirectional Operations</strong>: Supports both forward and backward half-month calculations</li>
+<li><strong>Seamless Integration</strong>: Leverages C-INCR-MONTHS for full month portions</li>
+</ol>
+<h3>Half-Month Logic Model</h3>
+<ul>
+<li><strong>Forward Half-Month</strong>: Day 1-15 → Day 16-end, Day 16-end → Day 1-15 next month</li>
+<li><strong>Backward Half-Month</strong>: Day 16-end → Day 1-15, Day 1-15 → Day 16-end previous month</li>
+<li><strong>Cross-Month Boundaries</strong>: Automatically handled through C-INCR-MONTHS integration</li>
+</ul>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-UP-WORK</strong>: Number of half-months to increment (positive or negative)</li>
+<li><strong>WS-NDTE-CCYY-S</strong>: Input year (4-digit)</li>
+<li><strong>WS-NDTE-MM-S</strong>: Input month (2-digit)</li>
+<li><strong>WS-NDTE-DD-S</strong>: Input day (2-digit)</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>WS-NDTE-CCYY-S</strong>: Updated year (4-digit)</li>
+<li><strong>WS-NDTE-MM-S</strong>: Updated month (2-digit)</li>
+<li><strong>WS-NDTE-DD-S</strong>: Updated day (2-digit, positioned within half-month)</li>
+</ul>
+<h3>Processing Logic</h3>
+<h4>Phase 1: Component Separation</h4>
+<pre><code class="language-cobol">DIVIDE WS-UP-WORK BY 2 GIVING WS-DIV-RESULT REMAINDER WS-MOD-2
+</code></pre>
+<ul>
+<li>Separates full months from remaining half-months</li>
+<li>WS-DIV-RESULT = number of full months</li>
+<li>WS-MOD-2 = remaining half-months (0, 1, or -1)</li>
+</ul>
+<h4>Phase 2: Full Month Processing</h4>
+<pre><code class="language-cobol">MOVE WS-DIV-RESULT TO WS-UP-WORK
+IF WS-UP-WORK NOT = 0
+   PERFORM C-INCR-MONTHS
+</code></pre>
+<ul>
+<li>Processes full month increments first</li>
+<li>Leverages existing C-INCR-MONTHS functionality</li>
+</ul>
+<h4>Phase 3: Half-Month Adjustment</h4>
+<p><strong>Forward Half-Month (WS-MOD-2 &gt; 0):</strong>
+- If current day &gt; 15: Move to first half of next month
+- If current day ≤ 15: Move to second half of current month</p>
+<p><strong>Backward Half-Month (WS-MOD-2 &lt; 0):</strong>
+- If current day &lt; 16: Move to second half of previous month<br />
+- If current day ≥ 16: Move to first half of current month</p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<pre><code class="language-cobol">WS-INCR-HALF-MONTHS-WORK-AREA
+├── WS-HOLD-DD              (Original day for reference)
+├── WS-DIV-RESULT          (Full months portion)
+├── WS-MOD-2               (Half-month remainder: -1, 0, 1)
+├── WS-UP-WORK             (Working increment value)
+├── WS-NDTE-CCYY-S         (Working year)
+├── WS-NDTE-MM-S           (Working month)
+└── WS-NDTE-DD-S           (Working day)
+</code></pre>
+<h3>Half-Month Boundary Logic</h3>
+<ul>
+<li><strong>Boundary Day</strong>: 15 (divides month into halves)</li>
+<li><strong>First Half</strong>: Days 1-15</li>
+<li><strong>Second Half</strong>: Days 16-end of month</li>
+<li><strong>Transition Rule</strong>: Cross boundary at day 15/16</li>
+</ul>
+<h2>Flow Diagrams</h2>
+<h3>Main Processing Flow</h3>
+<pre><code>[Input Date + Half-Month Increment] → [Separate Full/Half Months] → 
+[Process Full Months] → [Apply Half-Month Logic] → [Output Date]
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li><strong>Bi-monthly payment calculations</strong>: Twice-monthly payment schedules</li>
+<li><strong>Interest accrual</strong>: Semi-monthly compounding</li>
+<li><strong>Report generation</strong>: Bi-monthly reporting cycles</li>
+<li><strong>Payroll systems</strong>: Semi-monthly pay periods</li>
+</ul>
+<h3>Called Modules</h3>
+<ul>
+<li><strong>C-INCR-MONTHS</strong>: Handles full month increments</li>
+<li><strong>Date validation utilities</strong>: Through C-INCR-MONTHS chain</li>
+<li><strong>Calendar boundary management</strong>: Through C-INCR-MONTHS chain</li>
+</ul>
+<h2>Algorithm Examples</h2>
+<h3>Forward Half-Month Examples</h3>
+<pre><code>Input: January 10 + 1 half-month
+Day 10 ≤ 15 → Add 15 days → January 25
+
+Input: January 25 + 1 half-month  
+Day 25 &gt; 15 → Day = 25-15=10, Month+1 → February 10
+
+Input: January 31 + 1 half-month
+Day 31 &gt; 15 → Day = 31-15=16, Month+1 → February 16
+</code></pre>
+<h3>Backward Half-Month Examples</h3>
+<pre><code>Input: February 10 - 1 half-month
+Day 10 &lt; 16 → Add 15 days, Month-1 → January 25
+
+Input: February 25 - 1 half-month
+Day 25 ≥ 16 → Day = 25-15=10 → February 10
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Boundary Conditions</h3>
+<ol>
+<li><strong>Month Transitions</strong>: Handled automatically through C-INCR-MONTHS</li>
+<li><strong>Year Boundaries</strong>: Managed by underlying month logic</li>
+<li><strong>Day Range Validation</strong>: Ensured through 15-day arithmetic</li>
+<li><strong>Negative Increments</strong>: Properly handled with reverse logic</li>
+</ol>
+<h3>Edge Cases</h3>
+<ul>
+<li><strong>End-of-Month Dates</strong>: Adjusted relative to 15-day boundary</li>
+<li><strong>February Variations</strong>: Handled through C-INCR-MONTHS validation</li>
+<li><strong>Large Increments</strong>: Efficiently processed through division logic</li>
+</ul>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) time complexity through division approach</li>
+<li><strong>Memory Usage</strong>: Minimal additional working storage</li>
+<li><strong>Delegation</strong>: Leverages optimized C-INCR-MONTHS for complex cases</li>
+<li><strong>Calculation Cost</strong>: Simple arithmetic operations with single month call</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Forward Half-Month</h3>
+<pre><code class="language-cobol">MOVE 3 TO WS-UP-WORK              * 3 half-months = 1.5 months
+MOVE 2024 TO WS-NDTE-CCYY-S
+MOVE 01 TO WS-NDTE-MM-S
+MOVE 05 TO WS-NDTE-DD-S           * January 5
+PERFORM C-INCR-HALF-MONTHS
+* Result: 2024-02-20 (Jan 5 → Jan 20 → Feb 5 → Feb 20)
+</code></pre>
+<h3>Backward Half-Month</h3>
+<pre><code class="language-cobol">MOVE -2 TO WS-UP-WORK             * -2 half-months = -1 month
+MOVE 2024 TO WS-NDTE-CCYY-S
+MOVE 03 TO WS-NDTE-MM-S
+MOVE 20 TO WS-NDTE-DD-S           * March 20
+PERFORM C-INCR-HALF-MONTHS  
+* Result: 2024-02-05 (Mar 20 → Mar 5 → Feb 20 → Feb 5)
+</code></pre>
+<h3>Mixed Operations</h3>
+<pre><code class="language-cobol">MOVE 5 TO WS-UP-WORK              * 5 half-months = 2.5 months
+MOVE 2024 TO WS-NDTE-CCYY-S
+MOVE 12 TO WS-NDTE-MM-S
+MOVE 31 TO WS-NDTE-DD-S           * December 31
+PERFORM C-INCR-HALF-MONTHS
+* Result: 2025-03-16 (2 full months + 1 half-month)
+</code></pre>
+<h2>Maintenance Notes</h2>
+<h3>Design Philosophy</h3>
+<ul>
+<li><strong>Simplicity</strong>: Delegates complex month logic to proven C-INCR-MONTHS</li>
+<li><strong>Consistency</strong>: Uses uniform 15-day half-month model</li>
+<li><strong>Efficiency</strong>: Minimizes redundant date calculations</li>
+<li><strong>Reliability</strong>: Leverages tested month arithmetic</li>
+</ul>
+<h3>Code Quality</h3>
+<ul>
+<li><strong>Clear Logic</strong>: Well-defined half-month boundary rules</li>
+<li><strong>Modular Design</strong>: Effective use of existing utilities</li>
+<li><strong>Readable Code</strong>: Straightforward conditional logic</li>
+<li><strong>Maintainability</strong>: Simple modifications possible</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS Documentation</a> - Full month increments</li>
+<li><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS Documentation</a> - Day-based increments</li>
+<li><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE Documentation</a> - Date validation</li>
+<li><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a> - Complete utilities listing</li>
+</ul>
+<h2>Diagram References</h2>
+<ul>
+<li><a href="../Diagrams/C-INCR-HALF-MONTHS_Main_Flow.mmd">Main Processing Flow</a></li>
+<li><a href="../Diagrams/C-INCR-HALF-MONTHS_Logic.mmd">Half-Month Logic</a></li>
+<li><a href="../Diagrams/C-INCR-HALF-MONTHS_Call_Graph.mmd">Call Graph</a></li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

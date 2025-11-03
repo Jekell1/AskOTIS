@@ -1,0 +1,279 @@
+      * COPYMEMBER: LIBLP/LPSPCL
+      ******************************************************************
+      *    LPSPCL    STATE PARAMETER FILE CLEAR ROUTINE
+      *
+      * REV:
+      *  BAH 070196 REMOVED SP-INSTBL(13,14), SP-INSFESP-ETBL(13,14)
+      *                     SP-REBTBL(17,18), SP-REBTBL2(17,18)
+      *  JTG 072897 ADDED CLEAR OF SP-WAGE-ASSIGN-DAYS MERCURY #E135
+      *  BAH 081098 ADDED CLEAR OF SP-YTD-MAX-ALLOW-DELINQ MERCURY #193
+      *             ALSO CLEAR SP-MAX-ALLOW-DELINQ (SOMEONE FORGOT !)
+      *  KEC 100698 ADDED CLEAR OF SP-REVOL-PYMT-DUE-WORK
+      *                            SP-REVOL-PYMT-MINIMUM
+      *                            SP-REVOL-PYMT-MAXIMUM
+      *                            SP-REVOL-PYMT-PERCENT.
+      *  KEC 103098 ADDED CLEAR OF SP-REVOL-MEMBERSHIP-FEE.
+      *  JTG 990317 ADDED CLEAR OF SP-LNCOST-AMT & SP-DLDISC-RVPRIN1-PCNT
+      *  BLV 991117 ADDED CLEAR OF SP-RENEWABLE-PAYS, SP-RENEWABLE-DAYS,
+      *             WORLD PR# 213
+      *  JTG 991214 ADDED CLEAR OS SP-DLDISC-RVPRIN1-AF-PCNT, TFC #085
+      *  BAH 010326 SP-PRFORM WAS ONLY CLEARING UP TO 10, SHOULD OF BEEN
+      *             UP TO 20 !! BETH AND KEN
+      *  KEC 010608 {PR#01478} REGIONAL ACCEPTANCE [KEVIN MULLEN]
+      *             ADDED NEW FIELDS FOR REPO 'TRCD/FMNO'.
+      *  BLV 020222 SP-RENEWABLE-PAYS, SP-RENEWABLE-DAYS WEREN'T
+      *             GETTING CLEARED, ALSO SP-CONTR-CREDIT,
+      *             SP-CONTR-CREDIT-MIN-DEL-PER
+      *  BAH 040304 ADDED SP-DEFAULT-O2-INS-COMP FOR LENDMARK PR# 2258
+      *  JTG 050218 DUE TO THE NUMBER OF PAGES IN SPR BUILD SOME CUSTOMERS
+      *             ARE BUILDING PAGE (1 THRU 3) AND THEN RETURNING TO PAGE 1
+      *             INSTEAD OF GOING THRU EACH PAGE SETTING DEFAULT VALUES.
+      *
+      *             SPR CLEAR NOW SETS SOME SPR FIELDS TO NECESSARY VALUES
+      *             WHEN THIS OCCURS:
+      *
+      *               MOVE "E" TO SP-INTMETHOD.
+      *               MOVE 365 TO SP-YEARTYPE.
+      *               EARN-ORDER TABLE:
+      *                    INT        MOVE 1 TO EARN-ORDER(1).
+      *                    ADDON      MOVE 5 TO EARN-ORDER(2).
+      *                    SC         MOVE 2 TO EARN-ORDER(3).
+      *                    MF         MOVE 6 TO EARN-ORDER(4).
+      *                    DLDISC     MOVE 3 TO EARN-ORDER(5).
+      *                    OTH        MOVE 4 TO EARN-ORDER(6).
+      *  BAH 071127 ADDED CLEAR OF SP-MAX-CASH-PROCEEDS, REGMGM PR# 3110.
+      *  MJD 090506 ADDED SP-BANKRULE-RATE               BARNETT PR#3189.
+      *  BAH 090522 ADDED SP-AUTO-SEND-FMNO() PR# 245 REGACC
+      *   CS 090810 ADDED CLEAR OF SP-DLDISC-CONV-BF-PCNT WORLD PR#648
+      *   CS 121005 ADD CLEAR OF SP-CONTRACUTAL-SET-NONACCRUAL, SP-CONTRACTUAL
+      *             RESET-ACCRUAL, SP-MONTHS-PAY-NAPP-COUNTER REGACC PR#323
+      *  BAH 130507 ADD CLEAR OF SP-SHORT-PAY-THRESHOLD, NEWPORT PR# 4256
+      *   CS 160302 ADD CLEAR OF SP-ALT-PREPAY-MONTHS WORLD PR#1140       
+      *   CS 160721 SET 0 TO SP-LTOUCH-DATE,SP-ERNFRMLA(7-10)
+      *             SP-ERNAMT(7-10)SP-ERNPERCT(7-10),SP-ERN-DAYS(7-10)
+      *             SP-ERN-TERM(7-10). ADD CLEAR OF SP-REVOL-APPLY-ORDER(1-21)
+      *             ADD CLEAR OF SP-INSEARN-ORDER(ILEV) TO CLEAR-INSURANCE
+      *   CS 160728 CHANGED HOLD-KEY TO HOLD-SP1-KEY
+      *
+      * KEC 2016.1024 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         FIXED CLEAR-REBATE-TABLE PARAGRAPH.  THE LOOP WAS
+      *         SET FOR 23 TIMES WHEN IT SHOULD OF BEEN 22 TIMES.
+      *  MJD 170330 ADDED SP-ALT-DEFFRMLA, SP-ALT-DEFMIN AND SP-ALT-DEFMAX
+      *                                                           71225#386
+      *   CS 190509 CLEAR FUTURE FIELDS
+      * AMM 20210428 REMOVED FUTURE FIELDS, RESIZED FILE
+      * BLM 20210806 ADD CLEAR OF SP-DELQ-IB-AGE
+      *                           SP-DELQ-IB-MAX-DAYS
+      *                           SP-CASH-AVAIL-PERCENT
+      *                           SP-NET-BAL-REQ
+      *                           SP-AMT-PROCEEDS-REQ
+      *                           SP-PERCENT-REGPAY-AVAIL.
+      * BAH 2022041 CHANGED HOLD-SP1-KEY TO USE LPWSSP-SP1-KEY
+      ******************************************************************
+       CLEAR-SP-FILE SECTION.
+           MOVE SPACES TO SP-REC.
+           MOVE LPWSSP-SP1-KEY TO SP1-KEY.
+           MOVE HOLD-EFFDATE TO SP-EFFDATE.
+           MOVE 0 TO SP-EXPDATE SP-EXPD-MONTHS SP-EXPD-DAYS
+                     SP-JUDGRATE SP-JUDGYRTYPE SP-ACC-YRTYPE.
+           MOVE 0 TO SP-CONTPDTH SP-FINCHG SP-LCGRACE
+                     SP-TRWCONTPDTH SP-RECPDTH
+                     SP-LCRATE SP-LCMINCHG SP-LCMAXAMT SP-LCDELFAC
+                     SP-LCYRTYPE SP-BANKRULE-RATE.
+           MOVE 0 TO SP-DEFFRMLA SP-DEFWORKER SP-DEFPERCD SP-DEFBASE
+                     SP-DEFMIN SP-DEFMAX SP-SCFRMLA SP-SCRATE SP-SCMIN
+                     SP-SCMAX SP-MFFRMLA SP-MFRATE SP-MFMIN SP-MFMAX
+                     SP-ALT-DEFFRMLA SP-ALT-DEFMIN SP-ALT-DEFMAX.
+
+           MOVE "E" TO SP-INTMETHOD.
+           MOVE 365 TO SP-YEARTYPE.
+           MOVE 0   TO SP-YEARTYPE SP-PYEXFRMLA SP-PYEXSPCODE
+
+                       SP-PYEXYEARTP SP-PYEXBASE SP-PYEXDAYS
+                       SP-CAL-SPFRMLA SP-MINSF-FRMLA SP-MINSF-CHG
+                       SP-MAXAPR-FRMLA.
+
+           MOVE 0 TO SP-1STPY-ADDON-DAYS SP-1STPY-ADDON-YRTYPE
+                     SP-ADDON-RATE.
+           MOVE 0 TO SP-LC-CODE SP-PBDEL-DAYS SP-PBINCR-PERCENT
+                     SP-MIN-CREDIT-SCORE.
+           MOVE 0 TO SP-WAGE-ASSIGN-DAYS.
+           MOVE 0 TO SP-MAX-ALLOW-DELINQ SP-YTD-MAX-ALLOW-DELINQ.
+           MOVE 0 TO SP-LNCOST-AMT SP-DLDISC-RVPRIN1-PCNT
+                                   SP-DLDISC-RVPRIN1-AF-PCNT
+                     SP-DEFAULT-O2-INS-COMP.
+           MOVE 0 TO SP-DLDISC-CONV-BF-PCNT.
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 20
+              MOVE 0 TO SP-PRFORM(SUB)
+           END-PERFORM.
+
+           MOVE 0 TO SP-CONTR-CREDIT SP-CONTR-CREDIT-MIN-DEL-PER
+                     SP-RENEWABLE-DAYS SP-RENEWABLE-PAYS.
+           MOVE 999999.99 TO SP-MAX-CASH-PROCEEDS.
+
+           SET CTBL TO 1.
+       CLEAR-CAL-RATSP-ETBL.
+           MOVE 0 TO SP-CAL-NORATES(CTBL).
+           MOVE 0 TO SP-CAL-TBFRMLA(CTBL).
+
+           SET CSTP TO 1.
+       CLEAR-BREAK-TABLE.
+           MOVE 0 TO SP-CAL-RATE(CTBL CSTP).
+           MOVE 0 TO SP-CAL-BREAK(CTBL CSTP).
+           IF CSTP < 5
+              SET CSTP UP BY 1
+              GO TO CLEAR-BREAK-TABLE.
+           IF CTBL < 2
+              SET CTBL UP BY 1
+              GO TO CLEAR-CAL-RATSP-ETBL.
+
+           SET ETBL TO 1.
+       CLEAR-EDIT-TABLE.
+           MOVE 0 TO SP-EDT-NOEDITS(ETBL).
+
+           SET ESTP TO 1.
+       CLEAR-EDT-TABLE.
+           MOVE 0 TO SP-EDT-RATE(ETBL ESTP).
+           MOVE 0 TO SP-EDT-AMT(ETBL ESTP).
+           MOVE 0 TO SP-EDT-TERM(ETBL ESTP).
+           IF ESTP < 6
+              SET ESTP UP BY 1
+              GO TO CLEAR-EDT-TABLE.
+           IF ETBL < 2
+              SET ETBL UP BY 1
+              GO TO CLEAR-EDIT-TABLE.
+
+           SET ILEV TO 1.
+       CLEAR-INSURANCE-TABLE.
+           MOVE 0 TO SP-INSCOM(ILEV).
+           MOVE 0 TO SP-INSRATECD(ILEV).
+           MOVE 0 TO SP-INSJFAC(ILEV).
+           MOVE 0 TO SP-INSDISCNT(ILEV).
+           MOVE 0 TO SP-INSMINPREM(ILEV).
+           MOVE 0 TO SP-INSMINCHGABL(ILEV).
+           MOVE 0 TO SP-INSMAXCHGABL(ILEV).
+           MOVE 0 TO SP-INSMAXBENIF(ILEV).
+           MOVE 0 TO SP-INSMAXTERM(ILEV).
+           MOVE 0 TO SP-INSEXCEPT(ILEV).
+           MOVE 0 TO SP-INSNOVER(ILEV).
+           SET ISTP TO 1.
+       CLEAR-INS-TERM-TABLE.
+           MOVE 0 TO SP-INSTERM(ILEV ISTP).
+           MOVE 0 TO SP-INSRATE(ILEV ISTP).
+           IF ISTP < 20
+              SET ISTP UP BY 1
+              GO TO CLEAR-INS-TERM-TABLE.
+
+      * CHANGED SP-IVER TO 5 FROM 14
+           SET IVER TO 1.
+       CLEAR-COVERAGE-TABLE.
+           MOVE 0 TO SP-INSMINAGE(ILEV IVER).
+           MOVE 0 TO SP-INSMAXAGE(ILEV IVER).
+           MOVE 0 TO SP-INSMAXCOV(ILEV IVER).
+           MOVE 0 TO SP-INSMAXTRM(ILEV IVER).
+           IF IVER < 5
+              SET IVER UP BY 1
+              GO TO CLEAR-COVERAGE-TABLE.
+
+      * CHANGED FROM ILEV < 14 TO ILEV < 12 
+           IF ILEV < 12
+              SET ILEV UP BY 1
+              GO TO CLEAR-INSURANCE-TABLE.
+
+           SET EXPR TO 1.
+       CLEAR-EXPR-RATETBL.
+           MOVE 0 TO SP-EXPR-RATE(EXPR) SP-EXPR-BREAK(EXPR).
+           MOVE 0 TO SP-EXPR-YRTYPE(EXPR).
+           IF EXPR < 5
+              SET EXPR UP BY 1
+              GO TO CLEAR-EXPR-RATETBL.
+
+           SET ASTP TO 1.
+       CLEAR-ACC-RATSP-ETBL.
+           MOVE 0 TO SP-ACC-RATE(ASTP) SP-ACC-BREAK(ASTP).
+           IF ASTP < 5
+              SET ASTP UP BY 1
+              GO TO CLEAR-ACC-RATSP-ETBL.
+
+      * SET EARN-ORDER TABLE:
+      * INTEREST
+           MOVE 1 TO SP-EARN-ORDER(1).
+      * ADDON
+           MOVE 5 TO SP-EARN-ORDER(2).
+      * SERVICE CHARGE
+           MOVE 2 TO SP-EARN-ORDER(3).
+      * MAINTFEE
+           MOVE 6 TO SP-EARN-ORDER(4).
+      * DLDISC
+           MOVE 3 TO SP-EARN-ORDER(5).
+      * OTHER
+           MOVE 4 TO SP-EARN-ORDER(6).
+      * NEW
+           MOVE 0 TO SP-EARN-ORDER(7).
+           MOVE 0 TO SP-EARN-ORDER(8).
+           MOVE 0 TO SP-EARN-ORDER(9).
+           MOVE 0 TO SP-EARN-ORDER(10).
+
+           MOVE 0 TO SP-ERNDELQ-START SP-ERNDELQ-STOP
+                     SP-MAX-IB-ACR-DAYS.
+
+           MOVE 0 TO SUB.
+       CLEAR-REBATE-TABLE.
+           ADD 1 TO SUB.
+           MOVE 0 TO SP-RBDAYS(SUB 1) SP-RBDAYS(SUB 2).
+           MOVE 0 TO SP-RBYRTYPE(SUB 1) SP-RBYRTYPE(SUB 2).
+           MOVE 0 TO SP-RBMINRET(SUB).
+           MOVE 0 TO SP-RBNOMON(SUB).
+           MOVE 0 TO SP-RBDEDCHG(SUB).
+           MOVE 0 TO SP-RBRECAST(SUB).
+           MOVE 0 TO SP-RBEARLY(SUB).
+           MOVE 0 TO SP-RBDEFER(SUB).
+           MOVE 0 TO SP-RBPCT(SUB).
+           MOVE 0 TO SP-RBREDUC(SUB).
+           MOVE 0 TO SP-RBMIN(SUB).
+           MOVE 0 TO SP-RBSPOPT1(SUB).
+           MOVE 0 TO SP-RBSPOPT2(SUB).
+           MOVE 0 TO SP-RBMANAGER(SUB).
+      * CHANGED FROM 6 TO 10 TO INCLUDE NEW EARNINGS LEVELS
+           IF SUB NOT > 10
+              MOVE 0 TO SP-ERNFRMLA(SUB) SP-ERNAMT(SUB) SP-ERN-TERM(SUB)
+                        SP-ERNPERCT(SUB) SP-ERN-DAYS(SUB).
+           IF SUB NOT > 3
+              MOVE 0 TO SP-DEFPOLMX(SUB).
+
+      * CHANGED FROM 16 TO 22 FOR NEW INSURANCE AND 4 NEW EARNINGS
+           IF SUB < 22
+              GO TO CLEAR-REBATE-TABLE.
+
+      *-----------------------------------------------------------------
+       LPSPCL-MISC-CLEAR.
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 4
+                   MOVE ZEROES TO SP-REPO-FMNO(1, SUB)
+                                  SP-REPO-FMNO(2, SUB)
+                                  SP-REPO-FMNO(3, SUB)
+           END-PERFORM.
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 4
+                   MOVE ZEROES TO SP-AUTO-SEND-FMNO(1, SUB)
+                                  SP-AUTO-SEND-FMNO(2, SUB)
+           END-PERFORM.
+
+           MOVE 0 TO SP-CONTRACTUAL-SET-NONACCRUAL
+                     SP-CONTRACTUAL-RESET-ACCRUAL
+                     SP-SHORT-PAY-THRESHOLD
+                     SP-MONTHS-PAY-NAPP-COUNTER.
+           MOVE 0 TO SP-ALT-PREPAY-MONTHS.
+
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 12
+               MOVE 0 TO SP-INSEARN-ORDER(SUB)
+           END-PERFORM.
+
+           MOVE 0 TO SP-DELQ-IB-AGE
+                     SP-DELQ-IB-MAX-DAYS
+                     SP-CASH-AVAIL-PERCENT
+                     SP-NET-BAL-REQ
+                     SP-AMT-PROCEEDS-REQ
+                     SP-PERCENT-REGPAY-AVAIL.

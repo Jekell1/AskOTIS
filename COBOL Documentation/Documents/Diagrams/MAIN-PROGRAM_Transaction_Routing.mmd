@@ -1,0 +1,27 @@
+graph TD
+    A[Transaction Routing] --> B{CD-BR-FILE-TYPE}
+    B -->|B| C[BANKRUPT-POSTING]
+    B -->|Other| D{BP-TRCD}
+    
+    D -->|RV| E[REVERSAL-POSTING]
+    D -->|OT| F[OTHER-CHG-POSTING]
+    D -->|Other| G{Payment Amount Check}
+    
+    G -->|Large Amount & Payoff| H[PAYOFF-POSTING]
+    G -->|Regular Amount| I[PAYMENT-POSTING]
+    
+    C --> J[Check POSTING-ERRCD]
+    E --> J
+    F --> J
+    H --> J
+    I --> J
+    
+    J --> K{Error Status}
+    K -->|Error| L[Status 59: Posting Error]
+    K -->|Success| M[Status 0: Success]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style D fill:#fff3e0
+    style G fill:#fff3e0
+    style M fill:#e8f5e8

@@ -1,0 +1,73 @@
+      * COPYMEMBER: LIBUP/UPATRPCL
+
+      * 2025.0116 BAH ADDED ATP-LCDUE AND ATP-CLOSFEE-REB-AMT #1697 S35Q-157
+      ***********************************************************************
+      *    ASCII POSTING TRANSACTION FILE CLEAR ROUTINE
+      *
+      **************************************************************************
+       CLEAR-ATRP-FILE SECTION.
+           MOVE ALL X"09" TO ATRP-REC.
+
+           MOVE 0 TO ATP-DATE ATP-BRNO ATP-POOLID ATP-CLASS ATP-ACCTNO
+                     ATP-LINE ATP-LTOUCH-DATE ATP-LAWCODE ATP-SSNO
+                     ATP-PAYDATE ATP-DUEDATE.
+           MOVE 0 TO ATP-TRAMT ATP-INTDUE ATP-APOTH ATP-APOT2 ATP-APINT
+                     ATP-APLC ATP-APCUR ATP-EARNINGS(1) ATP-EARNINGS(2)
+                     ATP-EARNINGS(3) ATP-EARNINGS(4) ATP-EARNINGS(5)
+                     ATP-EARNINGS(6) ATP-EARNINGS(7) ATP-EARNINGS(8)
+                     ATP-EARNINGS(9) ATP-EARNINGS(10)
+                     ATP-WORKAMT(1) ATP-WORKAMT(2) ATP-WORKAMT(3)
+                     ATP-WORKAMT(4) ATP-WORKAMT(5) ATP-WORKAMT(6)
+                     ATP-WORKAMT(7) ATP-WORKAMT(8) ATP-WORKAMT(9)
+                     ATP-WORKAMT(10)
+                     ATP-OTHBAL ATP-OT2BAL ATP-INTBAL ATP-LCBAL 
+                     ATP-CURBAL ATP-PDTH-DATE ATP-DLNO ATP-DLPROC
+                     ATP-LCPDTH-DATE ATP-POSTING-BR ATP-REVSEQNO
+                     ATP-TILLNO ATP-INTPAID ATP-PRIOR-POOLID.
+           MOVE 0 TO ATP-INSEARN(1) ATP-INSEARN(2) ATP-INSEARN(3)
+                     ATP-INSEARN(4) ATP-INSEARN(5) ATP-INSEARN(6)
+                     ATP-INSEARN(7) ATP-INSEARN(8) ATP-INSEARN(9)
+                     ATP-INSEARN(10)
+                     ATP-INSWORKAMT(1) ATP-INSWORKAMT(2)
+                     ATP-INSWORKAMT(3) ATP-INSWORKAMT(4)
+                     ATP-INSWORKAMT(5) ATP-INSWORKAMT(6)
+                     ATP-INSWORKAMT(7) ATP-INSWORKAMT(8)
+                     ATP-INSWORKAMT(9) ATP-INSWORKAMT(10).
+           
+           MOVE 0 TO ATP-DLRVCHGS-ADJ(1) ATP-DLRVCHGS-ADJ(2)
+                     ATP-DLRVCHGS-ADJ(3) ATP-DLPARVHELD-ADJ
+                     ATP-DLPARVPAID-ADJ
+                     ATP-NEWSTAT-RATE ATP-PODATE ATP-TOTNODEF
+                     ATP-LNAMT ATP-ORIG-1STPYDATE ATP-OLD1ST-PYDATE
+                     ATP-1STPYDATE ATP-ORGTERM ATP-INSCOMM ATP-POSTTIME
+                     ATP-PL-OTH-AR ATP-LP-DLNO ATP-SPRCLASS
+                     ATP-POSTDATE ATP-UNITPER-FREQ.
+
+           MOVE 0 TO ATP-SP-DEFFRMLA ATP-PENALTY-INT ATP-INSCOMP
+                     ATP-PROMAMT ATP-PROMDATE ATP-INS-TAX-RB
+                     ATP-PROMDAYS-PASTDUE
+                     ATP-MIP-CLPAID ATP-MIP-CLCOMM ATP-MIP-CLPDTH-DATE
+                     ATP-MIP-AHPAID ATP-MIP-AHCOMM ATP-MIP-AHPDTH-DATE
+                     ATP-APPLIED-TO-ESCROW ATP-ESCROW-AMT
+                     ATP-ESCROW-DISBURSED ATP-ESCROW-PREPAID
+                     ATP-LP-SEQNO ATP-PRIOR-DF-POSTDATE
+                     ATP-FROMCL ATP-TOCL ATP-DLRVNUM ATP-P4P5-DLRVNUM
+                     ATP-LCDUE ATP-CLOSFEE-REB-AMT.
+
+           MOVE 0 TO ATP-GLNO(1)  ATP-GLNO(2)  ATP-GLNO(3)
+                     ATP-GLAMT(1) ATP-GLAMT(2) ATP-GLAMT(3).
+
+           MOVE SPACES TO ATP-JDCD ATP-PLCD ATP-MAKER
+                          ATP-IBPC ATP-TRCD ATP-REFNO ATP-SERVACCT
+                          ATP-SALEFIN ATP-INSURED ATP-INSOURS
+                          ATP-LOANTYPE ATP-OTHBR-FG ATP-REV ATP-REVTRCD
+                          ATP-STATUSFG ATP-KEEPAPINT ATP-INSTYPES
+                          ATP-POCD ATP-DL-RVCHGS-CODE(1)
+                          ATP-DL-RVCHGS-CODE(2) ATP-DL-RVCHGS-CODE(3)
+                          ATP-DL-PARVHELD-CODE ATP-DL-PARVPAID-CODE
+                          ATP-MANUAL-RB ATP-USERID ATP-PLTYPE
+                          ATP-REPOCD ATP-MAX-DEFER-FG ATP-UNITPER-CD
+                          ATP-COLLECTOR ATP-PROMID ATP-MIP-FG 
+                          ATP-INS-TAX-COUNTY-CD ATP-INS-TAX-CITY-CD
+                          ATP-PRIOR-DF-CODE ATP-CANCEL-REASON
+                          ATP-ADDON-TXT ATP-ADDON-TYP ATP-P4P5-TRANCD.

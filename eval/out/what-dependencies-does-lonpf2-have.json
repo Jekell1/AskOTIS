@@ -1,0 +1,67 @@
+{
+  "question": "What dependencies does LONPF2 have?",
+  "scope": "mixed",
+  "expanded_query": "LONPF2 What dependencies does have",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPF2",
+      "path": "LONPF2",
+      "line": null,
+      "snippet": "Paragraphs=354; edges=664; depth=6; cycles=Y; entries=166; exits=185; fanout_max=99; risk=0.79. Entry: END-PERFORM.... High fanout: EXIT (99)."
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "APIPAY",
+      "path": "APIPAY",
+      "line": null,
+      "snippet": "Paragraphs=93; edges=169; depth=6; cycles=N; entries=49; exits=49; fanout_max=24; risk=0.49. Entry: EXIT.... High fanout: DECLARATIVES (24)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "df29b942c892e76acf0ae782d540346b2bc1c7f9",
+      "path": "cobol_src\\LP\\LONPW9.CBL",
+      "line": 253,
+      "snippet": "*             HERE & CALL LONPF2, WORLD PR# 1151"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPW9",
+      "path": "LONPW9",
+      "line": null,
+      "snippet": "Paragraphs=144; edges=267; depth=9; cycles=N; entries=74; exits=72; fanout_max=44; risk=0.535. Entry: SETUP-LINK-INFO.... High fanout: EXIT (44)."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "INSTEAD",
+      "path": "INSTEAD",
+      "line": null,
+      "snippet": "INSTEAD ; ROLE:UNKNOWN ; OUT: ; IN:DISBI0,EOQRPT,LONPF2,MEMOSP,PTHMOD ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "5c5ba2861ebf35651e9a05051911f9de2a16367a",
+      "path": "cobol_src\\LP\\LONPF2.CBL",
+      "line": 2552,
+      "snippet": "*    CALL XFER USING STAT PROG-LIST PROG-BUF."
+    }
+  ],
+  "meta": {
+    "ts": 1759097676.995554,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

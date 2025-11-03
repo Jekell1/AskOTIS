@@ -1,0 +1,58 @@
+graph TD
+    A[P&L Transaction Input] --> B{BR-AUTO-PL-REF-AC Setting?}
+    
+    B -->|"1" - PL Only| C{Transaction = PL?}
+    B -->|"2" - PL/P2| D{Transaction = PL or P2?}
+    B -->|"3" - PL/P2/P3| E{Transaction = PL/P2/P3?}
+    B -->|Other| F[No Auto Processing]
+    
+    C -->|Yes| G[Auto Processing Enabled]
+    C -->|No| F
+    D -->|Yes| G
+    D -->|No| F
+    E -->|Yes| G
+    E -->|No| F
+    
+    G --> H[Read Current Loan Balance]
+    H --> I[Calculate Available Refund]
+    I --> J{Refund Amount > 0?}
+    
+    J -->|No| K[No Refund Required]
+    J -->|Yes| L[Generate Refund Transaction]
+    
+    L --> M[Create RI Transaction]
+    M --> N[Update Rebate Amounts]
+    N --> O[Calculate Acceleration Needed]
+    O --> P{Acceleration Required?}
+    
+    P -->|No| Q[Refund Only]
+    P -->|Yes| R[Generate AC Transaction]
+    
+    R --> S[Call LPCERN for Earnings]
+    S --> T[Move Earnings to Income]
+    T --> U[Update Accumulation Fields]
+    U --> V[Set LP-TILLNO for AC]
+    V --> W[Write AC Transaction]
+    W --> X[Update LN-CURBAL]
+    
+    Q --> Y[Apply Refund to Balance]
+    X --> Y
+    Y --> Z[Update Payment History]
+    Z --> AA[Update Audit Trail]
+    AA --> BB[Return Success Status]
+    
+    K --> CC[Continue Normal Processing]
+    F --> CC
+    CC --> BB
+    
+    BB --> DD[Check Balance Consistency]
+    DD --> EE{Balances Valid?}
+    EE -->|Yes| FF[Commit Changes]
+    EE -->|No| GG[Rollback and Error]
+    
+    style A fill:#e1f5fe
+    style G fill:#e8f5e8
+    style L fill:#fff3e0
+    style R fill:#fff3e0
+    style FF fill:#c8e6c9
+    style GG fill:#ffcdd2

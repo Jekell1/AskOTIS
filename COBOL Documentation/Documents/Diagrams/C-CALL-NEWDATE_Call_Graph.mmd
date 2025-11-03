@@ -1,0 +1,69 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-CALL-NEWDATE Module]
+    B --> C[Input Processing]
+    C --> D[Format Analysis]
+    D --> E[Component Extraction]
+    E --> F[Date Validation]
+    F --> G[Year Processing]
+    G --> H[Output Assembly]
+    H --> I[Return to Caller]
+    
+    subgraph "Input Processing"
+        J[Length Analysis]
+        K[Separator Detection]
+        L[Format Classification]
+    end
+    
+    subgraph "Validation Modules"
+        M[Month Validation]
+        N[Day Validation]
+        O[Year Validation]
+        P[Range Checking]
+    end
+    
+    subgraph "Year Processing"
+        Q[2-digit to 4-digit]
+        R[Century Logic]
+        S[Pivot Point Analysis]
+    end
+    
+    subgraph "Working Storage"
+        T[NEWDATE-INPUT]
+        U[NEWDATE-INPUT-LENGTH]
+        V[WS-NEWDATE-WORK-AREA]
+        W[Component Variables]
+    end
+    
+    subgraph "Output Structure"
+        X[WS-NEWDATE-OUT-CCYY]
+        Y[WS-NEWDATE-OUT-MM]
+        Z[WS-NEWDATE-OUT-DD]
+        AA[Return Code]
+    end
+    
+    C --> J
+    C --> K
+    C --> L
+    
+    F --> M
+    F --> N
+    F --> O
+    F --> P
+    
+    G --> Q
+    G --> R
+    G --> S
+    
+    B --> T
+    B --> U
+    B --> V
+    B --> W
+    
+    H --> X
+    H --> Y
+    H --> Z
+    H --> AA
+    
+    style A fill:#e1f5fe
+    style I fill:#c8e6c9
+    style B fill:#f3e5f5

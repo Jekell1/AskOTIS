@@ -1,0 +1,39 @@
+flowchart TD
+    A[Start C-DATE-TEST] --> B[Copy Input Date]
+    B --> C[MOVE NUM-DATE TO WS-NDTE]
+    C --> D{Month Valid AND Day Valid?}
+    D -->|No| E[Set NUM-DATE = 0]
+    D -->|Yes| F[Convert to Julian]
+    E --> Z[End C-DATE-TEST]
+    
+    F --> G[PERFORM C-CALL-JUL]
+    G --> H[Store Julian in WS-JUL-WK]
+    H --> I[Reset NUM-DATE = 0]
+    I --> J[Convert Julian Back to Date]
+    J --> K[PERFORM C-CALL-CJUL]
+    K --> L[Get Back-Converted Date]
+    L --> M{Original = Back-Converted?}
+    
+    M -->|No| N[Round-Trip Failed]
+    M -->|Yes| O[Round-Trip Successful]
+    N --> P[Keep NUM-DATE = 0]
+    O --> Q[Restore Original Date]
+    Q --> R[MOVE WS-NDTE TO NUM-DATE]
+    
+    P --> Z
+    R --> Z
+    
+    S[Validation Checks]
+    S --> T[MM: 01-12]
+    S --> U[DD: Valid for Month/Year]
+    S --> V[Julian Conversion Success]
+    S --> W[Round-Trip Consistency]
+    
+    style A fill:#e1f5fe
+    style Z fill:#c8e6c9
+    style D fill:#fff3e0
+    style M fill:#fff3e0
+    style E fill:#ffebee
+    style N fill:#ffebee
+    style O fill:#e8f5e8
+    style S fill:#e1f5fe

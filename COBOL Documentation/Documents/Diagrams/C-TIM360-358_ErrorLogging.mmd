@@ -1,0 +1,7 @@
+%% Error Logging Flow Diagram for C-TIM360-358
+flowchart TD
+    Start[Start Error Logging]
+    Start --> DetectError[Detect Error]
+    DetectError --> LogError[Log Error]
+    LogError --> Continue[Continue Processing]
+    Continue --> End[End Error Logging]

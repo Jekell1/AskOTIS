@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-CALL-CJUL Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-CALL-CJUL Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-CALL-CJUL Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-CALL-CJUL.cpy</code><br />
+<strong>Program ID:</strong> C-CALL-CJUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#algorithm-details">Algorithm Details</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-CALL-CJUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Julian to Gregorian Date Conversion<br />
+<strong>Source File:</strong> <code>C-CALL-CJUL.cpy</code><br />
+<strong>Usage:</strong> Convert Julian day numbers back to standard calendar dates (CCYYMMDD format)  </p>
+<h2>Purpose and Description</h2>
+<p>C-CALL-CJUL is the companion utility to C-CALL-JUL that performs the reverse conversion from Julian day numbers back to Gregorian calendar dates. This utility is essential for completing date arithmetic operations and ensuring round-trip date conversion accuracy throughout the payment processing system.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Julian to Gregorian Conversion</strong> - Convert Julian day numbers to CCYYMMDD format</li>
+<li><strong>Leap Year Handling</strong> - Account for leap years in reverse conversion</li>
+<li><strong>Month Boundary Processing</strong> - Determine correct month and day from Julian values</li>
+<li><strong>Date Format Output</strong> - Provide properly formatted CCYYMMDD results</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>P-CJUL-JULIAN-DATE</strong> - Julian day number (days since 12/31/1899)</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>P-CJUL-DATE-OUT</strong> - Date in CCYYMMDD format</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-CALL-CJUL Main Flow" src="Diagrams/C-CALL-CJUL_Main_Flow.mmd" /></p>
+<h4>Reverse Conversion Algorithm</h4>
+<ol>
+<li>
+<p><strong>Julian Input Processing</strong>
+   <code>cobol
+   MOVE P-CJUL-JULIAN-DATE TO CJUL-IN
+   COMPUTE CJWS-JUL-BY4 = CJUL-IN * 4</code></p>
+</li>
+<li>
+<p><strong>Year Calculation</strong>
+   <code>cobol
+   DIVIDE CJWS-JUL-BY4 BY 1461 GIVING CJWS-DIV-RESULT
+                            REMAINDER CJWS-MOD-JUL
+   IF CJWS-MOD-JUL NOT = 0
+      MOVE 1 TO CJWS-MOD-JUL</code></p>
+</li>
+<li>
+<p><strong>Year Determination</strong>
+   <code>cobol
+   COMPUTE WS-CJUL-OUT-CCYY = (CJUL-IN * 4 / 1461) + CJWS-MOD-JUL</code></p>
+</li>
+<li>
+<p><strong>Day-of-Year Calculation</strong>
+   <code>cobol
+   COMPUTE WS-CJUL-OUT-DD ROUNDED = CJUL-IN -
+           ((WS-CJUL-OUT-CCYY - 1) * 1461 / 4)</code></p>
+</li>
+<li>
+<p><strong>Leap Year Adjustment</strong>
+   <code>cobol
+   DIVIDE WS-CJUL-OUT-CCYY BY 4 GIVING CJWS-DIV-RESULT
+                               REMAINDER CJWS-MOD-JUL
+   IF CJWS-MOD-JUL NOT &gt; 0 AND WS-CJUL-OUT-DD NOT &lt; 60
+      MOVE 1 TO CJWS-WORK
+   ELSE
+      MOVE 0 TO CJWS-WORK</code></p>
+</li>
+<li>
+<p><strong>Month Resolution</strong>
+   <code>cobol
+   MOVE 13 TO CJWS-MM
+   PERFORM UNTIL (DYTOM(CJWS-MM) &lt; WS-CJUL-OUT-DD) OR (CJWS-MM = 1)
+      ADD -1 TO CJWS-MM
+   END-PERFORM</code></p>
+</li>
+</ol>
+<h3>Conversion Process Components</h3>
+<p><img alt="C-CALL-CJUL Conversion Process" src="Diagrams/C-CALL-CJUL_Conversion_Process.mmd" /></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Purpose</th>
+<th>Formula/Logic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Julian×4</strong></td>
+<td>Scale for 4-year cycle</td>
+<td><code>JULIAN × 4</code></td>
+</tr>
+<tr>
+<td><strong>1461 Division</strong></td>
+<td>Find 4-year periods</td>
+<td><code>(JULIAN×4) ÷ 1461</code></td>
+</tr>
+<tr>
+<td><strong>Year Calculation</strong></td>
+<td>Determine calendar year</td>
+<td><code>(Years from 1900) + 1900</code></td>
+</tr>
+<tr>
+<td><strong>Day-of-Year</strong></td>
+<td>Find day within year</td>
+<td><code>JULIAN - Year_Contribution</code></td>
+</tr>
+<tr>
+<td><strong>Month Lookup</strong></td>
+<td>Find month via DYTOM</td>
+<td>Loop through DYTOM table</td>
+</tr>
+<tr>
+<td><strong>Day Adjustment</strong></td>
+<td>Final day calculation</td>
+<td><code>Day_of_Year - DYTOM[Month]</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong><a href="C-DATE-TEST_Documentation.html">C-DATE-TEST</a></strong> - Round-trip date validation</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day increment operations</li>
+<li><strong>Date arithmetic routines</strong> - Converting Julian results back to dates</li>
+<li><strong>Validation processes</strong> - Ensuring Julian conversion accuracy</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li>No external routines (self-contained mathematical processing)</li>
+</ul>
+<p><img alt="C-CALL-CJUL Call Graph" src="Diagrams/C-CALL-CJUL_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Input Data Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-CJUL-JULIAN-DATE</td>
+<td>NUMERIC</td>
+<td>Input Julian day number</td>
+</tr>
+<tr>
+<td>CJUL-IN</td>
+<td>NUMERIC</td>
+<td>Working copy of Julian input</td>
+</tr>
+</tbody>
+</table>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CJWS-JUL-BY4</td>
+<td>NUMERIC</td>
+<td>Julian × 4 for cycle calculations</td>
+</tr>
+<tr>
+<td>CJWS-DIV-RESULT</td>
+<td>NUMERIC</td>
+<td>Division result storage</td>
+</tr>
+<tr>
+<td>CJWS-MOD-JUL</td>
+<td>NUMERIC</td>
+<td>Modulo/remainder values</td>
+</tr>
+<tr>
+<td>WS-CJUL-OUT-CCYY</td>
+<td>NUMERIC</td>
+<td>Calculated year</td>
+</tr>
+<tr>
+<td>WS-CJUL-OUT-MM</td>
+<td>NUMERIC</td>
+<td>Calculated month</td>
+</tr>
+<tr>
+<td>WS-CJUL-OUT-DD</td>
+<td>NUMERIC</td>
+<td>Calculated day</td>
+</tr>
+<tr>
+<td>CJWS-WORK</td>
+<td>NUMERIC</td>
+<td>Leap year adjustment flag</td>
+</tr>
+<tr>
+<td>CJWS-MM</td>
+<td>NUMERIC</td>
+<td>Month loop counter</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Data Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-CJUL-DATE-OUT</td>
+<td>DATE</td>
+<td>CCYYMMDD</td>
+<td>Converted Gregorian date</td>
+</tr>
+<tr>
+<td>CJUL-OUT-CC</td>
+<td>NUMERIC</td>
+<td>99</td>
+<td>Century portion</td>
+</tr>
+<tr>
+<td>CJUL-OUT-YY</td>
+<td>NUMERIC</td>
+<td>99</td>
+<td>Year portion</td>
+</tr>
+<tr>
+<td>CJUL-OUT-MM</td>
+<td>NUMERIC</td>
+<td>99</td>
+<td>Month portion</td>
+</tr>
+<tr>
+<td>CJUL-OUT-DD</td>
+<td>NUMERIC</td>
+<td>99</td>
+<td>Day portion</td>
+</tr>
+</tbody>
+</table>
+<h2>Mathematical Algorithm</h2>
+<h3>4-Year Cycle Logic</h3>
+<p>The algorithm leverages the 1461-day cycle (4 years including one leap year):
+- <strong>3 regular years:</strong> 365 days each = 1095 days
+- <strong>1 leap year:</strong> 366 days = 366 days<br />
+- <strong>Total:</strong> 1095 + 366 = 1461 days</p>
+<h3>Reverse DYTOM Processing</h3>
+<p>The month determination uses reverse lookup in the DYTOM table:</p>
+<pre><code class="language-cobol">MOVE 13 TO CJWS-MM
+PERFORM UNTIL (DYTOM(CJWS-MM) &lt; WS-CJUL-OUT-DD) OR (CJWS-MM = 1)
+   ADD -1 TO CJWS-MM
+END-PERFORM
+</code></pre>
+<p>This finds the largest month whose DYTOM value is less than the day-of-year.</p>
+<h2>Usage Examples</h2>
+<h3>Standard Julian Conversion</h3>
+<pre><code class="language-cobol">MOVE 45367 TO P-CJUL-JULIAN-DATE  
+PERFORM C-CALL-CJUL
+* Result: P-CJUL-DATE-OUT = 20240315 (example)
+</code></pre>
+<h3>Round-Trip Validation Pattern</h3>
+<pre><code class="language-cobol">* Convert date to Julian
+MOVE 20240229 TO P-DATE-IN
+PERFORM C-CALL-JUL
+MOVE P-JULIAN-DATE TO TEMP-JULIAN
+
+* Convert Julian back to date  
+MOVE TEMP-JULIAN TO P-CJUL-JULIAN-DATE
+PERFORM C-CALL-CJUL
+* P-CJUL-DATE-OUT should equal 20240229
+</code></pre>
+<h3>Date Arithmetic Completion</h3>
+<pre><code class="language-cobol">* Add 30 days using Julian arithmetic
+MOVE START-DATE TO P-DATE-IN
+PERFORM C-CALL-JUL
+ADD 30 TO P-JULIAN-DATE
+MOVE P-JULIAN-DATE TO P-CJUL-JULIAN-DATE
+PERFORM C-CALL-CJUL
+MOVE P-CJUL-DATE-OUT TO END-DATE
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Input Validation</h3>
+<p>The utility assumes valid Julian day numbers within the supported range:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Potential Issue</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Julian &lt; 1</td>
+<td>Dates before 1900</td>
+<td>Validate input range</td>
+</tr>
+<tr>
+<td>Julian &gt; 73049</td>
+<td>Dates beyond 2099</td>
+<td>Check practical limits</td>
+</tr>
+<tr>
+<td>Invalid Julian</td>
+<td>Mathematical errors</td>
+<td>Use with validated Julian values</td>
+</tr>
+</tbody>
+</table>
+<h3>Leap Year Edge Cases</h3>
+<p>Special handling for February 29 and leap year boundaries:
+- <strong>Day 60 adjustment</strong> - Accounts for February 29 in leap years
+- <strong>February handling</strong> - Correctly processes 28/29 day months
+- <strong>Year boundary</strong> - Properly handles December/January transitions</p>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Integer arithmetic</strong> - Avoids floating-point precision issues</li>
+<li><strong>Table lookup</strong> - DYTOM array for efficient month processing  </li>
+<li><strong>Reverse iteration</strong> - Efficient month finding algorithm</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Maximum 12 iterations for month lookup</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Test Scenarios</h3>
+<table>
+<thead>
+<tr>
+<th>Test Category</th>
+<th>Julian Input</th>
+<th>Expected Date</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Basic conversion</strong></td>
+<td>1</td>
+<td>19000101</td>
+<td>First supported date</td>
+</tr>
+<tr>
+<td><strong>Leap year</strong></td>
+<td>60 (leap year)</td>
+<td>*0229</td>
+<td>February 29 handling</td>
+</tr>
+<tr>
+<td><strong>Non-leap year</strong></td>
+<td>60 (non-leap)</td>
+<td>*0301</td>
+<td>February 28 boundary</td>
+</tr>
+<tr>
+<td><strong>Month boundaries</strong></td>
+<td>Various</td>
+<td><em>01, </em>31</td>
+<td>Month edge cases</td>
+</tr>
+<tr>
+<td><strong>Year boundaries</strong></td>
+<td>Year-end</td>
+<td>12/31, 01/01</td>
+<td>Year transitions</td>
+</tr>
+</tbody>
+</table>
+<h3>Round-Trip Validation</h3>
+<pre><code class="language-cobol">* Comprehensive validation pattern
+PERFORM VARYING TEST-DATE FROM 19000101 BY 1 
+                          UNTIL TEST-DATE &gt; 20991231
+   MOVE TEST-DATE TO P-DATE-IN
+   PERFORM C-CALL-JUL
+   MOVE P-JULIAN-DATE TO P-CJUL-JULIAN-DATE
+   PERFORM C-CALL-CJUL
+   IF P-CJUL-DATE-OUT NOT = TEST-DATE
+      * Log conversion error
+   END-IF
+END-PERFORM
+</code></pre>
+<h2>Dependencies</h2>
+<h3>Required Components</h3>
+<ul>
+<li><strong>DYTOM table</strong> - Month-to-day conversion array</li>
+<li><strong>Mathematical precision</strong> - Integer arithmetic support</li>
+<li><strong>Working storage</strong> - Sufficient numeric field sizes</li>
+</ul>
+<h3>No External Dependencies</h3>
+<ul>
+<li>Self-contained algorithm</li>
+<li>No calls to other utilities</li>
+<li>No file I/O operations</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Reverse Algorithm Pattern</strong> - Inverse of C-CALL-JUL logic</li>
+<li><strong>Table Lookup Pattern</strong> - DYTOM-based month resolution</li>
+<li><strong>Cycle Mathematics Pattern</strong> - 1461-day cycle optimization</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li><strong>Preserve 1461-day logic</strong> - Critical for leap year accuracy</li>
+<li><strong>Maintain DYTOM consistency</strong> - Must match C-CALL-JUL table</li>
+<li><strong>Keep integer arithmetic</strong> - Avoid floating-point precision issues</li>
+</ul>
+<h3>Testing Requirements</h3>
+<ul>
+<li>Validate against C-CALL-JUL for round-trip accuracy</li>
+<li>Test all leap years in supported range</li>
+<li>Verify month boundary calculations</li>
+<li>Check year transition handling</li>
+</ul>
+<h2>Historical Context</h2>
+<h3>Julian Day Epoch Consistency</h3>
+<ul>
+<li><strong>Same epoch as C-CALL-JUL</strong> - December 31, 1899 = Julian 0</li>
+<li><strong>Y2K compliance</strong> - Full 4-digit year support</li>
+<li><strong>Business focus</strong> - Optimized for 1900-2099 range</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Companion Gregorian to Julian conversion</li>
+<li><strong><a href="C-DATE-TEST_Documentation.html">C-DATE-TEST</a></strong> - Date validation using round-trip conversion</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day increment utility that uses CJUL conversion</li>
+<li><strong><a href="C-LEAP-YEAR-TEST_Documentation.html">C-LEAP-YEAR-TEST</a></strong> - Leap year determination utility</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

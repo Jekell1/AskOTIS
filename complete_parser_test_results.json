@@ -1,0 +1,79 @@
+{
+  "test_description": "Complete parser logic test with process_file function",
+  "test_result": "FAIL",
+  "file_info": {
+    "program_id": "COMPLETE-TEST",
+    "procedure_using": [
+      "L-INPUT-ONLY",
+      "L-OUTPUT-ONLY",
+      "L-INOUT-PARAM",
+      "L-MODIFY-PARAM"
+    ],
+    "linkage_items": 4,
+    "total_xrefs": 3,
+    "param_xrefs": 2
+  },
+  "parameter_analysis": {
+    "L-INOUT-PARAM": {
+      "total_references": 1,
+      "read_count": 0,
+      "write_count": 1,
+      "param_count": 0,
+      "directions": [
+        "param_out"
+      ],
+      "expected_direction": "param_out",
+      "correct": true,
+      "usage_sequence": [
+        {
+          "line": 25,
+          "kind": "write",
+          "direction": "param_out",
+          "snippet": "MOVE \"PROCESSED\" TO L-INOUT-PARAM."
+        }
+      ]
+    },
+    "L-MODIFY-PARAM": {
+      "total_references": 1,
+      "read_count": 1,
+      "write_count": 0,
+      "param_count": 0,
+      "directions": [
+        "param_in"
+      ],
+      "expected_direction": "param_out",
+      "correct": false,
+      "usage_sequence": [
+        {
+          "line": 29,
+          "kind": "read",
+          "direction": "param_in",
+          "snippet": "MOVE L-MODIFY-PARAM TO WS-TEMP."
+        }
+      ]
+    }
+  },
+  "all_xrefs_sample": [
+    {
+      "simple_name": "L-INOUT-PARAM",
+      "kind": "write",
+      "direction": "param_out",
+      "line": 25,
+      "snippet": "MOVE \"PROCESSED\" TO L-INOUT-PARAM."
+    },
+    {
+      "simple_name": "WS-TEMP",
+      "kind": "write",
+      "direction": "write",
+      "line": 29,
+      "snippet": "MOVE L-MODIFY-PARAM TO WS-TEMP."
+    },
+    {
+      "simple_name": "L-MODIFY-PARAM",
+      "kind": "read",
+      "direction": "param_in",
+      "line": 29,
+      "snippet": "MOVE L-MODIFY-PARAM TO WS-TEMP."
+    }
+  ]
+}

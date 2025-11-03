@@ -1,0 +1,959 @@
+{
+  "structural_limits": [
+    [
+      "new_cobol_flow_edges_v2",
+      16.635668526555072
+    ],
+    [
+      "new_cobol_variable_usage",
+      17.007646207894194
+    ],
+    [
+      "new_cobol_data_items",
+      17.286629468898532
+    ],
+    [
+      "new_cobol_screen_nodes",
+      40.56623269270511
+    ],
+    [
+      "new_cobol_paragraphs",
+      41.0622029344906
+    ]
+  ],
+  "potentially_expandable": [
+    [
+      "new_cobol_copybook_usage",
+      20.148791072535648
+    ]
+  ],
+  "details": {
+    "new_cobol_flow_edges_v2": {
+      "has_expected_content": 0,
+      "missing_expected_content": 15,
+      "copybooks": 15,
+      "programs": 0,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "ZMMAIN_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BHLIST_EVA",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BYMANE_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CHLOAN_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GLEXMU_SCN",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LP01UD",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "TRSMN4_EVA",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "EMWOR4_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CISCAN_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GBFSMS",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "PDPURG_SCN",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IOAQIN_DEF",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "COLRPT_SCN",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IOLMRN_EVA",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "UPWSATRK",
+          "has_content": false,
+          "checks": {
+            "has_flow_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": true,
+      "missing_content_pct": 100.0,
+      "coverage_pct": 16.635668526555072
+    },
+    "new_cobol_variable_usage": {
+      "has_expected_content": 4,
+      "missing_expected_content": 11,
+      "copybooks": 15,
+      "programs": 0,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "NCINS_DEF",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "MEMOSCW",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LP01DT_SQL",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "O2MORP_EVA",
+          "has_content": true,
+          "checks": {
+            "has_variable_ops": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "SPINMU_WKS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "AC1DAY_EVA",
+          "has_content": true,
+          "checks": {
+            "has_variable_ops": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPFDLTD",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "ACMAIN_WKS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPCAMU_WKS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CONVAL_EVA",
+          "has_content": true,
+          "checks": {
+            "has_variable_ops": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPWSSS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BYMAN6_DEF",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IOTRCI_EVA",
+          "has_content": true,
+          "checks": {
+            "has_variable_ops": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "DISBOV_WKS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "SRMAIN_WKS",
+          "has_content": false,
+          "checks": {
+            "has_variable_ops": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": true,
+      "missing_content_pct": 73.33333333333333,
+      "coverage_pct": 17.007646207894194
+    },
+    "new_cobol_data_items": {
+      "has_expected_content": 0,
+      "missing_expected_content": 15,
+      "copybooks": 15,
+      "programs": 0,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "TRLSCN_SCN",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LNAURP_DEF",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPEMRG_WKS",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IODLRN_DEF",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "EXXLTDI",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "UPFDALTC",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPCHGS_SQL",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BSLIST_SCN",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "RVENTW",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPFDTRB",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "TRLMN4_DEF",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GBSEGS_SQL",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CHREP3_SCN",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GLFDJD",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "AUTOPC_DEF",
+          "has_content": false,
+          "checks": {
+            "has_data_division": false,
+            "has_level_items": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": true,
+      "missing_content_pct": 100.0,
+      "coverage_pct": 17.286629468898532
+    },
+    "new_cobol_copybook_usage": {
+      "has_expected_content": 9,
+      "missing_expected_content": 6,
+      "copybooks": 15,
+      "programs": 0,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "UPWSATRK",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPWSLTD",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "RCINQ2_WKS",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "NOFILE_DEF",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "WR1080_SCN",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IOEPRN_EVA",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "TRSCAN_DEF",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "UPFSALTF",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPFSOP_LCK",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "PWMAIN_DEF",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "RVENTW",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "EACDMN_WKS",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPWSSS",
+          "has_content": false,
+          "checks": {
+            "has_copy_statements": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CDCHLS_EVA",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BBINQ3_DEF",
+          "has_content": true,
+          "checks": {
+            "has_copy_statements": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": false,
+      "missing_content_pct": 40.0,
+      "coverage_pct": 20.148791072535648
+    },
+    "new_cobol_screen_nodes": {
+      "has_expected_content": 0,
+      "missing_expected_content": 15,
+      "copybooks": 15,
+      "programs": 0,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "LP01TZ_SQL",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "DSMAN1_EVA",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "EACDMN_EVA",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IOLSFI_WKS",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "REBATEW",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BWMAN2_SCN",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "IR1098_EVA",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPFSRT",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GBFSMS",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GQMAIN_WKS",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "VOIDI_WKS",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BHSCAN_EVA",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "AC9DAY_CMD",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "XONIN_WKS",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "TR1697_SCN",
+          "has_content": false,
+          "checks": {
+            "has_screen_section": false,
+            "has_bms": false,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": true,
+      "missing_content_pct": 100.0,
+      "coverage_pct": 40.56623269270511
+    },
+    "new_cobol_paragraphs": {
+      "has_expected_content": 2,
+      "missing_expected_content": 13,
+      "copybooks": 13,
+      "programs": 2,
+      "not_found": 0,
+      "details": [
+        {
+          "program": "RZMTR3",
+          "has_content": true,
+          "checks": {
+            "has_procedure_division": true,
+            "has_paragraphs": true,
+            "is_copybook": false,
+            "is_program": true
+          }
+        },
+        {
+          "program": "IOGBIN_WKS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "SP01GQS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "GCLIST",
+          "has_content": true,
+          "checks": {
+            "has_procedure_division": true,
+            "has_paragraphs": true,
+            "is_copybook": false,
+            "is_program": true
+          }
+        },
+        {
+          "program": "TRBMN1_DEF",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "PDPG05_DEF",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "BNKWI_WKS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "DSMAN5_WKS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "CTLIST_DEF",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPFSOP_LCK",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "UP01ALTL",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "DACCESS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "TSLIST_WKS",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LAST4_DEF",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        },
+        {
+          "program": "LPTRCCL",
+          "has_content": false,
+          "checks": {
+            "has_procedure_division": false,
+            "has_paragraphs": true,
+            "is_copybook": true,
+            "is_program": false
+          }
+        }
+      ],
+      "is_structural_limit": true,
+      "missing_content_pct": 86.66666666666667,
+      "coverage_pct": 41.0622029344906
+    }
+  }
+}

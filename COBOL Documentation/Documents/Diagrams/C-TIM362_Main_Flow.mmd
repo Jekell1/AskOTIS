@@ -1,0 +1,88 @@
+flowchart TD
+    A[Start C-TIM362] --> B[MOVE WS-DATE2 TO WS-DATEX]
+    B --> C[PERFORM C-TIMBEG]
+    C --> D[Calculate Component Differences]
+    
+    D --> E[COMPUTE WS-XREM = DATE2-CCYY - DATE1-CCYY]
+    E --> F[COMPUTE WS-XMONTHS = DATE2-MM - DATE1-MM]
+    F --> G[COMPUTE WS-XDAYS = DATE2-DD - DATE1-DD]
+    
+    G --> H[Check Day Arithmetic Sign]
+    H --> I{WS-XDAYS NOT < 0?}
+    
+    I -->|Yes| J[Simple 30-Day Arithmetic]
+    I -->|No| K[Complex Julian Logic]
+    
+    J --> L[COMPUTE WS-XDAYS = Years×12+Months×30 + Days]
+    L --> M[PERFORM C-TIMEND]
+    M --> N[End C-TIM362]
+    
+    K --> O[Month Adjustment]
+    O --> P[ADD -1 TO WS-XMONTHS]
+    P --> Q[COMPUTE WS-HOLD-MOS = Years×12 + Months]
+    Q --> R[Date Manipulation]
+    
+    R --> S[MOVE -1 TO WS-UP-WORK]
+    S --> T[Set up C-INCR-MONTHS parameters]
+    T --> U[PERFORM C-INCR-MONTHS]
+    U --> V[Update WS-DATEX with result]
+    
+    V --> W[End-of-Month Logic]
+    W --> X[MOVE WS-DATE1-DD TO WS-DATEX-DD]
+    X --> Y{WS-DATE1-DD > 28?}
+    
+    Y -->|Yes| Z[Calculate Month Length]
+    Y -->|No| AA[Julian Date Processing]
+    
+    Z --> BB[COMPUTE WS-TMP-WORK = DYTOM difference]
+    BB --> CC[Check Leap Year for February]
+    CC --> DD{LEAP-YEAR-FALSE AND WS-DATEX-MM = 2?}
+    
+    DD -->|Yes| EE[ADD 1 TO WS-TMP-WORK]
+    DD -->|No| FF[Check Day vs Month Length]
+    
+    EE --> FF
+    FF --> GG{WS-DATE1-DD > WS-TMP-WORK?}
+    GG -->|Yes| HH[Reset to First of End Month]
+    GG -->|No| AA
+    
+    HH --> II[MOVE WS-DATE2-MM TO WS-DATEX-MM]
+    II --> JJ[MOVE 1 TO WS-DATEX-DD]
+    JJ --> KK[MOVE WS-DATE2-CCYY TO WS-DATEX-CCYY]
+    KK --> AA
+    
+    AA --> LL[Convert DATE2 to Julian]
+    LL --> MM[MOVE WS-DATE2 TO P-DATE-IN]
+    MM --> NN[PERFORM C-CALL-JUL]
+    NN --> OO[MOVE P-JULIAN-DATE TO WS-TMP-JUL-1]
+    
+    OO --> PP[Convert DATEX to Julian]
+    PP --> QQ[MOVE WS-DATEX TO P-DATE-IN]
+    QQ --> RR[PERFORM C-CALL-JUL]
+    RR --> SS[MOVE P-JULIAN-DATE TO WS-TMP-JUL-2]
+    
+    SS --> TT[Calculate Julian Difference]
+    TT --> UU[COMPUTE WS-XDAYS = WS-TMP-JUL-1 - WS-TMP-JUL-2]
+    UU --> VV[Final Adjustment]
+    
+    VV --> WW{WS-XDAYS > 30?}
+    WW -->|Yes| XX[COMPUTE WS-XDAYS + HOLD-MOS-1×30]
+    WW -->|No| YY[COMPUTE WS-XDAYS + HOLD-MOS×30]
+    
+    XX --> M
+    YY --> M
+    
+    style A fill:#e1f5fe
+    style N fill:#c8e6c9
+    style I fill:#fff3e0
+    style Y fill:#fff3e0
+    style DD fill:#fff3e0
+    style GG fill:#fff3e0
+    style WW fill:#fff3e0
+    style J fill:#e8f5e8
+    style K fill:#fff8e1
+    style C fill:#e8f5e8
+    style U fill:#e8f5e8
+    style NN fill:#e8f5e8
+    style RR fill:#e8f5e8
+    style M fill:#e8f5e8

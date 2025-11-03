@@ -1,0 +1,228 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.                         CREATE.
+       AUTHOR.                             RLZ.
+      * COPYRIGHT (C) 1995-2000,2020 MICRO FOCUS OR ONE OF ITS AFFILIATES.
+      *
+      * THE ONLY WARRANTIES FOR PRODUCTS AND SERVICES OF MICRO FOCUS
+      * AND ITS AFFILIATES AND LICENSORS ("MICRO FOCUS") ARE SET
+      * FORTH IN THE EXPRESS WARRANTY STATEMENTS ACCOMPANYING SUCH
+      * PRODUCTS AND SERVICES. NOTHING HEREIN SHOULD BE CONSTRUED AS
+      * CONSTITUTING AN ADDITIONAL WARRANTY. MICRO FOCUS SHALL NOT
+      * BE LIABLE FOR TECHNICAL OR EDITORIAL ERRORS OR OMISSIONS
+      * CONTAINED HEREIN. THE INFORMATION CONTAINED HEREIN IS
+      * SUBJECT TO CHANGE WITHOUT NOTICE.
+      *
+      * CONTAINS CONFIDENTIAL INFORMATION. EXCEPT AS SPECIFICALLY
+      * INDICATED OTHERWISE, A VALID LICENSE IS REQUIRED FOR POSSESSION,
+      * USE OR COPYING. CONSISTENT WITH FAR 12.211 AND 12.212,
+      * COMMERCIAL COMPUTER SOFTWARE, COMPUTER SOFTWARE DOCUMENTATION,
+      * AND TECHNICAL DATA FOR COMMERCIAL ITEMS ARE LICENSED TO THE U.S.
+      * GOVERNMENT UNDER VENDOR'S STANDARD COMMERCIAL LICENSE.
+
+       REMARKS.
+           CREATE TABLE AND LOAD DATA FROM LINE SEQUENTIAL FILE
+           INTO SQL SERVER DATABASE.
+
+      *****************************************************************
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT CUSTFILE
+               ASSIGN TO "/USR/LOCAL/BIN/CUSTOMER"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS CUSTFILE-STATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  CUSTFILE.
+       01  CUST-RECORD.
+           05  CUST-NUMBER                     PIC 9(3).
+           05  CUST-FIRST-NAME                 PIC X(20).
+           05  CUST-LAST-NAME                  PIC X(20).
+           05  CUST-BIRTHDAY.
+              07 SYEAR                         PIC X(4).
+              07 SMONTH                        PIC X(2).
+              07 SDAY                          PIC X(2).
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)UT/CREATE.CBL S35 04/11/23-08:57:16 >".
+       01  CUSTFILE-STATUS                     PIC XX.
+
+       EXEC SQL INCLUDE SQLCA END-EXEC.
+
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+
+       01  SQLSERVER     PIC X(64) VALUE SPACES.
+       01  SQLUSER       PIC X(32) VALUE SPACES.
+       01  SQLPASSWORD   PIC X(32) VALUE SPACES.
+
+       01  C-RECORD.
+           05  C-NUMBER                        PIC S9(3) COMP-5.
+           05  C-FIRST-NAME                    PIC X(20).
+           05  C-LAST-NAME                     PIC X(20).
+           05  C-BIRTHDAY                      PIC X(19).
+           05  C-INFO                          PIC X(10).
+
+       01  DSN-NAME                            PIC X(20).
+       01  USERID                              PIC X(8).
+       01  PASSWD.
+           49 PASSWD-LENGTH                    PIC S9(4) COMP-5 VALUE 0.
+           49 PASSWD-NAME                      PIC X(18).
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+
+       01  PYYYYMMDD.
+           03 SYEAR                            PIC 9(4).
+           03 SMONTH                           PIC 9(2).
+           03 SDAY                             PIC 9(2).
+
+       01  E-YYYYMMDD.
+           03 SYEAR                            PIC 9(4).
+           03 FILLER                           PIC X VALUE "-".
+           03 SMONTH                           PIC 9(2).
+           03 FILLER                           PIC X VALUE "-".
+           03 SDAY                             PIC 9(2).
+
+      ******************************************************************
+       PROCEDURE DIVISION.
+       MAIN SECTION.
+           EXEC SQL WHENEVER SQLERROR GO TO ERROR-EXIT END-EXEC.
+           DISPLAY "THIS PROGRAM DEMONSTRATES CONNECTING TO A SQL SERVER
+      -    " INSTANCE,".
+           DISPLAY "CREATING A TABLE AND INSERTING SOME DATA INTO IT.".
+      *    PERFORM INITIALIZATION-ROUTINE.
+           PERFORM MAKE-CONNECTION.
+      *    PERFORM DROP-TABLE.
+      *    PERFORM CREATE-TABLE.
+           PERFORM LOAD-TABLE
+           PERFORM DISCONNECT-CONNECTION.
+           DISPLAY "PROGRAM COMPLETE. PRESS ENTER TO EXIT."
+           ACCEPT OMITTED.
+           STOP RUN.
+
+      *DROP-TABLE.
+      *    DISPLAY "DROPPING EXISTING TABLE IF IT EXISTS...".
+      *    EXEC SQL WHENEVER SQLERROR CONTINUE END-EXEC.
+      *    EXEC SQL
+      *        DROP TABLE CUSTOMER
+      *    END-EXEC.
+      * IGNORE SQLCODE AS WE DO NOT EXPECT TABLE TO EXIST AT THIS POINT
+      *    EXEC SQL WHENEVER SQLERROR GO TO ERROR-EXIT END-EXEC.
+
+      *CREATE-TABLE.
+      *    DISPLAY "CREATING CUSTOMER TABLE...".
+      *    EXEC SQL
+      *       CREATE TABLE CUSTOMER (
+      *            C_NUMBER        INTEGER 
+      *                  CONSTRAINT C_NUMBER PRIMARY KEY,
+      *            C_FIRST_NAME    CHAR(20),
+      *            C_LAST_NAME     CHAR(20),
+      *            C_BIRTHDAY      DATETIME,
+      *            C_INFO          CHAR(10)
+      *            )
+      *    END-EXEC.
+      *    IF SQLCODE < 0 PERFORM ERROR-EXIT.
+
+       LOAD-TABLE.
+
+
+           DISPLAY "LOADING CUSTOMER TABLE WITH DATA...".
+           OPEN INPUT CUSTFILE.
+           PERFORM UNTIL CUSTFILE-STATUS = "10"
+               READ CUSTFILE NEXT RECORD
+                   AT END
+                       CONTINUE
+                   NOT AT END
+                       PERFORM INSERT-RECORD
+               END-READ
+           END-PERFORM.
+           CLOSE CUSTFILE.
+
+       INSERT-RECORD.
+           MOVE CUST-NUMBER TO  C-NUMBER.
+           MOVE CUST-FIRST-NAME TO C-FIRST-NAME.
+           MOVE CUST-LAST-NAME TO C-LAST-NAME.
+           MOVE "NEW" TO C-INFO.
+
+      *  WE WANT THE FORMAT YYYY-MM-DD
+      *  SOURCE FORMAT IS YYYYMMDD
+
+           MOVE CORRESPONDING CUST-BIRTHDAY TO E-YYYYMMDD.
+           MOVE E-YYYYMMDD TO C-BIRTHDAY.
+
+
+           EXEC SQL
+               INSERT INTO CUSTOMER VALUES
+                   (:C-NUMBER, :C-FIRST-NAME,
+                    :C-LAST-NAME, :C-BIRTHDAY, :C-INFO)
+           END-EXEC.
+           MOVE LOW-VALUES TO CUST-RECORD.
+           MOVE LOW-VALUES TO C-RECORD.
+ 
+      *COPY "COMMON.CPY".
+       INITIALIZATION-ROUTINE.
+           DISPLAY "ENTER THE SERVER NAME: ", NO ADVANCING.
+           ACCEPT DSN-NAME.
+           DISPLAY "ENTER YOUR USER ID (OR PRESS RETURN TO USE WINDOWS A
+      -           "UTHENTICATION): ", NO.
+           ACCEPT USERID.
+	   IF USERID NOT = SPACES
+               DISPLAY "ENTER YOUR PASSWORD : ", NO
+               ACCEPT PASSWD-NAME
+
+      * PASSWORDS IN A CONNECT STATEMENT MUST BE ENTERED IN A VARCHAR FORMAT
+      * WITH THE LENGTH OF THE INPUT STRING.
+               INSPECT PASSWD-NAME TALLYING PASSWD-LENGTH FOR CHARACTERS
+                  BEFORE INITIAL " "
+	   END-IF.
+
+       MAKE-CONNECTION.
+      *    IF USERID NOT = SPACES
+      *       EXEC SQL CONNECT TO :DSN-NAME AS C1
+      *                      USER :USERID USING :PASSWD
+      *       END-EXEC
+      *    ELSE
+      *       EXEC SQL CONNECT TO :DSN-NAME AS C1
+      *       END-EXEC
+      *    END-IF.
+      *    IF SQLCODE < 0 PERFORM ERROR-EXIT.
+      *    IF SQLCODE = 0 DISPLAY "CONNECTION SUCCESSFUL".
+
+           ACCEPT SQLSERVER FROM ENVIRONMENT
+                        "OTIS_DSN_NAME".
+           ACCEPT USERID FROM ENVIRONMENT "OTIS_ACUSQL_LOGIN".
+           ACCEPT PASSWD-NAME FROM ENVIRONMENT "OTIS_ACUSQL_PSWD".
+
+           EXEC SQL CONNECT TO :SQLSERVER AS C1
+                          USER :USERID USING :PASSWD-NAME
+           END-EXEC.
+
+           EXEC SQL WHENEVER SQLERROR GO TO ERROR-EXIT END-EXEC.
+
+           IF SQLCODE < 0 PERFORM ERROR-EXIT.
+
+
+      *KC  EXEC SQL CONNECT TO :SQLSERVER AS CONNECT2
+      *KC                 USER :USERID USING :PASSWD
+      *KC  END-EXEC.
+
+      *    EXEC SQL CONNECT TO :SQLSERVER AS CONNECT2
+      *                   USER :USERID USING :PASSWD-NAME
+      *    END-EXEC.
+
+           IF SQLCODE < 0 PERFORM ERROR-EXIT.
+
+       DISCONNECT-CONNECTION.
+           EXEC SQL COMMIT END-EXEC.
+           EXEC SQL DISCONNECT ALL END-EXEC.
+           IF SQLCODE < 0 PERFORM ERROR-EXIT.
+
+       ERROR-EXIT.
+           EXEC SQL WHENEVER SQLERROR CONTINUE END-EXEC.
+           DISPLAY "SQL ERROR: SQLCODE  " SQLCODE OF SQLCA.
+           DISPLAY "           SQLSTATE " SQLSTATE OF SQLCA.
+           DISPLAY SQLERRMC OF SQLCA.
+           ACCEPT OMITTED.
+           EXEC SQL DISCONNECT ALL END-EXEC.
+           STOP RUN.

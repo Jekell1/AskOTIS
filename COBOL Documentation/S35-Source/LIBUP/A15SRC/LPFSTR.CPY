@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSTR
+           SELECT TR-FILE ASSIGN TO TRANS-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY TR1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSCA
+           SELECT CA-FILE ASSIGN TO CA-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY CA1-KEY
+                  FILE STATUS FILE-STAT.

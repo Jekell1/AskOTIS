@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGL/GLFSFS
+           SELECT FS-FILE ASSIGN TO FS-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY FS1-KEY
+                  FILE STATUS FILE-STAT.

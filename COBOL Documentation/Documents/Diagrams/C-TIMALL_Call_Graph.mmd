@@ -1,0 +1,48 @@
+graph TD
+    A[C-TIMALL] --> B[Zero Date Check]
+    A --> C[State Backup]
+    A --> D[Parameter Setup]
+    A --> E[DATER-ROUTINE]
+    A --> F[Year Type Processing]
+    A --> G[State Restoration]
+    
+    F --> F1[C-TIM360-358]
+    F --> F2[C-TIM361]
+    F --> F3[C-TIM362]
+    F --> F4[C-TIM365-367]
+    F --> F5[C-TIM999-998]
+    
+    F1 --> F1A[C-TIMBEG]
+    F1 --> F1B[C-TIMEND]
+    F1 --> F1C[C-LEAP-YEAR-TEST]
+    
+    F2 --> F2A[C-TIMBEG]
+    F2 --> F2B[C-TIMEND]
+    
+    F3 --> F3A[C-TIMBEG]
+    F3 --> F3B[C-TIMEND]
+    
+    F4 --> F4A[C-TIMBEG]
+    F4 --> F4B[C-TIMEND]
+    F4 --> F4C[C-LEAP-YEAR-TEST]
+    
+    F5 --> F5A[C-TIMBEG]
+    F5 --> F5B[C-TIMEND]
+    F5 --> F5C[Special Timing Logic]
+    
+    E --> E1[Format Conversion]
+    E1 --> E2[Action Code Processing]
+    E2 --> E3[Result Processing]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff9c4
+    style C fill:#e8f5e8
+    style D fill:#fff9c4
+    style E fill:#f3e5f5
+    style F fill:#fff3e0
+    style G fill:#e8f5e8
+    style F1 fill:#f8bbd9
+    style F2 fill:#f8bbd9
+    style F3 fill:#f8bbd9
+    style F4 fill:#f8bbd9
+    style F5 fill:#f8bbd9

@@ -1,0 +1,67 @@
+{
+  "question": "Explain how APIPAY.CBL works",
+  "scope": "mixed",
+  "expanded_query": "APIPAY CBL Explain how works",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_flows",
+      "id": "APIPAY",
+      "path": "APIPAY",
+      "line": null,
+      "snippet": "Paragraphs=93; edges=169; depth=6; cycles=N; entries=49; exits=49; fanout_max=24; risk=0.49. Entry: EXIT.... High fanout: DECLARATIVES (24)."
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPW1",
+      "path": "LONPW1",
+      "line": null,
+      "snippet": "Paragraphs=65; edges=121; depth=7; cycles=Y; entries=37; exits=34; fanout_max=15; risk=0.805. Entry: WORKING-STORAGE.... High fanout: SET-NEW-BATCH-NO-ACCEPT (15)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "9f757c0105de5e2271f09d2b4897e02e8310871a",
+      "path": "cobol_src\\SP\\APIPAY.CBL",
+      "line": 1880,
+      "snippet": "CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "TO",
+      "path": "TO",
+      "line": null,
+      "snippet": "TO ; ROLE:LEAF ; OUT: ; IN:AC1ERN,ACRERN,APIPAY,BHAGED,BHCALL,BICREA,BLQUOT,BRMAN1,BRMAN2,BRMAN3,BRMAN4,BRMAN5,BRMAN6,BRMAN7,BROPM1,BULKTR,BWCREA,CALCZ3,CALCZL,CHKSEC,CLAIM2,CLMCUP,CLQUOT,CPINQ1,CPMNMU,DATE35,EOCRON,EOEXEC,EOMAIN,GCMAIN,GIMAN1,GIMAN2,GIMAN3,GIMAN4,GIMAN5,IOCONN,LCFLD,LNAGED,LNQUOT,LONPB0,LONPF1,LONPF2,LONPF5,LONPFA,LONPFC,LONPFF,LONPFZ,LONPG4,LONPG6,LONPG8 ; COPY:"
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "963555c0421093309f14ceea03545485755a6ca2",
+      "path": "cobol_src\\SP\\APIPAY.CBL",
+      "line": 1663,
+      "snippet": "CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPR0",
+      "path": "LONPR0",
+      "line": null,
+      "snippet": "Paragraphs=84; edges=167; depth=6; cycles=Y; entries=48; exits=39; fanout_max=26; risk=0.79. Entry: FILE-CONTROL.... High fanout: EXIT (26)."
+    }
+  ],
+  "meta": {
+    "ts": 1759097662.0633352,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PASSWD Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PASSWD Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> PASSWD<br>
+            <strong>Location:</strong> CL/PASSWD.CBL<br>
+            <strong>Purpose:</strong> Password Entry and Verification Call Program<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Type:</strong> Security utility program<br>
+            <strong>Called By:</strong> Various programs including LONPFB for override authorization
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#password-types">Password Validation Types</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#program-flow">Program Flow Diagrams</a></li>
+                <li><a href="#referenced-programs">Referenced Programs</a></li>
+                <li><a href="#error-handling-flow">Error Handling Flow</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#error-handling">Error Handling and Validation</a></li>
+                <li><a href="#common-errors">Common Error Conditions</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>PASSWD</strong> is a comprehensive password verification and security control program that provides centralized password authentication for the loan processing system. It supports multiple validation modes, user profile verification, and exception handling with encrypted password storage and verification.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Password Verification</strong>: Validates user-entered passwords against encrypted stored passwords</li>
+            <li><strong>User Profile Validation</strong>: Checks user authorization levels and profile restrictions</li>
+            <li><strong>Exception Handling</strong>: Manages password exceptions and special access cases</li>
+            <li><strong>Common Password Support</strong>: Supports up to 10 common passwords for shared access</li>
+            <li><strong>Forced Password Requirements</strong>: Enforces password requirements for sensitive operations</li>
+            <li><strong>Encryption Integration</strong>: Uses encrypted password storage and comparison</li>
+            <li><strong>Login Exception Management</strong>: Handles login-based password exceptions</li>
+        </ul>
+
+        <h2 id="password-types">Password Validation Types</h2>
+
+        <h3>Validation Modes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Mode</th>
+                    <th>Status Code</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Standard Verification</strong></td>
+                    <td>Default</td>
+                    <td>Normal password verification with optional entry</td>
+                    <td>General system access control</td>
+                </tr>
+                <tr>
+                    <td><strong>Must Exist</strong></td>
+                    <td>EX</td>
+                    <td>Password must exist in file to proceed</td>
+                    <td>Feature access control</td>
+                </tr>
+                <tr>
+                    <td><strong>Must Exist and Flag On</strong></td>
+                    <td>EN</td>
+                    <td>Password must exist and be enabled to proceed</td>
+                    <td>Enhanced security features</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Password Categories</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                    <th>Examples</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Program-Specific</strong></td>
+                    <td>Passwords unique to specific programs and sequences</td>
+                    <td>Function-specific access control</td>
+                    <td>Interest rebate overrides, memo deletion</td>
+                </tr>
+                <tr>
+                    <td><strong>Common Passwords</strong></td>
+                    <td>Shared passwords for general access</td>
+                    <td>Supervisor or shared access</td>
+                    <td>Common administrative functions</td>
+                </tr>
+                <tr>
+                    <td><strong>Audit Passwords</strong></td>
+                    <td>Special passwords for audit functions</td>
+                    <td>System memo deletion, priority memo modification</td>
+                    <td>DELAUD sequence passwords</td>
+                </tr>
+                <tr>
+                    <td><strong>User Profile Passwords</strong></td>
+                    <td>Passwords tied to specific user authorization levels</td>
+                    <td>Role-based access control</td>
+                    <td>Manager-level overrides</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="input-parameters">Input Parameters</h2>
+
+        <h3>Required Input Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PASSWDW-PGM</strong></td>
+                    <td>PIC X(8)</td>
+                    <td>Program identifier for password lookup</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>PASSWDW-SEQ</strong></td>
+                    <td>PIC 9</td>
+                    <td>Sequence number for specific password</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>PASSWDW-STAT</strong></td>
+                    <td>PIC XX</td>
+                    <td>Validation mode ("EX", "EN", or default)</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>PASSWDW-PROMPT1</strong></td>
+                    <td>PIC X(31)</td>
+                    <td>First line of password prompt</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>PASSWDW-PROMPT2</strong></td>
+                    <td>PIC X(31)</td>
+                    <td>Second line of password prompt</td>
+                    <td>Calling program</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Optional Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Default</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>FORM-PATHNAME</strong></td>
+                    <td>PIC X(path)</td>
+                    <td>Form path for window display</td>
+                    <td>Standard system path</td>
+                </tr>
+                <tr>
+                    <td><strong>EXIT-PATHNAME</strong></td>
+                    <td>PIC X(path)</td>
+                    <td>Exit path for return processing</td>
+                    <td>Calling program path</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="output-fields">Output Fields</h2>
+
+        <h3>Status and Control Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Values</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PASSWDW-STAT</strong></td>
+                    <td>PIC XX</td>
+                    <td>Password validation result</td>
+                    <td>"OK"=Success, "NA"=Not Allowed, " "=Failed</td>
+                </tr>
+                <tr>
+                    <td><strong>ERRCD</strong></td>
+                    <td>PIC X</td>
+                    <td>Error condition indicator</td>
+                    <td>" "=Normal, "X"=Error condition</td>
+                </tr>
+                <tr>
+                    <td><strong>IO-FG</strong></td>
+                    <td>PIC XX</td>
+                    <td>File I/O operation status</td>
+                    <td>"00"=Success, others=Error codes</td>
+                </tr>
+                <tr>
+                    <td><strong>VDUSTATUS</strong></td>
+                    <td>PIC XX</td>
+                    <td>Screen interaction status</td>
+                    <td>"00"=Normal entry, "10"=Exit, others=Special</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Internal Working Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>USER-PROFILE</strong></td>
+                    <td>PIC X</td>
+                    <td>Current user's authorization profile</td>
+                    <td>User level validation</td>
+                </tr>
+                <tr>
+                    <td><strong>PASSWORD-KEY</strong></td>
+                    <td>PIC X(14)</td>
+                    <td>Encrypted password for comparison</td>
+                    <td>Password verification</td>
+                </tr>
+                <tr>
+                    <td><strong>LOGNAME-BUF</strong></td>
+                    <td>PIC X(15)</td>
+                    <td>System login name</td>
+                    <td>Exception processing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="program-flow">Program Flow Diagrams</h2>
+
+        <div class="diagram-container">
+            <h3>Main Program Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Program Start] --> B[SQL Connect]
+                B --> C{Validation Mode}
+                C -->|EN| D[Password Must Exist and Flag On]
+                C -->|EX| E[Password Must Exist]
+                C -->|Default| F[Standard Verification]
+                
+                D --> D1[Read Password Record]
+                D1 --> D2{Password Exists?}
+                D2 -->|No| D3[Set Status NA]
+                D2 -->|Yes| D4{Password Enabled?}
+                D4 -->|No| D3
+                D4 -->|Yes| D5[Call Verification]
+                D5 --> Z[End Routine]
+                D3 --> Z
+                
+                E --> E1[Read Password Record]
+                E1 --> E2{Password Exists?}
+                E2 -->|No| E3[Set Status NA]
+                E2 -->|Yes| E4{Password Enabled?}
+                E4 -->|No| E5[Skip Entry]
+                E4 -->|Yes| E6[Call Verification]
+                E3 --> Z
+                E5 --> Z
+                E6 --> Z
+                
+                F --> F1[Read Program Password]
+                F1 --> F2{Password Found?}
+                F2 -->|Yes| F3{Password Enabled?}
+                F2 -->|No| F4[Check Common Passwords]
+                F3 -->|Yes| F5[Call Verification]
+                F3 -->|No| F6[Check Special Cases]
+                F4 --> F7[Try Common Password 1-10]
+                F5 --> Z
+                F6 --> F8{DELAUD System Memo?}
+                F8 -->|Yes| F9[Set Status NA]
+                F8 -->|No| Z
+                F7 --> F10{Common Password Found?}
+                F10 -->|Yes| F5
+                F10 -->|No| Z
+                F9 --> Z
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Password Verification Call Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Verification Call] --> B{User Profile Check?}
+                B -->|Yes| C[Get User Profile]
+                B -->|No| D[Check Exception Flag]
+                
+                C --> C1{Profile Authorized?}
+                C1 -->|No| C2[Exit - Authorized]
+                C1 -->|Yes| D
+                C2 --> Z[Exit]
+                
+                D --> D1{Exception Flag Set?}
+                D1 -->|No| E[Check Ask Flag]
+                D1 -->|Yes| D2[Check PE File]
+                
+                D2 --> D3[Get Login Name]
+                D3 --> D4[Read Exception Record]
+                D4 --> D5{Exception Found?}
+                D5 -->|Yes| C2
+                D5 -->|No| E
+                
+                E --> E1{Ask Flag Settings}
+                E1 -->|N| E2[Check User Profile vs Required]
+                E1 -->|Q| E2
+                E1 -->|Y| F[Enter Password]
+                
+                E2 --> E3{Profile Sufficient?}
+                E3 -->|No| E4{Ask Flag = N?}
+                E3 -->|Yes| F
+                E4 -->|Yes| E5[Display Not Allowed Message]
+                E4 -->|No| F
+                E5 --> E6[Set Status NA]
+                E6 --> Z
+                
+                F --> F1[Display Password Window]
+                F1 --> F2[Accept Password Entry]
+                F2 --> F3{Valid Entry?}
+                F3 -->|No| F2
+                F3 -->|Yes| F4[Convert to Upper Case]
+                F4 --> F5[Call Encryption]
+                F5 --> F6[Compare Passwords]
+                F6 --> F7{Passwords Match?}
+                F7 -->|Yes| F8[Set Status OK]
+                F7 -->|No| F9[Display Wrong Message]
+                F8 --> F10[Close Window]
+                F9 --> F11[Sleep 1 Second]
+                F11 --> F12[Set Status Failed]
+                F12 --> F10
+                F10 --> Z
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Password File Lookup Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Password Lookup] --> B[Set Program and Sequence]
+                B --> C[Open Password File]
+                C --> D[Read Password Record]
+                D --> E{Record Found?}
+                E -->|Yes| F[Close File]
+                E -->|No| G[Try Common Passwords]
+                
+                F --> F1{Password Active?}
+                F1 -->|Y| H[Return Active Password]
+                F1 -->|N| I[Return Inactive Status]
+                F1 -->|1-9| J[Set Common Sequence]
+                
+                G --> G1[Set Program = COMMON]
+                G1 --> G2[Loop Through Sequences 1-10]
+                G2 --> G3[Read Common Password]
+                G3 --> G4{Record Found?}
+                G4 -->|Yes| G5{Password Active?}
+                G4 -->|No| G6[Try Next Sequence]
+                G5 -->|Y| H
+                G5 -->|N| G6
+                G6 --> G7{More Sequences?}
+                G7 -->|Yes| G2
+                G7 -->|No| K[No Password Found]
+                
+                J --> J1[Open Password File]
+                J1 --> J2[Read Common Password]
+                J2 --> J3{Common Found?}
+                J3 -->|Yes| J4{Common Active?}
+                J3 -->|No| I
+                J4 -->|Y| H
+                J4 -->|N| I
+                
+                H --> L[Return Success]
+                I --> M[Return Inactive]
+                K --> N[Return Not Found]
+                
+                L --> O[End]
+                M --> O
+                N --> O
+            </div>
+        </div>
+
+        <h2 id="referenced-programs">Referenced Programs</h2>
+
+        <h3>External Program Calls</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Purpose</th>
+                    <th>Usage Context</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>GB/ENCRYP</strong></td>
+                    <td>Password encryption and comparison</td>
+                    <td>Secure password verification</td>
+                </tr>
+                <tr>
+                    <td><strong>C$TOUPPER</strong></td>
+                    <td>Convert password to uppercase</td>
+                    <td>Case-insensitive password handling</td>
+                </tr>
+                <tr>
+                    <td><strong>C$SLEEP</strong></td>
+                    <td>Delay processing for security</td>
+                    <td>Prevent rapid password attempts</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Copy Library Dependencies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Purpose</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LIBGB/GB01PW.CPY</strong></td>
+                    <td>Password file record definition</td>
+                    <td>File structure</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/GB01PE.CPY</strong></td>
+                    <td>Password exception file definition</td>
+                    <td>File structure</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/PASSWDW.CPY</strong></td>
+                    <td>Password window working storage</td>
+                    <td>Interface</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBWI/PASSWD*.CPY</strong></td>
+                    <td>Password window interface definitions</td>
+                    <td>User interface</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/PASSARGS.CPY</strong></td>
+                    <td>Password encryption arguments</td>
+                    <td>Security</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="error-handling-flow">Error Handling Flow</h2>
+
+        <div class="diagram-container">
+            <div class="mermaid">
+            flowchart TD
+                A[Error Detected] --> B{Error Type}
+                B -->|File Error| C[File Access Error]
+                B -->|Password Error| D[Password Validation Error]
+                B -->|Profile Error| E[User Profile Error]
+                B -->|System Error| F[System Error]
+                B -->|Window Error| G[Display Error]
+                
+                C --> C1[Set ERRCD]
+                C1 --> C2[Log File Error]
+                C2 --> H[Close Files]
+                
+                D --> D1[Display Wrong Password]
+                D1 --> D2[Sleep 1 Second]
+                D2 --> D3[Clear Status]
+                D3 --> I[Return to Entry]
+                
+                E --> E1[Display Profile Error]
+                E1 --> E2[Set Status NA]
+                E2 --> J[Exit Program]
+                
+                F --> F1[Display System Error]
+                F1 --> F2[Set Error Code]
+                F2 --> H
+                
+                G --> G1[Display Window Error]
+                G1 --> G2[Retry Window Creation]
+                G2 --> G3{Retry Success?}
+                G3 -->|Yes| K[Continue Processing]
+                G3 -->|No| H
+                
+                H --> L[Clean Exit]
+                I --> M[Continue Password Entry]
+                J --> L
+                K --> M
+                L --> N[Program End]
+                M --> O[Normal Processing Resume]
+            </div>
+        </div>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Security Architecture</h3>
+        <ul>
+            <li><strong>Encrypted Storage</strong>: All passwords stored in encrypted format</li>
+            <li><strong>Case Insensitive</strong>: Passwords converted to uppercase before comparison</li>
+            <li><strong>Multiple Validation Modes</strong>: Supports different security levels</li>
+            <li><strong>User Profile Integration</strong>: Ties passwords to user authorization levels</li>
+            <li><strong>Exception Handling</strong>: Special processing for authorized exceptions</li>
+            <li><strong>Delay Mechanism</strong>: Built-in delays to prevent brute force attacks</li>
+        </ul>
+
+        <h3>Window Management</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Implementation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Window Size</strong></td>
+                    <td>Compact password entry window</td>
+                    <td>4 lines by 35 columns</td>
+                </tr>
+                <tr>
+                    <td><strong>Window Position</strong></td>
+                    <td>Centered password entry</td>
+                    <td>Line 10, Column 26</td>
+                </tr>
+                <tr>
+                    <td><strong>Input Masking</strong></td>
+                    <td>Password field hidden during entry</td>
+                    <td>Masked input field</td>
+                </tr>
+                <tr>
+                    <td><strong>Prompt Display</strong></td>
+                    <td>Customizable prompt messages</td>
+                    <td>Two-line prompt support</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>File Access Patterns</h3>
+        <ul>
+            <li><strong>Primary Password File</strong>: Program-specific password records</li>
+            <li><strong>Common Password File</strong>: Shared password records (sequences 1-10)</li>
+            <li><strong>Exception File</strong>: Login-based password exceptions</li>
+            <li><strong>Optimized Access</strong>: Single record reads with immediate file closure</li>
+        </ul>
+
+        <h2 id="error-handling">Error Handling and Validation</h2>
+
+        <h3>Security Validation</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Validation Type</th>
+                    <th>Description</th>
+                    <th>Action Taken</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Password Existence</strong></td>
+                    <td>Validates password exists in file</td>
+                    <td>Return appropriate status code</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Status</strong></td>
+                    <td>Checks if password is active/enabled</td>
+                    <td>Allow/deny access based on status</td>
+                </tr>
+                <tr>
+                    <td><strong>User Profile Authorization</strong></td>
+                    <td>Validates user authorization level</td>
+                    <td>Bypass password if authorized</td>
+                </tr>
+                <tr>
+                    <td><strong>Exception Processing</strong></td>
+                    <td>Handles special login exceptions</td>
+                    <td>Allow access without password</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Complexity</strong></td>
+                    <td>Ensures password meets requirements</td>
+                    <td>Encrypted comparison validation</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>File Integrity</h3>
+        <ul>
+            <li><strong>SQL Transaction Control</strong>: Ensures data consistency during reads</li>
+            <li><strong>File Locking</strong>: Handles concurrent access to password files</li>
+            <li><strong>Error Recovery</strong>: Graceful handling of file access errors</li>
+            <li><strong>Backup Support</strong>: Supports password file backup and recovery</li>
+        </ul>
+
+        <h2 id="common-errors">Common Error Conditions</h2>
+
+        <h3>User Input Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Wrong Password</strong></td>
+                    <td>Incorrect password entered</td>
+                    <td>Re-enter correct password</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Not Allowed</strong></td>
+                    <td>User lacks sufficient authorization</td>
+                    <td>Contact supervisor for higher authorization</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Required</strong></td>
+                    <td>Feature requires password but none configured</td>
+                    <td>Configure password in system or disable feature</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Disabled</strong></td>
+                    <td>Password exists but is disabled</td>
+                    <td>Enable password or use alternate authorization</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>System Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Password File Access Error</strong></td>
+                    <td>Cannot access password database</td>
+                    <td>Check database connectivity and permissions</td>
+                </tr>
+                <tr>
+                    <td><strong>Encryption Failure</strong></td>
+                    <td>Password encryption routine fails</td>
+                    <td>Check encryption service availability</td>
+                </tr>
+                <tr>
+                    <td><strong>Window Creation Error</strong></td>
+                    <td>Cannot create password entry window</td>
+                    <td>Check display system and retry</td>
+                </tr>
+                <tr>
+                    <td><strong>SQL Connection Error</strong></td>
+                    <td>Database connection failure</td>
+                    <td>Verify database server status</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="integration-points">Integration Points</h2>
+
+        <h3>Calling Programs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Integration Purpose</th>
+                    <th>Data Exchange</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LONPFB</strong></td>
+                    <td>Interest rebate override authorization</td>
+                    <td>Password sequence, program ID, validation result</td>
+                </tr>
+                <tr>
+                    <td><strong>Memo Programs</strong></td>
+                    <td>Memo deletion and modification authorization</td>
+                    <td>DELAUD sequences, audit passwords</td>
+                </tr>
+                <tr>
+                    <td><strong>Administrative Programs</strong></td>
+                    <td>System administration functions</td>
+                    <td>Common passwords, user profile validation</td>
+                </tr>
+                <tr>
+                    <td><strong>Security Programs</strong></td>
+                    <td>General security and access control</td>
+                    <td>User authorization, exception handling</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>External System Integration</h3>
+        <ul>
+            <li><strong>Security Database</strong>: Stores encrypted passwords and user profiles</li>
+            <li><strong>Audit System</strong>: Logs all password verification attempts</li>
+            <li><strong>User Management</strong>: Integrates with user profile and authorization systems</li>
+            <li><strong>Exception Management</strong>: Handles special access cases and exceptions</li>
+            <li><strong>Encryption Services</strong>: Provides secure password storage and comparison</li>
+        </ul>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>Primary Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>GB01PW (Password File)</strong></td>
+                    <td>Program-specific password records</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>GB01PE (Password Exception)</strong></td>
+                    <td>Login-based password exceptions</td>
+                    <td>Read</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Configuration Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>User Profile</strong></td>
+                    <td>User authorization levels</td>
+                    <td>Profile-based access control</td>
+                </tr>
+                <tr>
+                    <td><strong>System Environment</strong></td>
+                    <td>Login names and system settings</td>
+                    <td>Exception processing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="performance">Performance Considerations</h2>
+
+        <h3>Optimization Features</h3>
+        <ul>
+            <li><strong>Minimal File I/O</strong>: Single record reads with immediate closure</li>
+            <li><strong>Cached User Profiles</strong>: Reduces redundant profile lookups</li>
+            <li><strong>Efficient Encryption</strong>: Optimized password comparison algorithms</li>
+            <li><strong>Fast Window Display</strong>: Lightweight password entry interface</li>
+            <li><strong>Exception Shortcuts</strong>: Quick bypass for authorized users</li>
+        </ul>
+
+        <h3>Performance Metrics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Typical Performance</th>
+                    <th>Optimization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Password Lookup</strong></td>
+                    <td>< 0.1 seconds</td>
+                    <td>Indexed file access</td>
+                </tr>
+                <tr>
+                    <td><strong>Window Display</strong></td>
+                    <td>< 0.2 seconds</td>
+                    <td>Lightweight window creation</td>
+                </tr>
+                <tr>
+                    <td><strong>Encryption Time</strong></td>
+                    <td>< 0.1 seconds</td>
+                    <td>Optimized encryption routines</td>
+                </tr>
+                <tr>
+                    <td><strong>Profile Check</strong></td>
+                    <td>< 0.05 seconds</td>
+                    <td>Cached profile data</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>12/23/91</strong></td>
+                    <td>Original program creation</td>
+                    <td>Initial development</td>
+                </tr>
+                <tr>
+                    <td><strong>01/24/94</strong></td>
+                    <td>Changed to allow 10 common passwords</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>09/28/99</strong></td>
+                    <td>Fixed VDUSTATUS/IO-FG/STAT per development meeting</td>
+                    <td>MG</td>
+                </tr>
+                <tr>
+                    <td><strong>07/19/00</strong></td>
+                    <td>Password protect deleting system generated memos</td>
+                    <td>BAH - TFC PR# 83</td>
+                </tr>
+                <tr>
+                    <td><strong>09/11/00</strong></td>
+                    <td>Changed sequence for TFC PR# 83 from 2 to 3</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td><strong>01/06/14</strong></td>
+                    <td>Added logic to force existence of password</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>03/11/12</strong></td>
+                    <td>Unstarred logic for forced password existence</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>07/10/22</strong></td>
+                    <td>Add 2 new flags for PW-ASK-FG processing</td>
+                    <td>BLF</td>
+                </tr>
+                <tr>
+                    <td><strong>05/28/13</strong></td>
+                    <td>Convert password to upper case before encryption</td>
+                    <td>BLM</td>
+                </tr>
+                <tr>
+                    <td><strong>11/30/15</strong></td>
+                    <td>Changed to not use PE-DIR, PW-DIR & PASSWDW-DIR</td>
+                    <td>KEC</td>
+                </tr>
+                <tr>
+                    <td><strong>10/23/18</strong></td>
+                    <td>Global PEFILE</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td><strong>09/18/19</strong></td>
+                    <td>Removed ACCESS-CALL on PEFILE</td>
+                    <td>BAH</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="warning">
+            <p><strong>Important Note:</strong> When modifying this program, be aware that changes may need to be made to both the standard verification routine and the forced password existence routine, as they contain similar logic that was copied to maintain clean separation of functionality.</p>
+        </div>
+
+        <div class="note">
+            <p><strong>Note:</strong> PASSWD is a critical security component that provides centralized password verification for the entire loan processing system. It supports multiple security levels and validation modes, making it essential for maintaining system security and access control throughout all loan processing operations.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

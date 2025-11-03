@@ -1,0 +1,2501 @@
+      * COPYMEMBER: LIBLP/LPBYGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - BYFILE (BYAFILE, BYBFILE)
+      *
+      *=================================================================
+      * REV:
+      * BAH 2021-0507 ***NEW***
+      *
+      ******************************************************************
+
+      *-----------------------------------------------------------------
+      *    LOAD BYA-REC FROM QBYA-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-BYA-FIELDS.
+           MOVE QBYA-DATE-CCYYMM TO BYA-DATE-CCYYMM.
+           MOVE QBYA-BRNO TO BYA-BRNO.
+           MOVE QBYA-CLASS TO BYA-CLASS.
+
+           IF ( QBYA-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO BYA-LTOUCH-DATE
+           ELSE
+              MOVE QBYA-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO BYA-LTOUCH-DATE.
+
+           MOVE QBYA-NO-1-1-1 TO BYA-NO(1 1 1).
+           MOVE QBYA-AMT-1-1-1 TO BYA-AMT(1 1 1).
+           MOVE QBYA-O2-1-1-1 TO BYA-O2(1 1 1).
+           MOVE QBYA-INT-1-1-1 TO BYA-INT(1 1 1).
+           MOVE QBYA-NO-1-1-2 TO BYA-NO(1 1 2).
+           MOVE QBYA-AMT-1-1-2 TO BYA-AMT(1 1 2).
+           MOVE QBYA-O2-1-1-2 TO BYA-O2(1 1 2).
+           MOVE QBYA-INT-1-1-2 TO BYA-INT(1 1 2).
+           MOVE QBYA-NO-1-1-3 TO BYA-NO(1 1 3).
+           MOVE QBYA-AMT-1-1-3 TO BYA-AMT(1 1 3).
+           MOVE QBYA-O2-1-1-3 TO BYA-O2(1 1 3).
+           MOVE QBYA-INT-1-1-3 TO BYA-INT(1 1 3).
+           MOVE QBYA-NO-1-1-4 TO BYA-NO(1 1 4).
+           MOVE QBYA-AMT-1-1-4 TO BYA-AMT(1 1 4).
+           MOVE QBYA-O2-1-1-4 TO BYA-O2(1 1 4).
+           MOVE QBYA-INT-1-1-4 TO BYA-INT(1 1 4).
+           MOVE QBYA-NO-1-1-5 TO BYA-NO(1 1 5).
+           MOVE QBYA-AMT-1-1-5 TO BYA-AMT(1 1 5).
+           MOVE QBYA-O2-1-1-5 TO BYA-O2(1 1 5).
+           MOVE QBYA-INT-1-1-5 TO BYA-INT(1 1 5).
+           MOVE QBYA-NO-1-1-6 TO BYA-NO(1 1 6).
+           MOVE QBYA-AMT-1-1-6 TO BYA-AMT(1 1 6).
+           MOVE QBYA-O2-1-1-6 TO BYA-O2(1 1 6).
+           MOVE QBYA-INT-1-1-6 TO BYA-INT(1 1 6).
+           MOVE QBYA-NO-1-1-7 TO BYA-NO(1 1 7).
+           MOVE QBYA-AMT-1-1-7 TO BYA-AMT(1 1 7).
+           MOVE QBYA-O2-1-1-7 TO BYA-O2(1 1 7).
+           MOVE QBYA-INT-1-1-7 TO BYA-INT(1 1 7).
+           MOVE QBYA-NO-1-1-8 TO BYA-NO(1 1 8).
+           MOVE QBYA-AMT-1-1-8 TO BYA-AMT(1 1 8).
+           MOVE QBYA-O2-1-1-8 TO BYA-O2(1 1 8).
+           MOVE QBYA-INT-1-1-8 TO BYA-INT(1 1 8).
+           MOVE QBYA-NO-1-1-9 TO BYA-NO(1 1 9).
+           MOVE QBYA-AMT-1-1-9 TO BYA-AMT(1 1 9).
+           MOVE QBYA-O2-1-1-9 TO BYA-O2(1 1 9).
+           MOVE QBYA-INT-1-1-9 TO BYA-INT(1 1 9).
+           MOVE QBYA-NO-1-1-10 TO BYA-NO(1 1 10).
+           MOVE QBYA-AMT-1-1-10 TO BYA-AMT(1 1 10).
+           MOVE QBYA-O2-1-1-10 TO BYA-O2(1 1 10).
+           MOVE QBYA-INT-1-1-10 TO BYA-INT(1 1 10).
+           MOVE QBYA-NO-1-1-11 TO BYA-NO(1 1 11).
+           MOVE QBYA-AMT-1-1-11 TO BYA-AMT(1 1 11).
+           MOVE QBYA-O2-1-1-11 TO BYA-O2(1 1 11).
+           MOVE QBYA-INT-1-1-11 TO BYA-INT(1 1 11).
+           MOVE QBYA-NO-1-2-1 TO BYA-NO(1 2 1).
+           MOVE QBYA-AMT-1-2-1 TO BYA-AMT(1 2 1).
+           MOVE QBYA-O2-1-2-1 TO BYA-O2(1 2 1).
+           MOVE QBYA-INT-1-2-1 TO BYA-INT(1 2 1).
+           MOVE QBYA-NO-1-2-2 TO BYA-NO(1 2 2).
+           MOVE QBYA-AMT-1-2-2 TO BYA-AMT(1 2 2).
+           MOVE QBYA-O2-1-2-2 TO BYA-O2(1 2 2).
+           MOVE QBYA-INT-1-2-2 TO BYA-INT(1 2 2).
+           MOVE QBYA-NO-1-2-3 TO BYA-NO(1 2 3).
+           MOVE QBYA-AMT-1-2-3 TO BYA-AMT(1 2 3).
+           MOVE QBYA-O2-1-2-3 TO BYA-O2(1 2 3).
+           MOVE QBYA-INT-1-2-3 TO BYA-INT(1 2 3).
+           MOVE QBYA-NO-1-2-4 TO BYA-NO(1 2 4).
+           MOVE QBYA-AMT-1-2-4 TO BYA-AMT(1 2 4).
+           MOVE QBYA-O2-1-2-4 TO BYA-O2(1 2 4).
+           MOVE QBYA-INT-1-2-4 TO BYA-INT(1 2 4).
+           MOVE QBYA-NO-1-2-5 TO BYA-NO(1 2 5).
+           MOVE QBYA-AMT-1-2-5 TO BYA-AMT(1 2 5).
+           MOVE QBYA-O2-1-2-5 TO BYA-O2(1 2 5).
+           MOVE QBYA-INT-1-2-5 TO BYA-INT(1 2 5).
+           MOVE QBYA-NO-1-2-6 TO BYA-NO(1 2 6).
+           MOVE QBYA-AMT-1-2-6 TO BYA-AMT(1 2 6).
+           MOVE QBYA-O2-1-2-6 TO BYA-O2(1 2 6).
+           MOVE QBYA-INT-1-2-6 TO BYA-INT(1 2 6).
+           MOVE QBYA-NO-1-2-7 TO BYA-NO(1 2 7).
+           MOVE QBYA-AMT-1-2-7 TO BYA-AMT(1 2 7).
+           MOVE QBYA-O2-1-2-7 TO BYA-O2(1 2 7).
+           MOVE QBYA-INT-1-2-7 TO BYA-INT(1 2 7).
+           MOVE QBYA-NO-1-2-8 TO BYA-NO(1 2 8).
+           MOVE QBYA-AMT-1-2-8 TO BYA-AMT(1 2 8).
+           MOVE QBYA-O2-1-2-8 TO BYA-O2(1 2 8).
+           MOVE QBYA-INT-1-2-8 TO BYA-INT(1 2 8).
+           MOVE QBYA-NO-1-2-9 TO BYA-NO(1 2 9).
+           MOVE QBYA-AMT-1-2-9 TO BYA-AMT(1 2 9).
+           MOVE QBYA-O2-1-2-9 TO BYA-O2(1 2 9).
+           MOVE QBYA-INT-1-2-9 TO BYA-INT(1 2 9).
+           MOVE QBYA-NO-1-2-10 TO BYA-NO(1 2 10).
+           MOVE QBYA-AMT-1-2-10 TO BYA-AMT(1 2 10).
+           MOVE QBYA-O2-1-2-10 TO BYA-O2(1 2 10).
+           MOVE QBYA-INT-1-2-10 TO BYA-INT(1 2 10).
+           MOVE QBYA-NO-1-2-11 TO BYA-NO(1 2 11).
+           MOVE QBYA-AMT-1-2-11 TO BYA-AMT(1 2 11).
+           MOVE QBYA-O2-1-2-11 TO BYA-O2(1 2 11).
+           MOVE QBYA-INT-1-2-11 TO BYA-INT(1 2 11).
+           MOVE QBYA-NO-2-1-1 TO BYA-NO(2 1 1).
+           MOVE QBYA-AMT-2-1-1 TO BYA-AMT(2 1 1).
+           MOVE QBYA-O2-2-1-1 TO BYA-O2(2 1 1).
+           MOVE QBYA-INT-2-1-1 TO BYA-INT(2 1 1).
+           MOVE QBYA-NO-2-1-2 TO BYA-NO(2 1 2).
+           MOVE QBYA-AMT-2-1-2 TO BYA-AMT(2 1 2).
+           MOVE QBYA-O2-2-1-2 TO BYA-O2(2 1 2).
+           MOVE QBYA-INT-2-1-2 TO BYA-INT(2 1 2).
+           MOVE QBYA-NO-2-1-3 TO BYA-NO(2 1 3).
+           MOVE QBYA-AMT-2-1-3 TO BYA-AMT(2 1 3).
+           MOVE QBYA-O2-2-1-3 TO BYA-O2(2 1 3).
+           MOVE QBYA-INT-2-1-3 TO BYA-INT(2 1 3).
+           MOVE QBYA-NO-2-1-4 TO BYA-NO(2 1 4).
+           MOVE QBYA-AMT-2-1-4 TO BYA-AMT(2 1 4).
+           MOVE QBYA-O2-2-1-4 TO BYA-O2(2 1 4).
+           MOVE QBYA-INT-2-1-4 TO BYA-INT(2 1 4).
+           MOVE QBYA-NO-2-1-5 TO BYA-NO(2 1 5).
+           MOVE QBYA-AMT-2-1-5 TO BYA-AMT(2 1 5).
+           MOVE QBYA-O2-2-1-5 TO BYA-O2(2 1 5).
+           MOVE QBYA-INT-2-1-5 TO BYA-INT(2 1 5).
+           MOVE QBYA-NO-2-1-6 TO BYA-NO(2 1 6).
+           MOVE QBYA-AMT-2-1-6 TO BYA-AMT(2 1 6).
+           MOVE QBYA-O2-2-1-6 TO BYA-O2(2 1 6).
+           MOVE QBYA-INT-2-1-6 TO BYA-INT(2 1 6).
+           MOVE QBYA-NO-2-1-7 TO BYA-NO(2 1 7).
+           MOVE QBYA-AMT-2-1-7 TO BYA-AMT(2 1 7).
+           MOVE QBYA-O2-2-1-7 TO BYA-O2(2 1 7).
+           MOVE QBYA-INT-2-1-7 TO BYA-INT(2 1 7).
+           MOVE QBYA-NO-2-1-8 TO BYA-NO(2 1 8).
+           MOVE QBYA-AMT-2-1-8 TO BYA-AMT(2 1 8).
+           MOVE QBYA-O2-2-1-8 TO BYA-O2(2 1 8).
+           MOVE QBYA-INT-2-1-8 TO BYA-INT(2 1 8).
+           MOVE QBYA-NO-2-1-9 TO BYA-NO(2 1 9).
+           MOVE QBYA-AMT-2-1-9 TO BYA-AMT(2 1 9).
+           MOVE QBYA-O2-2-1-9 TO BYA-O2(2 1 9).
+           MOVE QBYA-INT-2-1-9 TO BYA-INT(2 1 9).
+           MOVE QBYA-NO-2-1-10 TO BYA-NO(2 1 10).
+           MOVE QBYA-AMT-2-1-10 TO BYA-AMT(2 1 10).
+           MOVE QBYA-O2-2-1-10 TO BYA-O2(2 1 10).
+           MOVE QBYA-INT-2-1-10 TO BYA-INT(2 1 10).
+           MOVE QBYA-NO-2-1-11 TO BYA-NO(2 1 11).
+           MOVE QBYA-AMT-2-1-11 TO BYA-AMT(2 1 11).
+           MOVE QBYA-O2-2-1-11 TO BYA-O2(2 1 11).
+           MOVE QBYA-INT-2-1-11 TO BYA-INT(2 1 11).
+           MOVE QBYA-NO-2-2-1 TO BYA-NO(2 2 1).
+           MOVE QBYA-AMT-2-2-1 TO BYA-AMT(2 2 1).
+           MOVE QBYA-O2-2-2-1 TO BYA-O2(2 2 1).
+           MOVE QBYA-INT-2-2-1 TO BYA-INT(2 2 1).
+           MOVE QBYA-NO-2-2-2 TO BYA-NO(2 2 2).
+           MOVE QBYA-AMT-2-2-2 TO BYA-AMT(2 2 2).
+           MOVE QBYA-O2-2-2-2 TO BYA-O2(2 2 2).
+           MOVE QBYA-INT-2-2-2 TO BYA-INT(2 2 2).
+           MOVE QBYA-NO-2-2-3 TO BYA-NO(2 2 3).
+           MOVE QBYA-AMT-2-2-3 TO BYA-AMT(2 2 3).
+           MOVE QBYA-O2-2-2-3 TO BYA-O2(2 2 3).
+           MOVE QBYA-INT-2-2-3 TO BYA-INT(2 2 3).
+           MOVE QBYA-NO-2-2-4 TO BYA-NO(2 2 4).
+           MOVE QBYA-AMT-2-2-4 TO BYA-AMT(2 2 4).
+           MOVE QBYA-O2-2-2-4 TO BYA-O2(2 2 4).
+           MOVE QBYA-INT-2-2-4 TO BYA-INT(2 2 4).
+           MOVE QBYA-NO-2-2-5 TO BYA-NO(2 2 5).
+           MOVE QBYA-AMT-2-2-5 TO BYA-AMT(2 2 5).
+           MOVE QBYA-O2-2-2-5 TO BYA-O2(2 2 5).
+           MOVE QBYA-INT-2-2-5 TO BYA-INT(2 2 5).
+           MOVE QBYA-NO-2-2-6 TO BYA-NO(2 2 6).
+           MOVE QBYA-AMT-2-2-6 TO BYA-AMT(2 2 6).
+           MOVE QBYA-O2-2-2-6 TO BYA-O2(2 2 6).
+           MOVE QBYA-INT-2-2-6 TO BYA-INT(2 2 6).
+           MOVE QBYA-NO-2-2-7 TO BYA-NO(2 2 7).
+           MOVE QBYA-AMT-2-2-7 TO BYA-AMT(2 2 7).
+           MOVE QBYA-O2-2-2-7 TO BYA-O2(2 2 7).
+           MOVE QBYA-INT-2-2-7 TO BYA-INT(2 2 7).
+           MOVE QBYA-NO-2-2-8 TO BYA-NO(2 2 8).
+           MOVE QBYA-AMT-2-2-8 TO BYA-AMT(2 2 8).
+           MOVE QBYA-O2-2-2-8 TO BYA-O2(2 2 8).
+           MOVE QBYA-INT-2-2-8 TO BYA-INT(2 2 8).
+           MOVE QBYA-NO-2-2-9 TO BYA-NO(2 2 9).
+           MOVE QBYA-AMT-2-2-9 TO BYA-AMT(2 2 9).
+           MOVE QBYA-O2-2-2-9 TO BYA-O2(2 2 9).
+           MOVE QBYA-INT-2-2-9 TO BYA-INT(2 2 9).
+           MOVE QBYA-NO-2-2-10 TO BYA-NO(2 2 10).
+           MOVE QBYA-AMT-2-2-10 TO BYA-AMT(2 2 10).
+           MOVE QBYA-O2-2-2-10 TO BYA-O2(2 2 10).
+           MOVE QBYA-INT-2-2-10 TO BYA-INT(2 2 10).
+           MOVE QBYA-NO-2-2-11 TO BYA-NO(2 2 11).
+           MOVE QBYA-AMT-2-2-11 TO BYA-AMT(2 2 11).
+           MOVE QBYA-O2-2-2-11 TO BYA-O2(2 2 11).
+           MOVE QBYA-INT-2-2-11 TO BYA-INT(2 2 11).
+           MOVE QBYA-NO-3-1-1 TO BYA-NO(3 1 1).
+           MOVE QBYA-AMT-3-1-1 TO BYA-AMT(3 1 1).
+           MOVE QBYA-O2-3-1-1 TO BYA-O2(3 1 1).
+           MOVE QBYA-INT-3-1-1 TO BYA-INT(3 1 1).
+           MOVE QBYA-NO-3-1-2 TO BYA-NO(3 1 2).
+           MOVE QBYA-AMT-3-1-2 TO BYA-AMT(3 1 2).
+           MOVE QBYA-O2-3-1-2 TO BYA-O2(3 1 2).
+           MOVE QBYA-INT-3-1-2 TO BYA-INT(3 1 2).
+           MOVE QBYA-NO-3-1-3 TO BYA-NO(3 1 3).
+           MOVE QBYA-AMT-3-1-3 TO BYA-AMT(3 1 3).
+           MOVE QBYA-O2-3-1-3 TO BYA-O2(3 1 3).
+           MOVE QBYA-INT-3-1-3 TO BYA-INT(3 1 3).
+           MOVE QBYA-NO-3-1-4 TO BYA-NO(3 1 4).
+           MOVE QBYA-AMT-3-1-4 TO BYA-AMT(3 1 4).
+           MOVE QBYA-O2-3-1-4 TO BYA-O2(3 1 4).
+           MOVE QBYA-INT-3-1-4 TO BYA-INT(3 1 4).
+           MOVE QBYA-NO-3-1-5 TO BYA-NO(3 1 5).
+           MOVE QBYA-AMT-3-1-5 TO BYA-AMT(3 1 5).
+           MOVE QBYA-O2-3-1-5 TO BYA-O2(3 1 5).
+           MOVE QBYA-INT-3-1-5 TO BYA-INT(3 1 5).
+           MOVE QBYA-NO-3-1-6 TO BYA-NO(3 1 6).
+           MOVE QBYA-AMT-3-1-6 TO BYA-AMT(3 1 6).
+           MOVE QBYA-O2-3-1-6 TO BYA-O2(3 1 6).
+           MOVE QBYA-INT-3-1-6 TO BYA-INT(3 1 6).
+           MOVE QBYA-NO-3-1-7 TO BYA-NO(3 1 7).
+           MOVE QBYA-AMT-3-1-7 TO BYA-AMT(3 1 7).
+           MOVE QBYA-O2-3-1-7 TO BYA-O2(3 1 7).
+           MOVE QBYA-INT-3-1-7 TO BYA-INT(3 1 7).
+           MOVE QBYA-NO-3-1-8 TO BYA-NO(3 1 8).
+           MOVE QBYA-AMT-3-1-8 TO BYA-AMT(3 1 8).
+           MOVE QBYA-O2-3-1-8 TO BYA-O2(3 1 8).
+           MOVE QBYA-INT-3-1-8 TO BYA-INT(3 1 8).
+           MOVE QBYA-NO-3-1-9 TO BYA-NO(3 1 9).
+           MOVE QBYA-AMT-3-1-9 TO BYA-AMT(3 1 9).
+           MOVE QBYA-O2-3-1-9 TO BYA-O2(3 1 9).
+           MOVE QBYA-INT-3-1-9 TO BYA-INT(3 1 9).
+           MOVE QBYA-NO-3-1-10 TO BYA-NO(3 1 10).
+           MOVE QBYA-AMT-3-1-10 TO BYA-AMT(3 1 10).
+           MOVE QBYA-O2-3-1-10 TO BYA-O2(3 1 10).
+           MOVE QBYA-INT-3-1-10 TO BYA-INT(3 1 10).
+           MOVE QBYA-NO-3-1-11 TO BYA-NO(3 1 11).
+           MOVE QBYA-AMT-3-1-11 TO BYA-AMT(3 1 11).
+           MOVE QBYA-O2-3-1-11 TO BYA-O2(3 1 11).
+           MOVE QBYA-INT-3-1-11 TO BYA-INT(3 1 11).
+           MOVE QBYA-NO-3-2-1 TO BYA-NO(3 2 1).
+           MOVE QBYA-AMT-3-2-1 TO BYA-AMT(3 2 1).
+           MOVE QBYA-O2-3-2-1 TO BYA-O2(3 2 1).
+           MOVE QBYA-INT-3-2-1 TO BYA-INT(3 2 1).
+           MOVE QBYA-NO-3-2-2 TO BYA-NO(3 2 2).
+           MOVE QBYA-AMT-3-2-2 TO BYA-AMT(3 2 2).
+           MOVE QBYA-O2-3-2-2 TO BYA-O2(3 2 2).
+           MOVE QBYA-INT-3-2-2 TO BYA-INT(3 2 2).
+           MOVE QBYA-NO-3-2-3 TO BYA-NO(3 2 3).
+           MOVE QBYA-AMT-3-2-3 TO BYA-AMT(3 2 3).
+           MOVE QBYA-O2-3-2-3 TO BYA-O2(3 2 3).
+           MOVE QBYA-INT-3-2-3 TO BYA-INT(3 2 3).
+           MOVE QBYA-NO-3-2-4 TO BYA-NO(3 2 4).
+           MOVE QBYA-AMT-3-2-4 TO BYA-AMT(3 2 4).
+           MOVE QBYA-O2-3-2-4 TO BYA-O2(3 2 4).
+           MOVE QBYA-INT-3-2-4 TO BYA-INT(3 2 4).
+           MOVE QBYA-NO-3-2-5 TO BYA-NO(3 2 5).
+           MOVE QBYA-AMT-3-2-5 TO BYA-AMT(3 2 5).
+           MOVE QBYA-O2-3-2-5 TO BYA-O2(3 2 5).
+           MOVE QBYA-INT-3-2-5 TO BYA-INT(3 2 5).
+           MOVE QBYA-NO-3-2-6 TO BYA-NO(3 2 6).
+           MOVE QBYA-AMT-3-2-6 TO BYA-AMT(3 2 6).
+           MOVE QBYA-O2-3-2-6 TO BYA-O2(3 2 6).
+           MOVE QBYA-INT-3-2-6 TO BYA-INT(3 2 6).
+           MOVE QBYA-NO-3-2-7 TO BYA-NO(3 2 7).
+           MOVE QBYA-AMT-3-2-7 TO BYA-AMT(3 2 7).
+           MOVE QBYA-O2-3-2-7 TO BYA-O2(3 2 7).
+           MOVE QBYA-INT-3-2-7 TO BYA-INT(3 2 7).
+           MOVE QBYA-NO-3-2-8 TO BYA-NO(3 2 8).
+           MOVE QBYA-AMT-3-2-8 TO BYA-AMT(3 2 8).
+           MOVE QBYA-O2-3-2-8 TO BYA-O2(3 2 8).
+           MOVE QBYA-INT-3-2-8 TO BYA-INT(3 2 8).
+           MOVE QBYA-NO-3-2-9 TO BYA-NO(3 2 9).
+           MOVE QBYA-AMT-3-2-9 TO BYA-AMT(3 2 9).
+           MOVE QBYA-O2-3-2-9 TO BYA-O2(3 2 9).
+           MOVE QBYA-INT-3-2-9 TO BYA-INT(3 2 9).
+           MOVE QBYA-NO-3-2-10 TO BYA-NO(3 2 10).
+           MOVE QBYA-AMT-3-2-10 TO BYA-AMT(3 2 10).
+           MOVE QBYA-O2-3-2-10 TO BYA-O2(3 2 10).
+           MOVE QBYA-INT-3-2-10 TO BYA-INT(3 2 10).
+           MOVE QBYA-NO-3-2-11 TO BYA-NO(3 2 11).
+           MOVE QBYA-AMT-3-2-11 TO BYA-AMT(3 2 11).
+           MOVE QBYA-O2-3-2-11 TO BYA-O2(3 2 11).
+           MOVE QBYA-INT-3-2-11 TO BYA-INT(3 2 11).
+           MOVE QBYA-NO-REPO-1-1-1 TO BYA-NO-REPO(1 1 1).
+           MOVE QBYA-AMT-REPO-1-1-1 TO BYA-AMT-REPO(1 1 1).
+           MOVE QBYA-O2-REPO-1-1-1 TO BYA-O2-REPO(1 1 1).
+           MOVE QBYA-INT-REPO-1-1-1 TO BYA-INT-REPO(1 1 1).
+           MOVE QBYA-NO-REPO-1-1-2 TO BYA-NO-REPO(1 1 2).
+           MOVE QBYA-AMT-REPO-1-1-2 TO BYA-AMT-REPO(1 1 2).
+           MOVE QBYA-O2-REPO-1-1-2 TO BYA-O2-REPO(1 1 2).
+           MOVE QBYA-INT-REPO-1-1-2 TO BYA-INT-REPO(1 1 2).
+           MOVE QBYA-NO-REPO-1-1-3 TO BYA-NO-REPO(1 1 3).
+           MOVE QBYA-AMT-REPO-1-1-3 TO BYA-AMT-REPO(1 1 3).
+           MOVE QBYA-O2-REPO-1-1-3 TO BYA-O2-REPO(1 1 3).
+           MOVE QBYA-INT-REPO-1-1-3 TO BYA-INT-REPO(1 1 3).
+           MOVE QBYA-NO-REPO-1-1-4 TO BYA-NO-REPO(1 1 4).
+           MOVE QBYA-AMT-REPO-1-1-4 TO BYA-AMT-REPO(1 1 4).
+           MOVE QBYA-O2-REPO-1-1-4 TO BYA-O2-REPO(1 1 4).
+           MOVE QBYA-INT-REPO-1-1-4 TO BYA-INT-REPO(1 1 4).
+           MOVE QBYA-NO-REPO-1-1-5 TO BYA-NO-REPO(1 1 5).
+           MOVE QBYA-AMT-REPO-1-1-5 TO BYA-AMT-REPO(1 1 5).
+           MOVE QBYA-O2-REPO-1-1-5 TO BYA-O2-REPO(1 1 5).
+           MOVE QBYA-INT-REPO-1-1-5 TO BYA-INT-REPO(1 1 5).
+           MOVE QBYA-NO-REPO-1-2-1 TO BYA-NO-REPO(1 2 1).
+           MOVE QBYA-AMT-REPO-1-2-1 TO BYA-AMT-REPO(1 2 1).
+           MOVE QBYA-O2-REPO-1-2-1 TO BYA-O2-REPO(1 2 1).
+           MOVE QBYA-INT-REPO-1-2-1 TO BYA-INT-REPO(1 2 1).
+           MOVE QBYA-NO-REPO-1-2-2 TO BYA-NO-REPO(1 2 2).
+           MOVE QBYA-AMT-REPO-1-2-2 TO BYA-AMT-REPO(1 2 2).
+           MOVE QBYA-O2-REPO-1-2-2 TO BYA-O2-REPO(1 2 2).
+           MOVE QBYA-INT-REPO-1-2-2 TO BYA-INT-REPO(1 2 2).
+           MOVE QBYA-NO-REPO-1-2-3 TO BYA-NO-REPO(1 2 3).
+           MOVE QBYA-AMT-REPO-1-2-3 TO BYA-AMT-REPO(1 2 3).
+           MOVE QBYA-O2-REPO-1-2-3 TO BYA-O2-REPO(1 2 3).
+           MOVE QBYA-INT-REPO-1-2-3 TO BYA-INT-REPO(1 2 3).
+           MOVE QBYA-NO-REPO-1-2-4 TO BYA-NO-REPO(1 2 4).
+           MOVE QBYA-AMT-REPO-1-2-4 TO BYA-AMT-REPO(1 2 4).
+           MOVE QBYA-O2-REPO-1-2-4 TO BYA-O2-REPO(1 2 4).
+           MOVE QBYA-INT-REPO-1-2-4 TO BYA-INT-REPO(1 2 4).
+           MOVE QBYA-NO-REPO-1-2-5 TO BYA-NO-REPO(1 2 5).
+           MOVE QBYA-AMT-REPO-1-2-5 TO BYA-AMT-REPO(1 2 5).
+           MOVE QBYA-O2-REPO-1-2-5 TO BYA-O2-REPO(1 2 5).
+           MOVE QBYA-INT-REPO-1-2-5 TO BYA-INT-REPO(1 2 5).
+           MOVE QBYA-NO-REPO-2-1-1 TO BYA-NO-REPO(2 1 1).
+           MOVE QBYA-AMT-REPO-2-1-1 TO BYA-AMT-REPO(2 1 1).
+           MOVE QBYA-O2-REPO-2-1-1 TO BYA-O2-REPO(2 1 1).
+           MOVE QBYA-INT-REPO-2-1-1 TO BYA-INT-REPO(2 1 1).
+           MOVE QBYA-NO-REPO-2-1-2 TO BYA-NO-REPO(2 1 2).
+           MOVE QBYA-AMT-REPO-2-1-2 TO BYA-AMT-REPO(2 1 2).
+           MOVE QBYA-O2-REPO-2-1-2 TO BYA-O2-REPO(2 1 2).
+           MOVE QBYA-INT-REPO-2-1-2 TO BYA-INT-REPO(2 1 2).
+           MOVE QBYA-NO-REPO-2-1-3 TO BYA-NO-REPO(2 1 3).
+           MOVE QBYA-AMT-REPO-2-1-3 TO BYA-AMT-REPO(2 1 3).
+           MOVE QBYA-O2-REPO-2-1-3 TO BYA-O2-REPO(2 1 3).
+           MOVE QBYA-INT-REPO-2-1-3 TO BYA-INT-REPO(2 1 3).
+           MOVE QBYA-NO-REPO-2-1-4 TO BYA-NO-REPO(2 1 4).
+           MOVE QBYA-AMT-REPO-2-1-4 TO BYA-AMT-REPO(2 1 4).
+           MOVE QBYA-O2-REPO-2-1-4 TO BYA-O2-REPO(2 1 4).
+           MOVE QBYA-INT-REPO-2-1-4 TO BYA-INT-REPO(2 1 4).
+           MOVE QBYA-NO-REPO-2-1-5 TO BYA-NO-REPO(2 1 5).
+           MOVE QBYA-AMT-REPO-2-1-5 TO BYA-AMT-REPO(2 1 5).
+           MOVE QBYA-O2-REPO-2-1-5 TO BYA-O2-REPO(2 1 5).
+           MOVE QBYA-INT-REPO-2-1-5 TO BYA-INT-REPO(2 1 5).
+           MOVE QBYA-NO-REPO-2-2-1 TO BYA-NO-REPO(2 2 1).
+           MOVE QBYA-AMT-REPO-2-2-1 TO BYA-AMT-REPO(2 2 1).
+           MOVE QBYA-O2-REPO-2-2-1 TO BYA-O2-REPO(2 2 1).
+           MOVE QBYA-INT-REPO-2-2-1 TO BYA-INT-REPO(2 2 1).
+           MOVE QBYA-NO-REPO-2-2-2 TO BYA-NO-REPO(2 2 2).
+           MOVE QBYA-AMT-REPO-2-2-2 TO BYA-AMT-REPO(2 2 2).
+           MOVE QBYA-O2-REPO-2-2-2 TO BYA-O2-REPO(2 2 2).
+           MOVE QBYA-INT-REPO-2-2-2 TO BYA-INT-REPO(2 2 2).
+           MOVE QBYA-NO-REPO-2-2-3 TO BYA-NO-REPO(2 2 3).
+           MOVE QBYA-AMT-REPO-2-2-3 TO BYA-AMT-REPO(2 2 3).
+           MOVE QBYA-O2-REPO-2-2-3 TO BYA-O2-REPO(2 2 3).
+           MOVE QBYA-INT-REPO-2-2-3 TO BYA-INT-REPO(2 2 3).
+           MOVE QBYA-NO-REPO-2-2-4 TO BYA-NO-REPO(2 2 4).
+           MOVE QBYA-AMT-REPO-2-2-4 TO BYA-AMT-REPO(2 2 4).
+           MOVE QBYA-O2-REPO-2-2-4 TO BYA-O2-REPO(2 2 4).
+           MOVE QBYA-INT-REPO-2-2-4 TO BYA-INT-REPO(2 2 4).
+           MOVE QBYA-NO-REPO-2-2-5 TO BYA-NO-REPO(2 2 5).
+           MOVE QBYA-AMT-REPO-2-2-5 TO BYA-AMT-REPO(2 2 5).
+           MOVE QBYA-O2-REPO-2-2-5 TO BYA-O2-REPO(2 2 5).
+           MOVE QBYA-INT-REPO-2-2-5 TO BYA-INT-REPO(2 2 5).
+           MOVE QBYA-NO-REPO-3-1-1 TO BYA-NO-REPO(3 1 1).
+           MOVE QBYA-AMT-REPO-3-1-1 TO BYA-AMT-REPO(3 1 1).
+           MOVE QBYA-O2-REPO-3-1-1 TO BYA-O2-REPO(3 1 1).
+           MOVE QBYA-INT-REPO-3-1-1 TO BYA-INT-REPO(3 1 1).
+           MOVE QBYA-NO-REPO-3-1-2 TO BYA-NO-REPO(3 1 2).
+           MOVE QBYA-AMT-REPO-3-1-2 TO BYA-AMT-REPO(3 1 2).
+           MOVE QBYA-O2-REPO-3-1-2 TO BYA-O2-REPO(3 1 2).
+           MOVE QBYA-INT-REPO-3-1-2 TO BYA-INT-REPO(3 1 2).
+           MOVE QBYA-NO-REPO-3-1-3 TO BYA-NO-REPO(3 1 3).
+           MOVE QBYA-AMT-REPO-3-1-3 TO BYA-AMT-REPO(3 1 3).
+           MOVE QBYA-O2-REPO-3-1-3 TO BYA-O2-REPO(3 1 3).
+           MOVE QBYA-INT-REPO-3-1-3 TO BYA-INT-REPO(3 1 3).
+           MOVE QBYA-NO-REPO-3-1-4 TO BYA-NO-REPO(3 1 4).
+           MOVE QBYA-AMT-REPO-3-1-4 TO BYA-AMT-REPO(3 1 4).
+           MOVE QBYA-O2-REPO-3-1-4 TO BYA-O2-REPO(3 1 4).
+           MOVE QBYA-INT-REPO-3-1-4 TO BYA-INT-REPO(3 1 4).
+           MOVE QBYA-NO-REPO-3-1-5 TO BYA-NO-REPO(3 1 5).
+           MOVE QBYA-AMT-REPO-3-1-5 TO BYA-AMT-REPO(3 1 5).
+           MOVE QBYA-O2-REPO-3-1-5 TO BYA-O2-REPO(3 1 5).
+           MOVE QBYA-INT-REPO-3-1-5 TO BYA-INT-REPO(3 1 5).
+           MOVE QBYA-NO-REPO-3-2-1 TO BYA-NO-REPO(3 2 1).
+           MOVE QBYA-AMT-REPO-3-2-1 TO BYA-AMT-REPO(3 2 1).
+           MOVE QBYA-O2-REPO-3-2-1 TO BYA-O2-REPO(3 2 1).
+           MOVE QBYA-INT-REPO-3-2-1 TO BYA-INT-REPO(3 2 1).
+           MOVE QBYA-NO-REPO-3-2-2 TO BYA-NO-REPO(3 2 2).
+           MOVE QBYA-AMT-REPO-3-2-2 TO BYA-AMT-REPO(3 2 2).
+           MOVE QBYA-O2-REPO-3-2-2 TO BYA-O2-REPO(3 2 2).
+           MOVE QBYA-INT-REPO-3-2-2 TO BYA-INT-REPO(3 2 2).
+           MOVE QBYA-NO-REPO-3-2-3 TO BYA-NO-REPO(3 2 3).
+           MOVE QBYA-AMT-REPO-3-2-3 TO BYA-AMT-REPO(3 2 3).
+           MOVE QBYA-O2-REPO-3-2-3 TO BYA-O2-REPO(3 2 3).
+           MOVE QBYA-INT-REPO-3-2-3 TO BYA-INT-REPO(3 2 3).
+           MOVE QBYA-NO-REPO-3-2-4 TO BYA-NO-REPO(3 2 4).
+           MOVE QBYA-AMT-REPO-3-2-4 TO BYA-AMT-REPO(3 2 4).
+           MOVE QBYA-O2-REPO-3-2-4 TO BYA-O2-REPO(3 2 4).
+           MOVE QBYA-INT-REPO-3-2-4 TO BYA-INT-REPO(3 2 4).
+           MOVE QBYA-NO-REPO-3-2-5 TO BYA-NO-REPO(3 2 5).
+           MOVE QBYA-AMT-REPO-3-2-5 TO BYA-AMT-REPO(3 2 5).
+           MOVE QBYA-O2-REPO-3-2-5 TO BYA-O2-REPO(3 2 5).
+           MOVE QBYA-INT-REPO-3-2-5 TO BYA-INT-REPO(3 2 5).
+           MOVE QBYA-NO-PL-1-1-1 TO BYA-NO-PL(1 1 1).
+           MOVE QBYA-AMT-PL-1-1-1 TO BYA-AMT-PL(1 1 1).
+           MOVE QBYA-O2-PL-1-1-1 TO BYA-O2-PL(1 1 1).
+           MOVE QBYA-INT-PL-1-1-1 TO BYA-INT-PL(1 1 1).
+           MOVE QBYA-NO-PL-1-1-2 TO BYA-NO-PL(1 1 2).
+           MOVE QBYA-AMT-PL-1-1-2 TO BYA-AMT-PL(1 1 2).
+           MOVE QBYA-O2-PL-1-1-2 TO BYA-O2-PL(1 1 2).
+           MOVE QBYA-INT-PL-1-1-2 TO BYA-INT-PL(1 1 2).
+           MOVE QBYA-NO-PL-1-1-3 TO BYA-NO-PL(1 1 3).
+           MOVE QBYA-AMT-PL-1-1-3 TO BYA-AMT-PL(1 1 3).
+           MOVE QBYA-O2-PL-1-1-3 TO BYA-O2-PL(1 1 3).
+           MOVE QBYA-INT-PL-1-1-3 TO BYA-INT-PL(1 1 3).
+           MOVE QBYA-NO-PL-1-1-4 TO BYA-NO-PL(1 1 4).
+           MOVE QBYA-AMT-PL-1-1-4 TO BYA-AMT-PL(1 1 4).
+           MOVE QBYA-O2-PL-1-1-4 TO BYA-O2-PL(1 1 4).
+           MOVE QBYA-INT-PL-1-1-4 TO BYA-INT-PL(1 1 4).
+           MOVE QBYA-NO-PL-1-1-5 TO BYA-NO-PL(1 1 5).
+           MOVE QBYA-AMT-PL-1-1-5 TO BYA-AMT-PL(1 1 5).
+           MOVE QBYA-O2-PL-1-1-5 TO BYA-O2-PL(1 1 5).
+           MOVE QBYA-INT-PL-1-1-5 TO BYA-INT-PL(1 1 5).
+           MOVE QBYA-NO-PL-1-1-6 TO BYA-NO-PL(1 1 6).
+           MOVE QBYA-AMT-PL-1-1-6 TO BYA-AMT-PL(1 1 6).
+           MOVE QBYA-O2-PL-1-1-6 TO BYA-O2-PL(1 1 6).
+           MOVE QBYA-INT-PL-1-1-6 TO BYA-INT-PL(1 1 6).
+           MOVE QBYA-NO-PL-1-1-7 TO BYA-NO-PL(1 1 7).
+           MOVE QBYA-AMT-PL-1-1-7 TO BYA-AMT-PL(1 1 7).
+           MOVE QBYA-O2-PL-1-1-7 TO BYA-O2-PL(1 1 7).
+           MOVE QBYA-INT-PL-1-1-7 TO BYA-INT-PL(1 1 7).
+           MOVE QBYA-NO-PL-1-1-8 TO BYA-NO-PL(1 1 8).
+           MOVE QBYA-AMT-PL-1-1-8 TO BYA-AMT-PL(1 1 8).
+           MOVE QBYA-O2-PL-1-1-8 TO BYA-O2-PL(1 1 8).
+           MOVE QBYA-INT-PL-1-1-8 TO BYA-INT-PL(1 1 8).
+           MOVE QBYA-NO-PL-1-1-9 TO BYA-NO-PL(1 1 9).
+           MOVE QBYA-AMT-PL-1-1-9 TO BYA-AMT-PL(1 1 9).
+           MOVE QBYA-O2-PL-1-1-9 TO BYA-O2-PL(1 1 9).
+           MOVE QBYA-INT-PL-1-1-9 TO BYA-INT-PL(1 1 9).
+           MOVE QBYA-NO-PL-1-1-10 TO BYA-NO-PL(1 1 10).
+           MOVE QBYA-AMT-PL-1-1-10 TO BYA-AMT-PL(1 1 10).
+           MOVE QBYA-O2-PL-1-1-10 TO BYA-O2-PL(1 1 10).
+           MOVE QBYA-INT-PL-1-1-10 TO BYA-INT-PL(1 1 10).
+           MOVE QBYA-NO-PL-1-2-1 TO BYA-NO-PL(1 2 1).
+           MOVE QBYA-AMT-PL-1-2-1 TO BYA-AMT-PL(1 2 1).
+           MOVE QBYA-O2-PL-1-2-1 TO BYA-O2-PL(1 2 1).
+           MOVE QBYA-INT-PL-1-2-1 TO BYA-INT-PL(1 2 1).
+           MOVE QBYA-NO-PL-1-2-2 TO BYA-NO-PL(1 2 2).
+           MOVE QBYA-AMT-PL-1-2-2 TO BYA-AMT-PL(1 2 2).
+           MOVE QBYA-O2-PL-1-2-2 TO BYA-O2-PL(1 2 2).
+           MOVE QBYA-INT-PL-1-2-2 TO BYA-INT-PL(1 2 2).
+           MOVE QBYA-NO-PL-1-2-3 TO BYA-NO-PL(1 2 3).
+           MOVE QBYA-AMT-PL-1-2-3 TO BYA-AMT-PL(1 2 3).
+           MOVE QBYA-O2-PL-1-2-3 TO BYA-O2-PL(1 2 3).
+           MOVE QBYA-INT-PL-1-2-3 TO BYA-INT-PL(1 2 3).
+           MOVE QBYA-NO-PL-1-2-4 TO BYA-NO-PL(1 2 4).
+           MOVE QBYA-AMT-PL-1-2-4 TO BYA-AMT-PL(1 2 4).
+           MOVE QBYA-O2-PL-1-2-4 TO BYA-O2-PL(1 2 4).
+           MOVE QBYA-INT-PL-1-2-4 TO BYA-INT-PL(1 2 4).
+           MOVE QBYA-NO-PL-1-2-5 TO BYA-NO-PL(1 2 5).
+           MOVE QBYA-AMT-PL-1-2-5 TO BYA-AMT-PL(1 2 5).
+           MOVE QBYA-O2-PL-1-2-5 TO BYA-O2-PL(1 2 5).
+           MOVE QBYA-INT-PL-1-2-5 TO BYA-INT-PL(1 2 5).
+           MOVE QBYA-NO-PL-1-2-6 TO BYA-NO-PL(1 2 6).
+           MOVE QBYA-AMT-PL-1-2-6 TO BYA-AMT-PL(1 2 6).
+           MOVE QBYA-O2-PL-1-2-6 TO BYA-O2-PL(1 2 6).
+           MOVE QBYA-INT-PL-1-2-6 TO BYA-INT-PL(1 2 6).
+           MOVE QBYA-NO-PL-1-2-7 TO BYA-NO-PL(1 2 7).
+           MOVE QBYA-AMT-PL-1-2-7 TO BYA-AMT-PL(1 2 7).
+           MOVE QBYA-O2-PL-1-2-7 TO BYA-O2-PL(1 2 7).
+           MOVE QBYA-INT-PL-1-2-7 TO BYA-INT-PL(1 2 7).
+           MOVE QBYA-NO-PL-1-2-8 TO BYA-NO-PL(1 2 8).
+           MOVE QBYA-AMT-PL-1-2-8 TO BYA-AMT-PL(1 2 8).
+           MOVE QBYA-O2-PL-1-2-8 TO BYA-O2-PL(1 2 8).
+           MOVE QBYA-INT-PL-1-2-8 TO BYA-INT-PL(1 2 8).
+           MOVE QBYA-NO-PL-1-2-9 TO BYA-NO-PL(1 2 9).
+           MOVE QBYA-AMT-PL-1-2-9 TO BYA-AMT-PL(1 2 9).
+           MOVE QBYA-O2-PL-1-2-9 TO BYA-O2-PL(1 2 9).
+           MOVE QBYA-INT-PL-1-2-9 TO BYA-INT-PL(1 2 9).
+           MOVE QBYA-NO-PL-1-2-10 TO BYA-NO-PL(1 2 10).
+           MOVE QBYA-AMT-PL-1-2-10 TO BYA-AMT-PL(1 2 10).
+           MOVE QBYA-O2-PL-1-2-10 TO BYA-O2-PL(1 2 10).
+           MOVE QBYA-INT-PL-1-2-10 TO BYA-INT-PL(1 2 10).
+           MOVE QBYA-NO-PL-2-1-1 TO BYA-NO-PL(2 1 1).
+           MOVE QBYA-AMT-PL-2-1-1 TO BYA-AMT-PL(2 1 1).
+           MOVE QBYA-O2-PL-2-1-1 TO BYA-O2-PL(2 1 1).
+           MOVE QBYA-INT-PL-2-1-1 TO BYA-INT-PL(2 1 1).
+           MOVE QBYA-NO-PL-2-1-2 TO BYA-NO-PL(2 1 2).
+           MOVE QBYA-AMT-PL-2-1-2 TO BYA-AMT-PL(2 1 2).
+           MOVE QBYA-O2-PL-2-1-2 TO BYA-O2-PL(2 1 2).
+           MOVE QBYA-INT-PL-2-1-2 TO BYA-INT-PL(2 1 2).
+           MOVE QBYA-NO-PL-2-1-3 TO BYA-NO-PL(2 1 3).
+           MOVE QBYA-AMT-PL-2-1-3 TO BYA-AMT-PL(2 1 3).
+           MOVE QBYA-O2-PL-2-1-3 TO BYA-O2-PL(2 1 3).
+           MOVE QBYA-INT-PL-2-1-3 TO BYA-INT-PL(2 1 3).
+           MOVE QBYA-NO-PL-2-1-4 TO BYA-NO-PL(2 1 4).
+           MOVE QBYA-AMT-PL-2-1-4 TO BYA-AMT-PL(2 1 4).
+           MOVE QBYA-O2-PL-2-1-4 TO BYA-O2-PL(2 1 4).
+           MOVE QBYA-INT-PL-2-1-4 TO BYA-INT-PL(2 1 4).
+           MOVE QBYA-NO-PL-2-1-5 TO BYA-NO-PL(2 1 5).
+           MOVE QBYA-AMT-PL-2-1-5 TO BYA-AMT-PL(2 1 5).
+           MOVE QBYA-O2-PL-2-1-5 TO BYA-O2-PL(2 1 5).
+           MOVE QBYA-INT-PL-2-1-5 TO BYA-INT-PL(2 1 5).
+           MOVE QBYA-NO-PL-2-1-6 TO BYA-NO-PL(2 1 6).
+           MOVE QBYA-AMT-PL-2-1-6 TO BYA-AMT-PL(2 1 6).
+           MOVE QBYA-O2-PL-2-1-6 TO BYA-O2-PL(2 1 6).
+           MOVE QBYA-INT-PL-2-1-6 TO BYA-INT-PL(2 1 6).
+           MOVE QBYA-NO-PL-2-1-7 TO BYA-NO-PL(2 1 7).
+           MOVE QBYA-AMT-PL-2-1-7 TO BYA-AMT-PL(2 1 7).
+           MOVE QBYA-O2-PL-2-1-7 TO BYA-O2-PL(2 1 7).
+           MOVE QBYA-INT-PL-2-1-7 TO BYA-INT-PL(2 1 7).
+           MOVE QBYA-NO-PL-2-1-8 TO BYA-NO-PL(2 1 8).
+           MOVE QBYA-AMT-PL-2-1-8 TO BYA-AMT-PL(2 1 8).
+           MOVE QBYA-O2-PL-2-1-8 TO BYA-O2-PL(2 1 8).
+           MOVE QBYA-INT-PL-2-1-8 TO BYA-INT-PL(2 1 8).
+           MOVE QBYA-NO-PL-2-1-9 TO BYA-NO-PL(2 1 9).
+           MOVE QBYA-AMT-PL-2-1-9 TO BYA-AMT-PL(2 1 9).
+           MOVE QBYA-O2-PL-2-1-9 TO BYA-O2-PL(2 1 9).
+           MOVE QBYA-INT-PL-2-1-9 TO BYA-INT-PL(2 1 9).
+           MOVE QBYA-NO-PL-2-1-10 TO BYA-NO-PL(2 1 10).
+           MOVE QBYA-AMT-PL-2-1-10 TO BYA-AMT-PL(2 1 10).
+           MOVE QBYA-O2-PL-2-1-10 TO BYA-O2-PL(2 1 10).
+           MOVE QBYA-INT-PL-2-1-10 TO BYA-INT-PL(2 1 10).
+           MOVE QBYA-NO-PL-2-2-1 TO BYA-NO-PL(2 2 1).
+           MOVE QBYA-AMT-PL-2-2-1 TO BYA-AMT-PL(2 2 1).
+           MOVE QBYA-O2-PL-2-2-1 TO BYA-O2-PL(2 2 1).
+           MOVE QBYA-INT-PL-2-2-1 TO BYA-INT-PL(2 2 1).
+           MOVE QBYA-NO-PL-2-2-2 TO BYA-NO-PL(2 2 2).
+           MOVE QBYA-AMT-PL-2-2-2 TO BYA-AMT-PL(2 2 2).
+           MOVE QBYA-O2-PL-2-2-2 TO BYA-O2-PL(2 2 2).
+           MOVE QBYA-INT-PL-2-2-2 TO BYA-INT-PL(2 2 2).
+           MOVE QBYA-NO-PL-2-2-3 TO BYA-NO-PL(2 2 3).
+           MOVE QBYA-AMT-PL-2-2-3 TO BYA-AMT-PL(2 2 3).
+           MOVE QBYA-O2-PL-2-2-3 TO BYA-O2-PL(2 2 3).
+           MOVE QBYA-INT-PL-2-2-3 TO BYA-INT-PL(2 2 3).
+           MOVE QBYA-NO-PL-2-2-4 TO BYA-NO-PL(2 2 4).
+           MOVE QBYA-AMT-PL-2-2-4 TO BYA-AMT-PL(2 2 4).
+           MOVE QBYA-O2-PL-2-2-4 TO BYA-O2-PL(2 2 4).
+           MOVE QBYA-INT-PL-2-2-4 TO BYA-INT-PL(2 2 4).
+           MOVE QBYA-NO-PL-2-2-5 TO BYA-NO-PL(2 2 5).
+           MOVE QBYA-AMT-PL-2-2-5 TO BYA-AMT-PL(2 2 5).
+           MOVE QBYA-O2-PL-2-2-5 TO BYA-O2-PL(2 2 5).
+           MOVE QBYA-INT-PL-2-2-5 TO BYA-INT-PL(2 2 5).
+           MOVE QBYA-NO-PL-2-2-6 TO BYA-NO-PL(2 2 6).
+           MOVE QBYA-AMT-PL-2-2-6 TO BYA-AMT-PL(2 2 6).
+           MOVE QBYA-O2-PL-2-2-6 TO BYA-O2-PL(2 2 6).
+           MOVE QBYA-INT-PL-2-2-6 TO BYA-INT-PL(2 2 6).
+           MOVE QBYA-NO-PL-2-2-7 TO BYA-NO-PL(2 2 7).
+           MOVE QBYA-AMT-PL-2-2-7 TO BYA-AMT-PL(2 2 7).
+           MOVE QBYA-O2-PL-2-2-7 TO BYA-O2-PL(2 2 7).
+           MOVE QBYA-INT-PL-2-2-7 TO BYA-INT-PL(2 2 7).
+           MOVE QBYA-NO-PL-2-2-8 TO BYA-NO-PL(2 2 8).
+           MOVE QBYA-AMT-PL-2-2-8 TO BYA-AMT-PL(2 2 8).
+           MOVE QBYA-O2-PL-2-2-8 TO BYA-O2-PL(2 2 8).
+           MOVE QBYA-INT-PL-2-2-8 TO BYA-INT-PL(2 2 8).
+           MOVE QBYA-NO-PL-2-2-9 TO BYA-NO-PL(2 2 9).
+           MOVE QBYA-AMT-PL-2-2-9 TO BYA-AMT-PL(2 2 9).
+           MOVE QBYA-O2-PL-2-2-9 TO BYA-O2-PL(2 2 9).
+           MOVE QBYA-INT-PL-2-2-9 TO BYA-INT-PL(2 2 9).
+           MOVE QBYA-NO-PL-2-2-10 TO BYA-NO-PL(2 2 10).
+           MOVE QBYA-AMT-PL-2-2-10 TO BYA-AMT-PL(2 2 10).
+           MOVE QBYA-O2-PL-2-2-10 TO BYA-O2-PL(2 2 10).
+           MOVE QBYA-INT-PL-2-2-10 TO BYA-INT-PL(2 2 10).
+           MOVE QBYA-NO-PL-3-1-1 TO BYA-NO-PL(3 1 1).
+           MOVE QBYA-AMT-PL-3-1-1 TO BYA-AMT-PL(3 1 1).
+           MOVE QBYA-O2-PL-3-1-1 TO BYA-O2-PL(3 1 1).
+           MOVE QBYA-INT-PL-3-1-1 TO BYA-INT-PL(3 1 1).
+           MOVE QBYA-NO-PL-3-1-2 TO BYA-NO-PL(3 1 2).
+           MOVE QBYA-AMT-PL-3-1-2 TO BYA-AMT-PL(3 1 2).
+           MOVE QBYA-O2-PL-3-1-2 TO BYA-O2-PL(3 1 2).
+           MOVE QBYA-INT-PL-3-1-2 TO BYA-INT-PL(3 1 2).
+           MOVE QBYA-NO-PL-3-1-3 TO BYA-NO-PL(3 1 3).
+           MOVE QBYA-AMT-PL-3-1-3 TO BYA-AMT-PL(3 1 3).
+           MOVE QBYA-O2-PL-3-1-3 TO BYA-O2-PL(3 1 3).
+           MOVE QBYA-INT-PL-3-1-3 TO BYA-INT-PL(3 1 3).
+           MOVE QBYA-NO-PL-3-1-4 TO BYA-NO-PL(3 1 4).
+           MOVE QBYA-AMT-PL-3-1-4 TO BYA-AMT-PL(3 1 4).
+           MOVE QBYA-O2-PL-3-1-4 TO BYA-O2-PL(3 1 4).
+           MOVE QBYA-INT-PL-3-1-4 TO BYA-INT-PL(3 1 4).
+           MOVE QBYA-NO-PL-3-1-5 TO BYA-NO-PL(3 1 5).
+           MOVE QBYA-AMT-PL-3-1-5 TO BYA-AMT-PL(3 1 5).
+           MOVE QBYA-O2-PL-3-1-5 TO BYA-O2-PL(3 1 5).
+           MOVE QBYA-INT-PL-3-1-5 TO BYA-INT-PL(3 1 5).
+           MOVE QBYA-NO-PL-3-1-6 TO BYA-NO-PL(3 1 6).
+           MOVE QBYA-AMT-PL-3-1-6 TO BYA-AMT-PL(3 1 6).
+           MOVE QBYA-O2-PL-3-1-6 TO BYA-O2-PL(3 1 6).
+           MOVE QBYA-INT-PL-3-1-6 TO BYA-INT-PL(3 1 6).
+           MOVE QBYA-NO-PL-3-1-7 TO BYA-NO-PL(3 1 7).
+           MOVE QBYA-AMT-PL-3-1-7 TO BYA-AMT-PL(3 1 7).
+           MOVE QBYA-O2-PL-3-1-7 TO BYA-O2-PL(3 1 7).
+           MOVE QBYA-INT-PL-3-1-7 TO BYA-INT-PL(3 1 7).
+           MOVE QBYA-NO-PL-3-1-8 TO BYA-NO-PL(3 1 8).
+           MOVE QBYA-AMT-PL-3-1-8 TO BYA-AMT-PL(3 1 8).
+           MOVE QBYA-O2-PL-3-1-8 TO BYA-O2-PL(3 1 8).
+           MOVE QBYA-INT-PL-3-1-8 TO BYA-INT-PL(3 1 8).
+           MOVE QBYA-NO-PL-3-1-9 TO BYA-NO-PL(3 1 9).
+           MOVE QBYA-AMT-PL-3-1-9 TO BYA-AMT-PL(3 1 9).
+           MOVE QBYA-O2-PL-3-1-9 TO BYA-O2-PL(3 1 9).
+           MOVE QBYA-INT-PL-3-1-9 TO BYA-INT-PL(3 1 9).
+           MOVE QBYA-NO-PL-3-1-10 TO BYA-NO-PL(3 1 10).
+           MOVE QBYA-AMT-PL-3-1-10 TO BYA-AMT-PL(3 1 10).
+           MOVE QBYA-O2-PL-3-1-10 TO BYA-O2-PL(3 1 10).
+           MOVE QBYA-INT-PL-3-1-10 TO BYA-INT-PL(3 1 10).
+           MOVE QBYA-NO-PL-3-2-1 TO BYA-NO-PL(3 2 1).
+           MOVE QBYA-AMT-PL-3-2-1 TO BYA-AMT-PL(3 2 1).
+           MOVE QBYA-O2-PL-3-2-1 TO BYA-O2-PL(3 2 1).
+           MOVE QBYA-INT-PL-3-2-1 TO BYA-INT-PL(3 2 1).
+           MOVE QBYA-NO-PL-3-2-2 TO BYA-NO-PL(3 2 2).
+           MOVE QBYA-AMT-PL-3-2-2 TO BYA-AMT-PL(3 2 2).
+           MOVE QBYA-O2-PL-3-2-2 TO BYA-O2-PL(3 2 2).
+           MOVE QBYA-INT-PL-3-2-2 TO BYA-INT-PL(3 2 2).
+           MOVE QBYA-NO-PL-3-2-3 TO BYA-NO-PL(3 2 3).
+           MOVE QBYA-AMT-PL-3-2-3 TO BYA-AMT-PL(3 2 3).
+           MOVE QBYA-O2-PL-3-2-3 TO BYA-O2-PL(3 2 3).
+           MOVE QBYA-INT-PL-3-2-3 TO BYA-INT-PL(3 2 3).
+           MOVE QBYA-NO-PL-3-2-4 TO BYA-NO-PL(3 2 4).
+           MOVE QBYA-AMT-PL-3-2-4 TO BYA-AMT-PL(3 2 4).
+           MOVE QBYA-O2-PL-3-2-4 TO BYA-O2-PL(3 2 4).
+           MOVE QBYA-INT-PL-3-2-4 TO BYA-INT-PL(3 2 4).
+           MOVE QBYA-NO-PL-3-2-5 TO BYA-NO-PL(3 2 5).
+           MOVE QBYA-AMT-PL-3-2-5 TO BYA-AMT-PL(3 2 5).
+           MOVE QBYA-O2-PL-3-2-5 TO BYA-O2-PL(3 2 5).
+           MOVE QBYA-INT-PL-3-2-5 TO BYA-INT-PL(3 2 5).
+           MOVE QBYA-NO-PL-3-2-6 TO BYA-NO-PL(3 2 6).
+           MOVE QBYA-AMT-PL-3-2-6 TO BYA-AMT-PL(3 2 6).
+           MOVE QBYA-O2-PL-3-2-6 TO BYA-O2-PL(3 2 6).
+           MOVE QBYA-INT-PL-3-2-6 TO BYA-INT-PL(3 2 6).
+           MOVE QBYA-NO-PL-3-2-7 TO BYA-NO-PL(3 2 7).
+           MOVE QBYA-AMT-PL-3-2-7 TO BYA-AMT-PL(3 2 7).
+           MOVE QBYA-O2-PL-3-2-7 TO BYA-O2-PL(3 2 7).
+           MOVE QBYA-INT-PL-3-2-7 TO BYA-INT-PL(3 2 7).
+           MOVE QBYA-NO-PL-3-2-8 TO BYA-NO-PL(3 2 8).
+           MOVE QBYA-AMT-PL-3-2-8 TO BYA-AMT-PL(3 2 8).
+           MOVE QBYA-O2-PL-3-2-8 TO BYA-O2-PL(3 2 8).
+           MOVE QBYA-INT-PL-3-2-8 TO BYA-INT-PL(3 2 8).
+           MOVE QBYA-NO-PL-3-2-9 TO BYA-NO-PL(3 2 9).
+           MOVE QBYA-AMT-PL-3-2-9 TO BYA-AMT-PL(3 2 9).
+           MOVE QBYA-O2-PL-3-2-9 TO BYA-O2-PL(3 2 9).
+           MOVE QBYA-INT-PL-3-2-9 TO BYA-INT-PL(3 2 9).
+           MOVE QBYA-NO-PL-3-2-10 TO BYA-NO-PL(3 2 10).
+           MOVE QBYA-AMT-PL-3-2-10 TO BYA-AMT-PL(3 2 10).
+           MOVE QBYA-O2-PL-3-2-10 TO BYA-O2-PL(3 2 10).
+           MOVE QBYA-INT-PL-3-2-10 TO BYA-INT-PL(3 2 10).
+           MOVE QBYA-DLRVPRIN-1-1-1 TO BYA-DLRVPRIN(1 1 1).
+           MOVE QBYA-DLRVPRIN-1-1-2 TO BYA-DLRVPRIN(1 1 2).
+           MOVE QBYA-DLRVPRIN-1-1-3 TO BYA-DLRVPRIN(1 1 3).
+           MOVE QBYA-DLRVCHGS-1-1-1 TO BYA-DLRVCHGS(1 1 1).
+           MOVE QBYA-DLRVCHGS-1-1-2 TO BYA-DLRVCHGS(1 1 2).
+           MOVE QBYA-DLRVCHGS-1-1-3 TO BYA-DLRVCHGS(1 1 3).
+           MOVE QBYA-DLPARVHELD-1-1 TO BYA-DLPARVHELD(1 1).
+           MOVE QBYA-DLRVPRIN-1-2-1 TO BYA-DLRVPRIN(1 2 1).
+           MOVE QBYA-DLRVPRIN-1-2-2 TO BYA-DLRVPRIN(1 2 2).
+           MOVE QBYA-DLRVPRIN-1-2-3 TO BYA-DLRVPRIN(1 2 3).
+           MOVE QBYA-DLRVCHGS-1-2-1 TO BYA-DLRVCHGS(1 2 1).
+           MOVE QBYA-DLRVCHGS-1-2-2 TO BYA-DLRVCHGS(1 2 2).
+           MOVE QBYA-DLRVCHGS-1-2-3 TO BYA-DLRVCHGS(1 2 3).
+           MOVE QBYA-DLPARVHELD-1-2 TO BYA-DLPARVHELD(1 2).
+           MOVE QBYA-DLRVPRIN-2-1-1 TO BYA-DLRVPRIN(2 1 1).
+           MOVE QBYA-DLRVPRIN-2-1-2 TO BYA-DLRVPRIN(2 1 2).
+           MOVE QBYA-DLRVPRIN-2-1-3 TO BYA-DLRVPRIN(2 1 3).
+           MOVE QBYA-DLRVCHGS-2-1-1 TO BYA-DLRVCHGS(2 1 1).
+           MOVE QBYA-DLRVCHGS-2-1-2 TO BYA-DLRVCHGS(2 1 2).
+           MOVE QBYA-DLRVCHGS-2-1-3 TO BYA-DLRVCHGS(2 1 3).
+           MOVE QBYA-DLPARVHELD-2-1 TO BYA-DLPARVHELD(2 1).
+           MOVE QBYA-DLRVPRIN-2-2-1 TO BYA-DLRVPRIN(2 2 1).
+           MOVE QBYA-DLRVPRIN-2-2-2 TO BYA-DLRVPRIN(2 2 2).
+           MOVE QBYA-DLRVPRIN-2-2-3 TO BYA-DLRVPRIN(2 2 3).
+           MOVE QBYA-DLRVCHGS-2-2-1 TO BYA-DLRVCHGS(2 2 1).
+           MOVE QBYA-DLRVCHGS-2-2-2 TO BYA-DLRVCHGS(2 2 2).
+           MOVE QBYA-DLRVCHGS-2-2-3 TO BYA-DLRVCHGS(2 2 3).
+           MOVE QBYA-DLPARVHELD-2-2 TO BYA-DLPARVHELD(2 2).
+           MOVE QBYA-DLRVPRIN-3-1-1 TO BYA-DLRVPRIN(3 1 1).
+           MOVE QBYA-DLRVPRIN-3-1-2 TO BYA-DLRVPRIN(3 1 2).
+           MOVE QBYA-DLRVPRIN-3-1-3 TO BYA-DLRVPRIN(3 1 3).
+           MOVE QBYA-DLRVCHGS-3-1-1 TO BYA-DLRVCHGS(3 1 1).
+           MOVE QBYA-DLRVCHGS-3-1-2 TO BYA-DLRVCHGS(3 1 2).
+           MOVE QBYA-DLRVCHGS-3-1-3 TO BYA-DLRVCHGS(3 1 3).
+           MOVE QBYA-DLPARVHELD-3-1 TO BYA-DLPARVHELD(3 1).
+           MOVE QBYA-DLRVPRIN-3-2-1 TO BYA-DLRVPRIN(3 2 1).
+           MOVE QBYA-DLRVPRIN-3-2-2 TO BYA-DLRVPRIN(3 2 2).
+           MOVE QBYA-DLRVPRIN-3-2-3 TO BYA-DLRVPRIN(3 2 3).
+           MOVE QBYA-DLRVCHGS-3-2-1 TO BYA-DLRVCHGS(3 2 1).
+           MOVE QBYA-DLRVCHGS-3-2-2 TO BYA-DLRVCHGS(3 2 2).
+           MOVE QBYA-DLRVCHGS-3-2-3 TO BYA-DLRVCHGS(3 2 3).
+           MOVE QBYA-DLPARVHELD-3-2 TO BYA-DLPARVHELD(3 2).
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QBYA-REC FROM BYA-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-BYA-FIELDS.
+           MOVE BYA-DATE-CCYYMM TO QBYA-DATE-CCYYMM.
+           MOVE BYA-BRNO TO QBYA-BRNO.
+           MOVE BYA-CLASS TO QBYA-CLASS.
+
+           IF ( BYA-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QBYA-LTOUCH-DATE
+           ELSE
+              MOVE BYA-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QBYA-LTOUCH-DATE.
+
+           MOVE BYA-NO(1 1 1) TO QBYA-NO-1-1-1.
+           MOVE BYA-AMT(1 1 1) TO QBYA-AMT-1-1-1.
+           MOVE BYA-O2(1 1 1) TO QBYA-O2-1-1-1.
+           MOVE BYA-INT(1 1 1) TO QBYA-INT-1-1-1.
+           MOVE BYA-NO(1 1 2) TO QBYA-NO-1-1-2.
+           MOVE BYA-AMT(1 1 2) TO QBYA-AMT-1-1-2.
+           MOVE BYA-O2(1 1 2) TO QBYA-O2-1-1-2.
+           MOVE BYA-INT(1 1 2) TO QBYA-INT-1-1-2.
+           MOVE BYA-NO(1 1 3) TO QBYA-NO-1-1-3.
+           MOVE BYA-AMT(1 1 3) TO QBYA-AMT-1-1-3.
+           MOVE BYA-O2(1 1 3) TO QBYA-O2-1-1-3.
+           MOVE BYA-INT(1 1 3) TO QBYA-INT-1-1-3.
+           MOVE BYA-NO(1 1 4) TO QBYA-NO-1-1-4.
+           MOVE BYA-AMT(1 1 4) TO QBYA-AMT-1-1-4.
+           MOVE BYA-O2(1 1 4) TO QBYA-O2-1-1-4.
+           MOVE BYA-INT(1 1 4) TO QBYA-INT-1-1-4.
+           MOVE BYA-NO(1 1 5) TO QBYA-NO-1-1-5.
+           MOVE BYA-AMT(1 1 5) TO QBYA-AMT-1-1-5.
+           MOVE BYA-O2(1 1 5) TO QBYA-O2-1-1-5.
+           MOVE BYA-INT(1 1 5) TO QBYA-INT-1-1-5.
+           MOVE BYA-NO(1 1 6) TO QBYA-NO-1-1-6.
+           MOVE BYA-AMT(1 1 6) TO QBYA-AMT-1-1-6.
+           MOVE BYA-O2(1 1 6) TO QBYA-O2-1-1-6.
+           MOVE BYA-INT(1 1 6) TO QBYA-INT-1-1-6.
+           MOVE BYA-NO(1 1 7) TO QBYA-NO-1-1-7.
+           MOVE BYA-AMT(1 1 7) TO QBYA-AMT-1-1-7.
+           MOVE BYA-O2(1 1 7) TO QBYA-O2-1-1-7.
+           MOVE BYA-INT(1 1 7) TO QBYA-INT-1-1-7.
+           MOVE BYA-NO(1 1 8) TO QBYA-NO-1-1-8.
+           MOVE BYA-AMT(1 1 8) TO QBYA-AMT-1-1-8.
+           MOVE BYA-O2(1 1 8) TO QBYA-O2-1-1-8.
+           MOVE BYA-INT(1 1 8) TO QBYA-INT-1-1-8.
+           MOVE BYA-NO(1 1 9) TO QBYA-NO-1-1-9.
+           MOVE BYA-AMT(1 1 9) TO QBYA-AMT-1-1-9.
+           MOVE BYA-O2(1 1 9) TO QBYA-O2-1-1-9.
+           MOVE BYA-INT(1 1 9) TO QBYA-INT-1-1-9.
+           MOVE BYA-NO(1 1 10) TO QBYA-NO-1-1-10.
+           MOVE BYA-AMT(1 1 10) TO QBYA-AMT-1-1-10.
+           MOVE BYA-O2(1 1 10) TO QBYA-O2-1-1-10.
+           MOVE BYA-INT(1 1 10) TO QBYA-INT-1-1-10.
+           MOVE BYA-NO(1 1 11) TO QBYA-NO-1-1-11.
+           MOVE BYA-AMT(1 1 11) TO QBYA-AMT-1-1-11.
+           MOVE BYA-O2(1 1 11) TO QBYA-O2-1-1-11.
+           MOVE BYA-INT(1 1 11) TO QBYA-INT-1-1-11.
+           MOVE BYA-NO(1 2 1) TO QBYA-NO-1-2-1.
+           MOVE BYA-AMT(1 2 1) TO QBYA-AMT-1-2-1.
+           MOVE BYA-O2(1 2 1) TO QBYA-O2-1-2-1.
+           MOVE BYA-INT(1 2 1) TO QBYA-INT-1-2-1.
+           MOVE BYA-NO(1 2 2) TO QBYA-NO-1-2-2.
+           MOVE BYA-AMT(1 2 2) TO QBYA-AMT-1-2-2.
+           MOVE BYA-O2(1 2 2) TO QBYA-O2-1-2-2.
+           MOVE BYA-INT(1 2 2) TO QBYA-INT-1-2-2.
+           MOVE BYA-NO(1 2 3) TO QBYA-NO-1-2-3.
+           MOVE BYA-AMT(1 2 3) TO QBYA-AMT-1-2-3.
+           MOVE BYA-O2(1 2 3) TO QBYA-O2-1-2-3.
+           MOVE BYA-INT(1 2 3) TO QBYA-INT-1-2-3.
+           MOVE BYA-NO(1 2 4) TO QBYA-NO-1-2-4.
+           MOVE BYA-AMT(1 2 4) TO QBYA-AMT-1-2-4.
+           MOVE BYA-O2(1 2 4) TO QBYA-O2-1-2-4.
+           MOVE BYA-INT(1 2 4) TO QBYA-INT-1-2-4.
+           MOVE BYA-NO(1 2 5) TO QBYA-NO-1-2-5.
+           MOVE BYA-AMT(1 2 5) TO QBYA-AMT-1-2-5.
+           MOVE BYA-O2(1 2 5) TO QBYA-O2-1-2-5.
+           MOVE BYA-INT(1 2 5) TO QBYA-INT-1-2-5.
+           MOVE BYA-NO(1 2 6) TO QBYA-NO-1-2-6.
+           MOVE BYA-AMT(1 2 6) TO QBYA-AMT-1-2-6.
+           MOVE BYA-O2(1 2 6) TO QBYA-O2-1-2-6.
+           MOVE BYA-INT(1 2 6) TO QBYA-INT-1-2-6.
+           MOVE BYA-NO(1 2 7) TO QBYA-NO-1-2-7.
+           MOVE BYA-AMT(1 2 7) TO QBYA-AMT-1-2-7.
+           MOVE BYA-O2(1 2 7) TO QBYA-O2-1-2-7.
+           MOVE BYA-INT(1 2 7) TO QBYA-INT-1-2-7.
+           MOVE BYA-NO(1 2 8) TO QBYA-NO-1-2-8.
+           MOVE BYA-AMT(1 2 8) TO QBYA-AMT-1-2-8.
+           MOVE BYA-O2(1 2 8) TO QBYA-O2-1-2-8.
+           MOVE BYA-INT(1 2 8) TO QBYA-INT-1-2-8.
+           MOVE BYA-NO(1 2 9) TO QBYA-NO-1-2-9.
+           MOVE BYA-AMT(1 2 9) TO QBYA-AMT-1-2-9.
+           MOVE BYA-O2(1 2 9) TO QBYA-O2-1-2-9.
+           MOVE BYA-INT(1 2 9) TO QBYA-INT-1-2-9.
+           MOVE BYA-NO(1 2 10) TO QBYA-NO-1-2-10.
+           MOVE BYA-AMT(1 2 10) TO QBYA-AMT-1-2-10.
+           MOVE BYA-O2(1 2 10) TO QBYA-O2-1-2-10.
+           MOVE BYA-INT(1 2 10) TO QBYA-INT-1-2-10.
+           MOVE BYA-NO(1 2 11) TO QBYA-NO-1-2-11.
+           MOVE BYA-AMT(1 2 11) TO QBYA-AMT-1-2-11.
+           MOVE BYA-O2(1 2 11) TO QBYA-O2-1-2-11.
+           MOVE BYA-INT(1 2 11) TO QBYA-INT-1-2-11.
+           MOVE BYA-NO(2 1 1) TO QBYA-NO-2-1-1.
+           MOVE BYA-AMT(2 1 1) TO QBYA-AMT-2-1-1.
+           MOVE BYA-O2(2 1 1) TO QBYA-O2-2-1-1.
+           MOVE BYA-INT(2 1 1) TO QBYA-INT-2-1-1.
+           MOVE BYA-NO(2 1 2) TO QBYA-NO-2-1-2.
+           MOVE BYA-AMT(2 1 2) TO QBYA-AMT-2-1-2.
+           MOVE BYA-O2(2 1 2) TO QBYA-O2-2-1-2.
+           MOVE BYA-INT(2 1 2) TO QBYA-INT-2-1-2.
+           MOVE BYA-NO(2 1 3) TO QBYA-NO-2-1-3.
+           MOVE BYA-AMT(2 1 3) TO QBYA-AMT-2-1-3.
+           MOVE BYA-O2(2 1 3) TO QBYA-O2-2-1-3.
+           MOVE BYA-INT(2 1 3) TO QBYA-INT-2-1-3.
+           MOVE BYA-NO(2 1 4) TO QBYA-NO-2-1-4.
+           MOVE BYA-AMT(2 1 4) TO QBYA-AMT-2-1-4.
+           MOVE BYA-O2(2 1 4) TO QBYA-O2-2-1-4.
+           MOVE BYA-INT(2 1 4) TO QBYA-INT-2-1-4.
+           MOVE BYA-NO(2 1 5) TO QBYA-NO-2-1-5.
+           MOVE BYA-AMT(2 1 5) TO QBYA-AMT-2-1-5.
+           MOVE BYA-O2(2 1 5) TO QBYA-O2-2-1-5.
+           MOVE BYA-INT(2 1 5) TO QBYA-INT-2-1-5.
+           MOVE BYA-NO(2 1 6) TO QBYA-NO-2-1-6.
+           MOVE BYA-AMT(2 1 6) TO QBYA-AMT-2-1-6.
+           MOVE BYA-O2(2 1 6) TO QBYA-O2-2-1-6.
+           MOVE BYA-INT(2 1 6) TO QBYA-INT-2-1-6.
+           MOVE BYA-NO(2 1 7) TO QBYA-NO-2-1-7.
+           MOVE BYA-AMT(2 1 7) TO QBYA-AMT-2-1-7.
+           MOVE BYA-O2(2 1 7) TO QBYA-O2-2-1-7.
+           MOVE BYA-INT(2 1 7) TO QBYA-INT-2-1-7.
+           MOVE BYA-NO(2 1 8) TO QBYA-NO-2-1-8.
+           MOVE BYA-AMT(2 1 8) TO QBYA-AMT-2-1-8.
+           MOVE BYA-O2(2 1 8) TO QBYA-O2-2-1-8.
+           MOVE BYA-INT(2 1 8) TO QBYA-INT-2-1-8.
+           MOVE BYA-NO(2 1 9) TO QBYA-NO-2-1-9.
+           MOVE BYA-AMT(2 1 9) TO QBYA-AMT-2-1-9.
+           MOVE BYA-O2(2 1 9) TO QBYA-O2-2-1-9.
+           MOVE BYA-INT(2 1 9) TO QBYA-INT-2-1-9.
+           MOVE BYA-NO(2 1 10) TO QBYA-NO-2-1-10.
+           MOVE BYA-AMT(2 1 10) TO QBYA-AMT-2-1-10.
+           MOVE BYA-O2(2 1 10) TO QBYA-O2-2-1-10.
+           MOVE BYA-INT(2 1 10) TO QBYA-INT-2-1-10.
+           MOVE BYA-NO(2 1 11) TO QBYA-NO-2-1-11.
+           MOVE BYA-AMT(2 1 11) TO QBYA-AMT-2-1-11.
+           MOVE BYA-O2(2 1 11) TO QBYA-O2-2-1-11.
+           MOVE BYA-INT(2 1 11) TO QBYA-INT-2-1-11.
+           MOVE BYA-NO(2 2 1) TO QBYA-NO-2-2-1.
+           MOVE BYA-AMT(2 2 1) TO QBYA-AMT-2-2-1.
+           MOVE BYA-O2(2 2 1) TO QBYA-O2-2-2-1.
+           MOVE BYA-INT(2 2 1) TO QBYA-INT-2-2-1.
+           MOVE BYA-NO(2 2 2) TO QBYA-NO-2-2-2.
+           MOVE BYA-AMT(2 2 2) TO QBYA-AMT-2-2-2.
+           MOVE BYA-O2(2 2 2) TO QBYA-O2-2-2-2.
+           MOVE BYA-INT(2 2 2) TO QBYA-INT-2-2-2.
+           MOVE BYA-NO(2 2 3) TO QBYA-NO-2-2-3.
+           MOVE BYA-AMT(2 2 3) TO QBYA-AMT-2-2-3.
+           MOVE BYA-O2(2 2 3) TO QBYA-O2-2-2-3.
+           MOVE BYA-INT(2 2 3) TO QBYA-INT-2-2-3.
+           MOVE BYA-NO(2 2 4) TO QBYA-NO-2-2-4.
+           MOVE BYA-AMT(2 2 4) TO QBYA-AMT-2-2-4.
+           MOVE BYA-O2(2 2 4) TO QBYA-O2-2-2-4.
+           MOVE BYA-INT(2 2 4) TO QBYA-INT-2-2-4.
+           MOVE BYA-NO(2 2 5) TO QBYA-NO-2-2-5.
+           MOVE BYA-AMT(2 2 5) TO QBYA-AMT-2-2-5.
+           MOVE BYA-O2(2 2 5) TO QBYA-O2-2-2-5.
+           MOVE BYA-INT(2 2 5) TO QBYA-INT-2-2-5.
+           MOVE BYA-NO(2 2 6) TO QBYA-NO-2-2-6.
+           MOVE BYA-AMT(2 2 6) TO QBYA-AMT-2-2-6.
+           MOVE BYA-O2(2 2 6) TO QBYA-O2-2-2-6.
+           MOVE BYA-INT(2 2 6) TO QBYA-INT-2-2-6.
+           MOVE BYA-NO(2 2 7) TO QBYA-NO-2-2-7.
+           MOVE BYA-AMT(2 2 7) TO QBYA-AMT-2-2-7.
+           MOVE BYA-O2(2 2 7) TO QBYA-O2-2-2-7.
+           MOVE BYA-INT(2 2 7) TO QBYA-INT-2-2-7.
+           MOVE BYA-NO(2 2 8) TO QBYA-NO-2-2-8.
+           MOVE BYA-AMT(2 2 8) TO QBYA-AMT-2-2-8.
+           MOVE BYA-O2(2 2 8) TO QBYA-O2-2-2-8.
+           MOVE BYA-INT(2 2 8) TO QBYA-INT-2-2-8.
+           MOVE BYA-NO(2 2 9) TO QBYA-NO-2-2-9.
+           MOVE BYA-AMT(2 2 9) TO QBYA-AMT-2-2-9.
+           MOVE BYA-O2(2 2 9) TO QBYA-O2-2-2-9.
+           MOVE BYA-INT(2 2 9) TO QBYA-INT-2-2-9.
+           MOVE BYA-NO(2 2 10) TO QBYA-NO-2-2-10.
+           MOVE BYA-AMT(2 2 10) TO QBYA-AMT-2-2-10.
+           MOVE BYA-O2(2 2 10) TO QBYA-O2-2-2-10.
+           MOVE BYA-INT(2 2 10) TO QBYA-INT-2-2-10.
+           MOVE BYA-NO(2 2 11) TO QBYA-NO-2-2-11.
+           MOVE BYA-AMT(2 2 11) TO QBYA-AMT-2-2-11.
+           MOVE BYA-O2(2 2 11) TO QBYA-O2-2-2-11.
+           MOVE BYA-INT(2 2 11) TO QBYA-INT-2-2-11.
+           MOVE BYA-NO(3 1 1) TO QBYA-NO-3-1-1.
+           MOVE BYA-AMT(3 1 1) TO QBYA-AMT-3-1-1.
+           MOVE BYA-O2(3 1 1) TO QBYA-O2-3-1-1.
+           MOVE BYA-INT(3 1 1) TO QBYA-INT-3-1-1.
+           MOVE BYA-NO(3 1 2) TO QBYA-NO-3-1-2.
+           MOVE BYA-AMT(3 1 2) TO QBYA-AMT-3-1-2.
+           MOVE BYA-O2(3 1 2) TO QBYA-O2-3-1-2.
+           MOVE BYA-INT(3 1 2) TO QBYA-INT-3-1-2.
+           MOVE BYA-NO(3 1 3) TO QBYA-NO-3-1-3.
+           MOVE BYA-AMT(3 1 3) TO QBYA-AMT-3-1-3.
+           MOVE BYA-O2(3 1 3) TO QBYA-O2-3-1-3.
+           MOVE BYA-INT(3 1 3) TO QBYA-INT-3-1-3.
+           MOVE BYA-NO(3 1 4) TO QBYA-NO-3-1-4.
+           MOVE BYA-AMT(3 1 4) TO QBYA-AMT-3-1-4.
+           MOVE BYA-O2(3 1 4) TO QBYA-O2-3-1-4.
+           MOVE BYA-INT(3 1 4) TO QBYA-INT-3-1-4.
+           MOVE BYA-NO(3 1 5) TO QBYA-NO-3-1-5.
+           MOVE BYA-AMT(3 1 5) TO QBYA-AMT-3-1-5.
+           MOVE BYA-O2(3 1 5) TO QBYA-O2-3-1-5.
+           MOVE BYA-INT(3 1 5) TO QBYA-INT-3-1-5.
+           MOVE BYA-NO(3 1 6) TO QBYA-NO-3-1-6.
+           MOVE BYA-AMT(3 1 6) TO QBYA-AMT-3-1-6.
+           MOVE BYA-O2(3 1 6) TO QBYA-O2-3-1-6.
+           MOVE BYA-INT(3 1 6) TO QBYA-INT-3-1-6.
+           MOVE BYA-NO(3 1 7) TO QBYA-NO-3-1-7.
+           MOVE BYA-AMT(3 1 7) TO QBYA-AMT-3-1-7.
+           MOVE BYA-O2(3 1 7) TO QBYA-O2-3-1-7.
+           MOVE BYA-INT(3 1 7) TO QBYA-INT-3-1-7.
+           MOVE BYA-NO(3 1 8) TO QBYA-NO-3-1-8.
+           MOVE BYA-AMT(3 1 8) TO QBYA-AMT-3-1-8.
+           MOVE BYA-O2(3 1 8) TO QBYA-O2-3-1-8.
+           MOVE BYA-INT(3 1 8) TO QBYA-INT-3-1-8.
+           MOVE BYA-NO(3 1 9) TO QBYA-NO-3-1-9.
+           MOVE BYA-AMT(3 1 9) TO QBYA-AMT-3-1-9.
+           MOVE BYA-O2(3 1 9) TO QBYA-O2-3-1-9.
+           MOVE BYA-INT(3 1 9) TO QBYA-INT-3-1-9.
+           MOVE BYA-NO(3 1 10) TO QBYA-NO-3-1-10.
+           MOVE BYA-AMT(3 1 10) TO QBYA-AMT-3-1-10.
+           MOVE BYA-O2(3 1 10) TO QBYA-O2-3-1-10.
+           MOVE BYA-INT(3 1 10) TO QBYA-INT-3-1-10.
+           MOVE BYA-NO(3 1 11) TO QBYA-NO-3-1-11.
+           MOVE BYA-AMT(3 1 11) TO QBYA-AMT-3-1-11.
+           MOVE BYA-O2(3 1 11) TO QBYA-O2-3-1-11.
+           MOVE BYA-INT(3 1 11) TO QBYA-INT-3-1-11.
+           MOVE BYA-NO(3 2 1) TO QBYA-NO-3-2-1.
+           MOVE BYA-AMT(3 2 1) TO QBYA-AMT-3-2-1.
+           MOVE BYA-O2(3 2 1) TO QBYA-O2-3-2-1.
+           MOVE BYA-INT(3 2 1) TO QBYA-INT-3-2-1.
+           MOVE BYA-NO(3 2 2) TO QBYA-NO-3-2-2.
+           MOVE BYA-AMT(3 2 2) TO QBYA-AMT-3-2-2.
+           MOVE BYA-O2(3 2 2) TO QBYA-O2-3-2-2.
+           MOVE BYA-INT(3 2 2) TO QBYA-INT-3-2-2.
+           MOVE BYA-NO(3 2 3) TO QBYA-NO-3-2-3.
+           MOVE BYA-AMT(3 2 3) TO QBYA-AMT-3-2-3.
+           MOVE BYA-O2(3 2 3) TO QBYA-O2-3-2-3.
+           MOVE BYA-INT(3 2 3) TO QBYA-INT-3-2-3.
+           MOVE BYA-NO(3 2 4) TO QBYA-NO-3-2-4.
+           MOVE BYA-AMT(3 2 4) TO QBYA-AMT-3-2-4.
+           MOVE BYA-O2(3 2 4) TO QBYA-O2-3-2-4.
+           MOVE BYA-INT(3 2 4) TO QBYA-INT-3-2-4.
+           MOVE BYA-NO(3 2 5) TO QBYA-NO-3-2-5.
+           MOVE BYA-AMT(3 2 5) TO QBYA-AMT-3-2-5.
+           MOVE BYA-O2(3 2 5) TO QBYA-O2-3-2-5.
+           MOVE BYA-INT(3 2 5) TO QBYA-INT-3-2-5.
+           MOVE BYA-NO(3 2 6) TO QBYA-NO-3-2-6.
+           MOVE BYA-AMT(3 2 6) TO QBYA-AMT-3-2-6.
+           MOVE BYA-O2(3 2 6) TO QBYA-O2-3-2-6.
+           MOVE BYA-INT(3 2 6) TO QBYA-INT-3-2-6.
+           MOVE BYA-NO(3 2 7) TO QBYA-NO-3-2-7.
+           MOVE BYA-AMT(3 2 7) TO QBYA-AMT-3-2-7.
+           MOVE BYA-O2(3 2 7) TO QBYA-O2-3-2-7.
+           MOVE BYA-INT(3 2 7) TO QBYA-INT-3-2-7.
+           MOVE BYA-NO(3 2 8) TO QBYA-NO-3-2-8.
+           MOVE BYA-AMT(3 2 8) TO QBYA-AMT-3-2-8.
+           MOVE BYA-O2(3 2 8) TO QBYA-O2-3-2-8.
+           MOVE BYA-INT(3 2 8) TO QBYA-INT-3-2-8.
+           MOVE BYA-NO(3 2 9) TO QBYA-NO-3-2-9.
+           MOVE BYA-AMT(3 2 9) TO QBYA-AMT-3-2-9.
+           MOVE BYA-O2(3 2 9) TO QBYA-O2-3-2-9.
+           MOVE BYA-INT(3 2 9) TO QBYA-INT-3-2-9.
+           MOVE BYA-NO(3 2 10) TO QBYA-NO-3-2-10.
+           MOVE BYA-AMT(3 2 10) TO QBYA-AMT-3-2-10.
+           MOVE BYA-O2(3 2 10) TO QBYA-O2-3-2-10.
+           MOVE BYA-INT(3 2 10) TO QBYA-INT-3-2-10.
+           MOVE BYA-NO(3 2 11) TO QBYA-NO-3-2-11.
+           MOVE BYA-AMT(3 2 11) TO QBYA-AMT-3-2-11.
+           MOVE BYA-O2(3 2 11) TO QBYA-O2-3-2-11.
+           MOVE BYA-INT(3 2 11) TO QBYA-INT-3-2-11.
+           MOVE BYA-NO-REPO(1 1 1) TO QBYA-NO-REPO-1-1-1.
+           MOVE BYA-AMT-REPO(1 1 1) TO QBYA-AMT-REPO-1-1-1.
+           MOVE BYA-O2-REPO(1 1 1) TO QBYA-O2-REPO-1-1-1.
+           MOVE BYA-INT-REPO(1 1 1) TO QBYA-INT-REPO-1-1-1.
+           MOVE BYA-NO-REPO(1 1 2) TO QBYA-NO-REPO-1-1-2.
+           MOVE BYA-AMT-REPO(1 1 2) TO QBYA-AMT-REPO-1-1-2.
+           MOVE BYA-O2-REPO(1 1 2) TO QBYA-O2-REPO-1-1-2.
+           MOVE BYA-INT-REPO(1 1 2) TO QBYA-INT-REPO-1-1-2.
+           MOVE BYA-NO-REPO(1 1 3) TO QBYA-NO-REPO-1-1-3.
+           MOVE BYA-AMT-REPO(1 1 3) TO QBYA-AMT-REPO-1-1-3.
+           MOVE BYA-O2-REPO(1 1 3) TO QBYA-O2-REPO-1-1-3.
+           MOVE BYA-INT-REPO(1 1 3) TO QBYA-INT-REPO-1-1-3.
+           MOVE BYA-NO-REPO(1 1 4) TO QBYA-NO-REPO-1-1-4.
+           MOVE BYA-AMT-REPO(1 1 4) TO QBYA-AMT-REPO-1-1-4.
+           MOVE BYA-O2-REPO(1 1 4) TO QBYA-O2-REPO-1-1-4.
+           MOVE BYA-INT-REPO(1 1 4) TO QBYA-INT-REPO-1-1-4.
+           MOVE BYA-NO-REPO(1 1 5) TO QBYA-NO-REPO-1-1-5.
+           MOVE BYA-AMT-REPO(1 1 5) TO QBYA-AMT-REPO-1-1-5.
+           MOVE BYA-O2-REPO(1 1 5) TO QBYA-O2-REPO-1-1-5.
+           MOVE BYA-INT-REPO(1 1 5) TO QBYA-INT-REPO-1-1-5.
+           MOVE BYA-NO-REPO(1 2 1) TO QBYA-NO-REPO-1-2-1.
+           MOVE BYA-AMT-REPO(1 2 1) TO QBYA-AMT-REPO-1-2-1.
+           MOVE BYA-O2-REPO(1 2 1) TO QBYA-O2-REPO-1-2-1.
+           MOVE BYA-INT-REPO(1 2 1) TO QBYA-INT-REPO-1-2-1.
+           MOVE BYA-NO-REPO(1 2 2) TO QBYA-NO-REPO-1-2-2.
+           MOVE BYA-AMT-REPO(1 2 2) TO QBYA-AMT-REPO-1-2-2.
+           MOVE BYA-O2-REPO(1 2 2) TO QBYA-O2-REPO-1-2-2.
+           MOVE BYA-INT-REPO(1 2 2) TO QBYA-INT-REPO-1-2-2.
+           MOVE BYA-NO-REPO(1 2 3) TO QBYA-NO-REPO-1-2-3.
+           MOVE BYA-AMT-REPO(1 2 3) TO QBYA-AMT-REPO-1-2-3.
+           MOVE BYA-O2-REPO(1 2 3) TO QBYA-O2-REPO-1-2-3.
+           MOVE BYA-INT-REPO(1 2 3) TO QBYA-INT-REPO-1-2-3.
+           MOVE BYA-NO-REPO(1 2 4) TO QBYA-NO-REPO-1-2-4.
+           MOVE BYA-AMT-REPO(1 2 4) TO QBYA-AMT-REPO-1-2-4.
+           MOVE BYA-O2-REPO(1 2 4) TO QBYA-O2-REPO-1-2-4.
+           MOVE BYA-INT-REPO(1 2 4) TO QBYA-INT-REPO-1-2-4.
+           MOVE BYA-NO-REPO(1 2 5) TO QBYA-NO-REPO-1-2-5.
+           MOVE BYA-AMT-REPO(1 2 5) TO QBYA-AMT-REPO-1-2-5.
+           MOVE BYA-O2-REPO(1 2 5) TO QBYA-O2-REPO-1-2-5.
+           MOVE BYA-INT-REPO(1 2 5) TO QBYA-INT-REPO-1-2-5.
+           MOVE BYA-NO-REPO(2 1 1) TO QBYA-NO-REPO-2-1-1.
+           MOVE BYA-AMT-REPO(2 1 1) TO QBYA-AMT-REPO-2-1-1.
+           MOVE BYA-O2-REPO(2 1 1) TO QBYA-O2-REPO-2-1-1.
+           MOVE BYA-INT-REPO(2 1 1) TO QBYA-INT-REPO-2-1-1.
+           MOVE BYA-NO-REPO(2 1 2) TO QBYA-NO-REPO-2-1-2.
+           MOVE BYA-AMT-REPO(2 1 2) TO QBYA-AMT-REPO-2-1-2.
+           MOVE BYA-O2-REPO(2 1 2) TO QBYA-O2-REPO-2-1-2.
+           MOVE BYA-INT-REPO(2 1 2) TO QBYA-INT-REPO-2-1-2.
+           MOVE BYA-NO-REPO(2 1 3) TO QBYA-NO-REPO-2-1-3.
+           MOVE BYA-AMT-REPO(2 1 3) TO QBYA-AMT-REPO-2-1-3.
+           MOVE BYA-O2-REPO(2 1 3) TO QBYA-O2-REPO-2-1-3.
+           MOVE BYA-INT-REPO(2 1 3) TO QBYA-INT-REPO-2-1-3.
+           MOVE BYA-NO-REPO(2 1 4) TO QBYA-NO-REPO-2-1-4.
+           MOVE BYA-AMT-REPO(2 1 4) TO QBYA-AMT-REPO-2-1-4.
+           MOVE BYA-O2-REPO(2 1 4) TO QBYA-O2-REPO-2-1-4.
+           MOVE BYA-INT-REPO(2 1 4) TO QBYA-INT-REPO-2-1-4.
+           MOVE BYA-NO-REPO(2 1 5) TO QBYA-NO-REPO-2-1-5.
+           MOVE BYA-AMT-REPO(2 1 5) TO QBYA-AMT-REPO-2-1-5.
+           MOVE BYA-O2-REPO(2 1 5) TO QBYA-O2-REPO-2-1-5.
+           MOVE BYA-INT-REPO(2 1 5) TO QBYA-INT-REPO-2-1-5.
+           MOVE BYA-NO-REPO(2 2 1) TO QBYA-NO-REPO-2-2-1.
+           MOVE BYA-AMT-REPO(2 2 1) TO QBYA-AMT-REPO-2-2-1.
+           MOVE BYA-O2-REPO(2 2 1) TO QBYA-O2-REPO-2-2-1.
+           MOVE BYA-INT-REPO(2 2 1) TO QBYA-INT-REPO-2-2-1.
+           MOVE BYA-NO-REPO(2 2 2) TO QBYA-NO-REPO-2-2-2.
+           MOVE BYA-AMT-REPO(2 2 2) TO QBYA-AMT-REPO-2-2-2.
+           MOVE BYA-O2-REPO(2 2 2) TO QBYA-O2-REPO-2-2-2.
+           MOVE BYA-INT-REPO(2 2 2) TO QBYA-INT-REPO-2-2-2.
+           MOVE BYA-NO-REPO(2 2 3) TO QBYA-NO-REPO-2-2-3.
+           MOVE BYA-AMT-REPO(2 2 3) TO QBYA-AMT-REPO-2-2-3.
+           MOVE BYA-O2-REPO(2 2 3) TO QBYA-O2-REPO-2-2-3.
+           MOVE BYA-INT-REPO(2 2 3) TO QBYA-INT-REPO-2-2-3.
+           MOVE BYA-NO-REPO(2 2 4) TO QBYA-NO-REPO-2-2-4.
+           MOVE BYA-AMT-REPO(2 2 4) TO QBYA-AMT-REPO-2-2-4.
+           MOVE BYA-O2-REPO(2 2 4) TO QBYA-O2-REPO-2-2-4.
+           MOVE BYA-INT-REPO(2 2 4) TO QBYA-INT-REPO-2-2-4.
+           MOVE BYA-NO-REPO(2 2 5) TO QBYA-NO-REPO-2-2-5.
+           MOVE BYA-AMT-REPO(2 2 5) TO QBYA-AMT-REPO-2-2-5.
+           MOVE BYA-O2-REPO(2 2 5) TO QBYA-O2-REPO-2-2-5.
+           MOVE BYA-INT-REPO(2 2 5) TO QBYA-INT-REPO-2-2-5.
+           MOVE BYA-NO-REPO(3 1 1) TO QBYA-NO-REPO-3-1-1.
+           MOVE BYA-AMT-REPO(3 1 1) TO QBYA-AMT-REPO-3-1-1.
+           MOVE BYA-O2-REPO(3 1 1) TO QBYA-O2-REPO-3-1-1.
+           MOVE BYA-INT-REPO(3 1 1) TO QBYA-INT-REPO-3-1-1.
+           MOVE BYA-NO-REPO(3 1 2) TO QBYA-NO-REPO-3-1-2.
+           MOVE BYA-AMT-REPO(3 1 2) TO QBYA-AMT-REPO-3-1-2.
+           MOVE BYA-O2-REPO(3 1 2) TO QBYA-O2-REPO-3-1-2.
+           MOVE BYA-INT-REPO(3 1 2) TO QBYA-INT-REPO-3-1-2.
+           MOVE BYA-NO-REPO(3 1 3) TO QBYA-NO-REPO-3-1-3.
+           MOVE BYA-AMT-REPO(3 1 3) TO QBYA-AMT-REPO-3-1-3.
+           MOVE BYA-O2-REPO(3 1 3) TO QBYA-O2-REPO-3-1-3.
+           MOVE BYA-INT-REPO(3 1 3) TO QBYA-INT-REPO-3-1-3.
+           MOVE BYA-NO-REPO(3 1 4) TO QBYA-NO-REPO-3-1-4.
+           MOVE BYA-AMT-REPO(3 1 4) TO QBYA-AMT-REPO-3-1-4.
+           MOVE BYA-O2-REPO(3 1 4) TO QBYA-O2-REPO-3-1-4.
+           MOVE BYA-INT-REPO(3 1 4) TO QBYA-INT-REPO-3-1-4.
+           MOVE BYA-NO-REPO(3 1 5) TO QBYA-NO-REPO-3-1-5.
+           MOVE BYA-AMT-REPO(3 1 5) TO QBYA-AMT-REPO-3-1-5.
+           MOVE BYA-O2-REPO(3 1 5) TO QBYA-O2-REPO-3-1-5.
+           MOVE BYA-INT-REPO(3 1 5) TO QBYA-INT-REPO-3-1-5.
+           MOVE BYA-NO-REPO(3 2 1) TO QBYA-NO-REPO-3-2-1.
+           MOVE BYA-AMT-REPO(3 2 1) TO QBYA-AMT-REPO-3-2-1.
+           MOVE BYA-O2-REPO(3 2 1) TO QBYA-O2-REPO-3-2-1.
+           MOVE BYA-INT-REPO(3 2 1) TO QBYA-INT-REPO-3-2-1.
+           MOVE BYA-NO-REPO(3 2 2) TO QBYA-NO-REPO-3-2-2.
+           MOVE BYA-AMT-REPO(3 2 2) TO QBYA-AMT-REPO-3-2-2.
+           MOVE BYA-O2-REPO(3 2 2) TO QBYA-O2-REPO-3-2-2.
+           MOVE BYA-INT-REPO(3 2 2) TO QBYA-INT-REPO-3-2-2.
+           MOVE BYA-NO-REPO(3 2 3) TO QBYA-NO-REPO-3-2-3.
+           MOVE BYA-AMT-REPO(3 2 3) TO QBYA-AMT-REPO-3-2-3.
+           MOVE BYA-O2-REPO(3 2 3) TO QBYA-O2-REPO-3-2-3.
+           MOVE BYA-INT-REPO(3 2 3) TO QBYA-INT-REPO-3-2-3.
+           MOVE BYA-NO-REPO(3 2 4) TO QBYA-NO-REPO-3-2-4.
+           MOVE BYA-AMT-REPO(3 2 4) TO QBYA-AMT-REPO-3-2-4.
+           MOVE BYA-O2-REPO(3 2 4) TO QBYA-O2-REPO-3-2-4.
+           MOVE BYA-INT-REPO(3 2 4) TO QBYA-INT-REPO-3-2-4.
+           MOVE BYA-NO-REPO(3 2 5) TO QBYA-NO-REPO-3-2-5.
+           MOVE BYA-AMT-REPO(3 2 5) TO QBYA-AMT-REPO-3-2-5.
+           MOVE BYA-O2-REPO(3 2 5) TO QBYA-O2-REPO-3-2-5.
+           MOVE BYA-INT-REPO(3 2 5) TO QBYA-INT-REPO-3-2-5.
+           MOVE BYA-NO-PL(1 1 1) TO QBYA-NO-PL-1-1-1.
+           MOVE BYA-AMT-PL(1 1 1) TO QBYA-AMT-PL-1-1-1.
+           MOVE BYA-O2-PL(1 1 1) TO QBYA-O2-PL-1-1-1.
+           MOVE BYA-INT-PL(1 1 1) TO QBYA-INT-PL-1-1-1.
+           MOVE BYA-NO-PL(1 1 2) TO QBYA-NO-PL-1-1-2.
+           MOVE BYA-AMT-PL(1 1 2) TO QBYA-AMT-PL-1-1-2.
+           MOVE BYA-O2-PL(1 1 2) TO QBYA-O2-PL-1-1-2.
+           MOVE BYA-INT-PL(1 1 2) TO QBYA-INT-PL-1-1-2.
+           MOVE BYA-NO-PL(1 1 3) TO QBYA-NO-PL-1-1-3.
+           MOVE BYA-AMT-PL(1 1 3) TO QBYA-AMT-PL-1-1-3.
+           MOVE BYA-O2-PL(1 1 3) TO QBYA-O2-PL-1-1-3.
+           MOVE BYA-INT-PL(1 1 3) TO QBYA-INT-PL-1-1-3.
+           MOVE BYA-NO-PL(1 1 4) TO QBYA-NO-PL-1-1-4.
+           MOVE BYA-AMT-PL(1 1 4) TO QBYA-AMT-PL-1-1-4.
+           MOVE BYA-O2-PL(1 1 4) TO QBYA-O2-PL-1-1-4.
+           MOVE BYA-INT-PL(1 1 4) TO QBYA-INT-PL-1-1-4.
+           MOVE BYA-NO-PL(1 1 5) TO QBYA-NO-PL-1-1-5.
+           MOVE BYA-AMT-PL(1 1 5) TO QBYA-AMT-PL-1-1-5.
+           MOVE BYA-O2-PL(1 1 5) TO QBYA-O2-PL-1-1-5.
+           MOVE BYA-INT-PL(1 1 5) TO QBYA-INT-PL-1-1-5.
+           MOVE BYA-NO-PL(1 1 6) TO QBYA-NO-PL-1-1-6.
+           MOVE BYA-AMT-PL(1 1 6) TO QBYA-AMT-PL-1-1-6.
+           MOVE BYA-O2-PL(1 1 6) TO QBYA-O2-PL-1-1-6.
+           MOVE BYA-INT-PL(1 1 6) TO QBYA-INT-PL-1-1-6.
+           MOVE BYA-NO-PL(1 1 7) TO QBYA-NO-PL-1-1-7.
+           MOVE BYA-AMT-PL(1 1 7) TO QBYA-AMT-PL-1-1-7.
+           MOVE BYA-O2-PL(1 1 7) TO QBYA-O2-PL-1-1-7.
+           MOVE BYA-INT-PL(1 1 7) TO QBYA-INT-PL-1-1-7.
+           MOVE BYA-NO-PL(1 1 8) TO QBYA-NO-PL-1-1-8.
+           MOVE BYA-AMT-PL(1 1 8) TO QBYA-AMT-PL-1-1-8.
+           MOVE BYA-O2-PL(1 1 8) TO QBYA-O2-PL-1-1-8.
+           MOVE BYA-INT-PL(1 1 8) TO QBYA-INT-PL-1-1-8.
+           MOVE BYA-NO-PL(1 1 9) TO QBYA-NO-PL-1-1-9.
+           MOVE BYA-AMT-PL(1 1 9) TO QBYA-AMT-PL-1-1-9.
+           MOVE BYA-O2-PL(1 1 9) TO QBYA-O2-PL-1-1-9.
+           MOVE BYA-INT-PL(1 1 9) TO QBYA-INT-PL-1-1-9.
+           MOVE BYA-NO-PL(1 1 10) TO QBYA-NO-PL-1-1-10.
+           MOVE BYA-AMT-PL(1 1 10) TO QBYA-AMT-PL-1-1-10.
+           MOVE BYA-O2-PL(1 1 10) TO QBYA-O2-PL-1-1-10.
+           MOVE BYA-INT-PL(1 1 10) TO QBYA-INT-PL-1-1-10.
+           MOVE BYA-NO-PL(1 2 1) TO QBYA-NO-PL-1-2-1.
+           MOVE BYA-AMT-PL(1 2 1) TO QBYA-AMT-PL-1-2-1.
+           MOVE BYA-O2-PL(1 2 1) TO QBYA-O2-PL-1-2-1.
+           MOVE BYA-INT-PL(1 2 1) TO QBYA-INT-PL-1-2-1.
+           MOVE BYA-NO-PL(1 2 2) TO QBYA-NO-PL-1-2-2.
+           MOVE BYA-AMT-PL(1 2 2) TO QBYA-AMT-PL-1-2-2.
+           MOVE BYA-O2-PL(1 2 2) TO QBYA-O2-PL-1-2-2.
+           MOVE BYA-INT-PL(1 2 2) TO QBYA-INT-PL-1-2-2.
+           MOVE BYA-NO-PL(1 2 3) TO QBYA-NO-PL-1-2-3.
+           MOVE BYA-AMT-PL(1 2 3) TO QBYA-AMT-PL-1-2-3.
+           MOVE BYA-O2-PL(1 2 3) TO QBYA-O2-PL-1-2-3.
+           MOVE BYA-INT-PL(1 2 3) TO QBYA-INT-PL-1-2-3.
+           MOVE BYA-NO-PL(1 2 4) TO QBYA-NO-PL-1-2-4.
+           MOVE BYA-AMT-PL(1 2 4) TO QBYA-AMT-PL-1-2-4.
+           MOVE BYA-O2-PL(1 2 4) TO QBYA-O2-PL-1-2-4.
+           MOVE BYA-INT-PL(1 2 4) TO QBYA-INT-PL-1-2-4.
+           MOVE BYA-NO-PL(1 2 5) TO QBYA-NO-PL-1-2-5.
+           MOVE BYA-AMT-PL(1 2 5) TO QBYA-AMT-PL-1-2-5.
+           MOVE BYA-O2-PL(1 2 5) TO QBYA-O2-PL-1-2-5.
+           MOVE BYA-INT-PL(1 2 5) TO QBYA-INT-PL-1-2-5.
+           MOVE BYA-NO-PL(1 2 6) TO QBYA-NO-PL-1-2-6.
+           MOVE BYA-AMT-PL(1 2 6) TO QBYA-AMT-PL-1-2-6.
+           MOVE BYA-O2-PL(1 2 6) TO QBYA-O2-PL-1-2-6.
+           MOVE BYA-INT-PL(1 2 6) TO QBYA-INT-PL-1-2-6.
+           MOVE BYA-NO-PL(1 2 7) TO QBYA-NO-PL-1-2-7.
+           MOVE BYA-AMT-PL(1 2 7) TO QBYA-AMT-PL-1-2-7.
+           MOVE BYA-O2-PL(1 2 7) TO QBYA-O2-PL-1-2-7.
+           MOVE BYA-INT-PL(1 2 7) TO QBYA-INT-PL-1-2-7.
+           MOVE BYA-NO-PL(1 2 8) TO QBYA-NO-PL-1-2-8.
+           MOVE BYA-AMT-PL(1 2 8) TO QBYA-AMT-PL-1-2-8.
+           MOVE BYA-O2-PL(1 2 8) TO QBYA-O2-PL-1-2-8.
+           MOVE BYA-INT-PL(1 2 8) TO QBYA-INT-PL-1-2-8.
+           MOVE BYA-NO-PL(1 2 9) TO QBYA-NO-PL-1-2-9.
+           MOVE BYA-AMT-PL(1 2 9) TO QBYA-AMT-PL-1-2-9.
+           MOVE BYA-O2-PL(1 2 9) TO QBYA-O2-PL-1-2-9.
+           MOVE BYA-INT-PL(1 2 9) TO QBYA-INT-PL-1-2-9.
+           MOVE BYA-NO-PL(1 2 10) TO QBYA-NO-PL-1-2-10.
+           MOVE BYA-AMT-PL(1 2 10) TO QBYA-AMT-PL-1-2-10.
+           MOVE BYA-O2-PL(1 2 10) TO QBYA-O2-PL-1-2-10.
+           MOVE BYA-INT-PL(1 2 10) TO QBYA-INT-PL-1-2-10.
+           MOVE BYA-NO-PL(2 1 1) TO QBYA-NO-PL-2-1-1.
+           MOVE BYA-AMT-PL(2 1 1) TO QBYA-AMT-PL-2-1-1.
+           MOVE BYA-O2-PL(2 1 1) TO QBYA-O2-PL-2-1-1.
+           MOVE BYA-INT-PL(2 1 1) TO QBYA-INT-PL-2-1-1.
+           MOVE BYA-NO-PL(2 1 2) TO QBYA-NO-PL-2-1-2.
+           MOVE BYA-AMT-PL(2 1 2) TO QBYA-AMT-PL-2-1-2.
+           MOVE BYA-O2-PL(2 1 2) TO QBYA-O2-PL-2-1-2.
+           MOVE BYA-INT-PL(2 1 2) TO QBYA-INT-PL-2-1-2.
+           MOVE BYA-NO-PL(2 1 3) TO QBYA-NO-PL-2-1-3.
+           MOVE BYA-AMT-PL(2 1 3) TO QBYA-AMT-PL-2-1-3.
+           MOVE BYA-O2-PL(2 1 3) TO QBYA-O2-PL-2-1-3.
+           MOVE BYA-INT-PL(2 1 3) TO QBYA-INT-PL-2-1-3.
+           MOVE BYA-NO-PL(2 1 4) TO QBYA-NO-PL-2-1-4.
+           MOVE BYA-AMT-PL(2 1 4) TO QBYA-AMT-PL-2-1-4.
+           MOVE BYA-O2-PL(2 1 4) TO QBYA-O2-PL-2-1-4.
+           MOVE BYA-INT-PL(2 1 4) TO QBYA-INT-PL-2-1-4.
+           MOVE BYA-NO-PL(2 1 5) TO QBYA-NO-PL-2-1-5.
+           MOVE BYA-AMT-PL(2 1 5) TO QBYA-AMT-PL-2-1-5.
+           MOVE BYA-O2-PL(2 1 5) TO QBYA-O2-PL-2-1-5.
+           MOVE BYA-INT-PL(2 1 5) TO QBYA-INT-PL-2-1-5.
+           MOVE BYA-NO-PL(2 1 6) TO QBYA-NO-PL-2-1-6.
+           MOVE BYA-AMT-PL(2 1 6) TO QBYA-AMT-PL-2-1-6.
+           MOVE BYA-O2-PL(2 1 6) TO QBYA-O2-PL-2-1-6.
+           MOVE BYA-INT-PL(2 1 6) TO QBYA-INT-PL-2-1-6.
+           MOVE BYA-NO-PL(2 1 7) TO QBYA-NO-PL-2-1-7.
+           MOVE BYA-AMT-PL(2 1 7) TO QBYA-AMT-PL-2-1-7.
+           MOVE BYA-O2-PL(2 1 7) TO QBYA-O2-PL-2-1-7.
+           MOVE BYA-INT-PL(2 1 7) TO QBYA-INT-PL-2-1-7.
+           MOVE BYA-NO-PL(2 1 8) TO QBYA-NO-PL-2-1-8.
+           MOVE BYA-AMT-PL(2 1 8) TO QBYA-AMT-PL-2-1-8.
+           MOVE BYA-O2-PL(2 1 8) TO QBYA-O2-PL-2-1-8.
+           MOVE BYA-INT-PL(2 1 8) TO QBYA-INT-PL-2-1-8.
+           MOVE BYA-NO-PL(2 1 9) TO QBYA-NO-PL-2-1-9.
+           MOVE BYA-AMT-PL(2 1 9) TO QBYA-AMT-PL-2-1-9.
+           MOVE BYA-O2-PL(2 1 9) TO QBYA-O2-PL-2-1-9.
+           MOVE BYA-INT-PL(2 1 9) TO QBYA-INT-PL-2-1-9.
+           MOVE BYA-NO-PL(2 1 10) TO QBYA-NO-PL-2-1-10.
+           MOVE BYA-AMT-PL(2 1 10) TO QBYA-AMT-PL-2-1-10.
+           MOVE BYA-O2-PL(2 1 10) TO QBYA-O2-PL-2-1-10.
+           MOVE BYA-INT-PL(2 1 10) TO QBYA-INT-PL-2-1-10.
+           MOVE BYA-NO-PL(2 2 1) TO QBYA-NO-PL-2-2-1.
+           MOVE BYA-AMT-PL(2 2 1) TO QBYA-AMT-PL-2-2-1.
+           MOVE BYA-O2-PL(2 2 1) TO QBYA-O2-PL-2-2-1.
+           MOVE BYA-INT-PL(2 2 1) TO QBYA-INT-PL-2-2-1.
+           MOVE BYA-NO-PL(2 2 2) TO QBYA-NO-PL-2-2-2.
+           MOVE BYA-AMT-PL(2 2 2) TO QBYA-AMT-PL-2-2-2.
+           MOVE BYA-O2-PL(2 2 2) TO QBYA-O2-PL-2-2-2.
+           MOVE BYA-INT-PL(2 2 2) TO QBYA-INT-PL-2-2-2.
+           MOVE BYA-NO-PL(2 2 3) TO QBYA-NO-PL-2-2-3.
+           MOVE BYA-AMT-PL(2 2 3) TO QBYA-AMT-PL-2-2-3.
+           MOVE BYA-O2-PL(2 2 3) TO QBYA-O2-PL-2-2-3.
+           MOVE BYA-INT-PL(2 2 3) TO QBYA-INT-PL-2-2-3.
+           MOVE BYA-NO-PL(2 2 4) TO QBYA-NO-PL-2-2-4.
+           MOVE BYA-AMT-PL(2 2 4) TO QBYA-AMT-PL-2-2-4.
+           MOVE BYA-O2-PL(2 2 4) TO QBYA-O2-PL-2-2-4.
+           MOVE BYA-INT-PL(2 2 4) TO QBYA-INT-PL-2-2-4.
+           MOVE BYA-NO-PL(2 2 5) TO QBYA-NO-PL-2-2-5.
+           MOVE BYA-AMT-PL(2 2 5) TO QBYA-AMT-PL-2-2-5.
+           MOVE BYA-O2-PL(2 2 5) TO QBYA-O2-PL-2-2-5.
+           MOVE BYA-INT-PL(2 2 5) TO QBYA-INT-PL-2-2-5.
+           MOVE BYA-NO-PL(2 2 6) TO QBYA-NO-PL-2-2-6.
+           MOVE BYA-AMT-PL(2 2 6) TO QBYA-AMT-PL-2-2-6.
+           MOVE BYA-O2-PL(2 2 6) TO QBYA-O2-PL-2-2-6.
+           MOVE BYA-INT-PL(2 2 6) TO QBYA-INT-PL-2-2-6.
+           MOVE BYA-NO-PL(2 2 7) TO QBYA-NO-PL-2-2-7.
+           MOVE BYA-AMT-PL(2 2 7) TO QBYA-AMT-PL-2-2-7.
+           MOVE BYA-O2-PL(2 2 7) TO QBYA-O2-PL-2-2-7.
+           MOVE BYA-INT-PL(2 2 7) TO QBYA-INT-PL-2-2-7.
+           MOVE BYA-NO-PL(2 2 8) TO QBYA-NO-PL-2-2-8.
+           MOVE BYA-AMT-PL(2 2 8) TO QBYA-AMT-PL-2-2-8.
+           MOVE BYA-O2-PL(2 2 8) TO QBYA-O2-PL-2-2-8.
+           MOVE BYA-INT-PL(2 2 8) TO QBYA-INT-PL-2-2-8.
+           MOVE BYA-NO-PL(2 2 9) TO QBYA-NO-PL-2-2-9.
+           MOVE BYA-AMT-PL(2 2 9) TO QBYA-AMT-PL-2-2-9.
+           MOVE BYA-O2-PL(2 2 9) TO QBYA-O2-PL-2-2-9.
+           MOVE BYA-INT-PL(2 2 9) TO QBYA-INT-PL-2-2-9.
+           MOVE BYA-NO-PL(2 2 10) TO QBYA-NO-PL-2-2-10.
+           MOVE BYA-AMT-PL(2 2 10) TO QBYA-AMT-PL-2-2-10.
+           MOVE BYA-O2-PL(2 2 10) TO QBYA-O2-PL-2-2-10.
+           MOVE BYA-INT-PL(2 2 10) TO QBYA-INT-PL-2-2-10.
+           MOVE BYA-NO-PL(3 1 1) TO QBYA-NO-PL-3-1-1.
+           MOVE BYA-AMT-PL(3 1 1) TO QBYA-AMT-PL-3-1-1.
+           MOVE BYA-O2-PL(3 1 1) TO QBYA-O2-PL-3-1-1.
+           MOVE BYA-INT-PL(3 1 1) TO QBYA-INT-PL-3-1-1.
+           MOVE BYA-NO-PL(3 1 2) TO QBYA-NO-PL-3-1-2.
+           MOVE BYA-AMT-PL(3 1 2) TO QBYA-AMT-PL-3-1-2.
+           MOVE BYA-O2-PL(3 1 2) TO QBYA-O2-PL-3-1-2.
+           MOVE BYA-INT-PL(3 1 2) TO QBYA-INT-PL-3-1-2.
+           MOVE BYA-NO-PL(3 1 3) TO QBYA-NO-PL-3-1-3.
+           MOVE BYA-AMT-PL(3 1 3) TO QBYA-AMT-PL-3-1-3.
+           MOVE BYA-O2-PL(3 1 3) TO QBYA-O2-PL-3-1-3.
+           MOVE BYA-INT-PL(3 1 3) TO QBYA-INT-PL-3-1-3.
+           MOVE BYA-NO-PL(3 1 4) TO QBYA-NO-PL-3-1-4.
+           MOVE BYA-AMT-PL(3 1 4) TO QBYA-AMT-PL-3-1-4.
+           MOVE BYA-O2-PL(3 1 4) TO QBYA-O2-PL-3-1-4.
+           MOVE BYA-INT-PL(3 1 4) TO QBYA-INT-PL-3-1-4.
+           MOVE BYA-NO-PL(3 1 5) TO QBYA-NO-PL-3-1-5.
+           MOVE BYA-AMT-PL(3 1 5) TO QBYA-AMT-PL-3-1-5.
+           MOVE BYA-O2-PL(3 1 5) TO QBYA-O2-PL-3-1-5.
+           MOVE BYA-INT-PL(3 1 5) TO QBYA-INT-PL-3-1-5.
+           MOVE BYA-NO-PL(3 1 6) TO QBYA-NO-PL-3-1-6.
+           MOVE BYA-AMT-PL(3 1 6) TO QBYA-AMT-PL-3-1-6.
+           MOVE BYA-O2-PL(3 1 6) TO QBYA-O2-PL-3-1-6.
+           MOVE BYA-INT-PL(3 1 6) TO QBYA-INT-PL-3-1-6.
+           MOVE BYA-NO-PL(3 1 7) TO QBYA-NO-PL-3-1-7.
+           MOVE BYA-AMT-PL(3 1 7) TO QBYA-AMT-PL-3-1-7.
+           MOVE BYA-O2-PL(3 1 7) TO QBYA-O2-PL-3-1-7.
+           MOVE BYA-INT-PL(3 1 7) TO QBYA-INT-PL-3-1-7.
+           MOVE BYA-NO-PL(3 1 8) TO QBYA-NO-PL-3-1-8.
+           MOVE BYA-AMT-PL(3 1 8) TO QBYA-AMT-PL-3-1-8.
+           MOVE BYA-O2-PL(3 1 8) TO QBYA-O2-PL-3-1-8.
+           MOVE BYA-INT-PL(3 1 8) TO QBYA-INT-PL-3-1-8.
+           MOVE BYA-NO-PL(3 1 9) TO QBYA-NO-PL-3-1-9.
+           MOVE BYA-AMT-PL(3 1 9) TO QBYA-AMT-PL-3-1-9.
+           MOVE BYA-O2-PL(3 1 9) TO QBYA-O2-PL-3-1-9.
+           MOVE BYA-INT-PL(3 1 9) TO QBYA-INT-PL-3-1-9.
+           MOVE BYA-NO-PL(3 1 10) TO QBYA-NO-PL-3-1-10.
+           MOVE BYA-AMT-PL(3 1 10) TO QBYA-AMT-PL-3-1-10.
+           MOVE BYA-O2-PL(3 1 10) TO QBYA-O2-PL-3-1-10.
+           MOVE BYA-INT-PL(3 1 10) TO QBYA-INT-PL-3-1-10.
+           MOVE BYA-NO-PL(3 2 1) TO QBYA-NO-PL-3-2-1.
+           MOVE BYA-AMT-PL(3 2 1) TO QBYA-AMT-PL-3-2-1.
+           MOVE BYA-O2-PL(3 2 1) TO QBYA-O2-PL-3-2-1.
+           MOVE BYA-INT-PL(3 2 1) TO QBYA-INT-PL-3-2-1.
+           MOVE BYA-NO-PL(3 2 2) TO QBYA-NO-PL-3-2-2.
+           MOVE BYA-AMT-PL(3 2 2) TO QBYA-AMT-PL-3-2-2.
+           MOVE BYA-O2-PL(3 2 2) TO QBYA-O2-PL-3-2-2.
+           MOVE BYA-INT-PL(3 2 2) TO QBYA-INT-PL-3-2-2.
+           MOVE BYA-NO-PL(3 2 3) TO QBYA-NO-PL-3-2-3.
+           MOVE BYA-AMT-PL(3 2 3) TO QBYA-AMT-PL-3-2-3.
+           MOVE BYA-O2-PL(3 2 3) TO QBYA-O2-PL-3-2-3.
+           MOVE BYA-INT-PL(3 2 3) TO QBYA-INT-PL-3-2-3.
+           MOVE BYA-NO-PL(3 2 4) TO QBYA-NO-PL-3-2-4.
+           MOVE BYA-AMT-PL(3 2 4) TO QBYA-AMT-PL-3-2-4.
+           MOVE BYA-O2-PL(3 2 4) TO QBYA-O2-PL-3-2-4.
+           MOVE BYA-INT-PL(3 2 4) TO QBYA-INT-PL-3-2-4.
+           MOVE BYA-NO-PL(3 2 5) TO QBYA-NO-PL-3-2-5.
+           MOVE BYA-AMT-PL(3 2 5) TO QBYA-AMT-PL-3-2-5.
+           MOVE BYA-O2-PL(3 2 5) TO QBYA-O2-PL-3-2-5.
+           MOVE BYA-INT-PL(3 2 5) TO QBYA-INT-PL-3-2-5.
+           MOVE BYA-NO-PL(3 2 6) TO QBYA-NO-PL-3-2-6.
+           MOVE BYA-AMT-PL(3 2 6) TO QBYA-AMT-PL-3-2-6.
+           MOVE BYA-O2-PL(3 2 6) TO QBYA-O2-PL-3-2-6.
+           MOVE BYA-INT-PL(3 2 6) TO QBYA-INT-PL-3-2-6.
+           MOVE BYA-NO-PL(3 2 7) TO QBYA-NO-PL-3-2-7.
+           MOVE BYA-AMT-PL(3 2 7) TO QBYA-AMT-PL-3-2-7.
+           MOVE BYA-O2-PL(3 2 7) TO QBYA-O2-PL-3-2-7.
+           MOVE BYA-INT-PL(3 2 7) TO QBYA-INT-PL-3-2-7.
+           MOVE BYA-NO-PL(3 2 8) TO QBYA-NO-PL-3-2-8.
+           MOVE BYA-AMT-PL(3 2 8) TO QBYA-AMT-PL-3-2-8.
+           MOVE BYA-O2-PL(3 2 8) TO QBYA-O2-PL-3-2-8.
+           MOVE BYA-INT-PL(3 2 8) TO QBYA-INT-PL-3-2-8.
+           MOVE BYA-NO-PL(3 2 9) TO QBYA-NO-PL-3-2-9.
+           MOVE BYA-AMT-PL(3 2 9) TO QBYA-AMT-PL-3-2-9.
+           MOVE BYA-O2-PL(3 2 9) TO QBYA-O2-PL-3-2-9.
+           MOVE BYA-INT-PL(3 2 9) TO QBYA-INT-PL-3-2-9.
+           MOVE BYA-NO-PL(3 2 10) TO QBYA-NO-PL-3-2-10.
+           MOVE BYA-AMT-PL(3 2 10) TO QBYA-AMT-PL-3-2-10.
+           MOVE BYA-O2-PL(3 2 10) TO QBYA-O2-PL-3-2-10.
+           MOVE BYA-INT-PL(3 2 10) TO QBYA-INT-PL-3-2-10.
+           MOVE BYA-DLRVPRIN(1 1 1) TO QBYA-DLRVPRIN-1-1-1.
+           MOVE BYA-DLRVPRIN(1 1 2) TO QBYA-DLRVPRIN-1-1-2.
+           MOVE BYA-DLRVPRIN(1 1 3) TO QBYA-DLRVPRIN-1-1-3.
+           MOVE BYA-DLRVCHGS(1 1 1) TO QBYA-DLRVCHGS-1-1-1.
+           MOVE BYA-DLRVCHGS(1 1 2) TO QBYA-DLRVCHGS-1-1-2.
+           MOVE BYA-DLRVCHGS(1 1 3) TO QBYA-DLRVCHGS-1-1-3.
+           MOVE BYA-DLPARVHELD(1 1) TO QBYA-DLPARVHELD-1-1.
+           MOVE BYA-DLRVPRIN(1 2 1) TO QBYA-DLRVPRIN-1-2-1.
+           MOVE BYA-DLRVPRIN(1 2 2) TO QBYA-DLRVPRIN-1-2-2.
+           MOVE BYA-DLRVPRIN(1 2 3) TO QBYA-DLRVPRIN-1-2-3.
+           MOVE BYA-DLRVCHGS(1 2 1) TO QBYA-DLRVCHGS-1-2-1.
+           MOVE BYA-DLRVCHGS(1 2 2) TO QBYA-DLRVCHGS-1-2-2.
+           MOVE BYA-DLRVCHGS(1 2 3) TO QBYA-DLRVCHGS-1-2-3.
+           MOVE BYA-DLPARVHELD(1 2) TO QBYA-DLPARVHELD-1-2.
+           MOVE BYA-DLRVPRIN(2 1 1) TO QBYA-DLRVPRIN-2-1-1.
+           MOVE BYA-DLRVPRIN(2 1 2) TO QBYA-DLRVPRIN-2-1-2.
+           MOVE BYA-DLRVPRIN(2 1 3) TO QBYA-DLRVPRIN-2-1-3.
+           MOVE BYA-DLRVCHGS(2 1 1) TO QBYA-DLRVCHGS-2-1-1.
+           MOVE BYA-DLRVCHGS(2 1 2) TO QBYA-DLRVCHGS-2-1-2.
+           MOVE BYA-DLRVCHGS(2 1 3) TO QBYA-DLRVCHGS-2-1-3.
+           MOVE BYA-DLPARVHELD(2 1) TO QBYA-DLPARVHELD-2-1.
+           MOVE BYA-DLRVPRIN(2 2 1) TO QBYA-DLRVPRIN-2-2-1.
+           MOVE BYA-DLRVPRIN(2 2 2) TO QBYA-DLRVPRIN-2-2-2.
+           MOVE BYA-DLRVPRIN(2 2 3) TO QBYA-DLRVPRIN-2-2-3.
+           MOVE BYA-DLRVCHGS(2 2 1) TO QBYA-DLRVCHGS-2-2-1.
+           MOVE BYA-DLRVCHGS(2 2 2) TO QBYA-DLRVCHGS-2-2-2.
+           MOVE BYA-DLRVCHGS(2 2 3) TO QBYA-DLRVCHGS-2-2-3.
+           MOVE BYA-DLPARVHELD(2 2) TO QBYA-DLPARVHELD-2-2.
+           MOVE BYA-DLRVPRIN(3 1 1) TO QBYA-DLRVPRIN-3-1-1.
+           MOVE BYA-DLRVPRIN(3 1 2) TO QBYA-DLRVPRIN-3-1-2.
+           MOVE BYA-DLRVPRIN(3 1 3) TO QBYA-DLRVPRIN-3-1-3.
+           MOVE BYA-DLRVCHGS(3 1 1) TO QBYA-DLRVCHGS-3-1-1.
+           MOVE BYA-DLRVCHGS(3 1 2) TO QBYA-DLRVCHGS-3-1-2.
+           MOVE BYA-DLRVCHGS(3 1 3) TO QBYA-DLRVCHGS-3-1-3.
+           MOVE BYA-DLPARVHELD(3 1) TO QBYA-DLPARVHELD-3-1.
+           MOVE BYA-DLRVPRIN(3 2 1) TO QBYA-DLRVPRIN-3-2-1.
+           MOVE BYA-DLRVPRIN(3 2 2) TO QBYA-DLRVPRIN-3-2-2.
+           MOVE BYA-DLRVPRIN(3 2 3) TO QBYA-DLRVPRIN-3-2-3.
+           MOVE BYA-DLRVCHGS(3 2 1) TO QBYA-DLRVCHGS-3-2-1.
+           MOVE BYA-DLRVCHGS(3 2 2) TO QBYA-DLRVCHGS-3-2-2.
+           MOVE BYA-DLRVCHGS(3 2 3) TO QBYA-DLRVCHGS-3-2-3.
+           MOVE BYA-DLPARVHELD(3 2) TO QBYA-DLPARVHELD-3-2.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD BYB-REC FROM QBYB-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-BYB-FIELDS.
+           MOVE QBYB-DATE-CCYYMM TO BYB-DATE-CCYYMM.
+           MOVE QBYB-BRNO TO BYB-BRNO.
+           MOVE QBYB-CLASS TO BYB-CLASS.
+           MOVE QBYB-PL-PRINCOL-1-1 TO BYB-PL-PRINCOL(1 1).
+           MOVE QBYB-PL-INTCOL-1-1 TO BYB-PL-INTCOL(1 1).
+           MOVE QBYB-PL-LATECOL-1-1 TO BYB-PL-LATECOL(1 1).
+           MOVE QBYB-PL-O2COL-1-1 TO BYB-PL-O2COL(1 1).
+           MOVE QBYB-PL-PRINCOL-1-2 TO BYB-PL-PRINCOL(1 2).
+           MOVE QBYB-PL-INTCOL-1-2 TO BYB-PL-INTCOL(1 2).
+           MOVE QBYB-PL-LATECOL-1-2 TO BYB-PL-LATECOL(1 2).
+           MOVE QBYB-PL-O2COL-1-2 TO BYB-PL-O2COL(1 2).
+           MOVE QBYB-PL-PRINCOL-1-3 TO BYB-PL-PRINCOL(1 3).
+           MOVE QBYB-PL-INTCOL-1-3 TO BYB-PL-INTCOL(1 3).
+           MOVE QBYB-PL-LATECOL-1-3 TO BYB-PL-LATECOL(1 3).
+           MOVE QBYB-PL-O2COL-1-3 TO BYB-PL-O2COL(1 3).
+           MOVE QBYB-PL-PRINCOL-1-4 TO BYB-PL-PRINCOL(1 4).
+           MOVE QBYB-PL-INTCOL-1-4 TO BYB-PL-INTCOL(1 4).
+           MOVE QBYB-PL-LATECOL-1-4 TO BYB-PL-LATECOL(1 4).
+           MOVE QBYB-PL-O2COL-1-4 TO BYB-PL-O2COL(1 4).
+           MOVE QBYB-PL-PRINCOL-1-5 TO BYB-PL-PRINCOL(1 5).
+           MOVE QBYB-PL-INTCOL-1-5 TO BYB-PL-INTCOL(1 5).
+           MOVE QBYB-PL-LATECOL-1-5 TO BYB-PL-LATECOL(1 5).
+           MOVE QBYB-PL-O2COL-1-5 TO BYB-PL-O2COL(1 5).
+           MOVE QBYB-AMT-SOLD-1 TO BYB-AMT-SOLD(1).
+           MOVE QBYB-AMT-TRANS-1 TO BYB-AMT-TRANS(1).
+           MOVE QBYB-AMT-PURCH-1 TO BYB-AMT-PURCH(1).
+           MOVE QBYB-NO-SOLD-1 TO BYB-NO-SOLD(1).
+           MOVE QBYB-NO-TRANS-1 TO BYB-NO-TRANS(1).
+           MOVE QBYB-NO-PURCH-1 TO BYB-NO-PURCH(1).
+           MOVE QBYB-OTHCOL-1 TO BYB-OTHCOL(1).
+           MOVE QBYB-OT2COL-1 TO BYB-OT2COL(1).
+           MOVE QBYB-INTCOL-1 TO BYB-INTCOL(1).
+           MOVE QBYB-LATECOL-1 TO BYB-LATECOL(1).
+           MOVE QBYB-PRINCOL-1 TO BYB-PRINCOL(1).
+           MOVE QBYB-DEFCOL-1 TO BYB-DEFCOL(1).
+           MOVE QBYB-RNPRIN-1 TO BYB-RNPRIN(1).
+           MOVE QBYB-INTREB-1 TO BYB-INTREB(1).
+           MOVE QBYB-CLREB1-1 TO BYB-CLREB1(1).
+           MOVE QBYB-CLREB2-1 TO BYB-CLREB2(1).
+           MOVE QBYB-CLREB3-1 TO BYB-CLREB3(1).
+           MOVE QBYB-CLREB4-1 TO BYB-CLREB4(1).
+           MOVE QBYB-AHREB-1 TO BYB-AHREB(1).
+           MOVE QBYB-PPREB-1 TO BYB-PPREB(1).
+           MOVE QBYB-O1REB-1 TO BYB-O1REB(1).
+           MOVE QBYB-O2REB-1 TO BYB-O2REB(1).
+           MOVE QBYB-O3REB-1 TO BYB-O3REB(1).
+           MOVE QBYB-O4REB-1 TO BYB-O4REB(1).
+           MOVE QBYB-O5REB-1 TO BYB-O5REB(1).
+           MOVE QBYB-O6REB-1 TO BYB-O6REB(1).
+           MOVE QBYB-O7REB-1 TO BYB-O7REB(1).
+           MOVE QBYB-SCREB-1 TO BYB-SCREB(1).
+           MOVE QBYB-MFREB-1 TO BYB-MFREB(1).
+           MOVE QBYB-DFREB-1 TO BYB-DFREB(1).
+           MOVE QBYB-UN7-REB-1 TO BYB-UN7-REB(1).
+           MOVE QBYB-UN8-REB-1 TO BYB-UN8-REB(1).
+           MOVE QBYB-UN9-REB-1 TO BYB-UN9-REB(1).
+           MOVE QBYB-UN10-REB-1 TO BYB-UN10-REB(1).
+           MOVE QBYB-PART-CHGOFF-1 TO BYB-PART-CHGOFF(1).
+           MOVE QBYB-ALLOTMENTS-1 TO BYB-ALLOTMENTS(1).
+           MOVE QBYB-INS-NO-ELIG-1-1 TO BYB-INS-NO-ELIG(1 1).
+           MOVE QBYB-INS-NO-WROTE-1-1 TO BYB-INS-NO-WROTE(1 1).
+           MOVE QBYB-INS-NO-NOTWROTE-1-1 TO BYB-INS-NO-NOTWROTE(1 1).
+           MOVE QBYB-INS-AMT-WROTE-1-1 TO BYB-INS-AMT-WROTE(1 1).
+           MOVE QBYB-INS-NO-ELIG-1-2 TO BYB-INS-NO-ELIG(1 2).
+           MOVE QBYB-INS-NO-WROTE-1-2 TO BYB-INS-NO-WROTE(1 2).
+           MOVE QBYB-INS-NO-NOTWROTE-1-2 TO BYB-INS-NO-NOTWROTE(1 2).
+           MOVE QBYB-INS-AMT-WROTE-1-2 TO BYB-INS-AMT-WROTE(1 2).
+           MOVE QBYB-INS-NO-ELIG-1-3 TO BYB-INS-NO-ELIG(1 3).
+           MOVE QBYB-INS-NO-WROTE-1-3 TO BYB-INS-NO-WROTE(1 3).
+           MOVE QBYB-INS-NO-NOTWROTE-1-3 TO BYB-INS-NO-NOTWROTE(1 3).
+           MOVE QBYB-INS-AMT-WROTE-1-3 TO BYB-INS-AMT-WROTE(1 3).
+           MOVE QBYB-INS-NO-ELIG-1-4 TO BYB-INS-NO-ELIG(1 4).
+           MOVE QBYB-INS-NO-WROTE-1-4 TO BYB-INS-NO-WROTE(1 4).
+           MOVE QBYB-INS-NO-NOTWROTE-1-4 TO BYB-INS-NO-NOTWROTE(1 4).
+           MOVE QBYB-INS-AMT-WROTE-1-4 TO BYB-INS-AMT-WROTE(1 4).
+           MOVE QBYB-INS-NO-ELIG-1-5 TO BYB-INS-NO-ELIG(1 5).
+           MOVE QBYB-INS-NO-WROTE-1-5 TO BYB-INS-NO-WROTE(1 5).
+           MOVE QBYB-INS-NO-NOTWROTE-1-5 TO BYB-INS-NO-NOTWROTE(1 5).
+           MOVE QBYB-INS-AMT-WROTE-1-5 TO BYB-INS-AMT-WROTE(1 5).
+           MOVE QBYB-INS-NO-ELIG-1-6 TO BYB-INS-NO-ELIG(1 6).
+           MOVE QBYB-INS-NO-WROTE-1-6 TO BYB-INS-NO-WROTE(1 6).
+           MOVE QBYB-INS-NO-NOTWROTE-1-6 TO BYB-INS-NO-NOTWROTE(1 6).
+           MOVE QBYB-INS-AMT-WROTE-1-6 TO BYB-INS-AMT-WROTE(1 6).
+           MOVE QBYB-INS-NO-ELIG-1-7 TO BYB-INS-NO-ELIG(1 7).
+           MOVE QBYB-INS-NO-WROTE-1-7 TO BYB-INS-NO-WROTE(1 7).
+           MOVE QBYB-INS-NO-NOTWROTE-1-7 TO BYB-INS-NO-NOTWROTE(1 7).
+           MOVE QBYB-INS-AMT-WROTE-1-7 TO BYB-INS-AMT-WROTE(1 7).
+           MOVE QBYB-INS-NO-ELIG-1-8 TO BYB-INS-NO-ELIG(1 8).
+           MOVE QBYB-INS-NO-WROTE-1-8 TO BYB-INS-NO-WROTE(1 8).
+           MOVE QBYB-INS-NO-NOTWROTE-1-8 TO BYB-INS-NO-NOTWROTE(1 8).
+           MOVE QBYB-INS-AMT-WROTE-1-8 TO BYB-INS-AMT-WROTE(1 8).
+           MOVE QBYB-INS-NO-ELIG-1-9 TO BYB-INS-NO-ELIG(1 9).
+           MOVE QBYB-INS-NO-WROTE-1-9 TO BYB-INS-NO-WROTE(1 9).
+           MOVE QBYB-INS-NO-NOTWROTE-1-9 TO BYB-INS-NO-NOTWROTE(1 9).
+           MOVE QBYB-INS-AMT-WROTE-1-9 TO BYB-INS-AMT-WROTE(1 9).
+           MOVE QBYB-INS-NO-ELIG-1-10 TO BYB-INS-NO-ELIG(1 10).
+           MOVE QBYB-INS-NO-WROTE-1-10 TO BYB-INS-NO-WROTE(1 10).
+           MOVE QBYB-INS-NO-NOTWROTE-1-10 TO BYB-INS-NO-NOTWROTE(1 10).
+           MOVE QBYB-INS-AMT-WROTE-1-10 TO BYB-INS-AMT-WROTE(1 10).
+           MOVE QBYB-FEE-NO-ELIG-1-1 TO BYB-FEE-NO-ELIG(1 1).
+           MOVE QBYB-FEE-NO-WROTE-1-1 TO BYB-FEE-NO-WROTE(1 1).
+           MOVE QBYB-FEE-NO-NOTWROTE-1-1 TO BYB-FEE-NO-NOTWROTE(1 1).
+           MOVE QBYB-FEE-AMT-WROTE-1-1 TO BYB-FEE-AMT-WROTE(1 1).
+           MOVE QBYB-FEE-NO-ELIG-1-2 TO BYB-FEE-NO-ELIG(1 2).
+           MOVE QBYB-FEE-NO-WROTE-1-2 TO BYB-FEE-NO-WROTE(1 2).
+           MOVE QBYB-FEE-NO-NOTWROTE-1-2 TO BYB-FEE-NO-NOTWROTE(1 2).
+           MOVE QBYB-FEE-AMT-WROTE-1-2 TO BYB-FEE-AMT-WROTE(1 2).
+           MOVE QBYB-FEE-NO-ELIG-1-3 TO BYB-FEE-NO-ELIG(1 3).
+           MOVE QBYB-FEE-NO-WROTE-1-3 TO BYB-FEE-NO-WROTE(1 3).
+           MOVE QBYB-FEE-NO-NOTWROTE-1-3 TO BYB-FEE-NO-NOTWROTE(1 3).
+           MOVE QBYB-FEE-AMT-WROTE-1-3 TO BYB-FEE-AMT-WROTE(1 3).
+           MOVE QBYB-OTH-NO-COL-1 TO BYB-OTH-NO-COL(1).
+           MOVE QBYB-OT2-NO-COL-1 TO BYB-OT2-NO-COL(1).
+           MOVE QBYB-INT-NO-COL-1 TO BYB-INT-NO-COL(1).
+           MOVE QBYB-LATE-NO-COL-1 TO BYB-LATE-NO-COL(1).
+           MOVE QBYB-OTH-NO-WAIVED-1 TO BYB-OTH-NO-WAIVED(1).
+           MOVE QBYB-OT2-NO-WAIVED-1 TO BYB-OT2-NO-WAIVED(1).
+           MOVE QBYB-INT-NO-WAIVED-1 TO BYB-INT-NO-WAIVED(1).
+           MOVE QBYB-LATE-NO-WAIVED-1 TO BYB-LATE-NO-WAIVED(1).
+           MOVE QBYB-OTH-AMT-WAIVED-1 TO BYB-OTH-AMT-WAIVED(1).
+           MOVE QBYB-OT2-AMT-WAIVED-1 TO BYB-OT2-AMT-WAIVED(1).
+           MOVE QBYB-INT-AMT-WAIVED-1 TO BYB-INT-AMT-WAIVED(1).
+           MOVE QBYB-LATE-AMT-WAIVED-1 TO BYB-LATE-AMT-WAIVED(1).
+           MOVE QBYB-PL-PRINCOL-2-1 TO BYB-PL-PRINCOL(2 1).
+           MOVE QBYB-PL-INTCOL-2-1 TO BYB-PL-INTCOL(2 1).
+           MOVE QBYB-PL-LATECOL-2-1 TO BYB-PL-LATECOL(2 1).
+           MOVE QBYB-PL-O2COL-2-1 TO BYB-PL-O2COL(2 1).
+           MOVE QBYB-PL-PRINCOL-2-2 TO BYB-PL-PRINCOL(2 2).
+           MOVE QBYB-PL-INTCOL-2-2 TO BYB-PL-INTCOL(2 2).
+           MOVE QBYB-PL-LATECOL-2-2 TO BYB-PL-LATECOL(2 2).
+           MOVE QBYB-PL-O2COL-2-2 TO BYB-PL-O2COL(2 2).
+           MOVE QBYB-PL-PRINCOL-2-3 TO BYB-PL-PRINCOL(2 3).
+           MOVE QBYB-PL-INTCOL-2-3 TO BYB-PL-INTCOL(2 3).
+           MOVE QBYB-PL-LATECOL-2-3 TO BYB-PL-LATECOL(2 3).
+           MOVE QBYB-PL-O2COL-2-3 TO BYB-PL-O2COL(2 3).
+           MOVE QBYB-PL-PRINCOL-2-4 TO BYB-PL-PRINCOL(2 4).
+           MOVE QBYB-PL-INTCOL-2-4 TO BYB-PL-INTCOL(2 4).
+           MOVE QBYB-PL-LATECOL-2-4 TO BYB-PL-LATECOL(2 4).
+           MOVE QBYB-PL-O2COL-2-4 TO BYB-PL-O2COL(2 4).
+           MOVE QBYB-PL-PRINCOL-2-5 TO BYB-PL-PRINCOL(2 5).
+           MOVE QBYB-PL-INTCOL-2-5 TO BYB-PL-INTCOL(2 5).
+           MOVE QBYB-PL-LATECOL-2-5 TO BYB-PL-LATECOL(2 5).
+           MOVE QBYB-PL-O2COL-2-5 TO BYB-PL-O2COL(2 5).
+           MOVE QBYB-AMT-SOLD-2 TO BYB-AMT-SOLD(2).
+           MOVE QBYB-AMT-TRANS-2 TO BYB-AMT-TRANS(2).
+           MOVE QBYB-AMT-PURCH-2 TO BYB-AMT-PURCH(2).
+           MOVE QBYB-NO-SOLD-2 TO BYB-NO-SOLD(2).
+           MOVE QBYB-NO-TRANS-2 TO BYB-NO-TRANS(2).
+           MOVE QBYB-NO-PURCH-2 TO BYB-NO-PURCH(2).
+           MOVE QBYB-OTHCOL-2 TO BYB-OTHCOL(2).
+           MOVE QBYB-OT2COL-2 TO BYB-OT2COL(2).
+           MOVE QBYB-INTCOL-2 TO BYB-INTCOL(2).
+           MOVE QBYB-LATECOL-2 TO BYB-LATECOL(2).
+           MOVE QBYB-PRINCOL-2 TO BYB-PRINCOL(2).
+           MOVE QBYB-DEFCOL-2 TO BYB-DEFCOL(2).
+           MOVE QBYB-RNPRIN-2 TO BYB-RNPRIN(2).
+           MOVE QBYB-INTREB-2 TO BYB-INTREB(2).
+           MOVE QBYB-CLREB1-2 TO BYB-CLREB1(2).
+           MOVE QBYB-CLREB2-2 TO BYB-CLREB2(2).
+           MOVE QBYB-CLREB3-2 TO BYB-CLREB3(2).
+           MOVE QBYB-CLREB4-2 TO BYB-CLREB4(2).
+           MOVE QBYB-AHREB-2 TO BYB-AHREB(2).
+           MOVE QBYB-PPREB-2 TO BYB-PPREB(2).
+           MOVE QBYB-O1REB-2 TO BYB-O1REB(2).
+           MOVE QBYB-O2REB-2 TO BYB-O2REB(2).
+           MOVE QBYB-O3REB-2 TO BYB-O3REB(2).
+           MOVE QBYB-O4REB-2 TO BYB-O4REB(2).
+           MOVE QBYB-O5REB-2 TO BYB-O5REB(2).
+           MOVE QBYB-O6REB-2 TO BYB-O6REB(2).
+           MOVE QBYB-O7REB-2 TO BYB-O7REB(2).
+           MOVE QBYB-SCREB-2 TO BYB-SCREB(2).
+           MOVE QBYB-MFREB-2 TO BYB-MFREB(2).
+           MOVE QBYB-DFREB-2 TO BYB-DFREB(2).
+           MOVE QBYB-UN7-REB-2 TO BYB-UN7-REB(2).
+           MOVE QBYB-UN8-REB-2 TO BYB-UN8-REB(2).
+           MOVE QBYB-UN9-REB-2 TO BYB-UN9-REB(2).
+           MOVE QBYB-UN10-REB-2 TO BYB-UN10-REB(2).
+           MOVE QBYB-PART-CHGOFF-2 TO BYB-PART-CHGOFF(2).
+           MOVE QBYB-ALLOTMENTS-2 TO BYB-ALLOTMENTS(2).
+           MOVE QBYB-INS-NO-ELIG-2-1 TO BYB-INS-NO-ELIG(2 1).
+           MOVE QBYB-INS-NO-WROTE-2-1 TO BYB-INS-NO-WROTE(2 1).
+           MOVE QBYB-INS-NO-NOTWROTE-2-1 TO BYB-INS-NO-NOTWROTE(2 1).
+           MOVE QBYB-INS-AMT-WROTE-2-1 TO BYB-INS-AMT-WROTE(2 1).
+           MOVE QBYB-INS-NO-ELIG-2-2 TO BYB-INS-NO-ELIG(2 2).
+           MOVE QBYB-INS-NO-WROTE-2-2 TO BYB-INS-NO-WROTE(2 2).
+           MOVE QBYB-INS-NO-NOTWROTE-2-2 TO BYB-INS-NO-NOTWROTE(2 2).
+           MOVE QBYB-INS-AMT-WROTE-2-2 TO BYB-INS-AMT-WROTE(2 2).
+           MOVE QBYB-INS-NO-ELIG-2-3 TO BYB-INS-NO-ELIG(2 3).
+           MOVE QBYB-INS-NO-WROTE-2-3 TO BYB-INS-NO-WROTE(2 3).
+           MOVE QBYB-INS-NO-NOTWROTE-2-3 TO BYB-INS-NO-NOTWROTE(2 3).
+           MOVE QBYB-INS-AMT-WROTE-2-3 TO BYB-INS-AMT-WROTE(2 3).
+           MOVE QBYB-INS-NO-ELIG-2-4 TO BYB-INS-NO-ELIG(2 4).
+           MOVE QBYB-INS-NO-WROTE-2-4 TO BYB-INS-NO-WROTE(2 4).
+           MOVE QBYB-INS-NO-NOTWROTE-2-4 TO BYB-INS-NO-NOTWROTE(2 4).
+           MOVE QBYB-INS-AMT-WROTE-2-4 TO BYB-INS-AMT-WROTE(2 4).
+           MOVE QBYB-INS-NO-ELIG-2-5 TO BYB-INS-NO-ELIG(2 5).
+           MOVE QBYB-INS-NO-WROTE-2-5 TO BYB-INS-NO-WROTE(2 5).
+           MOVE QBYB-INS-NO-NOTWROTE-2-5 TO BYB-INS-NO-NOTWROTE(2 5).
+           MOVE QBYB-INS-AMT-WROTE-2-5 TO BYB-INS-AMT-WROTE(2 5).
+           MOVE QBYB-INS-NO-ELIG-2-6 TO BYB-INS-NO-ELIG(2 6).
+           MOVE QBYB-INS-NO-WROTE-2-6 TO BYB-INS-NO-WROTE(2 6).
+           MOVE QBYB-INS-NO-NOTWROTE-2-6 TO BYB-INS-NO-NOTWROTE(2 6).
+           MOVE QBYB-INS-AMT-WROTE-2-6 TO BYB-INS-AMT-WROTE(2 6).
+           MOVE QBYB-INS-NO-ELIG-2-7 TO BYB-INS-NO-ELIG(2 7).
+           MOVE QBYB-INS-NO-WROTE-2-7 TO BYB-INS-NO-WROTE(2 7).
+           MOVE QBYB-INS-NO-NOTWROTE-2-7 TO BYB-INS-NO-NOTWROTE(2 7).
+           MOVE QBYB-INS-AMT-WROTE-2-7 TO BYB-INS-AMT-WROTE(2 7).
+           MOVE QBYB-INS-NO-ELIG-2-8 TO BYB-INS-NO-ELIG(2 8).
+           MOVE QBYB-INS-NO-WROTE-2-8 TO BYB-INS-NO-WROTE(2 8).
+           MOVE QBYB-INS-NO-NOTWROTE-2-8 TO BYB-INS-NO-NOTWROTE(2 8).
+           MOVE QBYB-INS-AMT-WROTE-2-8 TO BYB-INS-AMT-WROTE(2 8).
+           MOVE QBYB-INS-NO-ELIG-2-9 TO BYB-INS-NO-ELIG(2 9).
+           MOVE QBYB-INS-NO-WROTE-2-9 TO BYB-INS-NO-WROTE(2 9).
+           MOVE QBYB-INS-NO-NOTWROTE-2-9 TO BYB-INS-NO-NOTWROTE(2 9).
+           MOVE QBYB-INS-AMT-WROTE-2-9 TO BYB-INS-AMT-WROTE(2 9).
+           MOVE QBYB-INS-NO-ELIG-2-10 TO BYB-INS-NO-ELIG(2 10).
+           MOVE QBYB-INS-NO-WROTE-2-10 TO BYB-INS-NO-WROTE(2 10).
+           MOVE QBYB-INS-NO-NOTWROTE-2-10 TO BYB-INS-NO-NOTWROTE(2 10).
+           MOVE QBYB-INS-AMT-WROTE-2-10 TO BYB-INS-AMT-WROTE(2 10).
+           MOVE QBYB-FEE-NO-ELIG-2-1 TO BYB-FEE-NO-ELIG(2 1).
+           MOVE QBYB-FEE-NO-WROTE-2-1 TO BYB-FEE-NO-WROTE(2 1).
+           MOVE QBYB-FEE-NO-NOTWROTE-2-1 TO BYB-FEE-NO-NOTWROTE(2 1).
+           MOVE QBYB-FEE-AMT-WROTE-2-1 TO BYB-FEE-AMT-WROTE(2 1).
+           MOVE QBYB-FEE-NO-ELIG-2-2 TO BYB-FEE-NO-ELIG(2 2).
+           MOVE QBYB-FEE-NO-WROTE-2-2 TO BYB-FEE-NO-WROTE(2 2).
+           MOVE QBYB-FEE-NO-NOTWROTE-2-2 TO BYB-FEE-NO-NOTWROTE(2 2).
+           MOVE QBYB-FEE-AMT-WROTE-2-2 TO BYB-FEE-AMT-WROTE(2 2).
+           MOVE QBYB-FEE-NO-ELIG-2-3 TO BYB-FEE-NO-ELIG(2 3).
+           MOVE QBYB-FEE-NO-WROTE-2-3 TO BYB-FEE-NO-WROTE(2 3).
+           MOVE QBYB-FEE-NO-NOTWROTE-2-3 TO BYB-FEE-NO-NOTWROTE(2 3).
+           MOVE QBYB-FEE-AMT-WROTE-2-3 TO BYB-FEE-AMT-WROTE(2 3).
+           MOVE QBYB-OTH-NO-COL-2 TO BYB-OTH-NO-COL(2).
+           MOVE QBYB-OT2-NO-COL-2 TO BYB-OT2-NO-COL(2).
+           MOVE QBYB-INT-NO-COL-2 TO BYB-INT-NO-COL(2).
+           MOVE QBYB-LATE-NO-COL-2 TO BYB-LATE-NO-COL(2).
+           MOVE QBYB-OTH-NO-WAIVED-2 TO BYB-OTH-NO-WAIVED(2).
+           MOVE QBYB-OT2-NO-WAIVED-2 TO BYB-OT2-NO-WAIVED(2).
+           MOVE QBYB-INT-NO-WAIVED-2 TO BYB-INT-NO-WAIVED(2).
+           MOVE QBYB-LATE-NO-WAIVED-2 TO BYB-LATE-NO-WAIVED(2).
+           MOVE QBYB-OTH-AMT-WAIVED-2 TO BYB-OTH-AMT-WAIVED(2).
+           MOVE QBYB-OT2-AMT-WAIVED-2 TO BYB-OT2-AMT-WAIVED(2).
+           MOVE QBYB-INT-AMT-WAIVED-2 TO BYB-INT-AMT-WAIVED(2).
+           MOVE QBYB-LATE-AMT-WAIVED-2 TO BYB-LATE-AMT-WAIVED(2).
+           MOVE QBYB-UNITS-1-1-1 TO BYB-UNITS(1 1 1).
+           MOVE QBYB-OUTBAL-1-1-1 TO BYB-OUTBAL(1 1 1).
+           MOVE QBYB-UNITS-1-1-2 TO BYB-UNITS(1 1 2).
+           MOVE QBYB-OUTBAL-1-1-2 TO BYB-OUTBAL(1 1 2).
+           MOVE QBYB-UNITS-1-1-3 TO BYB-UNITS(1 1 3).
+           MOVE QBYB-OUTBAL-1-1-3 TO BYB-OUTBAL(1 1 3).
+           MOVE QBYB-UNITS-1-1-4 TO BYB-UNITS(1 1 4).
+           MOVE QBYB-OUTBAL-1-1-4 TO BYB-OUTBAL(1 1 4).
+           MOVE QBYB-UNITS-1-1-5 TO BYB-UNITS(1 1 5).
+           MOVE QBYB-OUTBAL-1-1-5 TO BYB-OUTBAL(1 1 5).
+           MOVE QBYB-UNITS-1-1-6 TO BYB-UNITS(1 1 6).
+           MOVE QBYB-OUTBAL-1-1-6 TO BYB-OUTBAL(1 1 6).
+           MOVE QBYB-UNITS-1-1-7 TO BYB-UNITS(1 1 7).
+           MOVE QBYB-OUTBAL-1-1-7 TO BYB-OUTBAL(1 1 7).
+           MOVE QBYB-UNITS-1-1-8 TO BYB-UNITS(1 1 8).
+           MOVE QBYB-OUTBAL-1-1-8 TO BYB-OUTBAL(1 1 8).
+           MOVE QBYB-UNITS-1-1-9 TO BYB-UNITS(1 1 9).
+           MOVE QBYB-OUTBAL-1-1-9 TO BYB-OUTBAL(1 1 9).
+           MOVE QBYB-UNITS-1-1-10 TO BYB-UNITS(1 1 10).
+           MOVE QBYB-OUTBAL-1-1-10 TO BYB-OUTBAL(1 1 10).
+           MOVE QBYB-UNITS-1-2-1 TO BYB-UNITS(1 2 1).
+           MOVE QBYB-OUTBAL-1-2-1 TO BYB-OUTBAL(1 2 1).
+           MOVE QBYB-UNITS-1-2-2 TO BYB-UNITS(1 2 2).
+           MOVE QBYB-OUTBAL-1-2-2 TO BYB-OUTBAL(1 2 2).
+           MOVE QBYB-UNITS-1-2-3 TO BYB-UNITS(1 2 3).
+           MOVE QBYB-OUTBAL-1-2-3 TO BYB-OUTBAL(1 2 3).
+           MOVE QBYB-UNITS-1-2-4 TO BYB-UNITS(1 2 4).
+           MOVE QBYB-OUTBAL-1-2-4 TO BYB-OUTBAL(1 2 4).
+           MOVE QBYB-UNITS-1-2-5 TO BYB-UNITS(1 2 5).
+           MOVE QBYB-OUTBAL-1-2-5 TO BYB-OUTBAL(1 2 5).
+           MOVE QBYB-UNITS-1-2-6 TO BYB-UNITS(1 2 6).
+           MOVE QBYB-OUTBAL-1-2-6 TO BYB-OUTBAL(1 2 6).
+           MOVE QBYB-UNITS-1-2-7 TO BYB-UNITS(1 2 7).
+           MOVE QBYB-OUTBAL-1-2-7 TO BYB-OUTBAL(1 2 7).
+           MOVE QBYB-UNITS-1-2-8 TO BYB-UNITS(1 2 8).
+           MOVE QBYB-OUTBAL-1-2-8 TO BYB-OUTBAL(1 2 8).
+           MOVE QBYB-UNITS-1-2-9 TO BYB-UNITS(1 2 9).
+           MOVE QBYB-OUTBAL-1-2-9 TO BYB-OUTBAL(1 2 9).
+           MOVE QBYB-UNITS-1-2-10 TO BYB-UNITS(1 2 10).
+           MOVE QBYB-OUTBAL-1-2-10 TO BYB-OUTBAL(1 2 10).
+           MOVE QBYB-UNITS-2-1-1 TO BYB-UNITS(2 1 1).
+           MOVE QBYB-OUTBAL-2-1-1 TO BYB-OUTBAL(2 1 1).
+           MOVE QBYB-UNITS-2-1-2 TO BYB-UNITS(2 1 2).
+           MOVE QBYB-OUTBAL-2-1-2 TO BYB-OUTBAL(2 1 2).
+           MOVE QBYB-UNITS-2-1-3 TO BYB-UNITS(2 1 3).
+           MOVE QBYB-OUTBAL-2-1-3 TO BYB-OUTBAL(2 1 3).
+           MOVE QBYB-UNITS-2-1-4 TO BYB-UNITS(2 1 4).
+           MOVE QBYB-OUTBAL-2-1-4 TO BYB-OUTBAL(2 1 4).
+           MOVE QBYB-UNITS-2-1-5 TO BYB-UNITS(2 1 5).
+           MOVE QBYB-OUTBAL-2-1-5 TO BYB-OUTBAL(2 1 5).
+           MOVE QBYB-UNITS-2-1-6 TO BYB-UNITS(2 1 6).
+           MOVE QBYB-OUTBAL-2-1-6 TO BYB-OUTBAL(2 1 6).
+           MOVE QBYB-UNITS-2-1-7 TO BYB-UNITS(2 1 7).
+           MOVE QBYB-OUTBAL-2-1-7 TO BYB-OUTBAL(2 1 7).
+           MOVE QBYB-UNITS-2-1-8 TO BYB-UNITS(2 1 8).
+           MOVE QBYB-OUTBAL-2-1-8 TO BYB-OUTBAL(2 1 8).
+           MOVE QBYB-UNITS-2-1-9 TO BYB-UNITS(2 1 9).
+           MOVE QBYB-OUTBAL-2-1-9 TO BYB-OUTBAL(2 1 9).
+           MOVE QBYB-UNITS-2-1-10 TO BYB-UNITS(2 1 10).
+           MOVE QBYB-OUTBAL-2-1-10 TO BYB-OUTBAL(2 1 10).
+           MOVE QBYB-UNITS-2-2-1 TO BYB-UNITS(2 2 1).
+           MOVE QBYB-OUTBAL-2-2-1 TO BYB-OUTBAL(2 2 1).
+           MOVE QBYB-UNITS-2-2-2 TO BYB-UNITS(2 2 2).
+           MOVE QBYB-OUTBAL-2-2-2 TO BYB-OUTBAL(2 2 2).
+           MOVE QBYB-UNITS-2-2-3 TO BYB-UNITS(2 2 3).
+           MOVE QBYB-OUTBAL-2-2-3 TO BYB-OUTBAL(2 2 3).
+           MOVE QBYB-UNITS-2-2-4 TO BYB-UNITS(2 2 4).
+           MOVE QBYB-OUTBAL-2-2-4 TO BYB-OUTBAL(2 2 4).
+           MOVE QBYB-UNITS-2-2-5 TO BYB-UNITS(2 2 5).
+           MOVE QBYB-OUTBAL-2-2-5 TO BYB-OUTBAL(2 2 5).
+           MOVE QBYB-UNITS-2-2-6 TO BYB-UNITS(2 2 6).
+           MOVE QBYB-OUTBAL-2-2-6 TO BYB-OUTBAL(2 2 6).
+           MOVE QBYB-UNITS-2-2-7 TO BYB-UNITS(2 2 7).
+           MOVE QBYB-OUTBAL-2-2-7 TO BYB-OUTBAL(2 2 7).
+           MOVE QBYB-UNITS-2-2-8 TO BYB-UNITS(2 2 8).
+           MOVE QBYB-OUTBAL-2-2-8 TO BYB-OUTBAL(2 2 8).
+           MOVE QBYB-UNITS-2-2-9 TO BYB-UNITS(2 2 9).
+           MOVE QBYB-OUTBAL-2-2-9 TO BYB-OUTBAL(2 2 9).
+           MOVE QBYB-UNITS-2-2-10 TO BYB-UNITS(2 2 10).
+           MOVE QBYB-OUTBAL-2-2-10 TO BYB-OUTBAL(2 2 10).
+           MOVE QBYB-UNITS-3-1-1 TO BYB-UNITS(3 1 1).
+           MOVE QBYB-OUTBAL-3-1-1 TO BYB-OUTBAL(3 1 1).
+           MOVE QBYB-UNITS-3-1-2 TO BYB-UNITS(3 1 2).
+           MOVE QBYB-OUTBAL-3-1-2 TO BYB-OUTBAL(3 1 2).
+           MOVE QBYB-UNITS-3-1-3 TO BYB-UNITS(3 1 3).
+           MOVE QBYB-OUTBAL-3-1-3 TO BYB-OUTBAL(3 1 3).
+           MOVE QBYB-UNITS-3-1-4 TO BYB-UNITS(3 1 4).
+           MOVE QBYB-OUTBAL-3-1-4 TO BYB-OUTBAL(3 1 4).
+           MOVE QBYB-UNITS-3-1-5 TO BYB-UNITS(3 1 5).
+           MOVE QBYB-OUTBAL-3-1-5 TO BYB-OUTBAL(3 1 5).
+           MOVE QBYB-UNITS-3-1-6 TO BYB-UNITS(3 1 6).
+           MOVE QBYB-OUTBAL-3-1-6 TO BYB-OUTBAL(3 1 6).
+           MOVE QBYB-UNITS-3-1-7 TO BYB-UNITS(3 1 7).
+           MOVE QBYB-OUTBAL-3-1-7 TO BYB-OUTBAL(3 1 7).
+           MOVE QBYB-UNITS-3-1-8 TO BYB-UNITS(3 1 8).
+           MOVE QBYB-OUTBAL-3-1-8 TO BYB-OUTBAL(3 1 8).
+           MOVE QBYB-UNITS-3-1-9 TO BYB-UNITS(3 1 9).
+           MOVE QBYB-OUTBAL-3-1-9 TO BYB-OUTBAL(3 1 9).
+           MOVE QBYB-UNITS-3-1-10 TO BYB-UNITS(3 1 10).
+           MOVE QBYB-OUTBAL-3-1-10 TO BYB-OUTBAL(3 1 10).
+           MOVE QBYB-UNITS-3-2-1 TO BYB-UNITS(3 2 1).
+           MOVE QBYB-OUTBAL-3-2-1 TO BYB-OUTBAL(3 2 1).
+           MOVE QBYB-UNITS-3-2-2 TO BYB-UNITS(3 2 2).
+           MOVE QBYB-OUTBAL-3-2-2 TO BYB-OUTBAL(3 2 2).
+           MOVE QBYB-UNITS-3-2-3 TO BYB-UNITS(3 2 3).
+           MOVE QBYB-OUTBAL-3-2-3 TO BYB-OUTBAL(3 2 3).
+           MOVE QBYB-UNITS-3-2-4 TO BYB-UNITS(3 2 4).
+           MOVE QBYB-OUTBAL-3-2-4 TO BYB-OUTBAL(3 2 4).
+           MOVE QBYB-UNITS-3-2-5 TO BYB-UNITS(3 2 5).
+           MOVE QBYB-OUTBAL-3-2-5 TO BYB-OUTBAL(3 2 5).
+           MOVE QBYB-UNITS-3-2-6 TO BYB-UNITS(3 2 6).
+           MOVE QBYB-OUTBAL-3-2-6 TO BYB-OUTBAL(3 2 6).
+           MOVE QBYB-UNITS-3-2-7 TO BYB-UNITS(3 2 7).
+           MOVE QBYB-OUTBAL-3-2-7 TO BYB-OUTBAL(3 2 7).
+           MOVE QBYB-UNITS-3-2-8 TO BYB-UNITS(3 2 8).
+           MOVE QBYB-OUTBAL-3-2-8 TO BYB-OUTBAL(3 2 8).
+           MOVE QBYB-UNITS-3-2-9 TO BYB-UNITS(3 2 9).
+           MOVE QBYB-OUTBAL-3-2-9 TO BYB-OUTBAL(3 2 9).
+           MOVE QBYB-UNITS-3-2-10 TO BYB-UNITS(3 2 10).
+           MOVE QBYB-OUTBAL-3-2-10 TO BYB-OUTBAL(3 2 10).
+           MOVE QBYB-UNITS-BNKRPT-1-1-1 TO BYB-UNITS-BNKRPT(1 1 1).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-1 TO BYB-OUTBAL-BNKRPT(1 1 1).
+           MOVE QBYB-UNITS-BNKRPT-1-1-2 TO BYB-UNITS-BNKRPT(1 1 2).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-2 TO BYB-OUTBAL-BNKRPT(1 1 2).
+           MOVE QBYB-UNITS-BNKRPT-1-1-3 TO BYB-UNITS-BNKRPT(1 1 3).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-3 TO BYB-OUTBAL-BNKRPT(1 1 3).
+           MOVE QBYB-UNITS-BNKRPT-1-1-4 TO BYB-UNITS-BNKRPT(1 1 4).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-4 TO BYB-OUTBAL-BNKRPT(1 1 4).
+           MOVE QBYB-UNITS-BNKRPT-1-1-5 TO BYB-UNITS-BNKRPT(1 1 5).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-5 TO BYB-OUTBAL-BNKRPT(1 1 5).
+           MOVE QBYB-UNITS-BNKRPT-1-1-6 TO BYB-UNITS-BNKRPT(1 1 6).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-6 TO BYB-OUTBAL-BNKRPT(1 1 6).
+           MOVE QBYB-UNITS-BNKRPT-1-1-7 TO BYB-UNITS-BNKRPT(1 1 7).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-7 TO BYB-OUTBAL-BNKRPT(1 1 7).
+           MOVE QBYB-UNITS-BNKRPT-1-1-8 TO BYB-UNITS-BNKRPT(1 1 8).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-8 TO BYB-OUTBAL-BNKRPT(1 1 8).
+           MOVE QBYB-UNITS-BNKRPT-1-1-9 TO BYB-UNITS-BNKRPT(1 1 9).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-9 TO BYB-OUTBAL-BNKRPT(1 1 9).
+           MOVE QBYB-UNITS-BNKRPT-1-1-10 TO BYB-UNITS-BNKRPT(1 1 10).
+           MOVE QBYB-OUTBAL-BNKRPT-1-1-10 TO BYB-OUTBAL-BNKRPT(1 1 10).
+           MOVE QBYB-UNITS-BNKRPT-1-2-1 TO BYB-UNITS-BNKRPT(1 2 1).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-1 TO BYB-OUTBAL-BNKRPT(1 2 1).
+           MOVE QBYB-UNITS-BNKRPT-1-2-2 TO BYB-UNITS-BNKRPT(1 2 2).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-2 TO BYB-OUTBAL-BNKRPT(1 2 2).
+           MOVE QBYB-UNITS-BNKRPT-1-2-3 TO BYB-UNITS-BNKRPT(1 2 3).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-3 TO BYB-OUTBAL-BNKRPT(1 2 3).
+           MOVE QBYB-UNITS-BNKRPT-1-2-4 TO BYB-UNITS-BNKRPT(1 2 4).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-4 TO BYB-OUTBAL-BNKRPT(1 2 4).
+           MOVE QBYB-UNITS-BNKRPT-1-2-5 TO BYB-UNITS-BNKRPT(1 2 5).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-5 TO BYB-OUTBAL-BNKRPT(1 2 5).
+           MOVE QBYB-UNITS-BNKRPT-1-2-6 TO BYB-UNITS-BNKRPT(1 2 6).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-6 TO BYB-OUTBAL-BNKRPT(1 2 6).
+           MOVE QBYB-UNITS-BNKRPT-1-2-7 TO BYB-UNITS-BNKRPT(1 2 7).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-7 TO BYB-OUTBAL-BNKRPT(1 2 7).
+           MOVE QBYB-UNITS-BNKRPT-1-2-8 TO BYB-UNITS-BNKRPT(1 2 8).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-8 TO BYB-OUTBAL-BNKRPT(1 2 8).
+           MOVE QBYB-UNITS-BNKRPT-1-2-9 TO BYB-UNITS-BNKRPT(1 2 9).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-9 TO BYB-OUTBAL-BNKRPT(1 2 9).
+           MOVE QBYB-UNITS-BNKRPT-1-2-10 TO BYB-UNITS-BNKRPT(1 2 10).
+           MOVE QBYB-OUTBAL-BNKRPT-1-2-10 TO BYB-OUTBAL-BNKRPT(1 2 10).
+           MOVE QBYB-UNITS-BNKRPT-2-1-1 TO BYB-UNITS-BNKRPT(2 1 1).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-1 TO BYB-OUTBAL-BNKRPT(2 1 1).
+           MOVE QBYB-UNITS-BNKRPT-2-1-2 TO BYB-UNITS-BNKRPT(2 1 2).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-2 TO BYB-OUTBAL-BNKRPT(2 1 2).
+           MOVE QBYB-UNITS-BNKRPT-2-1-3 TO BYB-UNITS-BNKRPT(2 1 3).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-3 TO BYB-OUTBAL-BNKRPT(2 1 3).
+           MOVE QBYB-UNITS-BNKRPT-2-1-4 TO BYB-UNITS-BNKRPT(2 1 4).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-4 TO BYB-OUTBAL-BNKRPT(2 1 4).
+           MOVE QBYB-UNITS-BNKRPT-2-1-5 TO BYB-UNITS-BNKRPT(2 1 5).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-5 TO BYB-OUTBAL-BNKRPT(2 1 5).
+           MOVE QBYB-UNITS-BNKRPT-2-1-6 TO BYB-UNITS-BNKRPT(2 1 6).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-6 TO BYB-OUTBAL-BNKRPT(2 1 6).
+           MOVE QBYB-UNITS-BNKRPT-2-1-7 TO BYB-UNITS-BNKRPT(2 1 7).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-7 TO BYB-OUTBAL-BNKRPT(2 1 7).
+           MOVE QBYB-UNITS-BNKRPT-2-1-8 TO BYB-UNITS-BNKRPT(2 1 8).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-8 TO BYB-OUTBAL-BNKRPT(2 1 8).
+           MOVE QBYB-UNITS-BNKRPT-2-1-9 TO BYB-UNITS-BNKRPT(2 1 9).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-9 TO BYB-OUTBAL-BNKRPT(2 1 9).
+           MOVE QBYB-UNITS-BNKRPT-2-1-10 TO BYB-UNITS-BNKRPT(2 1 10).
+           MOVE QBYB-OUTBAL-BNKRPT-2-1-10 TO BYB-OUTBAL-BNKRPT(2 1 10).
+           MOVE QBYB-UNITS-BNKRPT-2-2-1 TO BYB-UNITS-BNKRPT(2 2 1).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-1 TO BYB-OUTBAL-BNKRPT(2 2 1).
+           MOVE QBYB-UNITS-BNKRPT-2-2-2 TO BYB-UNITS-BNKRPT(2 2 2).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-2 TO BYB-OUTBAL-BNKRPT(2 2 2).
+           MOVE QBYB-UNITS-BNKRPT-2-2-3 TO BYB-UNITS-BNKRPT(2 2 3).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-3 TO BYB-OUTBAL-BNKRPT(2 2 3).
+           MOVE QBYB-UNITS-BNKRPT-2-2-4 TO BYB-UNITS-BNKRPT(2 2 4).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-4 TO BYB-OUTBAL-BNKRPT(2 2 4).
+           MOVE QBYB-UNITS-BNKRPT-2-2-5 TO BYB-UNITS-BNKRPT(2 2 5).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-5 TO BYB-OUTBAL-BNKRPT(2 2 5).
+           MOVE QBYB-UNITS-BNKRPT-2-2-6 TO BYB-UNITS-BNKRPT(2 2 6).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-6 TO BYB-OUTBAL-BNKRPT(2 2 6).
+           MOVE QBYB-UNITS-BNKRPT-2-2-7 TO BYB-UNITS-BNKRPT(2 2 7).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-7 TO BYB-OUTBAL-BNKRPT(2 2 7).
+           MOVE QBYB-UNITS-BNKRPT-2-2-8 TO BYB-UNITS-BNKRPT(2 2 8).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-8 TO BYB-OUTBAL-BNKRPT(2 2 8).
+           MOVE QBYB-UNITS-BNKRPT-2-2-9 TO BYB-UNITS-BNKRPT(2 2 9).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-9 TO BYB-OUTBAL-BNKRPT(2 2 9).
+           MOVE QBYB-UNITS-BNKRPT-2-2-10 TO BYB-UNITS-BNKRPT(2 2 10).
+           MOVE QBYB-OUTBAL-BNKRPT-2-2-10 TO BYB-OUTBAL-BNKRPT(2 2 10).
+           MOVE QBYB-UNITS-BNKRPT-3-1-1 TO BYB-UNITS-BNKRPT(3 1 1).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-1 TO BYB-OUTBAL-BNKRPT(3 1 1).
+           MOVE QBYB-UNITS-BNKRPT-3-1-2 TO BYB-UNITS-BNKRPT(3 1 2).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-2 TO BYB-OUTBAL-BNKRPT(3 1 2).
+           MOVE QBYB-UNITS-BNKRPT-3-1-3 TO BYB-UNITS-BNKRPT(3 1 3).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-3 TO BYB-OUTBAL-BNKRPT(3 1 3).
+           MOVE QBYB-UNITS-BNKRPT-3-1-4 TO BYB-UNITS-BNKRPT(3 1 4).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-4 TO BYB-OUTBAL-BNKRPT(3 1 4).
+           MOVE QBYB-UNITS-BNKRPT-3-1-5 TO BYB-UNITS-BNKRPT(3 1 5).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-5 TO BYB-OUTBAL-BNKRPT(3 1 5).
+           MOVE QBYB-UNITS-BNKRPT-3-1-6 TO BYB-UNITS-BNKRPT(3 1 6).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-6 TO BYB-OUTBAL-BNKRPT(3 1 6).
+           MOVE QBYB-UNITS-BNKRPT-3-1-7 TO BYB-UNITS-BNKRPT(3 1 7).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-7 TO BYB-OUTBAL-BNKRPT(3 1 7).
+           MOVE QBYB-UNITS-BNKRPT-3-1-8 TO BYB-UNITS-BNKRPT(3 1 8).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-8 TO BYB-OUTBAL-BNKRPT(3 1 8).
+           MOVE QBYB-UNITS-BNKRPT-3-1-9 TO BYB-UNITS-BNKRPT(3 1 9).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-9 TO BYB-OUTBAL-BNKRPT(3 1 9).
+           MOVE QBYB-UNITS-BNKRPT-3-1-10 TO BYB-UNITS-BNKRPT(3 1 10).
+           MOVE QBYB-OUTBAL-BNKRPT-3-1-10 TO BYB-OUTBAL-BNKRPT(3 1 10).
+           MOVE QBYB-UNITS-BNKRPT-3-2-1 TO BYB-UNITS-BNKRPT(3 2 1).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-1 TO BYB-OUTBAL-BNKRPT(3 2 1).
+           MOVE QBYB-UNITS-BNKRPT-3-2-2 TO BYB-UNITS-BNKRPT(3 2 2).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-2 TO BYB-OUTBAL-BNKRPT(3 2 2).
+           MOVE QBYB-UNITS-BNKRPT-3-2-3 TO BYB-UNITS-BNKRPT(3 2 3).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-3 TO BYB-OUTBAL-BNKRPT(3 2 3).
+           MOVE QBYB-UNITS-BNKRPT-3-2-4 TO BYB-UNITS-BNKRPT(3 2 4).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-4 TO BYB-OUTBAL-BNKRPT(3 2 4).
+           MOVE QBYB-UNITS-BNKRPT-3-2-5 TO BYB-UNITS-BNKRPT(3 2 5).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-5 TO BYB-OUTBAL-BNKRPT(3 2 5).
+           MOVE QBYB-UNITS-BNKRPT-3-2-6 TO BYB-UNITS-BNKRPT(3 2 6).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-6 TO BYB-OUTBAL-BNKRPT(3 2 6).
+           MOVE QBYB-UNITS-BNKRPT-3-2-7 TO BYB-UNITS-BNKRPT(3 2 7).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-7 TO BYB-OUTBAL-BNKRPT(3 2 7).
+           MOVE QBYB-UNITS-BNKRPT-3-2-8 TO BYB-UNITS-BNKRPT(3 2 8).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-8 TO BYB-OUTBAL-BNKRPT(3 2 8).
+           MOVE QBYB-UNITS-BNKRPT-3-2-9 TO BYB-UNITS-BNKRPT(3 2 9).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-9 TO BYB-OUTBAL-BNKRPT(3 2 9).
+           MOVE QBYB-UNITS-BNKRPT-3-2-10 TO BYB-UNITS-BNKRPT(3 2 10).
+           MOVE QBYB-OUTBAL-BNKRPT-3-2-10 TO BYB-OUTBAL-BNKRPT(3 2 10).
+           MOVE QBYB-SUMWGTTM TO BYB-SUMWGTTM.
+           MOVE QBYB-SUMWGTAV TO BYB-SUMWGTAV.
+           MOVE QBYB-SUMWGTTA TO BYB-SUMWGTTA.
+           MOVE QBYB-IB-ACCRUED TO BYB-IB-ACCRUED.
+           MOVE QBYB-DLDISC-1 TO BYB-DLDISC(1).
+           MOVE QBYB-DLDISC-2 TO BYB-DLDISC(2).
+           MOVE QBYB-DLDISC-3 TO BYB-DLDISC(3).
+           MOVE QBYB-STD-POS TO BYB-STD-POS.
+           MOVE QBYB-30-DAY-MOVED TO BYB-30-DAY-MOVED.
+           MOVE QBYB-PROJ-INCREASE TO BYB-PROJ-INCREASE.
+           MOVE QBYB-PROJ-PROFIT TO BYB-PROJ-PROFIT.
+           MOVE QBYB-PROCEEDS-1 TO BYB-PROCEEDS(1).
+           MOVE QBYB-PROCEEDS-2 TO BYB-PROCEEDS(2).
+           MOVE QBYB-LOCKBOX-1 TO BYB-LOCKBOX(1).
+           MOVE QBYB-LOCKBOX-2 TO BYB-LOCKBOX(2).
+           MOVE QBYB-UNEARNED-AMT-1-1-1 TO BYB-UNEARNED-AMT(1 1 1).
+           MOVE QBYB-UNEARNED-AMT-1-1-2 TO BYB-UNEARNED-AMT(1 1 2).
+           MOVE QBYB-UNEARNED-AMT-1-1-3 TO BYB-UNEARNED-AMT(1 1 3).
+           MOVE QBYB-UNEARNED-AMT-1-1-4 TO BYB-UNEARNED-AMT(1 1 4).
+           MOVE QBYB-UNEARNED-AMT-1-1-5 TO BYB-UNEARNED-AMT(1 1 5).
+           MOVE QBYB-UNEARNED-AMT-1-1-6 TO BYB-UNEARNED-AMT(1 1 6).
+           MOVE QBYB-UNEARNED-AMT-1-1-7 TO BYB-UNEARNED-AMT(1 1 7).
+           MOVE QBYB-UNEARNED-AMT-1-1-8 TO BYB-UNEARNED-AMT(1 1 8).
+           MOVE QBYB-UNEARNED-AMT-1-1-9 TO BYB-UNEARNED-AMT(1 1 9).
+           MOVE QBYB-UNEARNED-AMT-1-1-10 TO BYB-UNEARNED-AMT(1 1 10).
+           MOVE QBYB-UNEARNED-AMT-1-2-1 TO BYB-UNEARNED-AMT(1 2 1).
+           MOVE QBYB-UNEARNED-AMT-1-2-2 TO BYB-UNEARNED-AMT(1 2 2).
+           MOVE QBYB-UNEARNED-AMT-1-2-3 TO BYB-UNEARNED-AMT(1 2 3).
+           MOVE QBYB-UNEARNED-AMT-1-2-4 TO BYB-UNEARNED-AMT(1 2 4).
+           MOVE QBYB-UNEARNED-AMT-1-2-5 TO BYB-UNEARNED-AMT(1 2 5).
+           MOVE QBYB-UNEARNED-AMT-1-2-6 TO BYB-UNEARNED-AMT(1 2 6).
+           MOVE QBYB-UNEARNED-AMT-1-2-7 TO BYB-UNEARNED-AMT(1 2 7).
+           MOVE QBYB-UNEARNED-AMT-1-2-8 TO BYB-UNEARNED-AMT(1 2 8).
+           MOVE QBYB-UNEARNED-AMT-1-2-9 TO BYB-UNEARNED-AMT(1 2 9).
+           MOVE QBYB-UNEARNED-AMT-1-2-10 TO BYB-UNEARNED-AMT(1 2 10).
+           MOVE QBYB-UNEARNED-AMT-2-1-1 TO BYB-UNEARNED-AMT(2 1 1).
+           MOVE QBYB-UNEARNED-AMT-2-1-2 TO BYB-UNEARNED-AMT(2 1 2).
+           MOVE QBYB-UNEARNED-AMT-2-1-3 TO BYB-UNEARNED-AMT(2 1 3).
+           MOVE QBYB-UNEARNED-AMT-2-1-4 TO BYB-UNEARNED-AMT(2 1 4).
+           MOVE QBYB-UNEARNED-AMT-2-1-5 TO BYB-UNEARNED-AMT(2 1 5).
+           MOVE QBYB-UNEARNED-AMT-2-1-6 TO BYB-UNEARNED-AMT(2 1 6).
+           MOVE QBYB-UNEARNED-AMT-2-1-7 TO BYB-UNEARNED-AMT(2 1 7).
+           MOVE QBYB-UNEARNED-AMT-2-1-8 TO BYB-UNEARNED-AMT(2 1 8).
+           MOVE QBYB-UNEARNED-AMT-2-1-9 TO BYB-UNEARNED-AMT(2 1 9).
+           MOVE QBYB-UNEARNED-AMT-2-1-10 TO BYB-UNEARNED-AMT(2 1 10).
+           MOVE QBYB-UNEARNED-AMT-2-2-1 TO BYB-UNEARNED-AMT(2 2 1).
+           MOVE QBYB-UNEARNED-AMT-2-2-2 TO BYB-UNEARNED-AMT(2 2 2).
+           MOVE QBYB-UNEARNED-AMT-2-2-3 TO BYB-UNEARNED-AMT(2 2 3).
+           MOVE QBYB-UNEARNED-AMT-2-2-4 TO BYB-UNEARNED-AMT(2 2 4).
+           MOVE QBYB-UNEARNED-AMT-2-2-5 TO BYB-UNEARNED-AMT(2 2 5).
+           MOVE QBYB-UNEARNED-AMT-2-2-6 TO BYB-UNEARNED-AMT(2 2 6).
+           MOVE QBYB-UNEARNED-AMT-2-2-7 TO BYB-UNEARNED-AMT(2 2 7).
+           MOVE QBYB-UNEARNED-AMT-2-2-8 TO BYB-UNEARNED-AMT(2 2 8).
+           MOVE QBYB-UNEARNED-AMT-2-2-9 TO BYB-UNEARNED-AMT(2 2 9).
+           MOVE QBYB-UNEARNED-AMT-2-2-10 TO BYB-UNEARNED-AMT(2 2 10).
+           MOVE QBYB-UNEARNED-AMT-3-1-1 TO BYB-UNEARNED-AMT(3 1 1).
+           MOVE QBYB-UNEARNED-AMT-3-1-2 TO BYB-UNEARNED-AMT(3 1 2).
+           MOVE QBYB-UNEARNED-AMT-3-1-3 TO BYB-UNEARNED-AMT(3 1 3).
+           MOVE QBYB-UNEARNED-AMT-3-1-4 TO BYB-UNEARNED-AMT(3 1 4).
+           MOVE QBYB-UNEARNED-AMT-3-1-5 TO BYB-UNEARNED-AMT(3 1 5).
+           MOVE QBYB-UNEARNED-AMT-3-1-6 TO BYB-UNEARNED-AMT(3 1 6).
+           MOVE QBYB-UNEARNED-AMT-3-1-7 TO BYB-UNEARNED-AMT(3 1 7).
+           MOVE QBYB-UNEARNED-AMT-3-1-8 TO BYB-UNEARNED-AMT(3 1 8).
+           MOVE QBYB-UNEARNED-AMT-3-1-9 TO BYB-UNEARNED-AMT(3 1 9).
+           MOVE QBYB-UNEARNED-AMT-3-1-10 TO BYB-UNEARNED-AMT(3 1 10).
+           MOVE QBYB-UNEARNED-AMT-3-2-1 TO BYB-UNEARNED-AMT(3 2 1).
+           MOVE QBYB-UNEARNED-AMT-3-2-2 TO BYB-UNEARNED-AMT(3 2 2).
+           MOVE QBYB-UNEARNED-AMT-3-2-3 TO BYB-UNEARNED-AMT(3 2 3).
+           MOVE QBYB-UNEARNED-AMT-3-2-4 TO BYB-UNEARNED-AMT(3 2 4).
+           MOVE QBYB-UNEARNED-AMT-3-2-5 TO BYB-UNEARNED-AMT(3 2 5).
+           MOVE QBYB-UNEARNED-AMT-3-2-6 TO BYB-UNEARNED-AMT(3 2 6).
+           MOVE QBYB-UNEARNED-AMT-3-2-7 TO BYB-UNEARNED-AMT(3 2 7).
+           MOVE QBYB-UNEARNED-AMT-3-2-8 TO BYB-UNEARNED-AMT(3 2 8).
+           MOVE QBYB-UNEARNED-AMT-3-2-9 TO BYB-UNEARNED-AMT(3 2 9).
+           MOVE QBYB-UNEARNED-AMT-3-2-10 TO BYB-UNEARNED-AMT(3 2 10).
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QBYB-REC FROM BYB-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-BYB-FIELDS.
+           MOVE BYB-DATE-CCYYMM TO QBYB-DATE-CCYYMM.
+           MOVE BYB-BRNO TO QBYB-BRNO.
+           MOVE BYB-CLASS TO QBYB-CLASS.
+           MOVE BYB-PL-PRINCOL(1 1) TO QBYB-PL-PRINCOL-1-1.
+           MOVE BYB-PL-INTCOL(1 1) TO QBYB-PL-INTCOL-1-1.
+           MOVE BYB-PL-LATECOL(1 1) TO QBYB-PL-LATECOL-1-1.
+           MOVE BYB-PL-O2COL(1 1) TO QBYB-PL-O2COL-1-1.
+           MOVE BYB-PL-PRINCOL(1 2) TO QBYB-PL-PRINCOL-1-2.
+           MOVE BYB-PL-INTCOL(1 2) TO QBYB-PL-INTCOL-1-2.
+           MOVE BYB-PL-LATECOL(1 2) TO QBYB-PL-LATECOL-1-2.
+           MOVE BYB-PL-O2COL(1 2) TO QBYB-PL-O2COL-1-2.
+           MOVE BYB-PL-PRINCOL(1 3) TO QBYB-PL-PRINCOL-1-3.
+           MOVE BYB-PL-INTCOL(1 3) TO QBYB-PL-INTCOL-1-3.
+           MOVE BYB-PL-LATECOL(1 3) TO QBYB-PL-LATECOL-1-3.
+           MOVE BYB-PL-O2COL(1 3) TO QBYB-PL-O2COL-1-3.
+           MOVE BYB-PL-PRINCOL(1 4) TO QBYB-PL-PRINCOL-1-4.
+           MOVE BYB-PL-INTCOL(1 4) TO QBYB-PL-INTCOL-1-4.
+           MOVE BYB-PL-LATECOL(1 4) TO QBYB-PL-LATECOL-1-4.
+           MOVE BYB-PL-O2COL(1 4) TO QBYB-PL-O2COL-1-4.
+           MOVE BYB-PL-PRINCOL(1 5) TO QBYB-PL-PRINCOL-1-5.
+           MOVE BYB-PL-INTCOL(1 5) TO QBYB-PL-INTCOL-1-5.
+           MOVE BYB-PL-LATECOL(1 5) TO QBYB-PL-LATECOL-1-5.
+           MOVE BYB-PL-O2COL(1 5) TO QBYB-PL-O2COL-1-5.
+           MOVE BYB-AMT-SOLD(1) TO QBYB-AMT-SOLD-1.
+           MOVE BYB-AMT-TRANS(1) TO QBYB-AMT-TRANS-1.
+           MOVE BYB-AMT-PURCH(1) TO QBYB-AMT-PURCH-1.
+           MOVE BYB-NO-SOLD(1) TO QBYB-NO-SOLD-1.
+           MOVE BYB-NO-TRANS(1) TO QBYB-NO-TRANS-1.
+           MOVE BYB-NO-PURCH(1) TO QBYB-NO-PURCH-1.
+           MOVE BYB-OTHCOL(1) TO QBYB-OTHCOL-1.
+           MOVE BYB-OT2COL(1) TO QBYB-OT2COL-1.
+           MOVE BYB-INTCOL(1) TO QBYB-INTCOL-1.
+           MOVE BYB-LATECOL(1) TO QBYB-LATECOL-1.
+           MOVE BYB-PRINCOL(1) TO QBYB-PRINCOL-1.
+           MOVE BYB-DEFCOL(1) TO QBYB-DEFCOL-1.
+           MOVE BYB-RNPRIN(1) TO QBYB-RNPRIN-1.
+           MOVE BYB-INTREB(1) TO QBYB-INTREB-1.
+           MOVE BYB-CLREB1(1) TO QBYB-CLREB1-1.
+           MOVE BYB-CLREB2(1) TO QBYB-CLREB2-1.
+           MOVE BYB-CLREB3(1) TO QBYB-CLREB3-1.
+           MOVE BYB-CLREB4(1) TO QBYB-CLREB4-1.
+           MOVE BYB-AHREB(1) TO QBYB-AHREB-1.
+           MOVE BYB-PPREB(1) TO QBYB-PPREB-1.
+           MOVE BYB-O1REB(1) TO QBYB-O1REB-1.
+           MOVE BYB-O2REB(1) TO QBYB-O2REB-1.
+           MOVE BYB-O3REB(1) TO QBYB-O3REB-1.
+           MOVE BYB-O4REB(1) TO QBYB-O4REB-1.
+           MOVE BYB-O5REB(1) TO QBYB-O5REB-1.
+           MOVE BYB-O6REB(1) TO QBYB-O6REB-1.
+           MOVE BYB-O7REB(1) TO QBYB-O7REB-1.
+           MOVE BYB-SCREB(1) TO QBYB-SCREB-1.
+           MOVE BYB-MFREB(1) TO QBYB-MFREB-1.
+           MOVE BYB-DFREB(1) TO QBYB-DFREB-1.
+           MOVE BYB-UN7-REB(1) TO QBYB-UN7-REB-1.
+           MOVE BYB-UN8-REB(1) TO QBYB-UN8-REB-1.
+           MOVE BYB-UN9-REB(1) TO QBYB-UN9-REB-1.
+           MOVE BYB-UN10-REB(1) TO QBYB-UN10-REB-1.
+           MOVE BYB-PART-CHGOFF(1) TO QBYB-PART-CHGOFF-1.
+           MOVE BYB-ALLOTMENTS(1) TO QBYB-ALLOTMENTS-1.
+           MOVE BYB-INS-NO-ELIG(1 1) TO QBYB-INS-NO-ELIG-1-1.
+           MOVE BYB-INS-NO-WROTE(1 1) TO QBYB-INS-NO-WROTE-1-1.
+           MOVE BYB-INS-NO-NOTWROTE(1 1) TO QBYB-INS-NO-NOTWROTE-1-1.
+           MOVE BYB-INS-AMT-WROTE(1 1) TO QBYB-INS-AMT-WROTE-1-1.
+           MOVE BYB-INS-NO-ELIG(1 2) TO QBYB-INS-NO-ELIG-1-2.
+           MOVE BYB-INS-NO-WROTE(1 2) TO QBYB-INS-NO-WROTE-1-2.
+           MOVE BYB-INS-NO-NOTWROTE(1 2) TO QBYB-INS-NO-NOTWROTE-1-2.
+           MOVE BYB-INS-AMT-WROTE(1 2) TO QBYB-INS-AMT-WROTE-1-2.
+           MOVE BYB-INS-NO-ELIG(1 3) TO QBYB-INS-NO-ELIG-1-3.
+           MOVE BYB-INS-NO-WROTE(1 3) TO QBYB-INS-NO-WROTE-1-3.
+           MOVE BYB-INS-NO-NOTWROTE(1 3) TO QBYB-INS-NO-NOTWROTE-1-3.
+           MOVE BYB-INS-AMT-WROTE(1 3) TO QBYB-INS-AMT-WROTE-1-3.
+           MOVE BYB-INS-NO-ELIG(1 4) TO QBYB-INS-NO-ELIG-1-4.
+           MOVE BYB-INS-NO-WROTE(1 4) TO QBYB-INS-NO-WROTE-1-4.
+           MOVE BYB-INS-NO-NOTWROTE(1 4) TO QBYB-INS-NO-NOTWROTE-1-4.
+           MOVE BYB-INS-AMT-WROTE(1 4) TO QBYB-INS-AMT-WROTE-1-4.
+           MOVE BYB-INS-NO-ELIG(1 5) TO QBYB-INS-NO-ELIG-1-5.
+           MOVE BYB-INS-NO-WROTE(1 5) TO QBYB-INS-NO-WROTE-1-5.
+           MOVE BYB-INS-NO-NOTWROTE(1 5) TO QBYB-INS-NO-NOTWROTE-1-5.
+           MOVE BYB-INS-AMT-WROTE(1 5) TO QBYB-INS-AMT-WROTE-1-5.
+           MOVE BYB-INS-NO-ELIG(1 6) TO QBYB-INS-NO-ELIG-1-6.
+           MOVE BYB-INS-NO-WROTE(1 6) TO QBYB-INS-NO-WROTE-1-6.
+           MOVE BYB-INS-NO-NOTWROTE(1 6) TO QBYB-INS-NO-NOTWROTE-1-6.
+           MOVE BYB-INS-AMT-WROTE(1 6) TO QBYB-INS-AMT-WROTE-1-6.
+           MOVE BYB-INS-NO-ELIG(1 7) TO QBYB-INS-NO-ELIG-1-7.
+           MOVE BYB-INS-NO-WROTE(1 7) TO QBYB-INS-NO-WROTE-1-7.
+           MOVE BYB-INS-NO-NOTWROTE(1 7) TO QBYB-INS-NO-NOTWROTE-1-7.
+           MOVE BYB-INS-AMT-WROTE(1 7) TO QBYB-INS-AMT-WROTE-1-7.
+           MOVE BYB-INS-NO-ELIG(1 8) TO QBYB-INS-NO-ELIG-1-8.
+           MOVE BYB-INS-NO-WROTE(1 8) TO QBYB-INS-NO-WROTE-1-8.
+           MOVE BYB-INS-NO-NOTWROTE(1 8) TO QBYB-INS-NO-NOTWROTE-1-8.
+           MOVE BYB-INS-AMT-WROTE(1 8) TO QBYB-INS-AMT-WROTE-1-8.
+           MOVE BYB-INS-NO-ELIG(1 9) TO QBYB-INS-NO-ELIG-1-9.
+           MOVE BYB-INS-NO-WROTE(1 9) TO QBYB-INS-NO-WROTE-1-9.
+           MOVE BYB-INS-NO-NOTWROTE(1 9) TO QBYB-INS-NO-NOTWROTE-1-9.
+           MOVE BYB-INS-AMT-WROTE(1 9) TO QBYB-INS-AMT-WROTE-1-9.
+           MOVE BYB-INS-NO-ELIG(1 10) TO QBYB-INS-NO-ELIG-1-10.
+           MOVE BYB-INS-NO-WROTE(1 10) TO QBYB-INS-NO-WROTE-1-10.
+           MOVE BYB-INS-NO-NOTWROTE(1 10) TO QBYB-INS-NO-NOTWROTE-1-10.
+           MOVE BYB-INS-AMT-WROTE(1 10) TO QBYB-INS-AMT-WROTE-1-10.
+           MOVE BYB-FEE-NO-ELIG(1 1) TO QBYB-FEE-NO-ELIG-1-1.
+           MOVE BYB-FEE-NO-WROTE(1 1) TO QBYB-FEE-NO-WROTE-1-1.
+           MOVE BYB-FEE-NO-NOTWROTE(1 1) TO QBYB-FEE-NO-NOTWROTE-1-1.
+           MOVE BYB-FEE-AMT-WROTE(1 1) TO QBYB-FEE-AMT-WROTE-1-1.
+           MOVE BYB-FEE-NO-ELIG(1 2) TO QBYB-FEE-NO-ELIG-1-2.
+           MOVE BYB-FEE-NO-WROTE(1 2) TO QBYB-FEE-NO-WROTE-1-2.
+           MOVE BYB-FEE-NO-NOTWROTE(1 2) TO QBYB-FEE-NO-NOTWROTE-1-2.
+           MOVE BYB-FEE-AMT-WROTE(1 2) TO QBYB-FEE-AMT-WROTE-1-2.
+           MOVE BYB-FEE-NO-ELIG(1 3) TO QBYB-FEE-NO-ELIG-1-3.
+           MOVE BYB-FEE-NO-WROTE(1 3) TO QBYB-FEE-NO-WROTE-1-3.
+           MOVE BYB-FEE-NO-NOTWROTE(1 3) TO QBYB-FEE-NO-NOTWROTE-1-3.
+           MOVE BYB-FEE-AMT-WROTE(1 3) TO QBYB-FEE-AMT-WROTE-1-3.
+           MOVE BYB-OTH-NO-COL(1) TO QBYB-OTH-NO-COL-1.
+           MOVE BYB-OT2-NO-COL(1) TO QBYB-OT2-NO-COL-1.
+           MOVE BYB-INT-NO-COL(1) TO QBYB-INT-NO-COL-1.
+           MOVE BYB-LATE-NO-COL(1) TO QBYB-LATE-NO-COL-1.
+           MOVE BYB-OTH-NO-WAIVED(1) TO QBYB-OTH-NO-WAIVED-1.
+           MOVE BYB-OT2-NO-WAIVED(1) TO QBYB-OT2-NO-WAIVED-1.
+           MOVE BYB-INT-NO-WAIVED(1) TO QBYB-INT-NO-WAIVED-1.
+           MOVE BYB-LATE-NO-WAIVED(1) TO QBYB-LATE-NO-WAIVED-1.
+           MOVE BYB-OTH-AMT-WAIVED(1) TO QBYB-OTH-AMT-WAIVED-1.
+           MOVE BYB-OT2-AMT-WAIVED(1) TO QBYB-OT2-AMT-WAIVED-1.
+           MOVE BYB-INT-AMT-WAIVED(1) TO QBYB-INT-AMT-WAIVED-1.
+           MOVE BYB-LATE-AMT-WAIVED(1) TO QBYB-LATE-AMT-WAIVED-1.
+           MOVE BYB-PL-PRINCOL(2 1) TO QBYB-PL-PRINCOL-2-1.
+           MOVE BYB-PL-INTCOL(2 1) TO QBYB-PL-INTCOL-2-1.
+           MOVE BYB-PL-LATECOL(2 1) TO QBYB-PL-LATECOL-2-1.
+           MOVE BYB-PL-O2COL(2 1) TO QBYB-PL-O2COL-2-1.
+           MOVE BYB-PL-PRINCOL(2 2) TO QBYB-PL-PRINCOL-2-2.
+           MOVE BYB-PL-INTCOL(2 2) TO QBYB-PL-INTCOL-2-2.
+           MOVE BYB-PL-LATECOL(2 2) TO QBYB-PL-LATECOL-2-2.
+           MOVE BYB-PL-O2COL(2 2) TO QBYB-PL-O2COL-2-2.
+           MOVE BYB-PL-PRINCOL(2 3) TO QBYB-PL-PRINCOL-2-3.
+           MOVE BYB-PL-INTCOL(2 3) TO QBYB-PL-INTCOL-2-3.
+           MOVE BYB-PL-LATECOL(2 3) TO QBYB-PL-LATECOL-2-3.
+           MOVE BYB-PL-O2COL(2 3) TO QBYB-PL-O2COL-2-3.
+           MOVE BYB-PL-PRINCOL(2 4) TO QBYB-PL-PRINCOL-2-4.
+           MOVE BYB-PL-INTCOL(2 4) TO QBYB-PL-INTCOL-2-4.
+           MOVE BYB-PL-LATECOL(2 4) TO QBYB-PL-LATECOL-2-4.
+           MOVE BYB-PL-O2COL(2 4) TO QBYB-PL-O2COL-2-4.
+           MOVE BYB-PL-PRINCOL(2 5) TO QBYB-PL-PRINCOL-2-5.
+           MOVE BYB-PL-INTCOL(2 5) TO QBYB-PL-INTCOL-2-5.
+           MOVE BYB-PL-LATECOL(2 5) TO QBYB-PL-LATECOL-2-5.
+           MOVE BYB-PL-O2COL(2 5) TO QBYB-PL-O2COL-2-5.
+           MOVE BYB-AMT-SOLD(2) TO QBYB-AMT-SOLD-2.
+           MOVE BYB-AMT-TRANS(2) TO QBYB-AMT-TRANS-2.
+           MOVE BYB-AMT-PURCH(2) TO QBYB-AMT-PURCH-2.
+           MOVE BYB-NO-SOLD(2) TO QBYB-NO-SOLD-2.
+           MOVE BYB-NO-TRANS(2) TO QBYB-NO-TRANS-2.
+           MOVE BYB-NO-PURCH(2) TO QBYB-NO-PURCH-2.
+           MOVE BYB-OTHCOL(2) TO QBYB-OTHCOL-2.
+           MOVE BYB-OT2COL(2) TO QBYB-OT2COL-2.
+           MOVE BYB-INTCOL(2) TO QBYB-INTCOL-2.
+           MOVE BYB-LATECOL(2) TO QBYB-LATECOL-2.
+           MOVE BYB-PRINCOL(2) TO QBYB-PRINCOL-2.
+           MOVE BYB-DEFCOL(2) TO QBYB-DEFCOL-2.
+           MOVE BYB-RNPRIN(2) TO QBYB-RNPRIN-2.
+           MOVE BYB-INTREB(2) TO QBYB-INTREB-2.
+           MOVE BYB-CLREB1(2) TO QBYB-CLREB1-2.
+           MOVE BYB-CLREB2(2) TO QBYB-CLREB2-2.
+           MOVE BYB-CLREB3(2) TO QBYB-CLREB3-2.
+           MOVE BYB-CLREB4(2) TO QBYB-CLREB4-2.
+           MOVE BYB-AHREB(2) TO QBYB-AHREB-2.
+           MOVE BYB-PPREB(2) TO QBYB-PPREB-2.
+           MOVE BYB-O1REB(2) TO QBYB-O1REB-2.
+           MOVE BYB-O2REB(2) TO QBYB-O2REB-2.
+           MOVE BYB-O3REB(2) TO QBYB-O3REB-2.
+           MOVE BYB-O4REB(2) TO QBYB-O4REB-2.
+           MOVE BYB-O5REB(2) TO QBYB-O5REB-2.
+           MOVE BYB-O6REB(2) TO QBYB-O6REB-2.
+           MOVE BYB-O7REB(2) TO QBYB-O7REB-2.
+           MOVE BYB-SCREB(2) TO QBYB-SCREB-2.
+           MOVE BYB-MFREB(2) TO QBYB-MFREB-2.
+           MOVE BYB-DFREB(2) TO QBYB-DFREB-2.
+           MOVE BYB-UN7-REB(2) TO QBYB-UN7-REB-2.
+           MOVE BYB-UN8-REB(2) TO QBYB-UN8-REB-2.
+           MOVE BYB-UN9-REB(2) TO QBYB-UN9-REB-2.
+           MOVE BYB-UN10-REB(2) TO QBYB-UN10-REB-2.
+           MOVE BYB-PART-CHGOFF(2) TO QBYB-PART-CHGOFF-2.
+           MOVE BYB-ALLOTMENTS(2) TO QBYB-ALLOTMENTS-2.
+           MOVE BYB-INS-NO-ELIG(2 1) TO QBYB-INS-NO-ELIG-2-1.
+           MOVE BYB-INS-NO-WROTE(2 1) TO QBYB-INS-NO-WROTE-2-1.
+           MOVE BYB-INS-NO-NOTWROTE(2 1) TO QBYB-INS-NO-NOTWROTE-2-1.
+           MOVE BYB-INS-AMT-WROTE(2 1) TO QBYB-INS-AMT-WROTE-2-1.
+           MOVE BYB-INS-NO-ELIG(2 2) TO QBYB-INS-NO-ELIG-2-2.
+           MOVE BYB-INS-NO-WROTE(2 2) TO QBYB-INS-NO-WROTE-2-2.
+           MOVE BYB-INS-NO-NOTWROTE(2 2) TO QBYB-INS-NO-NOTWROTE-2-2.
+           MOVE BYB-INS-AMT-WROTE(2 2) TO QBYB-INS-AMT-WROTE-2-2.
+           MOVE BYB-INS-NO-ELIG(2 3) TO QBYB-INS-NO-ELIG-2-3.
+           MOVE BYB-INS-NO-WROTE(2 3) TO QBYB-INS-NO-WROTE-2-3.
+           MOVE BYB-INS-NO-NOTWROTE(2 3) TO QBYB-INS-NO-NOTWROTE-2-3.
+           MOVE BYB-INS-AMT-WROTE(2 3) TO QBYB-INS-AMT-WROTE-2-3.
+           MOVE BYB-INS-NO-ELIG(2 4) TO QBYB-INS-NO-ELIG-2-4.
+           MOVE BYB-INS-NO-WROTE(2 4) TO QBYB-INS-NO-WROTE-2-4.
+           MOVE BYB-INS-NO-NOTWROTE(2 4) TO QBYB-INS-NO-NOTWROTE-2-4.
+           MOVE BYB-INS-AMT-WROTE(2 4) TO QBYB-INS-AMT-WROTE-2-4.
+           MOVE BYB-INS-NO-ELIG(2 5) TO QBYB-INS-NO-ELIG-2-5.
+           MOVE BYB-INS-NO-WROTE(2 5) TO QBYB-INS-NO-WROTE-2-5.
+           MOVE BYB-INS-NO-NOTWROTE(2 5) TO QBYB-INS-NO-NOTWROTE-2-5.
+           MOVE BYB-INS-AMT-WROTE(2 5) TO QBYB-INS-AMT-WROTE-2-5.
+           MOVE BYB-INS-NO-ELIG(2 6) TO QBYB-INS-NO-ELIG-2-6.
+           MOVE BYB-INS-NO-WROTE(2 6) TO QBYB-INS-NO-WROTE-2-6.
+           MOVE BYB-INS-NO-NOTWROTE(2 6) TO QBYB-INS-NO-NOTWROTE-2-6.
+           MOVE BYB-INS-AMT-WROTE(2 6) TO QBYB-INS-AMT-WROTE-2-6.
+           MOVE BYB-INS-NO-ELIG(2 7) TO QBYB-INS-NO-ELIG-2-7.
+           MOVE BYB-INS-NO-WROTE(2 7) TO QBYB-INS-NO-WROTE-2-7.
+           MOVE BYB-INS-NO-NOTWROTE(2 7) TO QBYB-INS-NO-NOTWROTE-2-7.
+           MOVE BYB-INS-AMT-WROTE(2 7) TO QBYB-INS-AMT-WROTE-2-7.
+           MOVE BYB-INS-NO-ELIG(2 8) TO QBYB-INS-NO-ELIG-2-8.
+           MOVE BYB-INS-NO-WROTE(2 8) TO QBYB-INS-NO-WROTE-2-8.
+           MOVE BYB-INS-NO-NOTWROTE(2 8) TO QBYB-INS-NO-NOTWROTE-2-8.
+           MOVE BYB-INS-AMT-WROTE(2 8) TO QBYB-INS-AMT-WROTE-2-8.
+           MOVE BYB-INS-NO-ELIG(2 9) TO QBYB-INS-NO-ELIG-2-9.
+           MOVE BYB-INS-NO-WROTE(2 9) TO QBYB-INS-NO-WROTE-2-9.
+           MOVE BYB-INS-NO-NOTWROTE(2 9) TO QBYB-INS-NO-NOTWROTE-2-9.
+           MOVE BYB-INS-AMT-WROTE(2 9) TO QBYB-INS-AMT-WROTE-2-9.
+           MOVE BYB-INS-NO-ELIG(2 10) TO QBYB-INS-NO-ELIG-2-10.
+           MOVE BYB-INS-NO-WROTE(2 10) TO QBYB-INS-NO-WROTE-2-10.
+           MOVE BYB-INS-NO-NOTWROTE(2 10) TO QBYB-INS-NO-NOTWROTE-2-10.
+           MOVE BYB-INS-AMT-WROTE(2 10) TO QBYB-INS-AMT-WROTE-2-10.
+           MOVE BYB-FEE-NO-ELIG(2 1) TO QBYB-FEE-NO-ELIG-2-1.
+           MOVE BYB-FEE-NO-WROTE(2 1) TO QBYB-FEE-NO-WROTE-2-1.
+           MOVE BYB-FEE-NO-NOTWROTE(2 1) TO QBYB-FEE-NO-NOTWROTE-2-1.
+           MOVE BYB-FEE-AMT-WROTE(2 1) TO QBYB-FEE-AMT-WROTE-2-1.
+           MOVE BYB-FEE-NO-ELIG(2 2) TO QBYB-FEE-NO-ELIG-2-2.
+           MOVE BYB-FEE-NO-WROTE(2 2) TO QBYB-FEE-NO-WROTE-2-2.
+           MOVE BYB-FEE-NO-NOTWROTE(2 2) TO QBYB-FEE-NO-NOTWROTE-2-2.
+           MOVE BYB-FEE-AMT-WROTE(2 2) TO QBYB-FEE-AMT-WROTE-2-2.
+           MOVE BYB-FEE-NO-ELIG(2 3) TO QBYB-FEE-NO-ELIG-2-3.
+           MOVE BYB-FEE-NO-WROTE(2 3) TO QBYB-FEE-NO-WROTE-2-3.
+           MOVE BYB-FEE-NO-NOTWROTE(2 3) TO QBYB-FEE-NO-NOTWROTE-2-3.
+           MOVE BYB-FEE-AMT-WROTE(2 3) TO QBYB-FEE-AMT-WROTE-2-3.
+           MOVE BYB-OTH-NO-COL(2) TO QBYB-OTH-NO-COL-2.
+           MOVE BYB-OT2-NO-COL(2) TO QBYB-OT2-NO-COL-2.
+           MOVE BYB-INT-NO-COL(2) TO QBYB-INT-NO-COL-2.
+           MOVE BYB-LATE-NO-COL(2) TO QBYB-LATE-NO-COL-2.
+           MOVE BYB-OTH-NO-WAIVED(2) TO QBYB-OTH-NO-WAIVED-2.
+           MOVE BYB-OT2-NO-WAIVED(2) TO QBYB-OT2-NO-WAIVED-2.
+           MOVE BYB-INT-NO-WAIVED(2) TO QBYB-INT-NO-WAIVED-2.
+           MOVE BYB-LATE-NO-WAIVED(2) TO QBYB-LATE-NO-WAIVED-2.
+           MOVE BYB-OTH-AMT-WAIVED(2) TO QBYB-OTH-AMT-WAIVED-2.
+           MOVE BYB-OT2-AMT-WAIVED(2) TO QBYB-OT2-AMT-WAIVED-2.
+           MOVE BYB-INT-AMT-WAIVED(2) TO QBYB-INT-AMT-WAIVED-2.
+           MOVE BYB-LATE-AMT-WAIVED(2) TO QBYB-LATE-AMT-WAIVED-2.
+           MOVE BYB-UNITS(1 1 1) TO QBYB-UNITS-1-1-1.
+           MOVE BYB-OUTBAL(1 1 1) TO QBYB-OUTBAL-1-1-1.
+           MOVE BYB-UNITS(1 1 2) TO QBYB-UNITS-1-1-2.
+           MOVE BYB-OUTBAL(1 1 2) TO QBYB-OUTBAL-1-1-2.
+           MOVE BYB-UNITS(1 1 3) TO QBYB-UNITS-1-1-3.
+           MOVE BYB-OUTBAL(1 1 3) TO QBYB-OUTBAL-1-1-3.
+           MOVE BYB-UNITS(1 1 4) TO QBYB-UNITS-1-1-4.
+           MOVE BYB-OUTBAL(1 1 4) TO QBYB-OUTBAL-1-1-4.
+           MOVE BYB-UNITS(1 1 5) TO QBYB-UNITS-1-1-5.
+           MOVE BYB-OUTBAL(1 1 5) TO QBYB-OUTBAL-1-1-5.
+           MOVE BYB-UNITS(1 1 6) TO QBYB-UNITS-1-1-6.
+           MOVE BYB-OUTBAL(1 1 6) TO QBYB-OUTBAL-1-1-6.
+           MOVE BYB-UNITS(1 1 7) TO QBYB-UNITS-1-1-7.
+           MOVE BYB-OUTBAL(1 1 7) TO QBYB-OUTBAL-1-1-7.
+           MOVE BYB-UNITS(1 1 8) TO QBYB-UNITS-1-1-8.
+           MOVE BYB-OUTBAL(1 1 8) TO QBYB-OUTBAL-1-1-8.
+           MOVE BYB-UNITS(1 1 9) TO QBYB-UNITS-1-1-9.
+           MOVE BYB-OUTBAL(1 1 9) TO QBYB-OUTBAL-1-1-9.
+           MOVE BYB-UNITS(1 1 10) TO QBYB-UNITS-1-1-10.
+           MOVE BYB-OUTBAL(1 1 10) TO QBYB-OUTBAL-1-1-10.
+           MOVE BYB-UNITS(1 2 1) TO QBYB-UNITS-1-2-1.
+           MOVE BYB-OUTBAL(1 2 1) TO QBYB-OUTBAL-1-2-1.
+           MOVE BYB-UNITS(1 2 2) TO QBYB-UNITS-1-2-2.
+           MOVE BYB-OUTBAL(1 2 2) TO QBYB-OUTBAL-1-2-2.
+           MOVE BYB-UNITS(1 2 3) TO QBYB-UNITS-1-2-3.
+           MOVE BYB-OUTBAL(1 2 3) TO QBYB-OUTBAL-1-2-3.
+           MOVE BYB-UNITS(1 2 4) TO QBYB-UNITS-1-2-4.
+           MOVE BYB-OUTBAL(1 2 4) TO QBYB-OUTBAL-1-2-4.
+           MOVE BYB-UNITS(1 2 5) TO QBYB-UNITS-1-2-5.
+           MOVE BYB-OUTBAL(1 2 5) TO QBYB-OUTBAL-1-2-5.
+           MOVE BYB-UNITS(1 2 6) TO QBYB-UNITS-1-2-6.
+           MOVE BYB-OUTBAL(1 2 6) TO QBYB-OUTBAL-1-2-6.
+           MOVE BYB-UNITS(1 2 7) TO QBYB-UNITS-1-2-7.
+           MOVE BYB-OUTBAL(1 2 7) TO QBYB-OUTBAL-1-2-7.
+           MOVE BYB-UNITS(1 2 8) TO QBYB-UNITS-1-2-8.
+           MOVE BYB-OUTBAL(1 2 8) TO QBYB-OUTBAL-1-2-8.
+           MOVE BYB-UNITS(1 2 9) TO QBYB-UNITS-1-2-9.
+           MOVE BYB-OUTBAL(1 2 9) TO QBYB-OUTBAL-1-2-9.
+           MOVE BYB-UNITS(1 2 10) TO QBYB-UNITS-1-2-10.
+           MOVE BYB-OUTBAL(1 2 10) TO QBYB-OUTBAL-1-2-10.
+           MOVE BYB-UNITS(2 1 1) TO QBYB-UNITS-2-1-1.
+           MOVE BYB-OUTBAL(2 1 1) TO QBYB-OUTBAL-2-1-1.
+           MOVE BYB-UNITS(2 1 2) TO QBYB-UNITS-2-1-2.
+           MOVE BYB-OUTBAL(2 1 2) TO QBYB-OUTBAL-2-1-2.
+           MOVE BYB-UNITS(2 1 3) TO QBYB-UNITS-2-1-3.
+           MOVE BYB-OUTBAL(2 1 3) TO QBYB-OUTBAL-2-1-3.
+           MOVE BYB-UNITS(2 1 4) TO QBYB-UNITS-2-1-4.
+           MOVE BYB-OUTBAL(2 1 4) TO QBYB-OUTBAL-2-1-4.
+           MOVE BYB-UNITS(2 1 5) TO QBYB-UNITS-2-1-5.
+           MOVE BYB-OUTBAL(2 1 5) TO QBYB-OUTBAL-2-1-5.
+           MOVE BYB-UNITS(2 1 6) TO QBYB-UNITS-2-1-6.
+           MOVE BYB-OUTBAL(2 1 6) TO QBYB-OUTBAL-2-1-6.
+           MOVE BYB-UNITS(2 1 7) TO QBYB-UNITS-2-1-7.
+           MOVE BYB-OUTBAL(2 1 7) TO QBYB-OUTBAL-2-1-7.
+           MOVE BYB-UNITS(2 1 8) TO QBYB-UNITS-2-1-8.
+           MOVE BYB-OUTBAL(2 1 8) TO QBYB-OUTBAL-2-1-8.
+           MOVE BYB-UNITS(2 1 9) TO QBYB-UNITS-2-1-9.
+           MOVE BYB-OUTBAL(2 1 9) TO QBYB-OUTBAL-2-1-9.
+           MOVE BYB-UNITS(2 1 10) TO QBYB-UNITS-2-1-10.
+           MOVE BYB-OUTBAL(2 1 10) TO QBYB-OUTBAL-2-1-10.
+           MOVE BYB-UNITS(2 2 1) TO QBYB-UNITS-2-2-1.
+           MOVE BYB-OUTBAL(2 2 1) TO QBYB-OUTBAL-2-2-1.
+           MOVE BYB-UNITS(2 2 2) TO QBYB-UNITS-2-2-2.
+           MOVE BYB-OUTBAL(2 2 2) TO QBYB-OUTBAL-2-2-2.
+           MOVE BYB-UNITS(2 2 3) TO QBYB-UNITS-2-2-3.
+           MOVE BYB-OUTBAL(2 2 3) TO QBYB-OUTBAL-2-2-3.
+           MOVE BYB-UNITS(2 2 4) TO QBYB-UNITS-2-2-4.
+           MOVE BYB-OUTBAL(2 2 4) TO QBYB-OUTBAL-2-2-4.
+           MOVE BYB-UNITS(2 2 5) TO QBYB-UNITS-2-2-5.
+           MOVE BYB-OUTBAL(2 2 5) TO QBYB-OUTBAL-2-2-5.
+           MOVE BYB-UNITS(2 2 6) TO QBYB-UNITS-2-2-6.
+           MOVE BYB-OUTBAL(2 2 6) TO QBYB-OUTBAL-2-2-6.
+           MOVE BYB-UNITS(2 2 7) TO QBYB-UNITS-2-2-7.
+           MOVE BYB-OUTBAL(2 2 7) TO QBYB-OUTBAL-2-2-7.
+           MOVE BYB-UNITS(2 2 8) TO QBYB-UNITS-2-2-8.
+           MOVE BYB-OUTBAL(2 2 8) TO QBYB-OUTBAL-2-2-8.
+           MOVE BYB-UNITS(2 2 9) TO QBYB-UNITS-2-2-9.
+           MOVE BYB-OUTBAL(2 2 9) TO QBYB-OUTBAL-2-2-9.
+           MOVE BYB-UNITS(2 2 10) TO QBYB-UNITS-2-2-10.
+           MOVE BYB-OUTBAL(2 2 10) TO QBYB-OUTBAL-2-2-10.
+           MOVE BYB-UNITS(3 1 1) TO QBYB-UNITS-3-1-1.
+           MOVE BYB-OUTBAL(3 1 1) TO QBYB-OUTBAL-3-1-1.
+           MOVE BYB-UNITS(3 1 2) TO QBYB-UNITS-3-1-2.
+           MOVE BYB-OUTBAL(3 1 2) TO QBYB-OUTBAL-3-1-2.
+           MOVE BYB-UNITS(3 1 3) TO QBYB-UNITS-3-1-3.
+           MOVE BYB-OUTBAL(3 1 3) TO QBYB-OUTBAL-3-1-3.
+           MOVE BYB-UNITS(3 1 4) TO QBYB-UNITS-3-1-4.
+           MOVE BYB-OUTBAL(3 1 4) TO QBYB-OUTBAL-3-1-4.
+           MOVE BYB-UNITS(3 1 5) TO QBYB-UNITS-3-1-5.
+           MOVE BYB-OUTBAL(3 1 5) TO QBYB-OUTBAL-3-1-5.
+           MOVE BYB-UNITS(3 1 6) TO QBYB-UNITS-3-1-6.
+           MOVE BYB-OUTBAL(3 1 6) TO QBYB-OUTBAL-3-1-6.
+           MOVE BYB-UNITS(3 1 7) TO QBYB-UNITS-3-1-7.
+           MOVE BYB-OUTBAL(3 1 7) TO QBYB-OUTBAL-3-1-7.
+           MOVE BYB-UNITS(3 1 8) TO QBYB-UNITS-3-1-8.
+           MOVE BYB-OUTBAL(3 1 8) TO QBYB-OUTBAL-3-1-8.
+           MOVE BYB-UNITS(3 1 9) TO QBYB-UNITS-3-1-9.
+           MOVE BYB-OUTBAL(3 1 9) TO QBYB-OUTBAL-3-1-9.
+           MOVE BYB-UNITS(3 1 10) TO QBYB-UNITS-3-1-10.
+           MOVE BYB-OUTBAL(3 1 10) TO QBYB-OUTBAL-3-1-10.
+           MOVE BYB-UNITS(3 2 1) TO QBYB-UNITS-3-2-1.
+           MOVE BYB-OUTBAL(3 2 1) TO QBYB-OUTBAL-3-2-1.
+           MOVE BYB-UNITS(3 2 2) TO QBYB-UNITS-3-2-2.
+           MOVE BYB-OUTBAL(3 2 2) TO QBYB-OUTBAL-3-2-2.
+           MOVE BYB-UNITS(3 2 3) TO QBYB-UNITS-3-2-3.
+           MOVE BYB-OUTBAL(3 2 3) TO QBYB-OUTBAL-3-2-3.
+           MOVE BYB-UNITS(3 2 4) TO QBYB-UNITS-3-2-4.
+           MOVE BYB-OUTBAL(3 2 4) TO QBYB-OUTBAL-3-2-4.
+           MOVE BYB-UNITS(3 2 5) TO QBYB-UNITS-3-2-5.
+           MOVE BYB-OUTBAL(3 2 5) TO QBYB-OUTBAL-3-2-5.
+           MOVE BYB-UNITS(3 2 6) TO QBYB-UNITS-3-2-6.
+           MOVE BYB-OUTBAL(3 2 6) TO QBYB-OUTBAL-3-2-6.
+           MOVE BYB-UNITS(3 2 7) TO QBYB-UNITS-3-2-7.
+           MOVE BYB-OUTBAL(3 2 7) TO QBYB-OUTBAL-3-2-7.
+           MOVE BYB-UNITS(3 2 8) TO QBYB-UNITS-3-2-8.
+           MOVE BYB-OUTBAL(3 2 8) TO QBYB-OUTBAL-3-2-8.
+           MOVE BYB-UNITS(3 2 9) TO QBYB-UNITS-3-2-9.
+           MOVE BYB-OUTBAL(3 2 9) TO QBYB-OUTBAL-3-2-9.
+           MOVE BYB-UNITS(3 2 10) TO QBYB-UNITS-3-2-10.
+           MOVE BYB-OUTBAL(3 2 10) TO QBYB-OUTBAL-3-2-10.
+           MOVE BYB-UNITS-BNKRPT(1 1 1) TO QBYB-UNITS-BNKRPT-1-1-1.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 1) TO QBYB-OUTBAL-BNKRPT-1-1-1.
+           MOVE BYB-UNITS-BNKRPT(1 1 2) TO QBYB-UNITS-BNKRPT-1-1-2.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 2) TO QBYB-OUTBAL-BNKRPT-1-1-2.
+           MOVE BYB-UNITS-BNKRPT(1 1 3) TO QBYB-UNITS-BNKRPT-1-1-3.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 3) TO QBYB-OUTBAL-BNKRPT-1-1-3.
+           MOVE BYB-UNITS-BNKRPT(1 1 4) TO QBYB-UNITS-BNKRPT-1-1-4.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 4) TO QBYB-OUTBAL-BNKRPT-1-1-4.
+           MOVE BYB-UNITS-BNKRPT(1 1 5) TO QBYB-UNITS-BNKRPT-1-1-5.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 5) TO QBYB-OUTBAL-BNKRPT-1-1-5.
+           MOVE BYB-UNITS-BNKRPT(1 1 6) TO QBYB-UNITS-BNKRPT-1-1-6.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 6) TO QBYB-OUTBAL-BNKRPT-1-1-6.
+           MOVE BYB-UNITS-BNKRPT(1 1 7) TO QBYB-UNITS-BNKRPT-1-1-7.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 7) TO QBYB-OUTBAL-BNKRPT-1-1-7.
+           MOVE BYB-UNITS-BNKRPT(1 1 8) TO QBYB-UNITS-BNKRPT-1-1-8.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 8) TO QBYB-OUTBAL-BNKRPT-1-1-8.
+           MOVE BYB-UNITS-BNKRPT(1 1 9) TO QBYB-UNITS-BNKRPT-1-1-9.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 9) TO QBYB-OUTBAL-BNKRPT-1-1-9.
+           MOVE BYB-UNITS-BNKRPT(1 1 10) TO QBYB-UNITS-BNKRPT-1-1-10.
+           MOVE BYB-OUTBAL-BNKRPT(1 1 10) TO QBYB-OUTBAL-BNKRPT-1-1-10.
+           MOVE BYB-UNITS-BNKRPT(1 2 1) TO QBYB-UNITS-BNKRPT-1-2-1.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 1) TO QBYB-OUTBAL-BNKRPT-1-2-1.
+           MOVE BYB-UNITS-BNKRPT(1 2 2) TO QBYB-UNITS-BNKRPT-1-2-2.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 2) TO QBYB-OUTBAL-BNKRPT-1-2-2.
+           MOVE BYB-UNITS-BNKRPT(1 2 3) TO QBYB-UNITS-BNKRPT-1-2-3.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 3) TO QBYB-OUTBAL-BNKRPT-1-2-3.
+           MOVE BYB-UNITS-BNKRPT(1 2 4) TO QBYB-UNITS-BNKRPT-1-2-4.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 4) TO QBYB-OUTBAL-BNKRPT-1-2-4.
+           MOVE BYB-UNITS-BNKRPT(1 2 5) TO QBYB-UNITS-BNKRPT-1-2-5.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 5) TO QBYB-OUTBAL-BNKRPT-1-2-5.
+           MOVE BYB-UNITS-BNKRPT(1 2 6) TO QBYB-UNITS-BNKRPT-1-2-6.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 6) TO QBYB-OUTBAL-BNKRPT-1-2-6.
+           MOVE BYB-UNITS-BNKRPT(1 2 7) TO QBYB-UNITS-BNKRPT-1-2-7.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 7) TO QBYB-OUTBAL-BNKRPT-1-2-7.
+           MOVE BYB-UNITS-BNKRPT(1 2 8) TO QBYB-UNITS-BNKRPT-1-2-8.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 8) TO QBYB-OUTBAL-BNKRPT-1-2-8.
+           MOVE BYB-UNITS-BNKRPT(1 2 9) TO QBYB-UNITS-BNKRPT-1-2-9.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 9) TO QBYB-OUTBAL-BNKRPT-1-2-9.
+           MOVE BYB-UNITS-BNKRPT(1 2 10) TO QBYB-UNITS-BNKRPT-1-2-10.
+           MOVE BYB-OUTBAL-BNKRPT(1 2 10) TO QBYB-OUTBAL-BNKRPT-1-2-10.
+           MOVE BYB-UNITS-BNKRPT(2 1 1) TO QBYB-UNITS-BNKRPT-2-1-1.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 1) TO QBYB-OUTBAL-BNKRPT-2-1-1.
+           MOVE BYB-UNITS-BNKRPT(2 1 2) TO QBYB-UNITS-BNKRPT-2-1-2.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 2) TO QBYB-OUTBAL-BNKRPT-2-1-2.
+           MOVE BYB-UNITS-BNKRPT(2 1 3) TO QBYB-UNITS-BNKRPT-2-1-3.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 3) TO QBYB-OUTBAL-BNKRPT-2-1-3.
+           MOVE BYB-UNITS-BNKRPT(2 1 4) TO QBYB-UNITS-BNKRPT-2-1-4.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 4) TO QBYB-OUTBAL-BNKRPT-2-1-4.
+           MOVE BYB-UNITS-BNKRPT(2 1 5) TO QBYB-UNITS-BNKRPT-2-1-5.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 5) TO QBYB-OUTBAL-BNKRPT-2-1-5.
+           MOVE BYB-UNITS-BNKRPT(2 1 6) TO QBYB-UNITS-BNKRPT-2-1-6.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 6) TO QBYB-OUTBAL-BNKRPT-2-1-6.
+           MOVE BYB-UNITS-BNKRPT(2 1 7) TO QBYB-UNITS-BNKRPT-2-1-7.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 7) TO QBYB-OUTBAL-BNKRPT-2-1-7.
+           MOVE BYB-UNITS-BNKRPT(2 1 8) TO QBYB-UNITS-BNKRPT-2-1-8.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 8) TO QBYB-OUTBAL-BNKRPT-2-1-8.
+           MOVE BYB-UNITS-BNKRPT(2 1 9) TO QBYB-UNITS-BNKRPT-2-1-9.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 9) TO QBYB-OUTBAL-BNKRPT-2-1-9.
+           MOVE BYB-UNITS-BNKRPT(2 1 10) TO QBYB-UNITS-BNKRPT-2-1-10.
+           MOVE BYB-OUTBAL-BNKRPT(2 1 10) TO QBYB-OUTBAL-BNKRPT-2-1-10.
+           MOVE BYB-UNITS-BNKRPT(2 2 1) TO QBYB-UNITS-BNKRPT-2-2-1.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 1) TO QBYB-OUTBAL-BNKRPT-2-2-1.
+           MOVE BYB-UNITS-BNKRPT(2 2 2) TO QBYB-UNITS-BNKRPT-2-2-2.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 2) TO QBYB-OUTBAL-BNKRPT-2-2-2.
+           MOVE BYB-UNITS-BNKRPT(2 2 3) TO QBYB-UNITS-BNKRPT-2-2-3.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 3) TO QBYB-OUTBAL-BNKRPT-2-2-3.
+           MOVE BYB-UNITS-BNKRPT(2 2 4) TO QBYB-UNITS-BNKRPT-2-2-4.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 4) TO QBYB-OUTBAL-BNKRPT-2-2-4.
+           MOVE BYB-UNITS-BNKRPT(2 2 5) TO QBYB-UNITS-BNKRPT-2-2-5.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 5) TO QBYB-OUTBAL-BNKRPT-2-2-5.
+           MOVE BYB-UNITS-BNKRPT(2 2 6) TO QBYB-UNITS-BNKRPT-2-2-6.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 6) TO QBYB-OUTBAL-BNKRPT-2-2-6.
+           MOVE BYB-UNITS-BNKRPT(2 2 7) TO QBYB-UNITS-BNKRPT-2-2-7.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 7) TO QBYB-OUTBAL-BNKRPT-2-2-7.
+           MOVE BYB-UNITS-BNKRPT(2 2 8) TO QBYB-UNITS-BNKRPT-2-2-8.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 8) TO QBYB-OUTBAL-BNKRPT-2-2-8.
+           MOVE BYB-UNITS-BNKRPT(2 2 9) TO QBYB-UNITS-BNKRPT-2-2-9.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 9) TO QBYB-OUTBAL-BNKRPT-2-2-9.
+           MOVE BYB-UNITS-BNKRPT(2 2 10) TO QBYB-UNITS-BNKRPT-2-2-10.
+           MOVE BYB-OUTBAL-BNKRPT(2 2 10) TO QBYB-OUTBAL-BNKRPT-2-2-10.
+           MOVE BYB-UNITS-BNKRPT(3 1 1) TO QBYB-UNITS-BNKRPT-3-1-1.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 1) TO QBYB-OUTBAL-BNKRPT-3-1-1.
+           MOVE BYB-UNITS-BNKRPT(3 1 2) TO QBYB-UNITS-BNKRPT-3-1-2.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 2) TO QBYB-OUTBAL-BNKRPT-3-1-2.
+           MOVE BYB-UNITS-BNKRPT(3 1 3) TO QBYB-UNITS-BNKRPT-3-1-3.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 3) TO QBYB-OUTBAL-BNKRPT-3-1-3.
+           MOVE BYB-UNITS-BNKRPT(3 1 4) TO QBYB-UNITS-BNKRPT-3-1-4.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 4) TO QBYB-OUTBAL-BNKRPT-3-1-4.
+           MOVE BYB-UNITS-BNKRPT(3 1 5) TO QBYB-UNITS-BNKRPT-3-1-5.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 5) TO QBYB-OUTBAL-BNKRPT-3-1-5.
+           MOVE BYB-UNITS-BNKRPT(3 1 6) TO QBYB-UNITS-BNKRPT-3-1-6.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 6) TO QBYB-OUTBAL-BNKRPT-3-1-6.
+           MOVE BYB-UNITS-BNKRPT(3 1 7) TO QBYB-UNITS-BNKRPT-3-1-7.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 7) TO QBYB-OUTBAL-BNKRPT-3-1-7.
+           MOVE BYB-UNITS-BNKRPT(3 1 8) TO QBYB-UNITS-BNKRPT-3-1-8.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 8) TO QBYB-OUTBAL-BNKRPT-3-1-8.
+           MOVE BYB-UNITS-BNKRPT(3 1 9) TO QBYB-UNITS-BNKRPT-3-1-9.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 9) TO QBYB-OUTBAL-BNKRPT-3-1-9.
+           MOVE BYB-UNITS-BNKRPT(3 1 10) TO QBYB-UNITS-BNKRPT-3-1-10.
+           MOVE BYB-OUTBAL-BNKRPT(3 1 10) TO QBYB-OUTBAL-BNKRPT-3-1-10.
+           MOVE BYB-UNITS-BNKRPT(3 2 1) TO QBYB-UNITS-BNKRPT-3-2-1.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 1) TO QBYB-OUTBAL-BNKRPT-3-2-1.
+           MOVE BYB-UNITS-BNKRPT(3 2 2) TO QBYB-UNITS-BNKRPT-3-2-2.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 2) TO QBYB-OUTBAL-BNKRPT-3-2-2.
+           MOVE BYB-UNITS-BNKRPT(3 2 3) TO QBYB-UNITS-BNKRPT-3-2-3.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 3) TO QBYB-OUTBAL-BNKRPT-3-2-3.
+           MOVE BYB-UNITS-BNKRPT(3 2 4) TO QBYB-UNITS-BNKRPT-3-2-4.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 4) TO QBYB-OUTBAL-BNKRPT-3-2-4.
+           MOVE BYB-UNITS-BNKRPT(3 2 5) TO QBYB-UNITS-BNKRPT-3-2-5.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 5) TO QBYB-OUTBAL-BNKRPT-3-2-5.
+           MOVE BYB-UNITS-BNKRPT(3 2 6) TO QBYB-UNITS-BNKRPT-3-2-6.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 6) TO QBYB-OUTBAL-BNKRPT-3-2-6.
+           MOVE BYB-UNITS-BNKRPT(3 2 7) TO QBYB-UNITS-BNKRPT-3-2-7.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 7) TO QBYB-OUTBAL-BNKRPT-3-2-7.
+           MOVE BYB-UNITS-BNKRPT(3 2 8) TO QBYB-UNITS-BNKRPT-3-2-8.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 8) TO QBYB-OUTBAL-BNKRPT-3-2-8.
+           MOVE BYB-UNITS-BNKRPT(3 2 9) TO QBYB-UNITS-BNKRPT-3-2-9.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 9) TO QBYB-OUTBAL-BNKRPT-3-2-9.
+           MOVE BYB-UNITS-BNKRPT(3 2 10) TO QBYB-UNITS-BNKRPT-3-2-10.
+           MOVE BYB-OUTBAL-BNKRPT(3 2 10) TO QBYB-OUTBAL-BNKRPT-3-2-10.
+           MOVE BYB-SUMWGTTM TO QBYB-SUMWGTTM.
+           MOVE BYB-SUMWGTAV TO QBYB-SUMWGTAV.
+           MOVE BYB-SUMWGTTA TO QBYB-SUMWGTTA.
+           MOVE BYB-IB-ACCRUED TO QBYB-IB-ACCRUED.
+           MOVE BYB-DLDISC(1) TO QBYB-DLDISC-1.
+           MOVE BYB-DLDISC(2) TO QBYB-DLDISC-2.
+           MOVE BYB-DLDISC(3) TO QBYB-DLDISC-3.
+           MOVE BYB-STD-POS TO QBYB-STD-POS.
+           MOVE BYB-30-DAY-MOVED TO QBYB-30-DAY-MOVED.
+           MOVE BYB-PROJ-INCREASE TO QBYB-PROJ-INCREASE.
+           MOVE BYB-PROJ-PROFIT TO QBYB-PROJ-PROFIT.
+           MOVE BYB-PROCEEDS(1) TO QBYB-PROCEEDS-1.
+           MOVE BYB-PROCEEDS(2) TO QBYB-PROCEEDS-2.
+           MOVE BYB-LOCKBOX(1) TO QBYB-LOCKBOX-1.
+           MOVE BYB-LOCKBOX(2) TO QBYB-LOCKBOX-2.
+           MOVE BYB-UNEARNED-AMT(1 1 1) TO QBYB-UNEARNED-AMT-1-1-1.
+           MOVE BYB-UNEARNED-AMT(1 1 2) TO QBYB-UNEARNED-AMT-1-1-2.
+           MOVE BYB-UNEARNED-AMT(1 1 3) TO QBYB-UNEARNED-AMT-1-1-3.
+           MOVE BYB-UNEARNED-AMT(1 1 4) TO QBYB-UNEARNED-AMT-1-1-4.
+           MOVE BYB-UNEARNED-AMT(1 1 5) TO QBYB-UNEARNED-AMT-1-1-5.
+           MOVE BYB-UNEARNED-AMT(1 1 6) TO QBYB-UNEARNED-AMT-1-1-6.
+           MOVE BYB-UNEARNED-AMT(1 1 7) TO QBYB-UNEARNED-AMT-1-1-7.
+           MOVE BYB-UNEARNED-AMT(1 1 8) TO QBYB-UNEARNED-AMT-1-1-8.
+           MOVE BYB-UNEARNED-AMT(1 1 9) TO QBYB-UNEARNED-AMT-1-1-9.
+           MOVE BYB-UNEARNED-AMT(1 1 10) TO QBYB-UNEARNED-AMT-1-1-10.
+           MOVE BYB-UNEARNED-AMT(1 2 1) TO QBYB-UNEARNED-AMT-1-2-1.
+           MOVE BYB-UNEARNED-AMT(1 2 2) TO QBYB-UNEARNED-AMT-1-2-2.
+           MOVE BYB-UNEARNED-AMT(1 2 3) TO QBYB-UNEARNED-AMT-1-2-3.
+           MOVE BYB-UNEARNED-AMT(1 2 4) TO QBYB-UNEARNED-AMT-1-2-4.
+           MOVE BYB-UNEARNED-AMT(1 2 5) TO QBYB-UNEARNED-AMT-1-2-5.
+           MOVE BYB-UNEARNED-AMT(1 2 6) TO QBYB-UNEARNED-AMT-1-2-6.
+           MOVE BYB-UNEARNED-AMT(1 2 7) TO QBYB-UNEARNED-AMT-1-2-7.
+           MOVE BYB-UNEARNED-AMT(1 2 8) TO QBYB-UNEARNED-AMT-1-2-8.
+           MOVE BYB-UNEARNED-AMT(1 2 9) TO QBYB-UNEARNED-AMT-1-2-9.
+           MOVE BYB-UNEARNED-AMT(1 2 10) TO QBYB-UNEARNED-AMT-1-2-10.
+           MOVE BYB-UNEARNED-AMT(2 1 1) TO QBYB-UNEARNED-AMT-2-1-1.
+           MOVE BYB-UNEARNED-AMT(2 1 2) TO QBYB-UNEARNED-AMT-2-1-2.
+           MOVE BYB-UNEARNED-AMT(2 1 3) TO QBYB-UNEARNED-AMT-2-1-3.
+           MOVE BYB-UNEARNED-AMT(2 1 4) TO QBYB-UNEARNED-AMT-2-1-4.
+           MOVE BYB-UNEARNED-AMT(2 1 5) TO QBYB-UNEARNED-AMT-2-1-5.
+           MOVE BYB-UNEARNED-AMT(2 1 6) TO QBYB-UNEARNED-AMT-2-1-6.
+           MOVE BYB-UNEARNED-AMT(2 1 7) TO QBYB-UNEARNED-AMT-2-1-7.
+           MOVE BYB-UNEARNED-AMT(2 1 8) TO QBYB-UNEARNED-AMT-2-1-8.
+           MOVE BYB-UNEARNED-AMT(2 1 9) TO QBYB-UNEARNED-AMT-2-1-9.
+           MOVE BYB-UNEARNED-AMT(2 1 10) TO QBYB-UNEARNED-AMT-2-1-10.
+           MOVE BYB-UNEARNED-AMT(2 2 1) TO QBYB-UNEARNED-AMT-2-2-1.
+           MOVE BYB-UNEARNED-AMT(2 2 2) TO QBYB-UNEARNED-AMT-2-2-2.
+           MOVE BYB-UNEARNED-AMT(2 2 3) TO QBYB-UNEARNED-AMT-2-2-3.
+           MOVE BYB-UNEARNED-AMT(2 2 4) TO QBYB-UNEARNED-AMT-2-2-4.
+           MOVE BYB-UNEARNED-AMT(2 2 5) TO QBYB-UNEARNED-AMT-2-2-5.
+           MOVE BYB-UNEARNED-AMT(2 2 6) TO QBYB-UNEARNED-AMT-2-2-6.
+           MOVE BYB-UNEARNED-AMT(2 2 7) TO QBYB-UNEARNED-AMT-2-2-7.
+           MOVE BYB-UNEARNED-AMT(2 2 8) TO QBYB-UNEARNED-AMT-2-2-8.
+           MOVE BYB-UNEARNED-AMT(2 2 9) TO QBYB-UNEARNED-AMT-2-2-9.
+           MOVE BYB-UNEARNED-AMT(2 2 10) TO QBYB-UNEARNED-AMT-2-2-10.
+           MOVE BYB-UNEARNED-AMT(3 1 1) TO QBYB-UNEARNED-AMT-3-1-1.
+           MOVE BYB-UNEARNED-AMT(3 1 2) TO QBYB-UNEARNED-AMT-3-1-2.
+           MOVE BYB-UNEARNED-AMT(3 1 3) TO QBYB-UNEARNED-AMT-3-1-3.
+           MOVE BYB-UNEARNED-AMT(3 1 4) TO QBYB-UNEARNED-AMT-3-1-4.
+           MOVE BYB-UNEARNED-AMT(3 1 5) TO QBYB-UNEARNED-AMT-3-1-5.
+           MOVE BYB-UNEARNED-AMT(3 1 6) TO QBYB-UNEARNED-AMT-3-1-6.
+           MOVE BYB-UNEARNED-AMT(3 1 7) TO QBYB-UNEARNED-AMT-3-1-7.
+           MOVE BYB-UNEARNED-AMT(3 1 8) TO QBYB-UNEARNED-AMT-3-1-8.
+           MOVE BYB-UNEARNED-AMT(3 1 9) TO QBYB-UNEARNED-AMT-3-1-9.
+           MOVE BYB-UNEARNED-AMT(3 1 10) TO QBYB-UNEARNED-AMT-3-1-10.
+           MOVE BYB-UNEARNED-AMT(3 2 1) TO QBYB-UNEARNED-AMT-3-2-1.
+           MOVE BYB-UNEARNED-AMT(3 2 2) TO QBYB-UNEARNED-AMT-3-2-2.
+           MOVE BYB-UNEARNED-AMT(3 2 3) TO QBYB-UNEARNED-AMT-3-2-3.
+           MOVE BYB-UNEARNED-AMT(3 2 4) TO QBYB-UNEARNED-AMT-3-2-4.
+           MOVE BYB-UNEARNED-AMT(3 2 5) TO QBYB-UNEARNED-AMT-3-2-5.
+           MOVE BYB-UNEARNED-AMT(3 2 6) TO QBYB-UNEARNED-AMT-3-2-6.
+           MOVE BYB-UNEARNED-AMT(3 2 7) TO QBYB-UNEARNED-AMT-3-2-7.
+           MOVE BYB-UNEARNED-AMT(3 2 8) TO QBYB-UNEARNED-AMT-3-2-8.
+           MOVE BYB-UNEARNED-AMT(3 2 9) TO QBYB-UNEARNED-AMT-3-2-9.
+           MOVE BYB-UNEARNED-AMT(3 2 10) TO QBYB-UNEARNED-AMT-3-2-10.
+ 

@@ -1,0 +1,10 @@
+       CLEAR-ALTP-FILE SECTION.
+           MOVE ALL X"09" TO ALTP-REC.
+
+           MOVE 0 TO ALTP-LTOUCH-DATE.
+
+           PERFORM VARYING LTPSUB FROM 1 BY 1 UNTIL LTPSUB > 41
+              MOVE 0 TO ALTP-SCHLD-TERM  (LTPSUB)
+                        ALTP-SCHLD-PAYMNT(LTPSUB)
+           END-PERFORM.
+

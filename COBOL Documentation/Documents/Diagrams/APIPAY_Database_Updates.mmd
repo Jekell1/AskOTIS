@@ -1,0 +1,70 @@
+graph TD
+    A[Database Update Start] --> B[Prepare Update Buffers]
+    B --> C[SETUP-LP-RECORD]
+    C --> D[SETUP-LONPF-BUFFER]
+    
+    D --> E[Specialized Processing Phase]
+    E --> F{Transaction Type}
+    
+    F -->|RP| G[LONPFB Updates]
+    F -->|PL/P2/P3| H[LONPF9 Updates]
+    F -->|RE/O2/OT| I[LONPF7 Updates]
+    F -->|PY/PA| J[LONPFC Updates]
+    F -->|RV/BK/BD| K[LONPF2 Direct Updates]
+    
+    G --> G1[Interest Rebate Calculations]
+    G1 --> G2[Balance Adjustments]
+    G2 --> G3[Regulatory Compliance Updates]
+    
+    H --> H1[Principal Payment Processing]
+    H1 --> H2[Amortization Schedule Updates]
+    H2 --> H3[Payment History Records]
+    
+    I --> I1[Repossession Status Updates]
+    I1 --> I2[Asset Recovery Records]
+    I2 --> I3[Legal Status Changes]
+    
+    J --> J1[Standard Payment Application]
+    J1 --> J2[Interest/Principal Allocation]
+    J2 --> J3[Payment Date Updates]
+    
+    K --> K1[Direct Balance Updates]
+    K1 --> K2[Transaction Reversal Processing]
+    
+    G3 --> L[Prepare for Final Update]
+    H3 --> L
+    I3 --> L
+    J3 --> L
+    K2 --> L
+    
+    L --> M[CALL LONPF2 for Final Updates]
+    M --> N[LONPF2 Processing]
+    
+    N --> O[Update Loan Master File]
+    O --> P[Update Payment History]
+    P --> Q[Create GL Entries]
+    Q --> R[Update Balance Files]
+    R --> S[Create Audit Records]
+    
+    S --> T{All Updates Success?}
+    T -->|No| U[Rollback Transaction]
+    T -->|Yes| V[Commit Updates]
+    
+    U --> W[Log Rollback]
+    W --> X[Return Error Status]
+    
+    V --> Y[Update Statistics]
+    Y --> Z[Create Success Log]
+    Z --> AA[Return Success Status]
+    
+    classDef preparation fill:#e1f3ff
+    classDef processing fill:#fff3e0
+    classDef database fill:#f0f8e8
+    classDef completion fill:#f8e8f8
+    classDef error fill:#ffe8e8
+    
+    class A,B,C,D preparation
+    class E,F,G,H,I,J,K,G1,G2,H1,H2,I1,I2,J1,J2,K1,K2 processing
+    class L,M,N,O,P,Q,R,S database
+    class V,Y,Z,AA completion
+    class T,U,W,X error

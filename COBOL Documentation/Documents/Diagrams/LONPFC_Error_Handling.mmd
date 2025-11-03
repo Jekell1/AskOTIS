@@ -1,0 +1,93 @@
+graph TD
+    A[Error Detected] --> B{Error Category?}
+    
+    B --> C[File Error Handler]
+    B --> D[Business Rule Violation]
+    B --> E[Payment Error Handler]
+    B --> F[Balance Error Handler]
+    B --> G[Input Error Handler]
+    
+    C --> H[Check File Status]
+    H --> I{Critical File Error?}
+    I --> J[Set ERRCD X]
+    I --> K[Set ERRCD E]
+    J --> L[Close All Files]
+    K --> M[Continue with Warning]
+    L --> N[Terminate Program]
+    
+    D --> O{Rule Violation Type?}
+    O --> P[Account Status Error]
+    O --> Q[Transaction Limit Error]
+    O --> R[Date Validation Error]
+    O --> S[Authorization Error]
+    
+    P --> T[Display Account Status Message]
+    Q --> U[Display Limit Exceeded Message]
+    R --> V[Display Date Error Message]
+    S --> W[Display Authorization Required]
+    
+    E --> X{Payment Error Type?}
+    X --> Y[Display Minimum Payment Required]
+    X --> Z[Display Maximum Payment Allowed]
+    X --> DIST_ERR[Display Distribution Error]
+    
+    F --> BAL_CHK{Balance Error Type?}
+    BAL_CHK --> RECALC[Recalculate Distribution]
+    BAL_CHK --> NEG_BAL[Check Revolving Account Rules]
+    BAL_CHK --> ADJ_PAY[Adjust Payment Amount]
+    
+    G --> INP_CHK{Input Error Type?}
+    INP_CHK --> HIGHLIGHT[Highlight Required Fields]
+    INP_CHK --> FORMAT[Display Format Requirements]
+    INP_CHK --> RANGE[Display Valid Range]
+    
+    T --> ROUTE[Set ROUTE-CD for Message Display]
+    U --> ROUTE
+    V --> ROUTE
+    W --> ROUTE
+    Y --> ROUTE
+    Z --> ROUTE
+    DIST_ERR --> ROUTE
+    
+    ROUTE --> SEND[CONDITIONAL-SEND-MESS]
+    SEND --> ROUTE_CHK{Route-CD Check}
+    ROUTE_CHK --> DISPLAY[Display Message to User]
+    ROUTE_CHK --> LOG[Log Message Only]
+    
+    RECALC --> RETURN_DIST[Return to Distribution Calculation]
+    NEG_BAL --> ALLOW_NEG{Allow Negative Balance?}
+    ALLOW_NEG --> CONTINUE[Continue Processing]
+    ALLOW_NEG --> PREVENT[Prevent Transaction]
+    ADJ_PAY --> RETURN_PAY[Return to Payment Entry]
+    
+    HIGHLIGHT --> RETURN_INPUT[Return to Input Screen]
+    FORMAT --> RETURN_INPUT
+    RANGE --> RETURN_INPUT
+    
+    DISPLAY --> WAIT[Wait for User Response]
+    LOG --> BACKGROUND[Continue Background Processing]
+    M --> BACKGROUND
+    CONTINUE --> BACKGROUND
+    
+    WAIT --> USER_ACTION{User Action?}
+    USER_ACTION --> RETURN_PROC[Return to Processing]
+    USER_ACTION --> EXIT[Exit Transaction]
+    USER_ACTION --> HELP[Display Help Screen]
+    HELP --> WAIT
+    
+    N --> TERM[Program Termination]
+    PREVENT --> ERR_STATUS[Set Error Status]
+    EXIT --> ERR_STATUS
+    ERR_STATUS --> RETURN_ERR[Return Error to Caller]
+    
+    RETURN_DIST --> RETURN_PROC
+    RETURN_PAY --> RETURN_PROC
+    RETURN_INPUT --> RETURN_PROC
+    RETURN_PROC --> RESUME[Resume Normal Processing]
+    BACKGROUND --> RESUME
+    
+    style A fill:#ffebee
+    style J fill:#ffcdd2
+    style N fill:#f44336
+    style RESUME fill:#c8e6c9
+    style RETURN_ERR fill:#ff9800

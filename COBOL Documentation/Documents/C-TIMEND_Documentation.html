@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMEND Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMEND Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-timend-documentation">C-TIMEND Documentation</h1>
+<p><strong>generated_on:</strong> 2025-07-31
+<strong>Location:</strong> .\APIPAY_Inlined.CBL</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagram">Program Flow Diagram</a></li>
+<li><a href="#batch-timeline">Batch Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>C-TIMEND is a COBOL routine that sets the correct sign on elapsed time calculations and adjusts date and month values based on business rules. It handles special cases for different year types and reverses dates if required.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Elapsed time calculation</li>
+<li>Date and month normalization</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>WS-XSIGN</li>
+<li>WS-XDAYS</li>
+<li>WS-XMONTHS</li>
+<li>WS-XREM</li>
+<li>TA-YRTYPE</li>
+<li>WS-JUL-1</li>
+<li>WS-JUL-2</li>
+<li>WS-DATE1</li>
+<li>WS-DATE2</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>WS-XDAYS</li>
+<li>WS-XMONTHS</li>
+<li>WS-XREM</li>
+<li>WS-DATE1</li>
+<li>WS-DATE2</li>
+<li>WS-JUL-1</li>
+<li>WS-JUL-2</li>
+</ul>
+<h2 id="program-flow-diagram">Program Flow Diagram</h2>
+<div class="mermaid">flowchart TD
+    Start --> ComputeDays
+    ComputeDays --> YearTypeCheck
+    YearTypeCheck -- "998" --> ComputeMonths
+    YearTypeCheck -- "365" --> ComputeJulian
+    YearTypeCheck -- "Other" --> DivideDays
+    ComputeMonths --> ComputeRemainder
+    DivideDays --> ComputeRemainder
+    ComputeJulian --> End
+    ComputeRemainder --> End
+    End["End"]
+    Start["Start"]
+    ComputeDays["COMPUTE WS-XDAYS = WS-XSIGN * WS-XDAYS"]
+    YearTypeCheck["Check TA-YRTYPE"]
+    ComputeMonths["COMPUTE WS-XMONTHS = WS-XMONTHS * WS-XSIGN"]
+    ComputeRemainder["COMPUTE WS-XREM"]
+    DivideDays["DIVIDE WS-XDAYS BY 30"]
+    ComputeJulian["COMPUTE WS-XDAYS for TA-YRTYPE=365"]
+</div>
+<h2 id="batch-timeline">Batch Timeline</h2>
+<div class="mermaid">gantt
+    title C-TIMEND Batch Timeline
+    section Elapsed Time
+    C-TIMEND :active, a1, 2025-07-31, 1d
+    section Processing
+    Date/Month Adjustment :after a1, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-TIMEND SECTION:</strong><ul>
+<li>Computes elapsed days with sign.</li>
+<li>Handles special year types (998, 365) for business logic.</li>
+<li>Adjusts months and remainder days.</li>
+<li>Reverses dates and Julian values if sign is negative.</li>
+</ul>
+</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">flowchart LR
+    WS_XSIGN["WS-XSIGN"] --> WS_XDAYS["WS-XDAYS"]
+    TA_YRTYPE["TA-YRTYPE"] --> YearType["Year Type Check"]
+    WS_XDAYS --> WS_XMONTHS["WS-XMONTHS"]
+    WS_XMONTHS --> WS_XREM["WS-XREM"]
+    WS_JUL_1["WS-JUL-1"] --> Compare["Compare Julian"]
+    WS_JUL_2["WS-JUL-2"] --> Compare
+    Compare --> WS_XSIGN
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>None (internal logic only)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>Handles invalid year types and negative signs.</li>
+<li>Reverses dates if sign is negative.</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>No explicit error handling; relies on valid input data.</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid year type</li>
+<li>Negative sign on elapsed days</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses COMPUTE and DIVIDE for date math.</li>
+<li>Handles business rules for year types.</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by elapsed time routines and batch processing.</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>APIPAY_Inlined.CBL</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">flowchart TD
+    MAIN --> C-TIMEND
+</div>
+<hr />
+<h3 id="diagrams">Diagrams</h3>
+<ul>
+<li><a href="../Diagrams/C-TIMEND_Flow.mmd">Program Flow Diagram</a></li>
+<li><a href="../Diagrams/C-TIMEND_Batch.mmd">Batch Timeline Diagram</a></li>
+<li><a href="../Diagrams/C-TIMEND_DataFlow.mmd">Data Flow Diagram</a></li>
+<li><a href="../Diagrams/C-TIMEND_CallGraph.mmd">Call Graph Diagram</a></li>
+</ul>
+<p>Click the links above to view the diagrams.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

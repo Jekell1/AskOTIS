@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDSCAN Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CDSCAN Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> CDSCAN<br>
+            <strong>Location:</strong> WI/CDSCAN.CBL<br>
+            <strong>Purpose:</strong> Code File Window Scan<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Called By:</strong> LONPF7 and other programs requiring code scanning
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#transaction-types">Transaction Types</a></li>
+                <li><a href="#input-output">Input/Output Parameters</a></li>
+                <li><a href="#purpose">Purpose and Functionality</a></li>
+                <li><a href="#code-types">Supported Code Types</a></li>
+                <li><a href="#features">Key Features</a></li>
+                <li><a href="#program-flow">Program Flow</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#interface">User Interface</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>CDSCAN</strong> is a comprehensive window-based scanning program that provides lookup and selection capabilities for various code files throughout the system. It supports numerous code types and provides an intuitive interface for code selection and validation.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Code Scanning</strong>: Provides lookup capabilities for various system codes</li>
+            <li><strong>Window Interface</strong>: Interactive window-based code selection</li>
+            <li><strong>Multi-Type Support</strong>: Handles numerous different code types</li>
+            <li><strong>Field Selection</strong>: Advanced field search and selection capabilities</li>
+            <li><strong>Branch Filtering</strong>: Branch-specific code filtering when appropriate</li>
+        </ul>
+
+        <h2 id="purpose">Purpose and Functionality</h2>
+
+        <p>CDSCAN serves as the primary code lookup utility, providing:</p>
+
+        <ul>
+            <li>Interactive scanning of code files</li>
+            <li>Selection and validation of system codes</li>
+            <li>Branch-specific code filtering</li>
+            <li>Field-based search capabilities</li>
+            <li>Window-based user interface</li>
+            <li>Support for over 25 different code types</li>
+        </ul>
+
+        <h2 id="code-types">Supported Code Types</h2>
+
+        <p>CDSCAN supports a wide variety of code types for different system functions:</p>
+
+        <h3>Core Code Types</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PO</strong></td>
+                    <td>Payoff codes</td>
+                    <td>Used by LONPF7 for payoff code scanning</td>
+                </tr>
+                <tr>
+                    <td><strong>AC</strong></td>
+                    <td>Action codes</td>
+                    <td>Account action and processing codes</td>
+                </tr>
+                <tr>
+                    <td><strong>RE</strong></td>
+                    <td>Reason codes</td>
+                    <td>Transaction and adjustment reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>CN</strong></td>
+                    <td>Branch codes</td>
+                    <td>Branch-specific code scanning</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Extended Code Types</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>EA</strong></td>
+                    <td>Extraction groups</td>
+                    <td>Normal extraction and collector queue groups</td>
+                </tr>
+                <tr>
+                    <td><strong>BW</strong></td>
+                    <td>Business codes</td>
+                    <td>4-character business type codes</td>
+                </tr>
+                <tr>
+                    <td><strong>FC</strong></td>
+                    <td>Fee codes</td>
+                    <td>Fee and charge code management</td>
+                </tr>
+                <tr>
+                    <td><strong>CL</strong></td>
+                    <td>Class codes</td>
+                    <td>Classification and grouping codes</td>
+                </tr>
+                <tr>
+                    <td><strong>ML</strong></td>
+                    <td>Mail list codes</td>
+                    <td>Mail list source codes</td>
+                </tr>
+                <tr>
+                    <td><strong>PH</strong></td>
+                    <td>Phone type codes</td>
+                    <td>Phone number type classification</td>
+                </tr>
+                <tr>
+                    <td><strong>PR</strong></td>
+                    <td>Product codes</td>
+                    <td>Product code maintenance</td>
+                </tr>
+                <tr>
+                    <td><strong>RO</strong></td>
+                    <td>Other charges</td>
+                    <td>Other charges code maintenance</td>
+                </tr>
+                <tr>
+                    <td><strong>BS</strong></td>
+                    <td>Reference codes</td>
+                    <td>REFNO reference codes</td>
+                </tr>
+                <tr>
+                    <td><strong>RC</strong></td>
+                    <td>Return codes</td>
+                    <td>Return and response codes</td>
+                </tr>
+                <tr>
+                    <td><strong>LO</strong></td>
+                    <td>LPO codes</td>
+                    <td>LPO business codes</td>
+                </tr>
+                <tr>
+                    <td><strong>TS</strong></td>
+                    <td>TRW special codes</td>
+                    <td>TRW specific processing codes</td>
+                </tr>
+                <tr>
+                    <td><strong>FU</strong></td>
+                    <td>Follow-up codes</td>
+                    <td>Follow-up action codes</td>
+                </tr>
+                <tr>
+                    <td><strong>LS</strong></td>
+                    <td>Repo reasons</td>
+                    <td>Repossession reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>CH</strong></td>
+                    <td>Charge off reasons</td>
+                    <td>Charge off reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>BR</strong></td>
+                    <td>Batch payment reference</td>
+                    <td>Batch payment reference codes</td>
+                </tr>
+                <tr>
+                    <td><strong>DF</strong></td>
+                    <td>Deferment reasons</td>
+                    <td>Deferment (paid thru) reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>UW</strong></td>
+                    <td>Void (unwind) codes</td>
+                    <td>SF void processing codes</td>
+                </tr>
+                <tr>
+                    <td><strong>FZ</strong></td>
+                    <td>Frozen reasons</td>
+                    <td>Account frozen reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>PA</strong></td>
+                    <td>Payroll timesheet codes</td>
+                    <td>Timesheet not worked codes</td>
+                </tr>
+                <tr>
+                    <td><strong>ID</strong></td>
+                    <td>KYC ID type codes</td>
+                    <td>KYC identification type codes</td>
+                </tr>
+                <tr>
+                    <td><strong>JT</strong></td>
+                    <td>Job type codes</td>
+                    <td>Job classification codes</td>
+                </tr>
+                <tr>
+                    <td><strong>PS</strong></td>
+                    <td>Payment reschedule reasons</td>
+                    <td>Payment reschedule reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>DR</strong></td>
+                    <td>Notes payable dormant reasons</td>
+                    <td>Notes payable dormant reason codes</td>
+                </tr>
+                <tr>
+                    <td><strong>OR</strong></td>
+                    <td>Order codes</td>
+                    <td>Order processing codes</td>
+                </tr>
+                <tr>
+                    <td><strong>A2</strong></td>
+                    <td>Action code 2</td>
+                    <td>Secondary action codes for securitization</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="features">Key Features</h2>
+
+        <h3>Search Capabilities</h3>
+        <ul>
+            <li><strong>Field Selection</strong>: Advanced field search with column range specification</li>
+            <li><strong>Pattern Matching</strong>: Search within specific character positions</li>
+            <li><strong>Branch Filtering</strong>: Filter codes by branch when applicable</li>
+            <li><strong>Page Navigation</strong>: Browse through multiple pages of codes</li>
+        </ul>
+
+        <h3>Display Features</h3>
+        <ul>
+            <li><strong>Window Interface</strong>: User-friendly window-based display</li>
+            <li><strong>Code Descriptions</strong>: Shows code descriptions and details</li>
+            <li><strong>Selection Options</strong>: Multiple selection methods</li>
+            <li><strong>Status Information</strong>: Shows code status and attributes</li>
+        </ul>
+
+        <h3>Special Handling</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Code Types</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Branch Filtering</strong></td>
+                    <td>Shows only codes for specific branch</td>
+                    <td>CN, EA (with branch queuing)</td>
+                </tr>
+                <tr>
+                    <td><strong>Group Filtering</strong></td>
+                    <td>Filters extraction/collector groups</td>
+                    <td>EA (normal vs collector queues)</td>
+                </tr>
+                <tr>
+                    <td><strong>Alpha Keys</strong></td>
+                    <td>Alphanumeric code identification</td>
+                    <td>RO (CD-RO-NUM), RC codes</td>
+                </tr>
+                <tr>
+                    <td><strong>Action Code Handling</strong></td>
+                    <td>Special handling for action codes</td>
+                    <td>AC (first byte of CD-TYPE)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="interface">User Interface</h2>
+
+        <h3>Window Controls</h3>
+        <p>CDSCAN provides standard window navigation:</p>
+        <ul>
+            <li><strong>Page Up/Down</strong>: Navigate through code lists</li>
+            <li><strong>Enter</strong>: Select highlighted code</li>
+            <li><strong>Escape</strong>: Exit without selection</li>
+            <li><strong>Field Selection</strong>: Click or navigate to specific codes</li>
+        </ul>
+
+        <h3>Search Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Purpose</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CDSCAN-TYPE</strong></td>
+                    <td>Specifies code type to scan</td>
+                    <td>Set to desired code type (PO, AC, RE, etc.)</td>
+                </tr>
+                <tr>
+                    <td><strong>CDSCAN-CODE</strong></td>
+                    <td>Starting code position</td>
+                    <td>Where to begin the scan</td>
+                </tr>
+                <tr>
+                    <td><strong>CDSCAN-CN-BRANCH</strong></td>
+                    <td>Branch filter for CN codes</td>
+                    <td>Branch number for filtering</td>
+                </tr>
+                <tr>
+                    <td><strong>CDSCAN-EA-CQ-FG</strong></td>
+                    <td>EA group type filter</td>
+                    <td>Filter extraction vs collector groups</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Program Structure</h3>
+        <ul>
+            <li><strong>Window Management</strong>: Handles window display and navigation</li>
+            <li><strong>Code File Access</strong>: Reads and processes code files</li>
+            <li><strong>Field Selection</strong>: Implements advanced field search logic</li>
+            <li><strong>Page Building</strong>: Constructs display pages dynamically</li>
+        </ul>
+
+        <h3>Key Processing Logic</h3>
+        <ul>
+            <li><strong>Code Type Validation</strong>: Validates requested code type</li>
+            <li><strong>Branch Filtering</strong>: Applies branch-specific filters</li>
+            <li><strong>Record Reading</strong>: Reads code file records sequentially</li>
+            <li><strong>Page Management</strong>: Handles multi-page displays</li>
+        </ul>
+
+        <h3>Return Values</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>"00"</strong></td>
+                    <td>Success</td>
+                    <td>Code selected successfully</td>
+                </tr>
+                <tr>
+                    <td><strong>"01"</strong></td>
+                    <td>No selection</td>
+                    <td>User exited without selecting</td>
+                </tr>
+                <tr>
+                    <td><strong>"99"</strong></td>
+                    <td>Error</td>
+                    <td>System error or invalid code type</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>Primary Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CD1-FILE</strong></td>
+                    <td>Code file master</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>CDSCAN-WINDOW-BUF</strong></td>
+                    <td>Window buffer for display</td>
+                    <td>Read/Write</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Window Layouts</h3>
+        <p>The program uses matching CD1-KEY layouts for different code types:</p>
+        <ul>
+            <li><strong>CDSCAN-CD1-KEY</strong> - Primary key layout</li>
+            <li><strong>CDSCAN-CD-??-KEY</strong> - Code type-specific key layouts</li>
+        </ul>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>02/12/96</strong></td>
+                    <td>Added logic for "CN" code scanning</td>
+                    <td>KEC</td>
+                </tr>
+                <tr>
+                    <td><strong>05/10/96</strong></td>
+                    <td>Added "EA" extraction groups logic</td>
+                    <td>BLL</td>
+                </tr>
+                <tr>
+                    <td><strong>09/30/96</strong></td>
+                    <td>Added "BW" business code type</td>
+                    <td>JFF</td>
+                </tr>
+                <tr>
+                    <td><strong>02/17/97</strong></td>
+                    <td>Added "FC" fee code type</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>07/09/97</strong></td>
+                    <td>Added logic for EQ and CQ groups</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>08/13/97</strong></td>
+                    <td>Added action code separate testing</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>12/07/98</strong></td>
+                    <td>Added "RO" other charges codes</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>03/11/12</strong></td>
+                    <td>Added "PS" payment reschedule reasons</td>
+                    <td>BAH - REGACC PR# 290</td>
+                </tr>
+                <tr>
+                    <td><strong>03/24/16</strong></td>
+                    <td>Changed window buffer to match CD1-KEY layouts</td>
+                    <td>KEC - PD#00003</td>
+                </tr>
+                <tr>
+                    <td><strong>04/20/22</strong></td>
+                    <td>Added "A2" action code 2 for securitization</td>
+                    <td>BAH - #1551</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="warning">
+            <p><strong>Important Note:</strong> Action codes require special handling because they only use the first byte of the 2-byte CD-TYPE field. This requires separate testing logic after READ-NEXT operations.</p>
+        </div>
+
+        <div class="note">
+            <p><strong>Note:</strong> CDSCAN is a versatile scanning utility that supports over 25 different code types across the system. It provides a consistent interface for code lookup and selection while handling the specific requirements of each code type. The program's window-based interface makes it user-friendly while its extensive code type support makes it essential for system operations.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

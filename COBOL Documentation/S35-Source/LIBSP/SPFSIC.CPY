@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSIC
+           SELECT IC-FILE ASSIGN IC-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY IC-KEY
+                  FILE STATUS FILE-STAT.

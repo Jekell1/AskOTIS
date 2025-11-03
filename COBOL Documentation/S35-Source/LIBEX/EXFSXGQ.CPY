@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXGQ
+           SELECT XGQ-FILE ASSIGN TO XGQ-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XGQ-KEY
+                  FILE STATUS FILE-STAT.

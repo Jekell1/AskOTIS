@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSLSJ
+           SELECT LSJ-FILE ASSIGN TO LSJ-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LSJ1-KEY
+                  FILE STATUS FILE-STAT.

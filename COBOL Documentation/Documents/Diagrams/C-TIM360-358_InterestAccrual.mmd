@@ -1,0 +1,9 @@
+%% Interest Accrual Calculation Flow Diagram for C-TIM360-358
+flowchart TD
+    Start[Start Interest Accrual]
+    Start --> ReadDates[Read Date Fields]
+    ReadDates --> SelectModel[Select Year Model (360/358)]
+    SelectModel --> CalcPeriod[Calculate Period]
+    CalcPeriod --> CalcInterest[Calculate Interest]
+    CalcInterest --> WriteResult[Write Result]
+    WriteResult --> End[End Interest Accrual]

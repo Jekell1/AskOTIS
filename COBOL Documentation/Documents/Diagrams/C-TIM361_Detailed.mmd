@@ -1,0 +1,22 @@
+%% C-TIM361 Detailed Flow Diagram
+%% This diagram shows the detailed paragraph and decision flow for C-TIM361
+
+flowchart TD
+    Start([Start]) --> Init[PERFORM C-TIMBEG]
+    Init --> Adjust1[IF WS-DATE1-DD > 30 THEN MOVE 30 TO WS-DATE1-DD]
+    Adjust1 --> Adjust2[IF WS-DATE2-DD > 30 THEN MOVE 30 TO WS-DATE2-DD]
+    Adjust2 --> LeapFeb1[IF WS-DATE2-MM = 2 AND WS-DATE2-DD > WS-DATE1-DD]
+    LeapFeb1 --> LeapTest1[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest1 --> LeapTrue1[IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29 THEN MOVE 30 TO WS-DATE2-DD]
+    LeapTest1 --> LeapFalse1[IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28 THEN MOVE 30 TO WS-DATE2-DD]
+    Adjust2 --> LeapFeb2[IF WS-DATE2-MM = 2 AND WS-DATE2-DD < WS-DATE1-DD]
+    LeapFeb2 --> LeapTest2[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest2 --> LeapTrue2[IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29 THEN MOVE 29 TO WS-DATE1-DD]
+    LeapTest2 --> LeapFalse2[IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28 THEN MOVE 28 TO WS-DATE1-DD]
+    Adjust2 --> LeapEdge[IF NOT (WS-DATE1-MM NOT = 2 OR ...)]
+    LeapEdge --> LeapTest3[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest3 --> LeapFalse3[IF LEAP-YEAR-FALSE THEN ADD 2 TO WS-DATE1-DD]
+    LeapTest3 --> LeapTrue3[IF LEAP-YEAR-TRUE THEN ADD 1 TO WS-DATE1-DD]
+    LeapEdge --> Compute[COMPUTE WS-XDAYS]
+    Compute --> End[PERFORM C-TIMEND]
+    End --> Finish([End])

@@ -1,0 +1,67 @@
+{
+  "question": "What does the full set of code do?",
+  "scope": "mixed",
+  "expanded_query": "What code do does full of set the",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_deps",
+      "id": "THE",
+      "path": "THE",
+      "line": null,
+      "snippet": "THE ; ROLE:UNKNOWN ; OUT: ; IN:CPINQ0,LONPFC ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "OF",
+      "path": "OF",
+      "line": null,
+      "snippet": "OF ; ROLE:LEAF ; OUT: ; IN:BLKONE,BWLNS3,ENDYER,LNQUOT,LONPB0,LPCPMU,LPMAN1,LPMAN2,XONPC0,ZONPC0 ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "ENCRYP",
+      "path": "ENCRYP",
+      "line": null,
+      "snippet": "Paragraphs=13; edges=20; depth=5; cycles=N; entries=4; exits=5; fanout_max=6; risk=0.315. Entry: WORKING-STORAGE.... High fanout: DO-PASSWD (6)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "2816bbcd4fd3bacb4a05ab5b4274584ae9f29762",
+      "path": "cobol_src\\CL\\PGMENU.CBL",
+      "line": 574,
+      "snippet": "* SCREEN AND IT LOOKS JUMBLED.   AT THE TIME OF THE CALL I DO"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPG0",
+      "path": "LONPG0",
+      "line": null,
+      "snippet": "Paragraphs=94; edges=169; depth=5; cycles=Y; entries=49; exits=49; fanout_max=17; risk=0.775. Entry: WORKING-STORAGE.... High fanout: WK-FILE (17)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "4d26cc51cd546d4cd34a044f0c4e5c513c88abc6",
+      "path": "cobol_src\\SP\\CPINQ0.CBL",
+      "line": 127,
+      "snippet": "*             RECALL THE LOAN WHILE WITHIN THE INQUIRY MODERN PR#3720"
+    }
+  ],
+  "meta": {
+    "ts": 1759097708.0680704,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

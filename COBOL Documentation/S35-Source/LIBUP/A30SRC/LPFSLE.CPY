@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSLE
+           SELECT LE-FILE ASSIGN TO LE-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY LE1-KEY
+                  FILE STATUS FILE-STAT.

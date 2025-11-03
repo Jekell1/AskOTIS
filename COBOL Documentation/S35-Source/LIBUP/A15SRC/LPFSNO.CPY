@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSNO
+           SELECT NO-FILE ASSIGN TO NO-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY NO1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUL - Calendar to Julian Date Conversion</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">JUL - Calendar to Julian Date Conversion</span>
+        </nav>
+        <main class="content">
+<h1>JUL - Calendar to Julian Date Conversion</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Program ID:</strong> JUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#program-flow">Program Flow</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> JUL<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Calendar to Julian Date Conversion<br />
+<strong>Source Location:</strong> APIPAY_Inlined.CBL lines 16531-16534<br />
+<strong>Usage:</strong> Convert standard calendar dates (YYYYMMDD) to Julian day numbers  </p>
+<h2>Purpose and Description</h2>
+<p>JUL is a fundamental date conversion utility that transforms standard Gregorian calendar dates into Julian day numbers. It serves as the primary conversion tool for date arithmetic operations, enabling mathematical calculations on dates by representing them as sequential day counts.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Calendar Date Conversion</strong> - Convert YYYYMMDD format to Julian day numbers</li>
+<li><strong>Year 2000 Handling</strong> - Special logic for century transitions</li>
+<li><strong>Julian Day Calculation</strong> - Compute days elapsed since reference date</li>
+<li><strong>Date Arithmetic Foundation</strong> - Enable day-based mathematical operations</li>
+</ol>
+<h3>Julian Date System</h3>
+<p>The JUL utility implements a Julian day numbering system where:
+- <strong>Reference Date</strong>: December 31, 1899 (Day 0)
+- <strong>Day Count</strong>: Sequential numbering of days from reference
+- <strong>Input Format</strong>: Standard YYYYMMDD calendar dates
+- <strong>Output Range</strong>: Positive integers representing valid date ranges</p>
+<h3>Year 2000 Processing</h3>
+<p>Special handling for century transitions:
+- <strong>Century Check</strong>: Compares NUM-YR with EXT-JULIAN-CC
+- <strong>Year 2000 Logic</strong>: Dates with NUM-YR &lt; EXT-JULIAN-CC treated as year 2000+
+- <strong>Century Boundary</strong>: Handles Y2K transition seamlessly</p>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong> - Calendar date in YYYYMMDD format</li>
+<li><strong>EXT-JULIAN-CC</strong> - Century cutoff for year 2000 processing</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>JULIAN-DATE</strong> - Number of days since December 31, 1899</li>
+<li><strong>Error indicators</strong> - Set to 0 if conversion successful</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="JUL Main Flow" src="Diagrams/JUL_Main_Flow.mmd" /></p>
+<h4>Core Implementation</h4>
+<pre><code class="language-cobol">JUL SECTION.
+    MOVE &quot;J&quot; TO DATER-ACTION-CODE.
+    PERFORM DATER-ROUTINE.
+</code></pre>
+<h3>Algorithm Steps</h3>
+<ol>
+<li><strong>Set Action Code</strong></li>
+<li>
+<p>Assigns "J" to DATER-ACTION-CODE to specify Calendar-to-Julian conversion</p>
+</li>
+<li>
+<p><strong>Year Processing</strong></p>
+</li>
+<li>Checks NUM-YR against EXT-JULIAN-CC for century determination</li>
+<li>
+<p>Applies year 2000 logic if NUM-YR &lt; EXT-JULIAN-CC</p>
+</li>
+<li>
+<p><strong>Delegate Processing</strong></p>
+</li>
+<li>Calls DATER-ROUTINE for complex Julian date mathematics</li>
+<li>
+<p>DATER-ROUTINE handles leap year calculations and month/day arithmetic</p>
+</li>
+<li>
+<p><strong>Result Generation</strong></p>
+</li>
+<li>DATER-ROUTINE updates JULIAN-DATE with computed day count</li>
+<li>Error flags set if input date is invalid</li>
+</ol>
+<h2>Input/Output Specifications</h2>
+<h3>Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NUM-DATE</td>
+<td>Numeric</td>
+<td>YYYYMMDD</td>
+<td>Standard calendar date</td>
+</tr>
+<tr>
+<td>EXT-JULIAN-CC</td>
+<td>Numeric</td>
+<td>YY</td>
+<td>Century cutoff for Y2K processing</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JULIAN-DATE</td>
+<td>Numeric</td>
+<td>Integer</td>
+<td>Days since 12/31/1899</td>
+</tr>
+<tr>
+<td>Error Flag</td>
+<td>Numeric</td>
+<td>Integer</td>
+<td>0 = Success, non-zero = Error</td>
+</tr>
+</tbody>
+</table>
+<h3>Data Validation</h3>
+<ul>
+<li><strong>NUM-DATE Requirements</strong>: Must be valid YYYYMMDD format</li>
+<li><strong>Date Range</strong>: Limited by DATER-ROUTINE's supported date range</li>
+<li><strong>Century Processing</strong>: Automatic year 2000 detection and adjustment</li>
+<li><strong>Error Handling</strong>: Invalid dates return error code and JULIAN-DATE = 0</li>
+</ul>
+<h2>Program Flow</h2>
+<p><img alt="JUL Call Graph" src="Diagrams/JUL_Call_Graph.mmd" /></p>
+<h3>Execution Flow</h3>
+<ol>
+<li><strong>Entry Point</strong>: JUL SECTION called by external routines</li>
+<li><strong>Setup Phase</strong>: DATER-ACTION-CODE set to "J"</li>
+<li><strong>Century Processing</strong>: Year 2000 logic applied if needed</li>
+<li><strong>Processing Phase</strong>: DATER-ROUTINE performs conversion</li>
+<li><strong>Completion</strong>: Control returns to caller with results</li>
+</ol>
+<h3>Call Chain</h3>
+<pre><code>Calling Program → JUL → DATER-ROUTINE → [Century Logic + Date Math] → Return
+</code></pre>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>Date arithmetic routines</strong> - For mathematical operations on dates</li>
+<li><strong>Date comparison utilities</strong> - For date ordering and sorting</li>
+<li><strong>Calendar calculation modules</strong> - For elapsed time computations</li>
+<li><strong>Batch processing routines</strong> - For date-based processing logic</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong>DATER-ROUTINE</strong> - Centralized date processing engine</li>
+<li><strong>Century calculation logic</strong> - Through DATER-ROUTINE</li>
+<li><strong>Leap year processing</strong> - Through DATER-ROUTINE</li>
+</ul>
+<h3>Usage Pattern</h3>
+<p>JUL is typically used with CJUL for date arithmetic:</p>
+<pre><code>Original Date → JUL → Julian Number → [Mathematical Operations] → CJUL → New Date
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Common Error Conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Error Type</th>
+<th>Cause</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Invalid Date Format</td>
+<td>NUM-DATE not in YYYYMMDD format</td>
+<td>Error flag set, JULIAN-DATE = 0</td>
+</tr>
+<tr>
+<td>Invalid Month</td>
+<td>Month &lt; 01 or &gt; 12</td>
+<td>Error flag set, JULIAN-DATE = 0</td>
+</tr>
+<tr>
+<td>Invalid Day</td>
+<td>Day invalid for month/year</td>
+<td>Error flag set, JULIAN-DATE = 0</td>
+</tr>
+<tr>
+<td>Out of Range</td>
+<td>Date beyond supported range</td>
+<td>Error flag set, JULIAN-DATE = 0</td>
+</tr>
+</tbody>
+</table>
+<h3>Error Detection</h3>
+<ul>
+<li>Error status returned through DATER-ROUTINE error handling</li>
+<li>JULIAN-DATE set to 0 when conversion fails</li>
+<li>Original NUM-DATE value preserved for debugging</li>
+</ul>
+<h3>Year 2000 Error Handling</h3>
+<ul>
+<li>Automatic century detection prevents Y2K errors</li>
+<li>EXT-JULIAN-CC threshold configures century boundary</li>
+<li>Invalid century configurations handled gracefully</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Basic Calendar to Julian Conversion</h3>
+<pre><code class="language-cobol">MOVE 20240315 TO NUM-DATE    * March 15, 2024
+PERFORM JUL
+* Result: JULIAN-DATE = 45370 (approximately)
+</code></pre>
+<h3>Date Arithmetic Example</h3>
+<pre><code class="language-cobol">* Convert date to Julian for arithmetic
+MOVE 20240101 TO NUM-DATE    * January 1, 2024
+PERFORM JUL
+MOVE JULIAN-DATE TO WS-START-JULIAN
+
+* Add 90 days
+ADD 90 TO JULIAN-DATE
+PERFORM CJUL                 * Convert back to calendar
+* NUM-DATE now contains date 90 days later
+</code></pre>
+<h3>Year 2000 Processing Example</h3>
+<pre><code class="language-cobol">* Set century cutoff
+MOVE 50 TO EXT-JULIAN-CC     * Years 00-49 = 2000-2049
+
+MOVE 20250315 TO NUM-DATE    * March 15, 2025
+PERFORM JUL
+* Processes as 21st century date
+
+MOVE 19980315 TO NUM-DATE    * March 15, 1998  
+PERFORM JUL
+* Processes as 20th century date
+</code></pre>
+<h3>Error Handling Example</h3>
+<pre><code class="language-cobol">MOVE 20240229 TO NUM-DATE    * Feb 29, 2024 (leap year)
+PERFORM JUL
+IF JULIAN-DATE = 0
+   DISPLAY &quot;JUL CONVERSION ERROR&quot;
+   PERFORM ERROR-HANDLING
+ELSE
+   DISPLAY &quot;JULIAN DATE: &quot; JULIAN-DATE
+END-IF
+</code></pre>
+<h2>Performance Considerations</h2>
+<ul>
+<li><strong>Efficiency</strong>: O(1) operation - constant time conversion</li>
+<li><strong>Memory Usage</strong>: Minimal working storage requirements</li>
+<li><strong>Century Logic</strong>: Minimal overhead for Y2K processing</li>
+<li><strong>Delegation</strong>: Actual computation done by optimized DATER-ROUTINE</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Validation Requirements</h3>
+<ul>
+<li>Input date must be valid calendar date</li>
+<li>Year 2000 processing must be accurate</li>
+<li>Output Julian date must be mathematically correct</li>
+<li>Error conditions properly flagged</li>
+</ul>
+<h3>Test Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Test Case</th>
+<th>Calendar Input</th>
+<th>Expected Behavior</th>
+<th>Result Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Date</td>
+<td>20240315</td>
+<td>Convert to Julian</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Leap Year</td>
+<td>20240229</td>
+<td>Handle leap day</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Invalid Month</td>
+<td>20241315</td>
+<td>Error detection</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Invalid Day</td>
+<td>20240431</td>
+<td>Error detection</td>
+<td>Error</td>
+</tr>
+<tr>
+<td>Y2K Date</td>
+<td>20000101</td>
+<td>Century processing</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>Century Edge</td>
+<td>19991231</td>
+<td>Boundary handling</td>
+<td>Success</td>
+</tr>
+</tbody>
+</table>
+<h3>Century Testing</h3>
+<ul>
+<li>Test dates before/after Y2K boundary</li>
+<li>Verify EXT-JULIAN-CC threshold handling</li>
+<li>Confirm century detection accuracy</li>
+</ul>
+<h2>Mathematical Foundation</h2>
+<h3>Julian Day Calculation</h3>
+<p>The conversion involves complex calendar mathematics:
+- <strong>Leap Year Detection</strong>: Proper handling of leap years
+- <strong>Month Day Counts</strong>: Accurate days per month calculations
+- <strong>Century Adjustments</strong>: Gregorian calendar corrections
+- <strong>Reference Point</strong>: Consistent base date of 12/31/1899</p>
+<h3>Calendar Algorithm</h3>
+<ol>
+<li>Separate year, month, day components</li>
+<li>Apply century logic for year determination</li>
+<li>Calculate leap year adjustments</li>
+<li>Sum total days from reference date</li>
+<li>Return sequential day number</li>
+</ol>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="CJUL_Documentation.html">CJUL Documentation</a></strong> - Reverse conversion (Julian to Calendar)</li>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE Documentation</a></strong> - Core date processing engine</li>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL Documentation</a></strong> - Enhanced JUL wrapper</li>
+<li><strong><a href="APIPAY_Documentation.html#datetime-processing-utilities">Date/Time Processing Overview</a></strong> - Complete utilities listing</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Delegation Pattern</strong> - Core logic delegated to DATER-ROUTINE</li>
+<li><strong>Action Code Pattern</strong> - Uses action codes to specify operation type</li>
+<li><strong>Century Abstraction</strong> - Y2K handling abstracted in configuration</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Avoid changing the action code assignment</li>
+<li>Ensure EXT-JULIAN-CC configuration remains consistent</li>
+<li>Maintain compatibility with CJUL utility for round-trip operations</li>
+<li>Preserve century boundary logic for historical date processing</li>
+<li>Test thoroughly when modifying DATER-ROUTINE dependencies</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

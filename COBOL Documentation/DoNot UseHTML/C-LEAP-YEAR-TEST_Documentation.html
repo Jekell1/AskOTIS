@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-LEAP-YEAR-TEST Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-LEAP-YEAR-TEST Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-LEAP-YEAR-TEST Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-LEAP-YEAR-TEST.cpy</code><br />
+<strong>Program ID:</strong> C-LEAP-YEAR-TEST<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#purpose-and-description">Purpose and Description</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#inputoutput-specifications">Input/Output Specifications</a></li>
+<li><a href="#algorithm-details">Algorithm Details</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-characteristics">Performance Characteristics</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#related-utilities">Related Utilities</a></li>
+</ol>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-LEAP-YEAR-TEST<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Leap Year Determination and Validation<br />
+<strong>Source File:</strong> <code>C-LEAP-YEAR-TEST.cpy</code><br />
+<strong>Usage:</strong> Determine if a given year is a leap year using standard Gregorian calendar rules  </p>
+<h2>Purpose and Description</h2>
+<p>C-LEAP-YEAR-TEST is a critical date validation utility that determines whether a given year is a leap year according to the standard Gregorian calendar rules. This utility is essential for accurate date calculations, February day validation, and Julian date conversions throughout the payment processing system.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Leap Year Calculation</strong> - Apply standard leap year determination algorithm</li>
+<li><strong>Flag Setting</strong> - Set appropriate true/false flags for leap year status</li>
+<li><strong>Gregorian Calendar Compliance</strong> - Follow official leap year rules (divisible by 4, 100, 400)</li>
+<li><strong>Date Processing Support</strong> - Enable accurate calendar calculations for other date utilities</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>LEAP-YEAR-CCYY</strong> - Four-digit year in CCYY format to be tested</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>LEAP-YEAR-FG</strong> - Flag indicating leap year status:</li>
+<li><strong>"T"</strong> - True: Year is a leap year (366 days)</li>
+<li><strong>"F"</strong> - False: Year is not a leap year (365 days)</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-LEAP-YEAR-TEST Main Flow" src="Diagrams/C-LEAP-YEAR-TEST_Main_Flow.mmd" /></p>
+<h4>Standard Gregorian Leap Year Algorithm</h4>
+<p>The utility implements the official Gregorian calendar leap year rules:</p>
+<ol>
+<li>
+<p><strong>Step 1: Divisible by 4</strong>
+   <code>cobol
+   DIVIDE LEAP-YEAR-CCYY BY 4
+          GIVING ND-WS-DIV-RESULT REMAINDER ND-WS-MOD-4
+   IF ND-WS-MOD-4 NOT = 0
+      MOVE "F" TO LEAP-YEAR-FG</code></p>
+</li>
+<li>
+<p><strong>Step 2: Divisible by 100 (Century Rule)</strong>
+   <code>cobol
+   DIVIDE LEAP-YEAR-CCYY BY 100
+          GIVING ND-WS-DIV-RESULT REMAINDER ND-WS-MOD-4
+   IF ND-WS-MOD-4 NOT = 0
+      MOVE "T" TO LEAP-YEAR-FG</code></p>
+</li>
+<li>
+<p><strong>Step 3: Divisible by 400 (Century Exception)</strong>
+   <code>cobol
+   DIVIDE LEAP-YEAR-CCYY BY 400
+          GIVING ND-WS-DIV-RESULT REMAINDER ND-WS-MOD-4
+   IF ND-WS-MOD-4 NOT = 0
+      MOVE "F" TO LEAP-YEAR-FG
+   ELSE
+      MOVE "T" TO LEAP-YEAR-FG</code></p>
+</li>
+</ol>
+<h3>Leap Year Rules</h3>
+<p><img alt="C-LEAP-YEAR-TEST Decision Process" src="Diagrams/C-LEAP-YEAR-TEST_Decision_Process.mmd" /></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Condition</th>
+<th>Result</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rule 1</td>
+<td>Not divisible by 4</td>
+<td>NOT leap year</td>
+<td>2021, 2022, 2023</td>
+</tr>
+<tr>
+<td>Rule 2</td>
+<td>Divisible by 4, not by 100</td>
+<td>IS leap year</td>
+<td>2020, 2024, 2028</td>
+</tr>
+<tr>
+<td>Rule 3</td>
+<td>Divisible by 100, not by 400</td>
+<td>NOT leap year</td>
+<td>1900, 2100, 2200</td>
+</tr>
+<tr>
+<td>Rule 4</td>
+<td>Divisible by 400</td>
+<td>IS leap year</td>
+<td>2000, 2400, 2800</td>
+</tr>
+</tbody>
+</table>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>C-CALL-JUL</strong> - Julian date conversion</li>
+<li><strong>C-CALL-NEWDATE</strong> - Date format processing</li>
+<li><strong>C-TIM360-358</strong> - 360/358-day year calculations</li>
+<li><strong>C-TIM361</strong> - 361-day year calculations</li>
+<li><strong>C-TIM362</strong> - 362-day year calculations</li>
+<li><strong>C-TIM365-367</strong> - 365/367-day year calculations</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li>No external routines (self-contained processing)</li>
+</ul>
+<p><img alt="C-LEAP-YEAR-TEST Call Graph" src="Diagrams/C-LEAP-YEAR-TEST_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LEAP-YEAR-CCYY</td>
+<td>NUMERIC(4)</td>
+<td>Input year to test</td>
+</tr>
+<tr>
+<td>LEAP-YEAR-FG</td>
+<td>CHAR(1)</td>
+<td>Output leap year flag</td>
+</tr>
+<tr>
+<td>ND-WS-DIV-RESULT</td>
+<td>NUMERIC</td>
+<td>Division result (not used)</td>
+</tr>
+<tr>
+<td>ND-WS-MOD-4</td>
+<td>NUMERIC</td>
+<td>Remainder from division operations</td>
+</tr>
+</tbody>
+</table>
+<h3>Flag Values</h3>
+<table>
+<thead>
+<tr>
+<th>Flag Value</th>
+<th>Meaning</th>
+<th>Days in Year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"T"</td>
+<td>True - Leap Year</td>
+<td>366 days</td>
+</tr>
+<tr>
+<td>"F"</td>
+<td>False - Regular Year</td>
+<td>365 days</td>
+</tr>
+</tbody>
+</table>
+<h2>Usage Examples</h2>
+<h3>Standard Leap Year Detection</h3>
+<pre><code class="language-cobol">MOVE 2024 TO LEAP-YEAR-CCYY
+PERFORM C-LEAP-YEAR-TEST
+* Result: LEAP-YEAR-FG = &quot;T&quot; (2024 is divisible by 4, not by 100)
+</code></pre>
+<h3>Century Year Testing</h3>
+<pre><code class="language-cobol">MOVE 1900 TO LEAP-YEAR-CCYY
+PERFORM C-LEAP-YEAR-TEST
+* Result: LEAP-YEAR-FG = &quot;F&quot; (divisible by 100 but not 400)
+
+MOVE 2000 TO LEAP-YEAR-CCYY
+PERFORM C-LEAP-YEAR-TEST
+* Result: LEAP-YEAR-FG = &quot;T&quot; (divisible by 400)
+</code></pre>
+<h3>February Validation Pattern</h3>
+<pre><code class="language-cobol">MOVE TRANSACTION-YEAR TO LEAP-YEAR-CCYY
+PERFORM C-LEAP-YEAR-TEST
+IF TRANSACTION-MONTH = 02 AND TRANSACTION-DAY = 29
+   IF LEAP-YEAR-FALSE
+      MOVE &quot;INVALID DATE&quot; TO ERROR-MESSAGE
+   END-IF
+END-IF
+</code></pre>
+<h2>Historical Context and Y2K Compliance</h2>
+<p>The utility includes commented-out legacy code that handled 2-digit year processing (Y2K era). The current implementation:</p>
+<ul>
+<li><strong>Uses 4-digit years (CCYY format)</strong> - Eliminates Y2K ambiguity</li>
+<li><strong>Deprecated 2-digit processing</strong> - Legacy code commented out but preserved</li>
+<li><strong>Full century support</strong> - Handles years from 1900 to 9999</li>
+</ul>
+<h3>Legacy Y2K Code (Preserved)</h3>
+<pre><code class="language-cobol">* C-SET-WS-DATE-YYYY SECTION (commented out)
+* C-ADJ-WS-NDTE-YY-S SECTION (commented out)
+</code></pre>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Early Exit</strong> - Returns immediately if not divisible by 4</li>
+<li><strong>Minimal Calculations</strong> - Only performs necessary division operations</li>
+<li><strong>Reused Variables</strong> - Efficient use of working storage</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Maximum of 3 division operations</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage usage</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Input Validation</h3>
+<p>The utility assumes valid 4-digit year input. Invalid years may produce unpredictable results.</p>
+<h3>Common Issues</h3>
+<ul>
+<li><strong>Zero or negative years</strong> - Not validated, may cause division errors</li>
+<li><strong>Non-numeric input</strong> - Will cause runtime errors</li>
+<li><strong>Years outside calendar range</strong> - Results may be mathematically correct but historically meaningless</li>
+</ul>
+<h2>Quality Assurance</h2>
+<h3>Test Cases</h3>
+<table>
+<thead>
+<tr>
+<th>Year</th>
+<th>Rule Applied</th>
+<th>Expected Result</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2024</td>
+<td>Divisible by 4, not 100</td>
+<td>"T"</td>
+<td>Standard leap year</td>
+</tr>
+<tr>
+<td>2023</td>
+<td>Not divisible by 4</td>
+<td>"F"</td>
+<td>Regular year</td>
+</tr>
+<tr>
+<td>1900</td>
+<td>Divisible by 100, not 400</td>
+<td>"F"</td>
+<td>Century rule</td>
+</tr>
+<tr>
+<td>2000</td>
+<td>Divisible by 400</td>
+<td>"T"</td>
+<td>Century exception</td>
+</tr>
+<tr>
+<td>2100</td>
+<td>Divisible by 100, not 400</td>
+<td>"F"</td>
+<td>Future century</td>
+</tr>
+<tr>
+<td>2400</td>
+<td>Divisible by 400</td>
+<td>"T"</td>
+<td>Future century leap</td>
+</tr>
+</tbody>
+</table>
+<h3>Edge Cases</h3>
+<ul>
+<li><strong>Year 1900</strong> - Not a leap year (century rule)</li>
+<li><strong>Year 2000</strong> - Is a leap year (400-year exception)</li>
+<li><strong>Year 4</strong> - First leap year in Julian period</li>
+<li><strong>Negative years</strong> - Undefined behavior (not validated)</li>
+</ul>
+<h2>Dependencies</h2>
+<h3>Required Data Elements</h3>
+<ul>
+<li>Valid 4-digit year in LEAP-YEAR-CCYY</li>
+<li>Initialized working storage variables</li>
+<li>Proper COBOL division operation support</li>
+</ul>
+<h3>No External Dependencies</h3>
+<ul>
+<li>Self-contained algorithm</li>
+<li>No calls to other utilities</li>
+<li>No file I/O operations</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Algorithm Pattern</strong> - Implements standard mathematical algorithm</li>
+<li><strong>Flag Pattern</strong> - Simple boolean result indication</li>
+<li><strong>Early Exit Pattern</strong> - Optimizes for most common case (non-leap years)</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li><strong>Do not alter leap year rules</strong> - Algorithm is mathematically standardized</li>
+<li><strong>Maintain backward compatibility</strong> - Flag values ("T"/"F") are used throughout system</li>
+<li><strong>Preserve early exit logic</strong> - Optimization is important for high-volume processing</li>
+</ul>
+<h3>Testing Requirements</h3>
+<ul>
+<li>Test all four leap year rule conditions</li>
+<li>Verify century years (1900, 2000, 2100, 2400)</li>
+<li>Test boundary years around system date ranges</li>
+<li>Validate flag output format consistency</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Julian date conversion utility that uses leap year information</li>
+<li><strong><a href="C-DATE-TEST_Documentation.html">C-DATE-TEST</a></strong> - Date validation utility for February 29 validation</li>
+<li><strong><a href="C-TIM365-367_Documentation.html">C-TIM365-367</a></strong> - Year type calculations using leap year data</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Date format processing with leap year awareness</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

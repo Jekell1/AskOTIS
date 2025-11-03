@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-DATE-TEST Program Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-DATE-TEST Program Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-date-test-program-documentation">C-DATE-TEST Program Documentation</h1>
+<p><strong>Location:</strong> APIPAY/APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-DATE-TEST<br />
+<strong>Date Written:</strong> See source comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>C-DATE-TEST validates a date in CCYYMMDD format. If the date is valid, it returns the same date; otherwise, it returns 0. It uses Julian conversion to check validity.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Date validation</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>NUM-DATE</code>: Date to validate (CCYYMMDD)</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>NUM-DATE</code>: Validated date (CCYYMMDD or 0)</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    A[Start] --> B[Move NUM-DATE to WS-NDTE]
+    B --> C[Check Month/Day Validity]
+    C --> D{Valid?}
+    D -- Yes --> E[Convert to Julian and Back]
+    D -- No --> F[Set NUM-DATE to 0]
+    E --> G[Compare with Original]
+    G -- Match --> H[Return NUM-DATE]
+    G -- No Match --> F
+    F --> I[End]
+    H --> I
+</div>
+<h3 id="detailed-flow">Detailed Flow</h3>
+<div class="mermaid">%% Mermaid Flowchart: C-DATE-TEST Detailed Flow
+graph TD
+    Start([Start])
+    MoveNDTE["Move NUM-DATE to WS-NDTE"]
+    CheckValid["Check month/day validity"]
+    Valid["If valid"]
+    ToJulian["Convert to Julian"]
+    BackToDate["Convert back to date"]
+    Compare["Compare with original"]
+    SetZero["Set NUM-DATE to 0"]
+    End([End])
+
+    Start --> MoveNDTE --> CheckValid --> Valid
+    Valid -- Yes --> ToJulian --> BackToDate --> Compare
+    Compare -- Match --> End
+    Compare -- No Match --> SetZero --> End
+    Valid -- No --> SetZero --> End
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+title C-DATE-TEST Batch Timeline
+    section Initialization
+    Move NUM-DATE to WS-NDTE :done, a1, 2025-07-31, 1d
+    section Validation
+    Check Validity :a2, after a1, 1d
+    Convert to Julian :a3, after a2, 1d
+    Convert Back :a4, after a3, 1d
+    Compare :a5, after a4, 1d
+    Set Zero :a6, after a5, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-DATE-TEST</strong>: Moves NUM-DATE to WS-NDTE, checks validity, converts to Julian and back, compares, and sets NUM-DATE to 0 if invalid.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    NUM_DATE --> WS_NDTE
+    WS_NDTE --> P_DATE_IN
+    P_DATE_IN --> P_JULIAN_DATE
+    P_JULIAN_DATE --> P_CJUL_JULIAN_DATE
+    P_CJUL_JULIAN_DATE --> P_CJUL_DATE_OUT
+    P_CJUL_DATE_OUT --> NUM_DATE
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>C-CALL-JUL (internal)</li>
+<li>C-CALL-CJUL (internal)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>Sets NUM-DATE to 0 if invalid</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Checks month and day validity</li>
+<li>Ensures round-trip conversion matches</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid month or day</li>
+<li>Non-matching conversion</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses working-storage fields</li>
+<li>No external file I/O</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by routines requiring date validation</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; uses internal paragraphs</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    C-DATE-TEST --> C-CALL-JUL
+    C-DATE-TEST --> C-CALL-CJUL
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

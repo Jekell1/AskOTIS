@@ -1,0 +1,12 @@
+      * COPYMEMBER: LIBWI/LCSCANW
+      * REV:
+      *  2024.0417 BAH REMOVED LCSCAN-GIFTNET, LCSCAN-TITLE AND FILLER
+      *  2024.0502 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  LCSCAN-BUF.
+           03  LCSCAN-KEY            PIC 9(3).
+           03  LCSCAN-VERIFY.
+               05  LCSCAN-SMALLOAN   PIC X.
+               05  LCSCAN-SALEFIN    PIC X.
+               05  LCSCAN-SERVACCT   PIC X.
+               05  LCSCAN-LOANTYPE   PIC X.
+           03  LCSCAN-STATUS         PIC XX.

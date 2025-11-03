@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSBM
+           SELECT BM-FILE ASSIGN TO BM-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY BM1-KEY
+                  FILE STATUS FILE-STAT.

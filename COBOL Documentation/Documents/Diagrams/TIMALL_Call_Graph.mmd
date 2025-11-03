@@ -1,0 +1,25 @@
+graph TD
+    A[TIMALL] --> B[DATER-ROUTINE]
+    B --> C[NEWDATE]
+    B --> D[Date Calculation Logic]
+    
+    E[TIM360] --> A
+    F[TIM365] --> A
+    G[TIM361] --> A
+    H[TIM362] --> A
+    I[TIM367] --> A
+    J[TIM999] --> A
+    K[TIM] --> A
+    L[TIMUPER] --> A
+    
+    M[Financial Modules] --> E
+    N[General Accounting] --> F
+    O[Special Processing] --> G
+    P[Business Logic] --> A
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style E fill:#fff3e0
+    style F fill:#fff3e0
+    style G fill:#fff3e0

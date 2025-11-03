@@ -1,0 +1,68 @@
+{
+  "question": "Where is the variable BT-BRANCH instigated?",
+  "scope": "variable",
+  "expanded_query": "BT-BRANCH Where instigated is the variable",
+  "aliases": {},
+  "answer_outline": "- Explain variable role (read vs write dominance).\n- List top reader and writer programs.\n- Show representative reference lines.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "d764f287d4b32cbacf61aa40712c8ade2349690d",
+      "path": "A8F2868BD2BB8807B0597D2911174B4452546B83",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "e50a2187da9ce54e1d3b60fdeeecaa5192e0f8e5",
+      "path": "cobol_src\\MN\\FDMAIN.CBL",
+      "line": 322,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "58210847082cc3df57b0c154b1e706edbeab36dd",
+      "path": "9E4F8FA37AE5643E2BEA897EA6206D876B0D0E4F",
+      "line": 218,
+      "snippet": "01  BT-REC."
+    },
+    {
+      "index": "cobol-symbols",
+      "id": "20ab2fb0c1a858dce2421089d55de823e1889c8f",
+      "path": "cobol_src\\LP\\BULKT2.CBL",
+      "line": 638,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "THE",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    },
+    {
+      "index": "new_cobol_variable_usage",
+      "id": "IS",
+      "path": null,
+      "line": null,
+      "snippet": ""
+    }
+  ],
+  "meta": {
+    "ts": 1759097667.4959452,
+    "k": 6,
+    "candidate_indexes": [
+      "variable_usage",
+      "symbol_refs",
+      "data_items",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "BT-BRANCH"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

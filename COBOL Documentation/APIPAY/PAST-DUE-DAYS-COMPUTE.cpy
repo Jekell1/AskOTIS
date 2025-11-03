@@ -1,0 +1,6 @@
+       PAST-DUE-DAYS-COMPUTE.
+           MOVE PDUE-TODAY-DATE      TO SYS-DATE.
+           PERFORM TIM.
+           IF ELAPSED-DAYS > 0
+              MOVE ELAPSED-DAYS TO PDUE-DAYS.
+

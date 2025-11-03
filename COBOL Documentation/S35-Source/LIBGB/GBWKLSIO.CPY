@@ -1,0 +1,44 @@
+      * COPYMEMBER: LIBGB/GBWKLSIO
+      * 
+      * THIS IS DIFFERENT THAN GBWKIN, THIS READS IN A FILE THAT WAS CREATED
+      * FROM THE 'LS' COMMAND SO IT DOES A READ NEXT DIFFERENTLY. TOO AFRAID
+      * TO CHANGE IT. USED IN GB/PERUSE AND WHOAMI  BAH 3/8/2024 
+      * ALSO DO NOT KNOW WHY THIS PARAGRAPH IS HERE
+       LIBGB-GBWKLSIO.
+      *    PERFORM FALL-THRU-IT.
+           MOVE WK-IFN TO E-FILE.
+           GO TO IO-ERROR.
+       OPEN-WK-FILE-OUTPUT.
+           PERFORM OPEN-IT.
+           MOVE WK-IFN TO E-FILE.
+           OPEN OUTPUT WK-FILE.
+           IF IO-FG = 8
+             GO TO OPEN-WK-FILE-OUTPUT.
+           IF IO-FG = 7
+             CLOSE WK-FILE
+             GO TO OPEN-WK-FILE-OUTPUT.
+           MOVE SPACES TO WK-REC.
+
+       OPEN-WK-FILE-INPUT.
+           PERFORM OPEN-IT.
+           MOVE WK-IFN TO E-FILE.
+           OPEN INPUT WK-FILE.
+           IF IO-FG = 8
+             GO TO OPEN-WK-FILE-INPUT.
+           IF IO-FG = 7
+             CLOSE WK-FILE
+             GO TO OPEN-WK-FILE-INPUT.
+       READ-WK-FILE-NEXT.
+           PERFORM READ-IT.
+           MOVE WK-IFN TO E-FILE.
+           MOVE SPACES TO E-KEYX.
+           READ WK-FILE AT END MOVE 9 TO IO-FG.
+       WRITE-WK-FILE.
+           PERFORM WRITE-IT.
+           MOVE WK-IFN TO E-FILE.
+           MOVE SPACES TO E-KEYX.
+           WRITE WK-REC.
+           MOVE SPACES TO WK-REC.
+       CLOSE-WK-FILE.
+           PERFORM CLOSE-IT.
+           CLOSE WK-FILE.

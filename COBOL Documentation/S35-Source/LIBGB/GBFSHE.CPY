@@ -1,0 +1,3 @@
+           SELECT HE-FILE ASSIGN TO HE-PATH
+                  ORGANIZATION LINE SEQUENTIAL
+                  FILE STATUS FILE-STAT.

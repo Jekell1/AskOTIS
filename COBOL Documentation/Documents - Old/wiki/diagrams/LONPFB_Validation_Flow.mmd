@@ -1,0 +1,25 @@
+flowchart TD
+    A[Start Validation] --> B[Check Payment Type]
+    B --> C{Type = RP?}
+    C -->|No| D[Invalid Payment Type]
+    C -->|Yes| E[Validate Account Number]
+    E --> F{Valid Format?}
+    F -->|No| G[Invalid Account Format]
+    F -->|Yes| H[Check Rebate Amount]
+    H --> I{Amount > 0?}
+    I -->|No| J[Invalid Amount]
+    I -->|Yes| K[Validate Date]
+    K --> L{Date Valid?}
+    L -->|No| M[Invalid Date]
+    L -->|Yes| N[Check Authorization]
+    N --> O{Auth Required?}
+    O -->|Yes| P{Auth Present?}
+    O -->|No| Q[Validation Complete]
+    P -->|No| R[Missing Authorization]
+    P -->|Yes| Q
+    D --> S[Return Error]
+    G --> S
+    J --> S
+    M --> S
+    R --> S
+    Q --> T[Return Success]

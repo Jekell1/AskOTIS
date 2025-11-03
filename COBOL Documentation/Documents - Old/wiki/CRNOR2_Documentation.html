@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRNOR2 Customer Record Processor - COBOL Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+        .nav-breadcrumb {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .nav-breadcrumb a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #28a745;
+        }
+        .meta {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #28a745;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        section {
+            background: white;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .toc {
+            columns: 2;
+            column-gap: 30px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+        .toc a {
+            color: #28a745;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ddd;
+        }
+        .toc a:hover {
+            background: #f8f9fa;
+            padding-left: 10px;
+            border-bottom: 1px solid #28a745;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            display: none;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="LONPFC_Documentation.html">LONPFC</a> > CRNOR2 Customer Record Processor
+    </div>
+
+    <div class="header">
+        <h1>CRNOR2 Customer Record Processor</h1>
+        <div class="meta">
+            <strong>Program ID:</strong> CRNOR2<br>
+            <strong>Purpose:</strong> Build NOFILE Record and Setup Payoff Workers<br>
+            <strong>Type:</strong> Called Program (Utility)<br>
+            <strong>Date Written:</strong> 012392<br>
+            <strong>Directory:</strong> CL<br>
+            <strong>File Location:</strong> c:\Users\jeff.childers\Documents\COBOL Documentation\S35-Source\CL\CRNOR2.CBL<br>
+            <strong>Documentation Generated:</strong> July 17, 2025
+        </div>
+    </div>
+
+    <div class="container">
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#usage">How to Use</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#processing-logic">Processing Logic</a></li>
+                <li><a href="#technical-implementation">Technical Implementation</a></li>
+                <li><a href="#copy-members">Copy Members Used</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#revision-history">Revision History</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Program Overview</h2>
+            <p><strong>CRNOR2</strong> is a utility program that builds NOFILE records and sets up payoff worker areas (POFF-WORKERS) for loan processing operations. This program is commonly called by other programs that need comprehensive loan information and payoff calculations without actually performing any updates.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>NOFILE Record Building:</strong> Constructs comprehensive loan information records</li>
+                <li><strong>Payoff Worker Setup:</strong> Initializes and populates payoff calculation areas</li>
+                <li><strong>Account Validation:</strong> Validates account accessibility and status</li>
+                <li><strong>Path Configuration:</strong> Sets up necessary file paths for processing</li>
+                <li><strong>Credit Restriction Processing:</strong> Handles available credit restrictions</li>
+                <li><strong>Delinquency Analysis:</strong> Calculates delinquency and arrearage amounts</li>
+                <li><strong>Branch Processing:</strong> Handles cross-branch account processing</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Important:</strong> CRNOR2 is a setup utility that prepares data structures for other programs. It does not perform actual loan updates but provides comprehensive loan analysis and payoff preparation.</p>
+            </div>
+        </section>
+
+        <section id="usage">
+            <h2>How to Use</h2>
+            <p>CRNOR2 is called as a subroutine with specific setup requirements:</p>
+
+            <h3>Standard Calling Sequence</h3>
+            <pre><code>MOVE  ACCOUNT NO     TO CRNOR2-ACCTNO
+MOVE  SYSTEM DATE    TO CRNOR2-SYSDATE
+SET   PAYOFF CODE    TO CRNOR2-LPTRCD          ----> 'PY' BY DEFAULT
+SET     " " OR "Y"   TO CRNOR2-GET-PAYOFF-ONLY ----> ' '  BY DEFAULT
+SET     " " OR "Y"   TO CRNOR2-RECAST-FG       ----> ' '  BY DEFAULT
+SET     " " OR "Y"   TO CRNOR2-DEF-STOP   ----> ' '  BY DEFAULT
+SET     " " OR "N"   TO CRNOR2-LPREC-FG 'N'  NO READ OF LPFILE
+MOVE "CL/CRNOR2" TO FORM-NAM
+CALL FORM-PROGX USING FORM-PATH CRNOR2-LINK NO-REC POFF-WORKERS
+                                LN-REC.
+CANCEL FORM-PROGX</code></pre>
+
+            <h3>Required Setup Before Calling</h3>
+            <table>
+                <tr>
+                    <th>Field</th>
+                    <th>Required Value</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>CRNOR2-ACCTNO</td>
+                    <td>Valid account number</td>
+                    <td>Account to process</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-SYSDATE</td>
+                    <td>Current system date</td>
+                    <td>Processing date reference</td>
+                </tr>
+                <tr>
+                    <td>FORM-NAM</td>
+                    <td>"CL/CRNOR2"</td>
+                    <td>Program identifier</td>
+                </tr>
+            </table>
+
+            <h3>Optional Control Flags</h3>
+            <table>
+                <tr>
+                    <th>Flag</th>
+                    <th>Default</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>CRNOR2-LPTRCD</td>
+                    <td>'PY'</td>
+                    <td>Payoff transaction code</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-GET-PAYOFF-ONLY</td>
+                    <td>' '</td>
+                    <td>Payoff calculation only flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-RECAST-FG</td>
+                    <td>' '</td>
+                    <td>Recast processing flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-DEF-STOP</td>
+                    <td>' '</td>
+                    <td>Deferment stop flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-LPREC-FG</td>
+                    <td>' '</td>
+                    <td>LP file read control ('N' = no read)</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="input-parameters">
+            <h2>Input Parameters</h2>
+            
+            <h3>CRNOR2-LINK Structure</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>CRNOR2-ACCTNO</td>
+                    <td>Account Number</td>
+                    <td>Loan account number to process</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-SYSDATE</td>
+                    <td>Date</td>
+                    <td>System date for processing calculations</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-LPTRCD</td>
+                    <td>Transaction Code</td>
+                    <td>Payoff transaction code (default 'PY')</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-GET-PAYOFF-ONLY</td>
+                    <td>Flag</td>
+                    <td>Y = Get payoff information only</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-RECAST-FG</td>
+                    <td>Flag</td>
+                    <td>Y = Enable recast processing</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-DEF-STOP</td>
+                    <td>Flag</td>
+                    <td>Y = Stop deferment processing</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-LPREC-FG</td>
+                    <td>Flag</td>
+                    <td>N = Skip LP file reading</td>
+                </tr>
+            </table>
+
+            <h3>Program Entry Parameters</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>FORM-PATH</td>
+                    <td>Path</td>
+                    <td>Form file path</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-LINK</td>
+                    <td>Structure</td>
+                    <td>Input parameter structure</td>
+                </tr>
+                <tr>
+                    <td>NO-REC</td>
+                    <td>Structure</td>
+                    <td>Output NOFILE record structure</td>
+                </tr>
+                <tr>
+                    <td>POFF-WORKERS</td>
+                    <td>Structure</td>
+                    <td>Payoff worker areas</td>
+                </tr>
+                <tr>
+                    <td>LN-REC</td>
+                    <td>Structure</td>
+                    <td>Loan record structure</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="output-fields">
+            <h2>Output Fields</h2>
+            
+            <h3>NO-REC Structure (Primary Output)</h3>
+            <p>The NO-REC area is built with comprehensive loan information. If an error occurs, the NO-REC area is set to zeros.</p>
+
+            <h3>Additional Output Fields</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>CRNOR2-AVCR-RESTRICT-FG</td>
+                    <td>PIC X</td>
+                    <td>Available credit restriction flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-CDEL-ARREARAGE</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Collection arrearage amount</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-INDU-PENALTY</td>
+                    <td>PIC S9(5)V99</td>
+                    <td>Industry penalty amount</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-CPOT30</td>
+                    <td>PIC X</td>
+                    <td>Current potential 30-day flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-RDPOT30</td>
+                    <td>PIC X</td>
+                    <td>Read potential 30-day flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-CPOTCHGOFF</td>
+                    <td>PIC X</td>
+                    <td>Current potential charge-off flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-RDPOTCHGOFF</td>
+                    <td>PIC X</td>
+                    <td>Read potential charge-off flag</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-CSUB</td>
+                    <td>PIC S9(6)</td>
+                    <td>Current subordination amount</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-RSUB</td>
+                    <td>PIC S9(6)</td>
+                    <td>Read subordination amount</td>
+                </tr>
+                <tr>
+                    <td>CRNOR2-CDEL-DELINQUENT</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Collection delinquent amount</td>
+                </tr>
+            </table>
+
+            <h3>POFF-WORKERS Output</h3>
+            <p>The POFF-WORKERS structure is populated with payoff calculation data including:</p>
+            <ul>
+                <li><strong>Payoff Amounts:</strong> Principal, interest, and fee calculations</li>
+                <li><strong>Rebate Information:</strong> Insurance and service charge rebates</li>
+                <li><strong>Date Calculations:</strong> Payoff through dates and aging information</li>
+                <li><strong>Account Status:</strong> Current loan status and restrictions</li>
+            </ul>
+        </section>
+
+        <section id="processing-logic">
+            <h2>Processing Logic</h2>
+            
+            <h3>Main Processing Flow</h3>
+            <ol>
+                <li><strong>Input Validation</strong>
+                    <ul>
+                        <li>Validate account number format</li>
+                        <li>Check system date validity</li>
+                        <li>Verify control flags</li>
+                    </ul>
+                </li>
+                <li><strong>Account Setup</strong>
+                    <ul>
+                        <li>Read loan record (LN-REC)</li>
+                        <li>Validate account accessibility</li>
+                        <li>Check for rescission loans (skip if found)</li>
+                        <li>Set up cross-branch paths if needed</li>
+                    </ul>
+                </li>
+                <li><strong>File Path Configuration</strong>
+                    <ul>
+                        <li>Set LT-PATH and LP-PATH for cross-branch processing</li>
+                        <li>Configure file access parameters</li>
+                        <li>Handle global LP file settings</li>
+                    </ul>
+                </li>
+                <li><strong>NOFILE Record Building</strong>
+                    <ul>
+                        <li>Initialize NO-REC structure</li>
+                        <li>Populate loan information</li>
+                        <li>Calculate delinquency and arrearage</li>
+                        <li>Set status and restriction flags</li>
+                    </ul>
+                </li>
+                <li><strong>Payoff Worker Setup</strong>
+                    <ul>
+                        <li>Initialize POFF-WORKERS structure</li>
+                        <li>Calculate payoff amounts</li>
+                        <li>Set up rebate calculations</li>
+                        <li>Configure aging and delinquency data</li>
+                    </ul>
+                </li>
+                <li><strong>Special Processing</strong>
+                    <ul>
+                        <li>Handle recast processing if flagged</li>
+                        <li>Process deferment policies</li>
+                        <li>Apply available credit restrictions</li>
+                        <li>Calculate industry penalties</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Special Processing Features</h3>
+            <ul>
+                <li><strong>Rescission Handling:</strong> Automatically skips rescission loans</li>
+                <li><strong>Cross-Branch Support:</strong> Handles accounts across different branches</li>
+                <li><strong>Available Credit Restrictions:</strong> Processes BW1 file for credit limits</li>
+                <li><strong>Payoff Good Through:</strong> Special handling for payoff validity periods</li>
+                <li><strong>First Payment Date Logic:</strong> Handles accounts without first payment dates</li>
+                <li><strong>Global LP File:</strong> Supports global LP file processing</li>
+            </ul>
+
+            <div class="warning">
+                <p><strong>First Payment Date Issue:</strong> When calling from LNMAN2 without a first payment date, the program can enter an infinite loop. The program now sets to ORIG-1STPYDATE if it exists, or exits with an initialized NO-REC (S35Q-65).</p>
+            </div>
+        </section>
+
+        <section id="technical-implementation">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Program Structure</h3>
+            <ul>
+                <li><strong>IDENTIFICATION DIVISION:</strong> Program metadata and extensive revision history</li>
+                <li><strong>ENVIRONMENT DIVISION:</strong> System configuration</li>
+                <li><strong>DATA DIVISION:</strong> Working storage and copy member includes</li>
+                <li><strong>PROCEDURE DIVISION:</strong> Main processing logic with parameter handling</li>
+            </ul>
+
+            <h3>Key Features</h3>
+            <ul>
+                <li><strong>Modular Design:</strong> Uses extensive copy members for shared functionality</li>
+                <li><strong>Parameter-Driven:</strong> Behavior controlled through input parameters</li>
+                <li><strong>Error Recovery:</strong> Graceful handling of errors with status reporting</li>
+                <li><strong>Multi-File Processing:</strong> Accesses multiple file types for comprehensive data</li>
+            </ul>
+
+            <h3>Database Integration</h3>
+            <ul>
+                <li><strong>SQL Connectivity:</strong> Uses SQL for database operations</li>
+                <li><strong>Multi-File Access:</strong> Reads LN, LP, LT, BW, SP, and other files</li>
+                <li><strong>Global File Support:</strong> Handles global file configurations</li>
+                <li><strong>Split File Support:</strong> Supports split SP file processing</li>
+            </ul>
+        </section>
+
+        <section id="copy-members">
+            <h2>Copy Members Used</h2>
+            
+            <h3>Core System Copy Members</h3>
+            <ul>
+                <li><strong>LIBGB/GB01BR.CPY, GB01BR_SQL.CPY:</strong> Branch record layouts</li>
+                <li><strong>LIBGB/GB01GB.CPY, GB01GB_SQL.CPY:</strong> Global parameter layouts</li>
+                <li><strong>LIBGB/GBWSBR.CPY:</strong> Branch working storage</li>
+            </ul>
+
+            <h3>Loan Processing Copy Members</h3>
+            <ul>
+                <li><strong>LIBLP/LP01LN.CPY:</strong> Loan record layout</li>
+                <li><strong>LIBLP/LP01SP.CPY:</strong> State parameter layout</li>
+                <li><strong>LIBLP/LP01LP.CPY:</strong> Loan payment layout</li>
+                <li><strong>LIBLP/LP01LT.CPY:</strong> Loan transaction layout</li>
+                <li><strong>LIBLP/LPNOCL.CPY:</strong> No-close processing</li>
+                <li><strong>LIBLP/LPUPWK.CPY:</strong> Loan update working storage</li>
+                <li><strong>LIBLP/ADDONSPR.CPY:</strong> Add-ons and SPR processing</li>
+                <li><strong>LIBLP/ADDONSPRW.CPY:</strong> Add-ons SPR working storage</li>
+            </ul>
+
+            <h3>Calculation Copy Members</h3>
+            <ul>
+                <li><strong>LIBLP/LPPOFF.CPY, LPPOF2.CPY:</strong> Payoff calculation layouts</li>
+                <li><strong>LIBLP/SETCTBLW.CPY, SETCTBL.CPY:</strong> Set calculation table</li>
+                <li><strong>LIBLP/DEFPOL.CPY:</strong> Deferment policy processing</li>
+                <li><strong>LIBLP/AGEING.CPY:</strong> Aging calculation</li>
+            </ul>
+
+            <h3>Utility Copy Members</h3>
+            <ul>
+                <li><strong>LIBCL/CRNOR2W.CPY:</strong> CRNOR2 working storage</li>
+                <li><strong>LIBGB/FILEWK.CPY:</strong> File working storage</li>
+                <li><strong>LIBGB/MESSWK.CPY:</strong> Message working storage</li>
+                <li><strong>LIBGB/CONNECTW_SQL.CPY:</strong> SQL connection working storage</li>
+            </ul>
+        </section>
+
+        <section id="error-handling">
+            <h2>Error Handling</h2>
+            
+            <h3>Error Detection</h3>
+            <ul>
+                <li><strong>Account Validation:</strong> Checks for valid account numbers</li>
+                <li><strong>File Access Errors:</strong> Handles file read failures gracefully</li>
+                <li><strong>Rescission Detection:</strong> Automatically skips rescission loans</li>
+                <li><strong>First Payment Date Issues:</strong> Prevents infinite loops with missing dates</li>
+            </ul>
+
+            <h3>Error Recovery</h3>
+            <table>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Recovery Action</th>
+                    <th>Output Result</th>
+                </tr>
+                <tr>
+                    <td>Invalid account</td>
+                    <td>Initialize NO-REC to zeros</td>
+                    <td>Zero-filled NO-REC structure</td>
+                </tr>
+                <tr>
+                    <td>File access failure</td>
+                    <td>Set error flags and continue</td>
+                    <td>Partial data with error indicators</td>
+                </tr>
+                <tr>
+                    <td>Rescission loan</td>
+                    <td>Skip processing entirely</td>
+                    <td>Bypass loan processing</td>
+                </tr>
+                <tr>
+                    <td>Missing first payment date</td>
+                    <td>Use ORIG-1STPYDATE or exit</td>
+                    <td>Initialized NO-REC or clean exit</td>
+                </tr>
+            </table>
+
+            <h3>Status Reporting</h3>
+            <ul>
+                <li><strong>Return Codes:</strong> Provides status codes for calling programs</li>
+                <li><strong>Error Flags:</strong> Sets specific flags for different error conditions</li>
+                <li><strong>Diagnostic Information:</strong> Includes diagnostic data in output structures</li>
+                <li><strong>Graceful Degradation:</strong> Continues processing with reduced functionality when possible</li>
+            </ul>
+        </section>
+
+        <section id="revision-history">
+            <h2>Revision History</h2>
+            
+            <h3>Major Revisions</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+                <tr>
+                    <td>012392</td>
+                    <td>Initial program creation</td>
+                    <td>Original development</td>
+                </tr>
+                <tr>
+                    <td>061695</td>
+                    <td>Added set of BR-NOT-OURS-REFUND</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>083195</td>
+                    <td>Added LIBLP/LPNOCL</td>
+                    <td>KEC</td>
+                </tr>
+                <tr>
+                    <td>011696</td>
+                    <td>Added CRNOR2-LPTRCD to get true "PO" payoff</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>071696</td>
+                    <td>Added LIBLP/LPUPWK for changes in LIBLP/AGEING</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td>102896</td>
+                    <td>Added CRNOR2-GET-PAYOFF-ONLY for payoff good through routine</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>121396</td>
+                    <td>Skip rescission loans</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>050797</td>
+                    <td>Added SETCTBLW and SETCTBL copy members</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td>051597</td>
+                    <td>Added LPPOF2 copy member (separated from LPPOFF)</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td>052097</td>
+                    <td>Added LIBLP/ADDONSPR for correct SPR regarding insurance rebate</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>111797</td>
+                    <td>Added logic for LIBLP/DEFPOL regarding BR-NODEF-1ST-X-MONTHS</td>
+                    <td>JTG #167</td>
+                </tr>
+                <tr>
+                    <td>122297</td>
+                    <td>Added set of CRNO-RECAST-FG from CRNOR2-RECAST-FG for IDEAL A48 to A60</td>
+                    <td>JTG #617</td>
+                </tr>
+                <tr>
+                    <td>030325</td>
+                    <td>Added set of LT-PATH and LP-PATH for crossing branches</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>160125</td>
+                    <td>Split out LT file</td>
+                    <td>BAH - PD0003</td>
+                </tr>
+                <tr>
+                    <td>161102</td>
+                    <td>Added READ-BW1-FILE for change to LPAVCR available credit restriction</td>
+                    <td>BAH - WORLD PR1199</td>
+                </tr>
+                <tr>
+                    <td>2018.07.02</td>
+                    <td>Added ADDONSPRW</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>2018.07.17</td>
+                    <td>Changed to read the SPR instead of passing it (CRNORC compatibility)</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>181221</td>
+                    <td>Global LP file support</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>190211</td>
+                    <td>Split SP file support</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>20190625</td>
+                    <td>Removed LN-REVOLVING</td>
+                    <td>BAH - PT0153</td>
+                </tr>
+                <tr>
+                    <td>2019.0708</td>
+                    <td>Fixed LDUE zeroing issue (was testing NXDUE instead of LDUE)</td>
+                    <td>BAH - PR#1375</td>
+                </tr>
+                <tr>
+                    <td>20220802</td>
+                    <td>Hard coded start LP</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>20220818</td>
+                    <td>Removed GLOBRD, read GB-FILE instead</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>20240201</td>
+                    <td>Removed NO-FMNO, NO-PRINTED and NO-WAGE-ASSIGN-DELINQ, added fields at end of record</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td>20240617</td>
+                    <td>Fixed first payment date loop issue when calling from LNMAN2</td>
+                    <td>BAH - S35Q-65</td>
+                </tr>
+            </table>
+
+            <h3>Recent Enhancements</h3>
+            <ul>
+                <li><strong>First Payment Date Fix:</strong> Prevents infinite loops with missing payment dates</li>
+                <li><strong>Record Structure Updates:</strong> Added new fields and removed obsolete ones</li>
+                <li><strong>Global File Support:</strong> Enhanced support for global and split file processing</li>
+                <li><strong>Cross-Branch Processing:</strong> Improved support for multi-branch operations</li>
+                <li><strong>Available Credit Restrictions:</strong> Enhanced credit limit processing</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Copy Member Updates:</strong> Keep copy members synchronized with system changes</li>
+                <li><strong>File Path Configuration:</strong> Verify cross-branch path settings</li>
+                <li><strong>Error Handling Testing:</strong> Test error conditions and recovery procedures</li>
+                <li><strong>Performance Monitoring:</strong> Monitor processing times for large account loads</li>
+            </ul>
+
+            <h3>Special Considerations</h3>
+            <ul>
+                <li><strong>Calling Program Dependencies:</strong> Changes affect many calling programs</li>
+                <li><strong>NOFILE Record Structure:</strong> Changes to NO-REC structure affect all callers</li>
+                <li><strong>Cross-Branch Processing:</strong> Ensure proper file path setup for multi-branch environments</li>
+                <li><strong>First Payment Date Logic:</strong> Monitor for potential infinite loop conditions</li>
+            </ul>
+
+            <h3>Testing Requirements</h3>
+            <ul>
+                <li><strong>Parameter Validation:</strong> Test all input parameter combinations</li>
+                <li><strong>Error Condition Testing:</strong> Verify proper handling of all error scenarios</li>
+                <li><strong>Cross-Branch Testing:</strong> Test with accounts from different branches</li>
+                <li><strong>Payoff Calculation Verification:</strong> Ensure accurate payoff worker setup</li>
+                <li><strong>Integration Testing:</strong> Test with all known calling programs</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Critical:</strong> CRNOR2 is a foundational utility used by many programs. Any changes must be thoroughly tested with all calling programs to ensure compatibility and correct operation.</p>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

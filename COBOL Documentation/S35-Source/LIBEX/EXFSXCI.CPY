@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXCI
+           SELECT XCI-FILE ASSIGN TO XCI-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XCI-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,89 @@
+      *******************************************************
+      *    TFC SHORT RATE CANCELLATION TABLE REFUND
+      *         CL/REBT04.C                               #96
+      *******************************************************
+       REBATE-EP24 SECTION.
+           MOVE "T" TO REB-FORM-PROG-TYPE.
+           MOVE 04  TO REB-FORM-PROG-NO.
+           MOVE REB-REFDATE TO NUM-DATE.
+           MOVE REB-PAYDATE TO SYS-DATE.
+           PERFORM TIM365.
+           MOVE ELAPSED-DAYS TO T04-ELAPSED-DAYS.
+           PERFORM REBATE-CALL-SUBPROG.
+           IF REB-COMMON-RTNCD = " "
+              MOVE REB-COMMON-REBATE TO REB-REBATE
+           ELSE
+              MOVE 0 TO REB-REBATE REB-SUB.
+           IF REB-REBATE < 0
+              MOVE 0 TO REB-REBATE.
+           MOVE 0 TO REB-SUB.
+   
+       REBATE-EP24-EXIT.
+           EXIT.
+
+      ********************************************
+      * GEORGIA 4% CLOSING FEE EARLY PROVISION
+      *
+      * NOTE: THE AMOUNT OF THE CLOSING FEE IS STORED IN THE
+      *       LN-POINTS FIELD AND ALSO INCLUDED IN THE SERVICE CHARGE
+      *
+      *  ***
+      *  ** THIS EARLY PROVISION IS NOT STAND ALONE, IT IS CALLED FROM
+      *  **  REBATE FORMULA "I" WHEN SERVICE CHARGE FORMULA = "54"
+      *  ***
+      *
+      * REBATE AMOUNT IS PASSED BACK IN THE REB-WORK2 FIELD AND WILL BE
+      *  ADDED TO REB-REBATE IN THE CALLING SECTION.
+      *
+      * IF THE LOAN PAYS  OFF IN THE FIRST 90 DAYS FROM DATE OF LOAN,
+      * THE CUSTOMER IS ENTITLED TO A DAILY PRORATA REFUND OF THE CLOSING
+      * FEE WITH A MINIMUM RETENTION OF $25.00.  THEREFORE, IF THE SERVICE
+      * CHARGE IS GREATER THAN $25.00, MEANING $25.01 OR GREATER, THEN
+      * THE CUSTOMER IS ENTITLED TO A REFUND OF THE DAILY PRORATA AMOUNT
+      * GREATER THAN $25.00.  IF THE SERVICE CHARGE IS $25.00 OR LESS,
+      * NO REFUND IS REQUIRED.
+      *
+      * SCENARIO ONE
+      *    LOAN AMOUNT: $1250, CLOSING FEE OF $50
+      *    LOAN TERM: 12 MONTHS, 360 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+      *
+      *    $1250 X 4% = $50, $50 / 360 = .13888, .13888 X 90 = 12.4999,
+      *    $12.50 IS EARNED,
+      *    $37.50 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $25.00,
+      *    THE REFUND TO THE BORROWER IS $25.00
+      *
+      * SCENARIO TWO
+      *    LOAN AMOUNT: $1250, CLOSING FEE OF $50
+      *    LOAN TERM: 4 MONTHS, 120 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+
+      *    $1250 X 4% = $50, $50 / 120 = .41666 X 90 = 37.4994,
+      *    $37.50 IS EARNED,
+      *    $12.50 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $37.50,
+      *    THE REFUND OR CREDIT TO THE BORROWER IS $12.50
+      *
+      * SCENARIO THREE
+      *    LOAN AMOUNT: $500, CLOSING FEE OF $20
+      *    LOAN TERM: 6 MONTHS, 180 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+
+      *    $500 X 4% = $20, $20 / 180 = .11111 X 90 = 9.99999,
+      *    $10.00 IS EARNED,
+      *    $10.00 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $20.00,
+      *    THE REFUND TO THE BORROWER IS $00.00
+      *
+      * SCENARIO FOUR
+      *    LOAN AMOUNT: $1000, CLOSING FEE OF $40
+      *    LOAN TERM: 6 MONTHS, 180 DAYS
+      *    LOAN PAID IN FULL ON 90TH DAY
+
+      *    $1000 X 4% = $40, $40 / 180 = .22222 X 90 = 19.99999,
+      *    $20.00 IS EARNED,
+      *    $20.00 IS UNEARNED,
+      *    THE LENDER MAY RETAIN $25.00,
+      *    THE REFUND OR CREDIT TO THE BORROWER IS $15.00
+      ********************************************

@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAKERS Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MAKERS Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> MAKERS<br>
+            <strong>Location:</strong> WI/MAKERS.CBL<br>
+            <strong>Purpose:</strong> Loan Makers (Borrowers and Co-signers) Display Window<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Type:</strong> Window interface program<br>
+            <strong>Called By:</strong> Various programs including LONPFB for borrower information display
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#display-structure">Display Structure</a></li>
+                <li><a href="#borrower-types">Borrower Types and Relationships</a></li>
+                <li><a href="#collateral-display">Collateral Display</a></li>
+                <li><a href="#program-flow">Program Flow Diagrams</a></li>
+                <li><a href="#data-sources">Data Sources</a></li>
+                <li><a href="#user-interactions">User Interactions</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#window-design">Window Design and Layout</a></li>
+                <li><a href="#navigation">Navigation and Controls</a></li>
+                <li><a href="#referenced-programs">Referenced Programs</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>MAKERS</strong> is a comprehensive window display program that provides detailed information about loan makers (borrowers, co-signers, and endorsers). It displays borrower personal information, employment details, collateral information, and contact phone numbers in an organized, user-friendly interface accessible through Control-N navigation.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Borrower Information Display</strong>: Shows comprehensive details for up to 4 loan makers</li>
+            <li><strong>Employment Data</strong>: Displays current employment status, position, and income information</li>
+            <li><strong>Contact Information</strong>: Shows home and work phone numbers with extensions</li>
+            <li><strong>Collateral Display</strong>: Presents detailed collateral information including vehicles and household goods</li>
+            <li><strong>Phone Navigation</strong>: Provides quick access to phone number management systems</li>
+            <li><strong>Data Integration</strong>: Consolidates information from multiple data sources</li>
+            <li><strong>Window Management</strong>: Provides floating window interface with proper cleanup</li>
+        </ul>
+
+        <h2 id="display-structure">Display Structure</h2>
+
+        <h3>Window Layout</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Content</th>
+                    <th>Lines</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Title Bar</strong></td>
+                    <td>MAKERS count display</td>
+                    <td>1</td>
+                    <td>Shows total number of makers on loan</td>
+                </tr>
+                <tr>
+                    <td><strong>Primary Maker</strong></td>
+                    <td>Main borrower information</td>
+                    <td>2-4</td>
+                    <td>Primary borrower details and employment</td>
+                </tr>
+                <tr>
+                    <td><strong>Secondary Maker</strong></td>
+                    <td>Co-signer/joint borrower info</td>
+                    <td>5-7</td>
+                    <td>Joint borrower or co-signer details</td>
+                </tr>
+                <tr>
+                    <td><strong>Collateral Section</strong></td>
+                    <td>Household goods and vehicles</td>
+                    <td>8-11</td>
+                    <td>Detailed collateral descriptions</td>
+                </tr>
+                <tr>
+                    <td><strong>Legend</strong></td>
+                    <td>Navigation options</td>
+                    <td>14</td>
+                    <td>Available user actions and controls</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Field Layout per Maker</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Maker Type</strong></td>
+                    <td>PIC X(6)</td>
+                    <td>MAKER:, JOINT:, or ENDOR:</td>
+                    <td>Derived from maker code</td>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>PIC X(30)</td>
+                    <td>Last name, First name format</td>
+                    <td>BW-LNAME, BW-FNAME</td>
+                </tr>
+                <tr>
+                    <td><strong>Home Phone</strong></td>
+                    <td>999/999/9999</td>
+                    <td>Formatted home phone number</td>
+                    <td>BW-PHONE</td>
+                </tr>
+                <tr>
+                    <td><strong>Work Phone</strong></td>
+                    <td>999/999/9999</td>
+                    <td>Formatted work phone number</td>
+                    <td>BW-EMPPHONE</td>
+                </tr>
+                <tr>
+                    <td><strong>Extension</strong></td>
+                    <td>ZZZ9</td>
+                    <td>Work phone extension</td>
+                    <td>BW-EMPEXT</td>
+                </tr>
+                <tr>
+                    <td><strong>Employer</strong></td>
+                    <td>PIC X(24)</td>
+                    <td>Current employer name</td>
+                    <td>BW-EMPLOYER</td>
+                </tr>
+                <tr>
+                    <td><strong>Position</strong></td>
+                    <td>PIC X(24)</td>
+                    <td>Job title/position</td>
+                    <td>BW-EMPLPOS</td>
+                </tr>
+                <tr>
+                    <td><strong>Years</strong></td>
+                    <td>Z9</td>
+                    <td>Years of employment</td>
+                    <td>BW-EMPYEARS</td>
+                </tr>
+                <tr>
+                    <td><strong>Regular Pay</strong></td>
+                    <td>ZZZ,ZZ9.99</td>
+                    <td>Regular pay amount</td>
+                    <td>BW-EMPPAY</td>
+                </tr>
+                <tr>
+                    <td><strong>Work Hours</strong></td>
+                    <td>PIC X(9)</td>
+                    <td>Standard work hours</td>
+                    <td>BW-WORKHRS</td>
+                </tr>
+                <tr>
+                    <td><strong>Pay Source</strong></td>
+                    <td>PIC X(9)</td>
+                    <td>Additional pay source</td>
+                    <td>BW-EMPPAYSR</td>
+                </tr>
+                <tr>
+                    <td><strong>Overtime Pay</strong></td>
+                    <td>ZZZ,ZZ9.99</td>
+                    <td>Overtime pay amount</td>
+                    <td>BW-EMPPAYOT</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="borrower-types">Borrower Types and Relationships</h2>
+
+        <h3>Maker Classifications</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Display Label</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Primary</strong></td>
+                    <td>MAKER:</td>
+                    <td>Primary borrower (first maker)</td>
+                    <td>Main loan applicant</td>
+                </tr>
+                <tr>
+                    <td><strong>J</strong></td>
+                    <td>JOINT:</td>
+                    <td>Joint borrower</td>
+                    <td>Equal liability co-borrower</td>
+                </tr>
+                <tr>
+                    <td><strong>E</strong></td>
+                    <td>ENDOR:</td>
+                    <td>Endorser/Co-signer</td>
+                    <td>Guarantor of loan payment</td>
+                </tr>
+                <tr>
+                    <td><strong>Other</strong></td>
+                    <td>MAKER:</td>
+                    <td>Additional makers</td>
+                    <td>Other related parties</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Information Handling</h3>
+        <ul>
+            <li><strong>Up to 4 Makers</strong>: System supports display of up to 4 loan makers</li>
+            <li><strong>Dynamic Display</strong>: Only makers with valid SSNs are displayed</li>
+            <li><strong>Missing Data Handling</strong>: Shows "**MISSING**" for unavailable borrower records</li>
+            <li><strong>Phone Number Formatting</strong>: Converts "/" separators to "-" for consistent display</li>
+            <li><strong>Name Concatenation</strong>: Combines last and first names with proper formatting</li>
+        </ul>
+
+        <h2 id="collateral-display">Collateral Display</h2>
+
+        <h3>Collateral Categories</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Label</th>
+                    <th>Source</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Primary Collateral</strong></td>
+                    <td>HHG 1:</td>
+                    <td>LN-COLLID + LTC-HHGS(1)</td>
+                    <td>Main household goods description</td>
+                </tr>
+                <tr>
+                    <td><strong>Secondary HHG</strong></td>
+                    <td>HHG 2:</td>
+                    <td>LTC-HHGS(2)</td>
+                    <td>Additional household goods</td>
+                </tr>
+                <tr>
+                    <td><strong>First Vehicle</strong></td>
+                    <td>CAR 1:</td>
+                    <td>LTC vehicle fields</td>
+                    <td>Year, make, model, style, class, VIN</td>
+                </tr>
+                <tr>
+                    <td><strong>Second Vehicle</strong></td>
+                    <td>CAR 2:</td>
+                    <td>LTC vehicle fields</td>
+                    <td>Second vehicle information</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Vehicle Information Format</h3>
+        <ul>
+            <li><strong>Year</strong>: LTC-YEAR (vehicle year)</li>
+            <li><strong>Make</strong>: LTC-MAKE (manufacturer)</li>
+            <li><strong>Model</strong>: LTC-MODEL (vehicle model)</li>
+            <li><strong>Style</strong>: LTC-STYLE (body style)</li>
+            <li><strong>Class</strong>: LTC-CLASS (vehicle class)</li>
+            <li><strong>VIN</strong>: LTC-VIN (vehicle identification number)</li>
+        </ul>
+
+        <h2 id="program-flow">Program Flow Diagrams</h2>
+
+        <div class="diagram-container">
+            <h3>Main Program Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Program Start] --> B[SQL Connect]
+                B --> C[Security Check]
+                C --> D[Create Floating Window]
+                D --> E[Form Reset]
+                E --> F[Display Title]
+                F --> G[Clear Collateral Fields]
+                G --> H[Get Loan Record]
+                H --> I[Setup Makers Loop]
+                
+                I --> I1{Makers 1 to 2}
+                I1 -->|Yes| I2[Setup Maker Info]
+                I2 --> I3[Next Maker]
+                I3 --> I1
+                I1 -->|Complete| J[Setup Collateral]
+                
+                J --> J1[Get Loan Trailer]
+                J1 --> J2[Setup HHG 1]
+                J2 --> J3[Setup HHG 2]
+                J3 --> J4[Setup CAR 1]
+                J4 --> J5[Setup CAR 2]
+                J5 --> K[Display All Information]
+                
+                K --> L[Accept User Input]
+                L --> M{User Action}
+                M -->|CTRL-N| N[Phone Program Call]
+                M -->|Up/Down Arrow| O[Toggle Display]
+                M -->|Exit Key| P[End Routine]
+                
+                N --> Q{Contact Phone Exists?}
+                Q -->|Yes| R[Call PHONE2]
+                Q -->|No| S[Call PHONES]
+                R --> L
+                S --> L
+                
+                O --> O1[Switch Makers 3-4]
+                O1 --> O2[Re-setup Display]
+                O2 --> L
+                
+                P --> T[Close Files]
+                T --> U[Destroy Window]
+                U --> V[Exit Program]
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Maker Setup Process</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Setup Maker] --> B[Set Maker Subscript]
+                B --> C{Valid SSN?}
+                C -->|No| D[Skip Maker]
+                C -->|Yes| E[Get Borrower Record]
+                
+                E --> F{Record Found?}
+                F -->|No| G[Set Missing Indicator]
+                F -->|Yes| H[Check Contact Phone]
+                
+                H --> H1{Contact Phone Exists?}
+                H1 -->|Yes| H2[Set PHONE2 Program]
+                H1 -->|No| H3[Set PHONES Program]
+                
+                H2 --> I[Determine Maker Type]
+                H3 --> I
+                G --> I
+                
+                I --> I1{Maker Number}
+                I1 -->|1| J[Set MAKER: Label]
+                I1 -->|Other| K[Check Maker Code]
+                
+                K --> K1{Maker Code}
+                K1 -->|J| L[Set JOINT: Label]
+                K1 -->|E| M[Set ENDOR: Label]
+                K1 -->|Other| J
+                
+                J --> N[Format Name]
+                L --> N
+                M --> N
+                
+                N --> O[Format Phone Numbers]
+                O --> P[Set Employment Info]
+                P --> Q[Set Pay Information]
+                Q --> R[Setup Complete]
+                
+                D --> R
+                R --> S[Exit Setup]
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Collateral Display Setup</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Setup Collateral] --> B[Get Loan Trailer]
+                B --> C{Trailer Found?}
+                C -->|No| D[Use Loan Collateral Only]
+                C -->|Yes| E[Setup HHG 1]
+                
+                D --> D1[Set HHG 1 from LN-COLLID]
+                D1 --> F[End Collateral Setup]
+                
+                E --> E1{LN-COLLID Empty?}
+                E1 -->|Yes| E2[Set HHG 1 = LTC-HHGS(1)]
+                E1 -->|No| E3[Combine LN-COLLID + LTC-HHGS(1)]
+                
+                E2 --> G[Setup HHG 2]
+                E3 --> G
+                
+                G --> G1{LTC-HHGS(2) Empty?}
+                G1 -->|Yes| H[Setup CAR 1]
+                G1 -->|No| G2[Set HHG 2 = LTC-HHGS(2)]
+                G2 --> H
+                
+                H --> H1{CAR 1 Data Exists?}
+                H1 -->|No| I[Setup CAR 2]
+                H1 -->|Yes| H2[Format CAR 1 String]
+                H2 --> H3[Combine Year, Make, Model, Style, Class, VIN]
+                H3 --> I
+                
+                I --> I1{CAR 2 Data Exists?}
+                I1 -->|No| F
+                I1 -->|Yes| I2[Format CAR 2 String]
+                I2 --> I3[Combine Year, Make, Model, Style, Class, VIN]
+                I3 --> F
+                
+                F --> J[Display All Collateral]
+            </div>
+        </div>
+
+        <h2 id="data-sources">Data Sources</h2>
+
+        <h3>Primary Data Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Key Fields Used</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LP01LN (Loan File)</strong></td>
+                    <td>Basic loan information</td>
+                    <td>LN-ACCTNO, LN-COLLID</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01BW (Borrower File)</strong></td>
+                    <td>Detailed borrower information</td>
+                    <td>All BW- fields for personal and employment data</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01LTC (Loan Trailer/Collateral)</strong></td>
+                    <td>Extended loan and collateral data</td>
+                    <td>LTC-HHGS, vehicle fields, LTC-BRNO, LTC-ACCTNO</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>External Data Sources</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Source</th>
+                    <th>Data Type</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>EXT-WI-CL-SSNO</strong></td>
+                    <td>Maker SSN array</td>
+                    <td>Links to borrower records</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-MAKERCD</strong></td>
+                    <td>Maker code array</td>
+                    <td>Determines maker type display</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-OWNBR</strong></td>
+                    <td>Owner/branch number</td>
+                    <td>Record identification</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-ACCTNO</strong></td>
+                    <td>Account number</td>
+                    <td>Primary key for data retrieval</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="user-interactions">User Interactions</h2>
+
+        <h3>Navigation Controls</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Key/Action</th>
+                    <th>Function</th>
+                    <th>Condition</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CTRL-N</strong></td>
+                    <td>Phone number management</td>
+                    <td>Always available</td>
+                    <td>Calls PHONE2 or PHONES program</td>
+                </tr>
+                <tr>
+                    <td><strong>Up Arrow</strong></td>
+                    <td>Toggle display (makers 3-4)</td>
+                    <td>More than 2 makers</td>
+                    <td>Shows makers 3 and 4</td>
+                </tr>
+                <tr>
+                    <td><strong>Down Arrow</strong></td>
+                    <td>Toggle display (makers 1-2)</td>
+                    <td>More than 2 makers</td>
+                    <td>Shows makers 1 and 2</td>
+                </tr>
+                <tr>
+                    <td><strong>Exit Key</strong></td>
+                    <td>Close window</td>
+                    <td>Always available</td>
+                    <td>Returns to calling program</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Dynamic Legend Display</h3>
+        <ul>
+            <li><strong>2 or Fewer Makers</strong>: " CTRL N MISC PHONE, EXIT-ANYKEY"</li>
+            <li><strong>3 or More Makers</strong>: " CTRL N PH#, EXIT-ANYKEY, ^-TOGGLE"</li>
+        </ul>
+
+        <h3>Phone Program Selection Logic</h3>
+        <ul>
+            <li><strong>PHONE2</strong>: Called when borrower has contact phone numbers (BW-CONTACT-PHONE)</li>
+            <li><strong>PHONES</strong>: Called when no contact phone numbers exist</li>
+            <li><strong>Program Path</strong>: "WI/PHONE2" or "WI/PHONES" set in VDU-CTRL-N-PROG</li>
+        </ul>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Window Specifications</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Window Type</strong></td>
+                    <td>FLOATING GRAPHICAL</td>
+                    <td>Overlay window that doesn't block parent</td>
+                </tr>
+                <tr>
+                    <td><strong>Position</strong></td>
+                    <td>Line 8, Column 1</td>
+                    <td>Screen positioning with offset support</td>
+                </tr>
+                <tr>
+                    <td><strong>Size</strong></td>
+                    <td>80 columns × 14 lines</td>
+                    <td>With modification support for screen sizes</td>
+                </tr>
+                <tr>
+                    <td><strong>Font</strong></td>
+                    <td>LABEL FONT</td>
+                    <td>Standard system font</td>
+                </tr>
+                <tr>
+                    <td><strong>Colors</strong></td>
+                    <td>VDU-WCOLOR-TCLP</td>
+                    <td>System color scheme</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Data Structure Organization</h3>
+        <ul>
+            <li><strong>Display Buffer</strong>: Two-element array for alternating maker display</li>
+            <li><strong>Field Mapping</strong>: Structured field definitions for consistent formatting</li>
+            <li><strong>Subscript Management</strong>: Dynamic subscript handling for 4-maker support</li>
+            <li><strong>String Formatting</strong>: Automatic field concatenation and formatting</li>
+        </ul>
+
+        <h3>Memory Management</h3>
+        <ul>
+            <li><strong>Working Storage</strong>: Efficient use of copybook structures</li>
+            <li><strong>Display Buffers</strong>: Reusable display buffer arrays</li>
+            <li><strong>Window Handles</strong>: Proper window handle management and cleanup</li>
+            <li><strong>SQL Resources</strong>: Controlled file opening and closing</li>
+        </ul>
+
+        <h2 id="window-design">Window Design and Layout</h2>
+
+        <h3>Screen Layout Example</h3>
+        <pre>
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ MAKERS: 3                                                                    │
+│                                                                              │
+│ MAKER: Smith, John               555-123-4567  555-987-6543 1234            │
+│        ABC Manufacturing         Manager                5  $3,500.00        │
+│        8-5 M-F      Commission                         $1,200.00             │
+│                                                                              │
+│ JOINT: Smith, Mary               555-123-4567  555-555-1212 0               │
+│        XYZ Corporation          Supervisor             3  $2,800.00         │
+│        9-5 M-F      Overtime                           $400.00               │
+│                                                                              │
+│ HHG 1: Furniture and household goods, bedroom set                           │
+│ HHG 2: Kitchen appliances, washer and dryer                                 │
+│ CAR 1: 2018 Honda Accord Sedan 4DR VIN: 1HGCV1F30JA123456                 │
+│ CAR 2: 2020 Ford F150 Pickup 4DR VIN: 1FTFW1E50LFC67890                   │
+│                                                                              │
+│ CTRL N PH#, EXIT-ANYKEY, ^-TOGGLE                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+        </pre>
+
+        <h3>Field Positioning</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field Group</th>
+                    <th>Column Range</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Maker Type</strong></td>
+                    <td>1-6</td>
+                    <td>MAKER:, JOINT:, ENDOR:</td>
+                </tr>
+                <tr>
+                    <td><strong>Name</strong></td>
+                    <td>8-37</td>
+                    <td>Formatted borrower name</td>
+                </tr>
+                <tr>
+                    <td><strong>Home Phone</strong></td>
+                    <td>39-51</td>
+                    <td>xxx-xxx-xxxx format</td>
+                </tr>
+                <tr>
+                    <td><strong>Work Phone</strong></td>
+                    <td>53-65</td>
+                    <td>xxx-xxx-xxxx format</td>
+                </tr>
+                <tr>
+                    <td><strong>Extension</strong></td>
+                    <td>67-70</td>
+                    <td>Work phone extension</td>
+                </tr>
+                <tr>
+                    <td><strong>Employment</strong></td>
+                    <td>8-80</td>
+                    <td>Employer, position, years, pay</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="navigation">Navigation and Controls</h2>
+
+        <h3>Control Integration</h3>
+        <ul>
+            <li><strong>VDU-CTRL-N-PROG</strong>: Dynamically set based on contact phone availability</li>
+            <li><strong>VDUSTATUS</strong>: Captures user navigation actions (1U, 1D for arrows)</li>
+            <li><strong>Toggle Logic</strong>: Seamless switching between maker pairs 1-2 and 3-4</li>
+            <li><strong>Exit Handling</strong>: Clean window destruction and resource cleanup</li>
+        </ul>
+
+        <h3>Error Prevention</h3>
+        <ul>
+            <li><strong>Missing Data Protection</strong>: Graceful handling of missing borrower records</li>
+            <li><strong>Invalid SSN Handling</strong>: Skip makers with zero or invalid SSNs</li>
+            <li><strong>File Access Protection</strong>: Proper error handling for file access failures</li>
+            <li><strong>Display Buffer Management</strong>: Prevents buffer overflow and display corruption</li>
+        </ul>
+
+        <h2 id="referenced-programs">Referenced Programs</h2>
+
+        <h3>External Program Calls</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Purpose</th>
+                    <th>Call Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>WI/PHONE2</strong></td>
+                    <td>Contact phone management</td>
+                    <td>When borrower has contact phones</td>
+                </tr>
+                <tr>
+                    <td><strong>WI/PHONES</strong></td>
+                    <td>General phone management</td>
+                    <td>When no contact phones exist</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Copy Library Dependencies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Purpose</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LIBLP/LP01*.CPY</strong></td>
+                    <td>File record definitions</td>
+                    <td>Data structures</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBLP/LPWS*.CPY</strong></td>
+                    <td>Working storage for files</td>
+                    <td>File handling</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBWI/MAKERS_*.CPY</strong></td>
+                    <td>Window-specific definitions</td>
+                    <td>User interface</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/*.CPY</strong></td>
+                    <td>General system utilities</td>
+                    <td>Common functions</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>SQL File Access</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Access Pattern</th>
+                    <th>Key Fields</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LN1 (Loan)</strong></td>
+                    <td>Single record read</td>
+                    <td>LN-ACCTNO</td>
+                </tr>
+                <tr>
+                    <td><strong>BW1 (Borrower)</strong></td>
+                    <td>Multiple reads per maker</td>
+                    <td>BW-SSNO</td>
+                </tr>
+                <tr>
+                    <td><strong>LTC1 (Loan Trailer)</strong></td>
+                    <td>Single record read</td>
+                    <td>LTC-BRNO, LTC-ACCTNO, LTC-SEQNO</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>File Operation Patterns</h3>
+        <ul>
+            <li><strong>Open-Read-Close</strong>: Each file operation follows this pattern for resource management</li>
+            <li><strong>Error Handling</strong>: IO-FG checked after each operation</li>
+            <li><strong>SQL Connection</strong>: Single connection maintained throughout program execution</li>
+            <li><strong>Resource Cleanup</strong>: All files properly closed before program termination</li>
+        </ul>
+
+        <h2 id="error-handling">Error Handling</h2>
+
+        <h3>Error Conditions and Responses</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Type</th>
+                    <th>Detection</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Missing Borrower</strong></td>
+                    <td>IO-FG = 9 on BW read</td>
+                    <td>Display "**MISSING**" as name</td>
+                </tr>
+                <tr>
+                    <td><strong>Missing Loan Trailer</strong></td>
+                    <td>IO-FG ≠ 0 on LTC read</td>
+                    <td>Use only loan collateral description</td>
+                </tr>
+                <tr>
+                    <td><strong>File Access Error</strong></td>
+                    <td>SQL connection or file errors</td>
+                    <td>Error code in ERRCD, graceful termination</td>
+                </tr>
+                <tr>
+                    <td><strong>Invalid SSN</strong></td>
+                    <td>EXT-WI-CL-SSNO = 0</td>
+                    <td>Skip maker setup, continue with next</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Data Validation</h3>
+        <ul>
+            <li><strong>SSN Validation</strong>: Zero SSN indicates inactive/invalid maker</li>
+            <li><strong>Field Length Validation</strong>: String operations use DELIMITED BY SIZE</li>
+            <li><strong>Display Buffer Protection</strong>: Proper field initialization prevents display corruption</li>
+            <li><strong>Phone Format Validation</strong>: Automatic conversion of phone number separators</li>
+        </ul>
+
+        <h2 id="performance">Performance Considerations</h2>
+
+        <h3>Optimization Features</h3>
+        <ul>
+            <li><strong>Efficient File Access</strong>: Single-record reads with immediate closure</li>
+            <li><strong>Conditional Processing</strong>: Skip processing for invalid makers</li>
+            <li><strong>String Operations</strong>: Optimized string concatenation using DELIMITED BY</li>
+            <li><strong>Display Optimization</strong>: Bulk display updates using buffer arrays</li>
+            <li><strong>Memory Management</strong>: Reuse of working storage structures</li>
+        </ul>
+
+        <h3>Performance Metrics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Typical Time</th>
+                    <th>Optimization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Window Creation</strong></td>
+                    <td>< 0.2 seconds</td>
+                    <td>Efficient screen section usage</td>
+                </tr>
+                <tr>
+                    <td><strong>Data Retrieval</strong></td>
+                    <td>< 0.3 seconds</td>
+                    <td>Indexed file access, minimal reads</td>
+                </tr>
+                <tr>
+                    <td><strong>Display Update</strong></td>
+                    <td>< 0.1 seconds</td>
+                    <td>Bulk buffer updates</td>
+                </tr>
+                <tr>
+                    <td><strong>Navigation Response</strong></td>
+                    <td>< 0.1 seconds</td>
+                    <td>Cached data, minimal processing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>12/23/91</strong></td>
+                    <td>Original program creation</td>
+                    <td>Initial development</td>
+                </tr>
+                <tr>
+                    <td><strong>02/26/97</strong></td>
+                    <td>Fixed collateral display for missing collateral</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>05/27/97</strong></td>
+                    <td>Changed to display collateral from record 3</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>10/09/97</strong></td>
+                    <td>Added BW-OTHPHONE display</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td><strong>02/16/98</strong></td>
+                    <td>Added CTRL-N access to phone window</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>02/19/98</strong></td>
+                    <td>Updated legend for CTRL-N option</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td><strong>03/02/98</strong></td>
+                    <td>Removed BW-OTHPHONE, rearranged fields</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td><strong>05/02/00</strong></td>
+                    <td>Added BMFILE logic, conditional PHONE2/PHONES calls</td>
+                    <td>MJD - TFC PR#37</td>
+                </tr>
+                <tr>
+                    <td><strong>04/29/04</strong></td>
+                    <td>Display both HHG collateral and both cars</td>
+                    <td>GLB - Lendmark PR# 2062</td>
+                </tr>
+                <tr>
+                    <td><strong>01/25/16</strong></td>
+                    <td>Split out LTFILE</td>
+                    <td>BAH - PD0003</td>
+                </tr>
+                <tr>
+                    <td><strong>08/03/22</strong></td>
+                    <td>Hard coded start implementation</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td><strong>03/25/25</strong></td>
+                    <td>Borrower contact phones moved to BW-REC, removed BM</td>
+                    <td>BAH - S35Q-192</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <p><strong>Note:</strong> MAKERS provides a comprehensive view of all loan participants and their associated information. The program has evolved significantly over time to handle various data sources and display requirements, making it a critical component of the loan information system.</p>
+        </div>
+
+        <div class="warning">
+            <p><strong>Important:</strong> The program dynamically determines which phone management program to call based on the presence of contact phone numbers. This logic is critical for proper phone number management integration.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

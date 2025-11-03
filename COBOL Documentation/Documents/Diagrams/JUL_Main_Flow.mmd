@@ -1,0 +1,22 @@
+graph TD
+    A[Start: JUL SECTION] --> B[Set DATER-ACTION-CODE to 'J']
+    B --> C[Call DATER-ROUTINE]
+    C --> D{Year Processing}
+    D --> E{NUM-YR < EXT-JULIAN-CC?}
+    E -->|Yes| F[Apply Year 2000+ Logic]
+    E -->|No| G[Use Standard Century]
+    F --> H[Calendar to Julian Calculation]
+    G --> H
+    H --> I{Conversion Successful?}
+    I -->|Yes| J[Set JULIAN-DATE to Day Count]
+    I -->|No| K[Set JULIAN-DATE to 0]
+    I -->|No| L[Set Error Flag]
+    J --> M[Return to Caller]
+    K --> L
+    L --> M
+    
+    style A fill:#e1f5fe
+    style M fill:#e8f5e8
+    style K fill:#ffebee
+    style L fill:#ffebee
+    style F fill:#fff3e0

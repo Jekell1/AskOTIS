@@ -1,0 +1,26 @@
+graph TD
+    A[External Calling Program] --> B[JUL SECTION]
+    B --> C[DATER-ROUTINE]
+    C --> D[Century Processing Logic]
+    C --> E[Calendar Mathematics]
+    C --> F[Leap Year Calculations]
+    C --> G[Month/Day Arithmetic]
+    D --> H[Julian Day Computation]
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Error Validation]
+    I --> C
+    C --> B
+    B --> A
+    
+    J[CJUL SECTION] -.->|Often used together| B
+    K[Date Arithmetic Routines] --> B
+    L[Date Comparison Utilities] --> B
+    M[Calendar Calculations] --> B
+    N[Batch Processing] --> B
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style A fill:#e8f5e8
+    style J fill:#fff3e0

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATER-ROUTINE COBOL Program Design Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">DATER-ROUTINE COBOL Program Design Document</span>
+        </nav>
+        <main class="content">
+<h1 id="dater-routine-cobol-program-design-document">DATER-ROUTINE COBOL Program Design Document</h1>
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> DATER-ROUTINE<br />
+<strong>Date Written:</strong> Legacy system (pre-2000)</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p>DATER-ROUTINE is a central COBOL section for date calculations and manipulations. It acts as a dispatcher, performing elapsed time, date increment, date comparison, Julian conversions, weekday determination, and date validation, based on the action code provided. It is widely used for all date-related logic in the system.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Elapsed time calculation (days, months, years)</li>
+<li>Date increment (by days, months, years, weeks, semimonths)</li>
+<li>Date comparison (less than, equal, greater than)</li>
+<li>Julian date conversion (calendar &lt;-&gt; Julian)</li>
+<li>Weekday determination</li>
+<li>Date validation</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>DATER-ACTION-CODE</code>: Operation selector (E, N, I, C, J, W, D, T)</li>
+<li><code>NUM-DATE</code>: Main date (YYYYMMDD)</li>
+<li><code>SYS-DATE</code>: Secondary date (YYYYMMDD)</li>
+<li><code>NDTE-DATE</code>: Date to increment (YYYYMMDD)</li>
+<li><code>NDTE-HOLD</code>: Increment value (unit periods)</li>
+<li><code>DATER-UNITPER-CD</code>: Unit period code (M, D, Y, S, W, B)</li>
+<li><code>DATER-UNITPER-FREQ</code>: Frequency of unit periods</li>
+<li><code>JULIAN-DATE</code>: Julian date (for conversion)</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>ELAPSED-DAYS</code>, <code>ELAPSED-MONTHS</code>, <code>ELAPSED-REM</code>, <code>ELAPSED-RESULTS</code>: Elapsed time results</li>
+<li><code>NDTE-DATE</code>: Incremented date</li>
+<li><code>JULIAN-DATE</code>: Julian date result</li>
+<li><code>NUM-DATE</code>: Calendar date result (from Julian)</li>
+<li><code>DAY-OF-WEEK</code>, <code>DAY-IS-SUN</code>, ...: Weekday flags</li>
+<li><code>DATER-RESULTS</code>: General result field</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">flowchart TD
+    Start([Start: DATER-ROUTINE]) --> Main[PERFORM C-DATER-MAIN]
+    Main --> ConvertIn[CONVERT-SYS-NUM-NDTE-DATES-IN]
+    ConvertIn --> SaveAction[Save DATER-ACTION-CODE]
+    SaveAction --> EvalAction{EVALUATE DATER-ACTION-CODE}
+    EvalAction -- "E" --> Elapsed[C-ELAPSED-TIME]
+    EvalAction -- "N" --> NewDate[C-CALL-NEWDATE]
+    EvalAction -- "I" --> Incr[C-INCREMENT-PERIODS]
+    EvalAction -- "C" --> CJUL[C-CALL-CJUL]
+    EvalAction -- "J" --> JUL[C-CALL-JUL]
+    EvalAction -- "W" --> Weekday[C-WEEKDAY]
+    EvalAction -- "D" --> Compare[C-DATE-COMPARE]
+    EvalAction -- "T" --> Test[C-DATE-TEST]
+    Elapsed & NewDate & Incr & CJUL & JUL & Weekday & Compare & Test --> RestoreAction[Restore DATER-ACTION-CODE]
+    RestoreAction --> ConvertOut[CONVERT-SYS-NUM-NDTE-DATES-OUT]
+    ConvertOut --> End([End])
+</div>
+<h2 id="batch-processing-timeline">Batch Processing Timeline</h2>
+<div class="mermaid">gantt
+title DATER-ROUTINE Batch Timeline
+section DATER-ROUTINE
+DATER-ROUTINE Call :a1, 2025-07-24, 1d
+C-DATER-MAIN       :a2, after a1, 1d
+Action Dispatch    :a3, after a2, 1d
+Result Conversion  :a4, after a3, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>DATER-ROUTINE SECTION</strong>: Entry point. Calls C-DATER-MAIN.</li>
+<li><strong>C-DATER-MAIN SECTION</strong>: Converts input dates, saves action code, dispatches to the correct routine based on action code, restores action code, converts output dates.</li>
+<li><strong>Action Codes:</strong><ul>
+<li>"E": Elapsed time calculation (PERFORM C-ELAPSED-TIME)</li>
+<li>"N": New date calculation (PERFORM C-CALL-NEWDATE)</li>
+<li>"I": Increment periods (PERFORM C-INCREMENT-PERIODS)</li>
+<li>"C": Julian to calendar (PERFORM C-CALL-CJUL)</li>
+<li>"J": Calendar to Julian (PERFORM C-CALL-JUL)</li>
+<li>"W": Weekday determination (PERFORM C-WEEKDAY)</li>
+<li>"D": Date comparison (PERFORM C-DATE-COMPARE)</li>
+<li>"T": Date test/validation (PERFORM C-DATE-TEST)</li>
+</ul>
+</li>
+<li><strong>CONVERT-SYS-NUM-NDTE-DATES-IN/OUT</strong>: Handle input/output date normalization.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">flowchart LR
+    DATER-ACTION-CODE --> DATER-ROUTINE
+    DATER-ROUTINE --> C-DATER-MAIN
+    C-DATER-MAIN -->|E| C-ELAPSED-TIME
+    C-DATER-MAIN -->|N| C-CALL-NEWDATE
+    C-DATER-MAIN -->|I| C-INCREMENT-PERIODS
+    C-DATER-MAIN -->|C| C-CALL-CJUL
+    C-DATER-MAIN -->|J| C-CALL-JUL
+    C-DATER-MAIN -->|W| C-WEEKDAY
+    C-DATER-MAIN -->|D| C-DATE-COMPARE
+    C-DATER-MAIN -->|T| C-DATE-TEST
+    C-DATER-MAIN --> CONVERT-SYS-NUM-NDTE-DATES-OUT
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><code>C-ELAPSED-TIME</code> (internal)</li>
+<li><code>C-CALL-NEWDATE</code> (internal)</li>
+<li><code>C-INCREMENT-PERIODS</code> (internal)</li>
+<li><code>C-CALL-CJUL</code> (internal)</li>
+<li><code>C-CALL-JUL</code> (internal)</li>
+<li><code>C-WEEKDAY</code> (internal)</li>
+<li><code>C-DATE-COMPARE</code> (internal)</li>
+<li><code>C-DATE-TEST</code> (internal)</li>
+<li><code>CONVERT-SYS-NUM-NDTE-DATES-IN/OUT</code> (internal)</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Invalid or missing dates are handled by normalization routines.</li>
+<li>Action code not recognized: no action performed.</li>
+<li>Each subroutine (e.g., C-ELAPSED-TIME) has its own error handling for edge cases.</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures:</strong> Uses working-storage for all date fields, action codes, and results.</li>
+<li><strong>Dispatch Logic:</strong> EVALUATE statement for action code dispatch.</li>
+<li><strong>No direct file I/O:</strong> All operations are in-memory.</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Called by all routines needing date calculations, increments, or comparisons.</li>
+<li>Used by TIM360, TIM365, and other timing utilities.</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; all logic is internal to APIPAY_Inlined.CBL</li>
+<li>Uses internal copybooks and working-storage</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    DATER-ROUTINE --> C-DATER-MAIN
+    C-DATER-MAIN --> CONVERT-SYS-NUM-NDTE-DATES-IN
+    C-DATER-MAIN --> C-ELAPSED-TIME
+    C-DATER-MAIN --> C-CALL-NEWDATE
+    C-DATER-MAIN --> C-INCREMENT-PERIODS
+    C-DATER-MAIN --> C-CALL-CJUL
+    C-DATER-MAIN --> C-CALL-JUL
+    C-DATER-MAIN --> C-WEEKDAY
+    C-DATER-MAIN --> C-DATE-COMPARE
+    C-DATER-MAIN --> C-DATE-TEST
+    C-DATER-MAIN --> CONVERT-SYS-NUM-NDTE-DATES-OUT
+</div>
+<hr />
+<p><strong>See also:</strong>
+- <a href="TIM360_Documentation.html">TIM360 Documentation</a>
+- <a href="APIPAY_Documentation.html">APIPAY Main Documentation</a></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

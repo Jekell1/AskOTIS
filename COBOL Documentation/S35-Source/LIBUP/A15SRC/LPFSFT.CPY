@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSFT
+           SELECT FT-FILE ASSIGN FT-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY FT1-KEY
+                  FILE STATUS FILE-STAT.

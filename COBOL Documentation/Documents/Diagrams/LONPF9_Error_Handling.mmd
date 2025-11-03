@@ -1,0 +1,53 @@
+graph TD
+    A[Error Detected] --> B{Error Type?}
+    
+    B -->|File I/O Error| C[DECLARE-ERROR Section]
+    B -->|Validation Error| D[Business Rule Validation]
+    B -->|System Error| E[System Error Handler]
+    B -->|User Input Error| F[Input Validation Handler]
+    
+    C --> G[Close All Open Files]
+    G --> H[Set ERRCD = 'X']
+    H --> I[Log Fatal Error]
+    I --> J[Terminate Program]
+    
+    D --> K{Severity Level?}
+    K -->|Critical| L[Set ERRCD = 'E']
+    K -->|Warning| M[Set ERRCD = 'P']
+    K -->|Info| N[Continue Processing]
+    
+    L --> O[Display Error Message]
+    M --> O
+    O --> P[Set RETURN-STATUS]
+    P --> Q[Update LOG-MSG]
+    Q --> R[Return to Calling Program]
+    
+    E --> S[Log System Error]
+    S --> T[Attempt Recovery]
+    T --> U{Recovery Successful?}
+    U -->|Yes| V[Continue Processing]
+    U -->|No| W[Set Fatal Error]
+    W --> H
+    
+    F --> X{Input Error Type?}
+    X -->|Invalid Transaction Code| Y[Display Valid Codes]
+    X -->|Invalid Amount| Z[Display Amount Rules]
+    X -->|Invalid Date| AA[Display Date Format]
+    X -->|Missing Required Field| BB[Highlight Required Fields]
+    
+    Y --> CC[Return to Input Screen]
+    Z --> CC
+    AA --> CC
+    BB --> CC
+    CC --> DD[Clear Error Flags]
+    DD --> EE[Accept Corrected Input]
+    
+    N --> FF[Continue Normal Processing]
+    V --> FF
+    EE --> FF
+    
+    style A fill:#ffebee
+    style H fill:#ffcdd2
+    style J fill:#f44336
+    style R fill:#fff3e0
+    style FF fill:#c8e6c9

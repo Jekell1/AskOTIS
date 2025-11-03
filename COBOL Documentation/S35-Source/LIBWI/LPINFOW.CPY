@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBWI/LPINFOW
+      * REV:
+      *  2024.0425 BAH MADE LEVEL 01 AND CALL, NOT WINDOW
+       01  LPINFO-BUF.
+           03  LPINFO-LP-BRNO    PIC 9(4).
+           03  LPINFO-LP-ACCTNO  PIC 9(8).
+           03  LPINFO-LP-SEQNO   PIC 9(5).
+           03  LPINFO-ARCHIVE-FG PIC X.

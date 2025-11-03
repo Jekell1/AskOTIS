@@ -1,0 +1,29 @@
+graph TD
+    A[Time Calculation Process] --> B[C-TIMBEG]
+    B --> C[Specific Time Calculation]
+    C --> D[C-TIMEND]
+    
+    subgraph "Date Processing System"
+    B --> B1[Initialize]
+    D --> D1[Finalize]
+    end
+    
+    subgraph "Time Calculation Methods"
+    C --> C1[C-TIM360-358]
+    C --> C2[C-TIM361]
+    C --> C3[C-TIM362]
+    C --> C4[C-TIM365-367]
+    C --> C5[C-TIM999-998]
+    C --> C6[C-TIMALL]
+    end
+    
+    subgraph "Data Flow"
+    B1 --> B2[Date Ordering]
+    B2 --> B3[Julian Conversion]
+    B3 --> B4[Sign Determination]
+    
+    D1 --> D2[Apply Sign]
+    D2 --> D3[Month Calculation]
+    D3 --> D4[Remainder Calculation]
+    D4 --> D5[Year Type Handling]
+    end

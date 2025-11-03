@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSIM
+           SELECT IM-FILE ASSIGN IM-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY IM-KEY
+                  FILE STATUS FILE-STAT.

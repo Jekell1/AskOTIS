@@ -1,0 +1,71 @@
+flowchart TD
+    A[Half-Month Increment Input] --> B[Division Operation]
+    B --> C[Increment ÷ 2]
+    C --> D[Full Months = Quotient]
+    C --> E[Half-Months = Remainder]
+    
+    D --> F{Full Months ≠ 0?}
+    F -->|Yes| G[Process via C-INCR-MONTHS]
+    F -->|No| H[Skip to Half-Month Logic]
+    
+    G --> I[Month Boundary Handling]
+    I --> J[Year Transitions]
+    J --> H
+    
+    H --> K{Remainder?}
+    K -->|+1| L[Forward Half-Month]
+    K -->|-1| M[Backward Half-Month]  
+    K -->|0| N[Complete - No Half]
+    
+    L --> O{Current Day > 15?}
+    O -->|Yes| P[Second Half → Next Month First Half]
+    O -->|No| Q[First Half → Second Half Same Month]
+    
+    P --> R[New Day = Original Day - 15]
+    R --> S[Next Month via C-INCR-MONTHS]
+    S --> T[Position in First Half]
+    
+    Q --> U[New Day = Original Day + 15]
+    U --> V[Stay in Current Month]
+    V --> W[Position in Second Half]
+    
+    M --> X{Current Day < 16?}
+    X -->|Yes| Y[First Half → Previous Month Second Half]
+    X -->|No| Z[Second Half → First Half Same Month]
+    
+    Y --> AA[Previous Month via C-INCR-MONTHS]
+    AA --> BB[New Day = Original Day + 15]
+    BB --> CC[Position in Second Half]
+    
+    Z --> DD[New Day = Original Day - 15]
+    DD --> EE[Stay in Current Month]
+    EE --> FF[Position in First Half]
+    
+    T --> GG[Final Result]
+    W --> GG
+    CC --> GG
+    FF --> GG
+    N --> GG
+    
+    subgraph "Half-Month Model"
+        HH[First Half: Days 1-15]
+        II[Second Half: Days 16-End]
+        JJ[Boundary: Day 15/16]
+    end
+    
+    subgraph "Examples"
+        KK[Jan 10 + 1 half → Jan 25]
+        LL[Jan 25 + 1 half → Feb 10]
+        MM[Feb 10 - 1 half → Jan 25]
+        NN[Feb 25 - 1 half → Feb 10]
+    end
+    
+    style A fill:#e3f2fd
+    style GG fill:#e8f5e8
+    style F fill:#fff8e1
+    style K fill:#fff8e1
+    style O fill:#fff8e1
+    style X fill:#fff8e1
+    style G fill:#f3e5f5
+    style S fill:#f3e5f5
+    style AA fill:#f3e5f5

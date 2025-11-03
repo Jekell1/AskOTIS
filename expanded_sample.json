@@ -1,0 +1,295 @@
+[
+  {
+    "fact_id": "a13932705e0966c7650a",
+    "score": 0.038461538461538464,
+    "rank_sources": {
+      "keyword": 2,
+      "vector": 2
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.8,
+    "action_role": "REVERSAL",
+    "posting_type": "GL",
+    "gating_cond": "IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND",
+    "fact_text": "Program APIPAY paragraph SKIP-PAYOFF-CALC performs reversal gl when condition: IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND",
+    "paragraphs": [
+      {
+        "@search.score": 7.88921,
+        "para_id": "74ab4082c42da2b4d1cf94addcdeea5a6091c838",
+        "name": "SKIP-PAYOFF-CALC",
+        "kind": "paragraph",
+        "start_line": 1246,
+        "end_line": 1296,
+        "text": "       SKIP-PAYOFF-CALC.\n\n      * DON'T ALLOW POSTING WHEN LOAN HAS ZERO BALANCE\n\n           IF LN-CURBAL = 0\n              MOVE \"ALREADY ZERO BALANCE\" TO LOG-MSG\n              MOVE 46                 TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n      * TEST FOR VALID GENERAL LEDGER INTERFACE RECORD:\n\n           MOVE LN-OWNBR TO GI-BRANCH.\n           MOVE LN-CLASS TO GI-CLASS.\n           PERFORM READ-GI1-FILE.\n           IF IO-FG NOT = 0\n              MOVE \"MISSING G/L INTERFACE \" TO LOG-MSG\n              MOVE 58                 TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           MOVE \" \" TO POSTING-ERRCD.\n\n           IF CD-BR-FILE-TYPE = \"B\"\n              PERFORM BANKRUPT-POSTING\n           ELSE\n           IF BP-TRCD = \"RV\"\n              PERFORM REVERSAL-POSTING\n           ELSE\n           IF BP-TRCD = \"OT\"\n              PERFORM OTHER-CHG-POSTING\n           ELSE\n              IF (BP-TRAMT > VALID-POSTING-NOPOFF) AND\n                 (HOLD-BP-TRCD = \"99\"            )\n                 PERFORM PAYOFF-POSTING\n              ELSE\n                 PERFORM PAYMENT-POSTING.\n\n           IF NOT (POSTING-ERRCD = \" \" OR \"O\")\n              MOVE \"GENERIC POSTING ERROR\" TO LOG-MSG\n              MOVE 59                 TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n            \n           MOVE 0                   TO RETURN-STATUS.\n\n           MOVE \"SUCCESSFUL UPDATE\" TO LOG-MSG\n           PERFORM CREATE-LOG.\n\n           PERFORM CLOSE-OP-FILE.\n\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "b8a99ab0f63b885f44cc000deaafdb9dd306e55f",
+        "name": "END-ROUTINE",
+        "kind": "paragraph",
+        "start_line": 1297,
+        "end_line": 1304,
+        "text": "       END-ROUTINE.\n           MOVE TEMP-PATH TO ACCESS-BUF.\n           PERFORM REMOVE-WORKFILE.\n           PERFORM CLOSE-OP-FILE.\n\n           GO TO END-PROGRAM.\n\n      ************************************\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "edbb32d3b9576761c458",
+    "score": 0.03684922244759973,
+    "rank_sources": {
+      "keyword": 1,
+      "vector": 8
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.7,
+    "action_role": "REVERSAL",
+    "posting_type": "INTEREST",
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph REVERSAL-LP1-FILE performs reversal interest",
+    "paragraphs": [
+      {
+        "@search.score": 3.5447187,
+        "para_id": "53558871c67ac53d22cf7eca5434fd5e1dd0e7f9",
+        "name": "REVERSAL-LP1-FILE",
+        "kind": "paragraph",
+        "start_line": 2108,
+        "end_line": 2230,
+        "text": "       REVERSAL-LP1-FILE.\n           MOVE LP-TRCD  TO REV-TRCD.\n           MOVE LP-REFNO TO REV-REFNO.\n\n           ADD LN-INTBAL LP-APINT GIVING LP-INTBAL.\n           ADD LN-OTHBAL LP-APOTH GIVING LP-OTHBAL.\n           ADD LN-LCBAL LP-APLC GIVING LP-LCBAL.\n\n           MOVE LN-CURBAL TO LP-CURBAL.\n\n      * \"OTWOAPJDPLPIPWRPTSTPSPBKBD\" (NOT).\n      *  PA NOT IN LIST SO WILL BE CDV-NO-MATCH\n           MOVE CDV-17 TO CDV-BUF.\n           PERFORM CDV-VERIFY.\n\n      * THE \"DF\" HAS THE AMOUNT IN INTDUE SO INTBAL COMES OUT RIGHT:\n           IF (CDV-NO-MATCH OR (REV-TRCD = \"Z2\"))\n              IF ( REV-TRCD NOT = \"WL\" ) AND\n                 ( SP-CAL-RATETYPE(1) NOT = \"Z\" ) AND\n                 ( NOT (REV-TRCD = \"RE\" AND LN-LOANTYPE = \"I\") )\n                   SUBTRACT LP-INTDUE FROM LP-INTBAL.\n\n      * ADDON-POSTING, LP-APINTOWE HOLDS LN-INTPDTH BEFORE ADDON:\n           IF (CDV-NO-MATCH OR (REV-TRCD = \"Z2\"))\n              IF NOT ADDON-POSTING\n                 SUBTRACT LP-APINTOWE FROM LP-LCBAL.\n\n           MULTIPLY -1 BY\n              LP-TRAMT LP-APOTH LP-APINT LP-APLC LP-APCUR\n              LP-INTDUE LP-DLPROC LP-EARNED(1) LP-EARNED(2)\n              LP-EARNED(3) LXG-GLAMT(1) LXG-GLAMT(2) LXG-GLAMT(3)\n              LP-INTPAID LXE-EARN(1) LXE-EARN(2) LXE-EARN(3)\n              LXE-EARN(4) LXE-EARN(5) LXE-EARN(6) LXE-EARN(7)\n              LXE-WORKER LXE-WORKER2 LP-NOLCHG LP-PREPAY-PENALTY\n              LP-PRORATED-INS-REB LP-EXTRA-PRIN-LFP LP-APPLIED-TO-ESCROW.\n\n      * ADDON-POSTING, LP-APINTOWE HOLDS LN-INTPDTH BEFORE ADDON\n           IF REV-TRCD NOT = \"SP\" AND NOT = \"DC\" AND\n                        NOT ADDON-POSTING\n              MULTIPLY -1 BY LP-APINTOWE.\n\n           IF REB-AMOUNT(1) NOT = 0\n              IF LN-ADDON-FG = \"Y\"\n                 ADD LN-ANTICADJ(1) REB-AMOUNT(1)\n                                         GIVING ADDON-INT-REBATE.\n\n      * FOR PC ACCOUNTS, 'RI' MAY HAVE A VALUE:\n           MOVE SPACES TO HOLD-DL-RVCHGS-CODE(1)\n                          HOLD-DL-RVCHGS-CODE(2)\n                          HOLD-DL-RVCHGS-CODE(3)\n                          HOLD-DL-PARVHELD-CODE\n                          HOLD-DL-PARVPAID-CODE.\n\n           IF LN-SERVACCT NOT = \"Y\"\n              PERFORM CALC-HOLD-LN-ACCERN.\n\n           COMPUTE HOLD-LN-TOTERN =\n                LN-TOTERN\n                    + LP-EARNED(1) + LP-EARNED(2) + LP-EARNED(3)\n                     + LXE-EARN(1) + LXE-EARN(2)  + LXE-EARN(3)\n                     + LXE-EARN(4) + LXE-EARN(5)  + LXE-EARN(6)\n                     + LXE-EARN(7).\n\n           IF LN-SERVACCT NOT = \"Y\"\n              IF NOT ADDON-POSTING\n                  IF REV-TRCD NOT = \"WI\" AND NOT = \"WL\"\n                     IF REV-TRCD NOT = \"RD\"\n                        ADD LP-APINT LP-APLC TO HOLD-LN-TOTERN\n                     ELSE\n                        SUBTRACT LP-TRAMT FROM HOLD-LN-TOTERN.\n\n           MOVE LN-TOTDEF TO HOLD-LN-TOTDFMNTS.\n           IF DF-POSTING\n              IF SP-DEFFRMLA = 97 OR 96 OR 95\n                 COMPUTE HOLD-LN-TOTINT = LN-TOTINT + LP-APINT\n              ELSE\n                 COMPUTE HOLD-LN-TOTDFMNTS = LN-TOTDEF + LP-APINT\n              END-IF\n           ELSE\n              IF REV-TRCD = \"RD\"\n                 COMPUTE HOLD-LN-TOTDFMNTS = LN-TOTDEF - LP-TRAMT\n              ELSE\n                 IF REB-AMOUNT(7) NOT = 0\n                   COMPUTE HOLD-LN-TOTDFMNTS = LN-TOTDEF - REB-AMOUNT(7)\n                   SUBTRACT REB-AMOUNT(7) FROM HOLD-LN-TOTERN.\n\n           IF NOT (DF-POSTING AND (SP-DEFFRMLA = 97 OR 96 OR 95))\n              MOVE LN-TOTINT TO HOLD-LN-TOTINT.\n           MOVE LN-TOTLCHG TO HOLD-LN-TOTLCHG.\n           MOVE LN-TOTSERACCT TO HOLD-LN-TOTSERACCT.\n\n      * PACESETTER DEFFRMLA 8 CAN HAVE LATE CHARGES\n           IF REV-TRCD NOT = \"WL\"\n              IF REVERSE-AFTER-RESCHED-FG = \"N\"\n                 COMPUTE HOLD-LN-TOTLCHG = LN-TOTLCHG + LP-APLC.\n\n           IF REV-TRCD NOT = \"WI\" AND\n                        NOT DF-POSTING AND\n                         NOT ADDON-POSTING\n              COMPUTE HOLD-LN-TOTINT = LN-TOTINT + LP-APINT.\n\n      * UCCC LATE CHARGES\n      * CAN'T TAKE LATE CHARGE ON MONIES PAID WITHIN GRACE DAYS OF DUE DAY\n\n           IF ( SP-LCFRMLA = \"F\" OR \"H\" OR \"I\" OR \"J\" OR \"K\"\n                                 OR \"L\" OR \"M\" OR \"P\" OR \"S\" OR \"T\")\n              IF REV-TRCD = \"PY\" OR \"PA\" OR \"AL\" OR \"PE\" OR \"SS\"\n                         OR \"PO\" OR \"PB\" OR \"SC\" OR \"RN\" OR \"IN\"\n                                 OR \"RB\" OR \"RO\" OR \"PR\" OR \"PC\"\n                                 OR \"PP\" OR \"AH\" OR \"PN\" OR \"PZ\"\n                 MOVE LP-LCPARTIALS TO HOLD-PARTIALS\n                 MOVE LP-LCPAID TO HOLD-LCPAID.\n\n           IF LN-SERVACCT NOT = \"Y\"\n              GO TO BYPASS-SERVICE.\n\n           ADD LP-EARNED(1) TO HOLD-LN-TOTSERACCT.\n\n      * EARNED INTEREST\n           ADD LP-EARNED(2) TO HOLD-LN-TOTSERACCT.\n      * EARNED LCHG\n           ADD LP-EARNED(3) TO HOLD-LN-TOTSERACCT.\n\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "d825b19e2ce0b550f63e8666bca90f0718ffdb45",
+        "name": "BYPASS-SERVICE",
+        "kind": "paragraph",
+        "start_line": 2231,
+        "end_line": 2272,
+        "text": "       BYPASS-SERVICE.\n           MOVE \"RV\" TO LP-TRCD.\n\n      * LET REVERSAL 'RV' RECORD HAVE THE LP-PAYDATE OF THE\n      * RECORD BEING REVERSED:\n           MOVE TRANS-DATE TO LP-TRDATE LP-PAYDATE.\n\n      ***********************************************************\n      * LOGIC FROM BEGINNING OF DISPLAY-ENTRY-LINE IN LONPF8:\n      ***********************************************************\n           SUBTRACT LP-APCUR FROM LP-CURBAL.\n\n      * CANT CHANGE LN-REC IN HERE! LONPF2 WILL EXIT IF LN-REC DOESNT\n      * MATCH WK-SAVE-RECORD\n           MOVE LN-TOTPAYMNTD TO HOLD-LN-TOTPAYMNTD.\n\n      * UPDATE CONTRACTUAL PAYMENTS TO DATE:\n           ADD LP-APCUR TO LN-TOTPAYMNTD\n           IF SP-CAL-RATETYPE(1) = \"Z\"\n              SUBTRACT LP-EXTRA-PRIN-LFP FROM LN-TOTPAYMNTD\n              ADD LP-EXTRA-PRIN-LFP        TO LN-TOTEXCPAYMNTD.\n           IF SP-CONTRFRMLA = \"A\"\n              ADD LP-APLC TO LN-TOTPAYMNTD.\n           ADD LP-APINT TO LN-TOTPAYMNTD.\n\n      * COMPUTE PAID THRU DATE\n           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.\n           PERFORM PAID-THRU-CALCULATION.\n           MOVE PDTH-DATE-FULL TO LP-PDTH-DATE.\n\n      * CANT CHANGE LN-REC IN HERE! LONPF2 WILL EXIT IF LN-REC DOESNT\n      * MATCH WK-SAVE-RECORD\n           MOVE HOLD-LN-TOTPAYMNTD TO LN-TOTPAYMNTD.\n\n           MOVE BP-TRCD TO HOLD-BP-TRCD LP-TRCD.\n           MOVE BP-REFCD TO LP-REFNO HOLD-LP-REFNO.\n\n      * PAYMENT UPDATE\n\n           MOVE LN-ACCTNO TO LOAN-KEY.\n           MOVE LN-SSNO(1) TO BORROWER-KEY.\n\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "45334876ae7374418651",
+    "score": 0.03636363636363636,
+    "rank_sources": {
+      "keyword": 5,
+      "vector": 5
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph WORKING-STORAGE performs reversal",
+    "paragraphs": [
+      {
+        "@search.score": 4.5142384,
+        "para_id": "3691abac255eb431cc7711cc17ccb9d22c474b88",
+        "name": "WORKING-STORAGE",
+        "kind": "paragraph",
+        "start_line": 76,
+        "end_line": 312,
+        "text": "       WORKING-STORAGE SECTION.\n       77  SCCS-IDENTIFIER PIC X(37) VALUE\n           \"@(#)SP/APIPAY S35 02/12/24-15:54:03 >\".\n       COPY \"LIBGB/GB01BR.CPY\".\n       COPY \"LIBGB/GB01BR_SQL.CPY\".\n       COPY \"LIBGB/GBWSBR.CPY\".\n       COPY \"LIBGB/GB01GB.CPY\".\n       COPY \"LIBGB/GB01GB_SQL.CPY\".\n       COPY \"LIBGB/GBWSGB.CPY\".\n       COPY \"LIBLP/LP01SP.CPY\".\n       COPY \"LIBLP/LP01SPA.CPY\".\n       COPY \"LIBLP/LP01SPB.CPY\".\n       COPY \"LIBLP/LP01SPC.CPY\".\n       COPY \"LIBLP/LP01SP_SQL.CPY\".\n       COPY \"LIBLP/LPWSSP.CPY\".\n       COPY \"LIBLP/LP01BW.CPY\".\n       COPY \"LIBLP/LP01BW_SQL.CPY\".\n       COPY \"LIBLP/LPWSBW.CPY\".\n       COPY \"LIBLP/LP01LP.CPY\".\n       COPY \"LIBLP/LP01LP_SQL.CPY\".\n       COPY \"LIBLP/LPWSLP.CPY\".\n       COPY \"LIBLP/LP01LX.CPY\".\n       COPY \"LIBLP/LP01LX_SQL.CPY\".\n       COPY \"LIBLP/LPWSLX.CPY\".\n       COPY \"LIBLP/LP01LXE.CPY\".\n       COPY \"LIBLP/LP01LXE_SQL.CPY\".\n       COPY \"LIBLP/LPWSLXE.CPY\".\n       COPY \"LIBLP/LP01LXG.CPY\".\n       COPY \"LIBLP/LP01LXG_SQL.CPY\".\n       COPY \"LIBLP/LPWSLXG.CPY\".\n       COPY \"LIBLP/LP01CD.CPY\".\n       COPY \"LIBLP/LP01CD_SQL.CPY\".\n       COPY \"LIBLP/LPWSCD.CPY\".\n       COPY \"LIBLP/LP01LN.CPY\".\n       COPY \"LIBLP/LP01LN_SQL.CPY\".\n       COPY \"LIBLP/LPWSLN.CPY\".\n       COPY \"LIBLP/LP01LTI.CPY\".\n       COPY \"LIBLP/LP01LTI_SQL.CPY\".\n       COPY \"LIBLP/LPWSLTI.CPY\".\n       COPY \"LIBLP/LP01LTP.CPY\".\n       COPY \"LIBLP/LP01LTP_SQL.CPY\".\n       COPY \"LIBLP/LPWSLTP.CPY\".\n       COPY \"LIBGL/GL01GI.CPY\".\n       COPY \"LIBGL/GL01GI_SQL.CPY\".\n       COPY \"LIBGL/GLWSGI.CPY\".\n       COPY \"LIBGB/GB01RC.CPY\".\n       COPY \"LIBGB/GB01RC_SQL.CPY\".\n       COPY \"LIBGB/GBWSRC.CPY\".\n       COPY \"LIBLP/LP01BP.CPY\".\n\n       01  WK-IFN              PIC X(2)     VALUE \"WK\".\n       01  LOG-PATH.\n           03  LOG-SPOOL-DIR      PIC X(32).\n           03  LOG-PATHNAME       PIC X(10) VALUE \"/0000LOG\".\n\n       01  RETURN-STATUS         PIC 9(6) VALUE 0.\n\n       01  HOLD-LN-TOTPAYMNTD              PIC S9(7)V99 COMP-3.\n       01  HOLD-PROG-BUF-BRANCH            PIC 9(4)    COMP.\n       01  HOLD-BP-PAYOFF-NONCASH          PIC X VALUE \" \".\n       01  HOLD-LBOX-PAYOFF-NONCASH        PIC X VALUE \" \".\n       01  HOLD-BP-ALLOW-PMT-ACCT-OTHBAL   PIC X VALUE \" \".\n       01  HOLD-LBOX-ALLOW-PMT-ACCT-OTHBAL PIC X VALUE \" \".\n       01  HOLD-CD-BR-POST-SS-TRCD         PIC X VALUE \" \".\n       01  WK-KEY              PIC 9(2)     VALUE 0.\n       01  POSTING-ERRCD       PIC XX       VALUE \" \".\n       01  PAYMENT-PROG        PIC X(6)     VALUE SPACES.\n\n       01  TOT-POFF-REBATES    PIC S9(9)V99 COMP.\n\n       01  ORIG-LN-LBOX        PIC X(01)    VALUE \" \".\n       01  ORIG-LN-ALLOTCD     PIC X(01)    VALUE \" \".\n       01  ORIG-BP-TRAMT       PIC S9(9)V99 VALUE 0.\n       01  ORIG-LN-OT2BAL      PIC S9(9)V99 VALUE 0.\n\n      * EXAMPLE; A0201TST\n       01  ORIG-POSTNAME       PIC X(10).\n\n       01  HOLD-EXT-FILPATH.\n           03  FILLER                PIC X(13).\n           03  HOLD-EXT-FILPATH-DATA PIC X(6).\n\n      *-----------------------------------------------------------------\n      * SPOOL DIRECTORY/FILENAME FOR LOG\n      * EO/APIMMDDYY/0000LOG\n      *-----------------------------------------------------------------\n       01  EX-SPOOL.\n           03  EX-SPOOL-BASE          PIC X(09).\n           03  FILLER                 PIC X(01)   VALUE \"/\".\n           03  EX-SPOOL-MACHINE       PIC X(02).\n           03  FILLER                 PIC X(01)   VALUE \"/\".\n           03  EX-SPOOL-DATA-PATH PIC X(6).\n           03  FILLER             PIC X(04)  VALUE \"/EO/\".\n           03  EX-SPOOL-PCODE     PIC X(03)  VALUE \"API\".\n           03  EX-SPOOL-DATE      PIC 9(06).\n           03  EX-SPOOL-FILE.\n               05  FILLER         PIC X(01).\n               05  EX-SPOOL-STEP  PIC 9(04).\n               05  EX-SPOOL-NAME  PIC X(06).\n               05  EX-SPOOL-SUF   PIC X(02).\n\n       01  SAVE-EX-SPOOL-NAME     PIC X(06).\n       01  STEP-COUNT             PIC 9999 VALUE 100.\n\n       01  WORK-USERID.\n           03  WORK-SECURITY        PIC X.\n           03  WORK-BR              PIC 9(4).\n           03  WORK-NAME            PIC X(5).\n\n       01  PAYOFF-TRANS-FG      PIC X        VALUE \" \".\n\n       01  SUB                 PIC 9(6)      COMP-3 VALUE 0.\n       01  SUB1                PIC 9(6)      COMP-3 VALUE 0.\n       01  OVPAID-FLAG         PIC X         VALUE \" \".\n       01  OVPAID-AMT          PIC S9(9)V99.\n       01  DISPLAY-OVPAID-AMT  PIC Z(6)9.99-.\n\n       01  TEST-AMT                PIC S9(9)V99  COMP   VALUE 0.\n       01  NET-POFF-PRIN           PIC S9(9)V99  COMP   VALUE 0.\n       01  WILL-POFF-ACCOUNT       PIC S9(9)V99  COMP   VALUE 0.\n       01  VALID-POSTING-NOPOFF    PIC S9(9)V99  COMP   VALUE 0.\n\n       01  DF-TEST             PIC X         VALUE \" \".\n           88 DF-POSTING                     VALUE \"Y\".\n\n      * REVERSAL WORKERS\n       01  VALID-REVERSAL-FG           PIC X VALUE \" \".\n       01  REVERSE-AFTER-RESCHED-FG    PIC X VALUE \"N\".\n       01  REV-REFNO           PIC X(5)             VALUE \" \".\n       01  REV-TRCD            PIC XX.\n           88  AD-POSTING      VALUE \"AD\" \"A2\" \"A3\" \"A4\"\n                                     \"A5\" \"A6\" \"A7\" \"A8\"\n                                     \"A9\".\n           88  DF-POSTINGX     VALUE \"DF\" \"D2\" \"D3\" \"D4\"\n                                     \"D5\" \"D6\" \"D7\" \"D8\"\n                                     \"D9\".\n           88  ADDON-POSTING   VALUE \"LP\" \"NP\" \"ET\" \"RT\" \"ST\".\n           88  REBATE-POSTING  VALUE \"RC\" \"RA\" \"RP\" \"R1\"\n                                     \"R2\" \"R3\" \"RI\" \"RS\"\n                                     \"RM\" \"RD\".\n       01  HOLD-REV-TRCD      REDEFINES REV-TRCD.\n           03 FILLER           PIC X.\n           03  TRCD-FTST       PIC X.\n           03  TRCD-NODF      REDEFINES TRCD-FTST\n                               PIC 9.\n\n       01  CDV-BUF           VALUE \" \".\n           03  CDV-CD        PIC X(2) OCCURS 83.\n       01  CDV-SUB           PIC 9(6) COMP-3.\n           88 CDV-NO-MATCH   VALUE 0.\n           88 CDV-MATCH      VALUE 1 THRU 100.\n       01  CDV-17            PIC X(40) VALUE\n           \"OTWOAPJDPLP2P3P4P5PIPWTSTPSPACO2W2Z2BKBD\".\n\n       COPY \"LIBLP/LPBP_CMD.CPY\".\n       COPY \"LIBLP/LPBPPATH.CPY\".\n       COPY \"LIBLP/LPWKPATH.CPY\".\n       COPY \"LIBLP/LPIBPCW.CPY\".\n       COPY \"LIBLP/LPRATEW.CPY\".\n       COPY \"LIBLP/LPXDTEW.CPY\".\n       COPY \"LIBLP/LPLCASW.CPY\".\n       COPY \"LIBLP/LPSCHDW.CPY\".\n       COPY \"LIBGB/SPPDTHW.CPY\".\n       COPY \"LIBLP/LPLCHGW.CPY\".\n       COPY \"LIBLP/LPLCAPW.CPY\".\n       COPY \"LIBLP/LPMDTEW.CPY\".\n       COPY \"LIBLP/LPITRMW.CPY\".\n       COPY \"LIBGB/DATERW.CPY\".\n       COPY \"LIBLP/SETCTBLW.CPY\".\n       COPY \"LIBGB/TIMEWK.CPY\".\n       COPY \"LIBGB/REBATEW.CPY\".\n       COPY \"LIBLP/LPPOFFW.CPY\".\n       COPY \"LIBLP/ADDONSPRW.CPY\".\n       COPY \"LIBGB/AGEINGW.CPY\".\n       COPY \"LIBLP/LPUPWKW.CPY\".\n       COPY \"LIBLP/LPCEPPW.CPY\".\n       COPY \"LIBLP/LPAMTSW.CPY\".\n       COPY \"LIBLP/LPPDUEW.CPY\".\n       COPY \"LIBLP/DEFPOLW.CPY\".\n       COPY \"LIBLP/LPAPRSW.CPY\".\n       COPY \"LIBLP/LPAPRZW.CPY\".\n       COPY \"LIBLP/LPUPERW.CPY\".\n       COPY \"LIBLP/POSTDATEW.CPY\".\n       COPY \"LIBGB/GETENVW.CPY\".\n       COPY \"LIBGB/ACCESSW.CPY\".\n       COPY \"LIBGB/DACCESSW.CPY\".\n       COPY \"LIBGB/SYSTEMW.CPY\".\n       COPY \"LIBGB/CONNECTW_SQL.CPY\".\n       COPY \"LIBGB/FILEWK.CPY\".\n       COPY \"LIBGB/MESSWK.CPY\".\n       COPY \"LIBGB/MKTEMPW_CMD.CPY\".\n       COPY \"LIBGB/GETPRW.CPY\".\n       COPY \"LIBGB/RBACTW.CPY\".\n       COPY \"LIBGB/GPENVW.CPY\".\n       COPY \"LIBLP/LPEDPATH.CPY\".\n\n       COPY \"LIBGB/CONAME_EXT.CPY\".\n       COPY \"LIBGB/PRU_LNK.CPY\".\n       01  BT-REC.\n           03  BT-BRANCH             PIC 9(04).\n           03  BT-ACCTNO             PIC 9(06).\n           03  BT-AMT                PIC 9(08)V9(02).\n           03  FILLER REDEFINES BT-AMT.\n               05  BT-SIGN           PIC X.\n               05  BT-AMT2           PIC 9(07)V9(02).\n           03  BT-SIGNED-AMT REDEFINES BT-AMT\n                                     PIC S9(08)V9(02).\n           03  BT-REFCD              PIC X(05).\n           03  BT-PAYDATE            PIC 9(06).\n           03  BT-TRCD               PIC X(2).\n\n\n       01  FORM-PATH.\n           03  FILLER         PIC X.\n           03  FORM-REL       PIC X(7).\n           03  FILLER REDEFINES FORM-REL.\n               05  FILLER     PIC X(4).\n               05  LOGUID-REL PIC X(3).\n           03  FILLER         PIC X.\n           03  FORM-OBJ       PIC XX.\n           03  FILLER         PIC X.\n           03  FORM-NAM.\n               05  FORM-DIRX  PIC XX.\n               05  FILLER     PIC X.\n               05  FORM-PROGX PIC X(6).\n           03  FILLER         PIC X.\n       01  FORM-PATHNAME     PIC X(22).\n       01  EXIT-PATHNAME     PIC X(22).\n       COPY \"LIBLP/LPLOANW.CPY\".\n       COPY \"LIBLP/LPPFBUF.CPY\".\n\n       01  INPUT-STRING              PIC X(33).\n       01  REPAY-TRANS-ID            PIC 9(10).\n\n\n       PROCEDURE DIVISION \n             CHAINING INPUT-STRING REPAY-TRANS-ID.\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "7dfa9d741c7d17207291f91a5213f27a845b0deb",
+        "name": "DECLARATIVES",
+        "kind": "paragraph",
+        "start_line": 313,
+        "end_line": 313,
+        "text": "       DECLARATIVES.\n"
+      },
+      {
+        "@search.score": 1.0,
+        "para_id": "1ca3b79ad14838f1ba8232f7ccfdbe9193baf1fd",
+        "name": "DECLARE-ERROR",
+        "kind": "paragraph",
+        "start_line": 314,
+        "end_line": 339,
+        "text": "       DECLARE-ERROR SECTION.\n           USE AFTER ERROR PROCEDURE ON\n              WK-FILE OP-FILE LOG-FILE.\n       COPY \"LIBGB/DECLARE.CPY\".\n           PERFORM CLOSE-SP1-FILE.\n           PERFORM CLOSE-LTP1-FILE.\n           PERFORM CLOSE-LTI1-FILE.\n           PERFORM CLOSE-LP1-FILE.\n           PERFORM CLOSE-LN1-FILE.\n           PERFORM CLOSE-LXE1-FILE.\n           PERFORM CLOSE-LXG1-FILE.\n           PERFORM CLOSE-LP1-FILE.\n           PERFORM CLOSE-CD1-FILE.\n           PERFORM CLOSE-BW1-FILE.\n           PERFORM CLOSE-GI1-FILE.\n           PERFORM CLOSE-RC2-FILE.\n           PERFORM CLOSE-BR-FILE.\n           PERFORM CLOSE-GB-FILE.\n           CLOSE WK-FILE OP-FILE LOG-FILE.\n       COPY \"LIBGB/DECLAR2.CPY\".\n\n      ******************************************************************\n      *\n      *  PROGRAM CONTROL\n      *\n      ******************************************************************\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "8a0034b5af2c2a5a3d10",
+    "score": 0.036062378167641324,
+    "rank_sources": {
+      "keyword": 4,
+      "vector": 7
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph REVERSAL-RTN-EXIT performs reversal",
+    "paragraphs": [
+      {
+        "@search.score": 7.7588663,
+        "para_id": "9fa8e9d561d3f55eb7050deaa5eb1004f60d801e",
+        "name": "REVERSAL-RTN-EXIT",
+        "kind": "paragraph",
+        "start_line": 2307,
+        "end_line": 2311,
+        "text": "       REVERSAL-RTN-EXIT.\n           EXIT.\n\n\n      **************************************************\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "695e070999502e26203e1570e333d114ab417d6a",
+        "name": "SETUP-LP-RECORD",
+        "kind": "paragraph",
+        "start_line": 2312,
+        "end_line": 2338,
+        "text": "       SETUP-LP-RECORD SECTION.\n      **************************************************\n           PERFORM CLEAR-LP-FILE.\n\n           MOVE LN-STATUSFG    TO LP-STATUSFG.\n           MOVE LN-ACCTNO      TO LP-ACCTNO.\n           MOVE TRANS-DATE     TO LP-TRDATE.\n           MOVE BP-PAYDATE     TO LP-PAYDATE.\n           MOVE LN-SSNO(1)     TO LP-SSNO.\n           MOVE LN-LCPDTH-DATE TO LP-LCPDTH-DATE.\n      * BECAUSE CASH DRAWER IS NEVER REALY UPDATED DURING THE UPDATE\n      * OF A \"PA\",ETC TRANSACTION, WE DECIDED TO DEFAULT THE DRAWER\n      * NUMBER TO ZERO RATHER THAN MAKE THE USER ENTER A UNUSED #.\n           MOVE 0              TO LP-TILLNO.\n           MOVE BATCH-REFCD    TO LP-REFNO.\n\n           IF REPAY-TRANS-ID NUMERIC\n              MOVE REPAY-TRANS-ID TO LP-REPAY-TRANS-ID\n           ELSE\n              MOVE 0              TO LP-REPAY-TRANS-ID.\n\n           PERFORM CLEAR-LXG-FILE.\n\n           MOVE LP-BRNO   TO LXG-BRNO.\n           MOVE LP-ACCTNO TO LXG-ACCTNO.\n\n      **************************************************\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "3a50f3c6ac43ab6665aa",
+    "score": 0.0196078431372549,
+    "rank_sources": {
+      "vector": 1
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph READ-EARNINGS performs reversal",
+    "paragraphs": [
+      {
+        "@search.score": 6.1795135,
+        "para_id": "a2dbd2fc73cb6d09fff7a753951b0b79f171fae8",
+        "name": "READ-EARNINGS",
+        "kind": "paragraph",
+        "start_line": 2730,
+        "end_line": 2746,
+        "text": "       READ-EARNINGS.\n      * GET THE LXE-EARN'S FOR THIS REVERSAL\n           PERFORM OPEN-LXE1-FILE.\n           MOVE LP-BRNO   TO LXE-BRNO.\n           MOVE LP-ACCTNO TO LXE-ACCTNO.\n           MOVE LP-SEQNO  TO LXE-SEQNO.\n           PERFORM READ-LXE1-FILE.\n           PERFORM CLOSE-LXE1-FILE.\n           IF IO-FG NOT = 0\n              MOVE 0 TO LXE-EARN(1) LXE-EARN(2) LXE-EARN(3)\n                        LXE-EARN(4) LXE-EARN(5) LXE-EARN(6)\n                        LXE-EARN(7) LXE-WORKER LXE-WORKER2.\n           IF REV-REBATE NOT = \"Y\"\n              MOVE LXE-REC TO WK-LXE-REC.\n\n\n      ******************************************************************\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "21bd5ebf1ccebe7a8b69a71b5c86089588fbdbb5",
+        "name": "IO-ROUTINES",
+        "kind": "paragraph",
+        "start_line": 2747,
+        "end_line": 2749,
+        "text": "       IO-ROUTINES SECTION.\n      ******************************************************************\n       COPY \"LIBGB/CONNECT_SQL.CPY\".\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "533df7529d1d673ad9d4",
+    "score": 0.018867924528301886,
+    "rank_sources": {
+      "keyword": 3
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph CALL-LONPF2-FOR-REVERSAL performs reversal",
+    "paragraphs": [
+      {
+        "@search.score": 10.219095,
+        "para_id": "d742d6f998fa6824ae8ec5d174b63aec3a1d200d",
+        "name": "CALL-LONPF2-FOR-REVERSAL",
+        "kind": "paragraph",
+        "start_line": 2291,
+        "end_line": 2306,
+        "text": "       CALL-LONPF2-FOR-REVERSAL.\n\n           MOVE \"LP/LONPF2\" TO FORM-NAM.\n           CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME\n                                 PROG-BUF  UPDATE-BUF.\n           CANCEL FORM-PROGX.\n\n      * TEST PROG-BUF (ERRCD) TO MAKE SURE LONPF2 DID NOT REJECT\n      * THE PROPOSED TRANSACTION\n      \n           IF ERRCD = \"E\" OR \"X\" OR \"M\"\n              MOVE \"LONPF2: PMT NOT APPLIED  \" TO LOG-MSG\n              MOVE 69                 TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              MOVE \"E\" TO POSTING-ERRCD.\n\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "9fa8e9d561d3f55eb7050deaa5eb1004f60d801e",
+        "name": "REVERSAL-RTN-EXIT",
+        "kind": "paragraph",
+        "start_line": 2307,
+        "end_line": 2311,
+        "text": "       REVERSAL-RTN-EXIT.\n           EXIT.\n\n\n      **************************************************\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "35c8d8dcff4cc88e8b31",
+    "score": 0.018867924528301886,
+    "rank_sources": {
+      "vector": 3
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.8,
+    "action_role": "REVERSAL",
+    "posting_type": "INTEREST",
+    "gating_cond": "IF VALID-REVERSAL-FG NOT = \"Y\"",
+    "fact_text": "Program APIPAY paragraph MAIN-PROGRAM performs reversal interest when condition: IF VALID-REVERSAL-FG NOT = \"Y\"",
+    "paragraphs": [
+      {
+        "@search.score": 4.6465344,
+        "para_id": "6a854499db76c4ed5f1985e6a5861ef0261c6794",
+        "name": "MAIN-PROGRAM",
+        "kind": "paragraph",
+        "start_line": 340,
+        "end_line": 1119,
+        "text": "       MAIN-PROGRAM SECTION.\n\n      D    STOP MESS.\n\n      * NEED TO GET EXTERNAL VARIABLES SET\n           MOVE \"CO\" TO FORM-OBJ.\n           MOVE \"GB/SETENV\" TO FORM-NAM.\n           CALL FORM-PROGX USING FORM-PATHNAME EXIT-PATHNAME.\n           CANCEL FORM-PROGX.\n\n           PERFORM SQL-CONNECT.\n\n           MOVE FORM-PATHNAME TO FORM-PATH.\n\n           MOVE 99 TO RETURN-STATUS.\n\n           PERFORM GET-GPENV.\n\n           MOVE EXT-FILPATH TO HOLD-EXT-FILPATH.\n           ACCEPT ORIG-POSTNAME FROM ENVIRONMENT \"POSTNAME\".\n\n      * THIS COULD CHANGE TO USE THE BP-REC WITH MORE FIELDS. I USED SIMPLEST TO\n      * START OFF WITH. LOOK AT WHAT IS IN BATPAY.SH IN SH DIRECTORY\n\n           MOVE INPUT-STRING TO BT-REC.\n\n           MOVE BT-ACCTNO    TO BP-LNNO.\n           MOVE 0            TO BP-SSNO.\n           MOVE BT-AMT       TO BP-TRAMT.\n           MOVE BT-REFCD     TO BP-REFCD.\n           MOVE BT-PAYDATE   TO DATE-MMDDYY\n           PERFORM CONVERT-MMDDYY-TO-YYYYMMDD.\n           MOVE DATE-YYYYMMDD TO BP-PAYDATE.\n           MOVE BT-TRCD      TO BP-TRCD.\n\n           PERFORM INITIALIZATION.\n           IF ERRCD NOT = \" \"\n              GO TO END-PROGRAM.\n\n           MOVE BT-BRANCH TO BR-NO.\n           PERFORM READ-BR-FILE.\n           IF IO-FG = 9\n              MOVE 2                TO RETURN-STATUS\n              MOVE \"BRANCH &&&& NOT ON FILE, ABORTED\" TO LOG-MSG\n              INSPECT LOG-MSG REPLACING FIRST \"&&&&\" BY BT-BRANCH\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           PERFORM OPEN-CD1-FILE.\n           MOVE \"BR\"      TO CD-TYPE.\n           MOVE BP-REFCD  TO CD-CODE.\n           PERFORM READ-CD1-FILE.\n           IF (IO-BAD) OR (CD-BR-FILE-TYPE = \"LC\" OR \"C\")\n              MOVE 3                TO RETURN-STATUS\n              MOVE \"REF CODE &&&&& NOT ON FILE, ABORTED\" TO LOG-MSG\n              INSPECT LOG-MSG REPLACING FIRST \"&&&&&\" BY BP-REFCD\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           IF CD-BR-PAYOFF-FG = \"Y\"\n              MOVE \"N\" TO HOLD-BP-ALLOW-PMT-ACCT-OTHBAL\n                          HOLD-LBOX-ALLOW-PMT-ACCT-OTHBAL\n              MOVE \"Y\" TO HOLD-BP-PAYOFF-NONCASH\n                          HOLD-LBOX-PAYOFF-NONCASH\n           ELSE\n              MOVE BR-BP-ALLOW-PMT-ACCT-OTHBAL TO\n                                    HOLD-BP-ALLOW-PMT-ACCT-OTHBAL\n              MOVE BR-LBOX-ALLOW-PMT-ACCT-OTHBAL TO\n                                    HOLD-LBOX-ALLOW-PMT-ACCT-OTHBAL\n              MOVE BR-BP-PAYOFF-NONCASH TO\n                                    HOLD-BP-PAYOFF-NONCASH\n              MOVE BR-LBOX-PAYOFF-NONCASH TO\n                                    HOLD-LBOX-PAYOFF-NONCASH.\n\n           MOVE CD-BR-LC-FG TO BATCH-REFCD-LC-FG.\n\n      * ONLY PROCESS FILES FOR THE MACHINE YOU ARE ON\n\n           IF BR-MACHINE NOT = EXT-FILPATH-MACHINE\n              MOVE 4                TO RETURN-STATUS\n              MOVE \"BRANCH NOT ON THIS MACHINE, ABORTED\" TO LOG-MSG\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           MOVE EXT-FILPATH-BASE           TO FILPATH-BASE.\n           MOVE BR-MACHINE                 TO FILPATH-MACHINE.\n           MOVE BR-DATA-PATH               TO FILPATH-DATA.\n\n           MOVE \"B\"                        TO BW-PATH-OVERRIDE\n                                              LN-PATH-OVERRIDE\n                                              BP-PATH-OVERRIDE\n                                              GB-PATH-OVERRIDE\n                                              LP-PATH-OVERRIDE\n                                              LXE-PATH-OVERRIDE\n                                              LXG-PATH-OVERRIDE.\n\n\n      * NEED FOR LCAS ROUTINES (REPLACES GLOBRD)\n           PERFORM OPEN-GB-FILE.\n           MOVE GB-PATH-OWNBR TO GB-BRNO.\n           MOVE 1             TO GB-NO.\n           PERFORM READ-GB-FILE.\n           PERFORM CLOSE-GB-FILE.\n           IF IO-BAD\n              MOVE 5                       TO RETURN-STATUS\n              MOVE \"GLOBAL REC MISSING FOR &&&&, ABORTED\" TO LOG-MSG\n              INSPECT LOG-MSG REPLACING FIRST \"&&&&\" BY BT-BRANCH\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           PERFORM OPEN-LN1-FILE.\n           PERFORM OPEN-BW1-FILE.\n\n      * CHANGE THE EXTERNAL FILPATH TO THAT OF THE CURRENT BRANCH.\n\n           MOVE BR-MACHINE            TO EXT-FILPATH-MACHINE.\n           MOVE BR-DATA-PATH          TO EXT-FILPATH-DATA.\n           SET ENVIRONMENT \"FIL\"      TO EXT-FILPATH-FIL.\n           MOVE ORIG-POSTNAME         TO WORK-USERID.\n           MOVE BR-NO                 TO WORK-BR.\n           SET ENVIRONMENT \"POSTNAME\" TO WORK-USERID.\n           MOVE BR-NO                 TO BRANCH.\n\n      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n      * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING *\n      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n      *                                                                     *\n      * FROM THIS POINT FORWARD THE USER HAS BE PLACED, LOGICALLY, INTO     *\n      * THE BRANCH FOR WHICH HE/SHE IS POSTING FOR.                         *\n      *                                                                     *\n      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n      * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING * WARNING *\n      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n\n      * TEST RC-STATUS FOR OPEN DAY\n\n           MOVE \"A1\"       TO RC-STATUS.\n           MOVE BR-NO      TO RC-BRNO.\n           MOVE TRANS-DATE TO RC-TRANS-DATE.\n\n           PERFORM OPEN-RC2-FILE.\n           PERFORM READ-RC2-FILE.\n           PERFORM CLOSE-RC2-FILE.\n           IF IO-FG NOT = 0\n              MOVE 6                       TO RETURN-STATUS\n              MOVE \"DAY NOT OPEN, ABORTED\" TO LOG-MSG\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n      * DAY IS OPEN, RESERVE OP FILE SO THE DAY CANNOT BE CLOSED.\n\n           MOVE TRANS-DATE TO DATE-YYYYMMDD.\n           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.\n           MOVE BR-NO       TO OPEN-PATH-BRNO.\n           MOVE DATE-MMDDYY TO OPEN-PATH-TRDATE.\n           PERFORM LOAD-OPEN-FILE.\n           MOVE OPEN-PATH TO ACCESS-BUF.\n           PERFORM ACCESS-CALL.\n           IF STAT NOT = \"00\"\n              MOVE \"COULD NOT OPEN DAY\" TO LOG-MSG\n              MOVE 7                       TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           PERFORM OPEN-OP-FILE.\n\n           IF (BP-PAYDATE = 20202020 OR BP-PAYDATE = 02020202\n                 OR BP-PAYDATE = 0)\n              MOVE TRANS-DATE TO BP-PAYDATE.\n\n           MOVE \" \"      TO OVPAID-FLAG.\n           MOVE 0        TO OVPAID-AMT HOLD-OVPAID-CHECK.\n           MOVE BP-TRAMT TO ORIG-BP-TRAMT.\n           MOVE \" \"      TO POSTING-ERRCD.\n\n           IF (BR-AUTO-PL-REF-AC = \"Y\" OR \"2\" OR \"3\")\n              IF (BP-TRCD = \"PL\" OR \"P2\" OR \"P3\")\n                 MOVE \"AUTO ACCELERATE FG:REJECT\" TO LOG-MSG\n                 MOVE 8                           TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n      * DONT ALLOW THE BACKDATE TO A PRIOR MONTH FOR PL TYPE TRANSACTION\n           IF BP-TRCD =  \"PL\" OR \"P2\" OR \"P3\"\n              MOVE BP-PAYDATE TO NUM-DATE\n              MOVE TRANS-DATE TO SYS-DATE\n              IF NOT (NUM-MO = S-MM AND NUM-CCYY = S-CCYY)\n                 MOVE 9                              TO RETURN-STATUS\n                 MOVE \"BACK DATE IN PRIOR MO, ABORTED\" TO LOG-MSG\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n           MOVE BR-NO   TO LN-OWNBR.\n           MOVE BP-LNNO TO LN-ACCTNO.\n           PERFORM READ-LN1-FILE.\n           IF IO-FG NOT = 0\n              MOVE 10                             TO RETURN-STATUS\n              MOVE \"ACCOUNT NOT ON FILE, ABORTED\" TO LOG-MSG\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           IF LN-ESCROW-FG = \"Y\"\n              MOVE \"ACCOUNT HAS ESCROW\"  TO LOG-MSG\n              MOVE 11                    TO RETURN-STATUS\n              PERFORM CREATE-LOG\n              GO TO END-ROUTINE.\n\n           IF BP-TRCD = \"RV\"\n              PERFORM VALIDATE-REVERSAL\n              IF VALID-REVERSAL-FG NOT = \"Y\"\n                 GO TO END-ROUTINE.\n\n           IF LN-BNKRPTDATE NOT = 0\n              IF BP-TRCD = \"BK\"\n                 MOVE \"BK: ACCT ALREADY BANKRUPT\" TO LOG-MSG\n                 MOVE 12                          TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n           IF LN-BNKRPTDATE = 0\n              IF BP-TRCD = \"BD\"\n                 MOVE \"BD: ACCT NOT BANKRPT STAT\" TO LOG-MSG\n                 MOVE 13                          TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n           IF BP-TRCD =  \"PL\" OR \"P2\" OR \"P3\"\n              IF LN-PLCD = \"P\"\n                 MOVE \"ACCT ALREADY ACTIVE P&L\" TO LOG-MSG\n                 MOVE 14                        TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n           IF BP-TRCD = \"RE\"\n               IF GP-REPO-CODE NOT = \"A\"\n                  MOVE \"MUST HAVE REPO OPTIONS TURNED ON\" TO\n                                                          LOG-MSG\n                  MOVE 15                            TO RETURN-STATUS\n                  PERFORM CREATE-LOG\n                  GO TO END-ROUTINE.\n\n           IF BP-TRCD = \"RE\"\n               IF NOT (LN-REPOCD = \"X\" OR \"S\")\n                  MOVE \"RE: ACCT NOT REPO STATUS!\" TO LOG-MSG\n                  MOVE 16                          TO RETURN-STATUS\n                  PERFORM CREATE-LOG\n                  GO TO END-ROUTINE.\n\n           IF BP-TRCD = \"RE\"\n              MOVE BP-PAYDATE TO IBPC-DATE\n              PERFORM IBPC-TEST\n              IF NOT (IBPC-FG = \"I\" OR LN-LOANTYPE = \"I\")\n                 MOVE \"RE: ACCT NOT INTEREST BEARING!\" TO LOG-MSG\n                 MOVE 17                             TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n      * \"R\" REJECT\n\n           IF HOLD-CD-BR-POST-SS-TRCD = \"R\"\n               IF LN-REPOCD = \"X\"\n                  MOVE \"REPO BATCH RECORD\"   TO LOG-MSG\n                  MOVE 18                    TO RETURN-STATUS\n                  PERFORM CREATE-LOG\n                  GO TO END-ROUTINE.\n\n           IF HOLD-CD-BR-POST-SS-TRCD = \"Y\"\n               IF LN-REPOCD NOT = \"X\"\n                  MOVE \"NON REPO BATCH RECORD!\"  TO LOG-MSG\n                  MOVE 19                        TO RETURN-STATUS\n                  PERFORM CREATE-LOG\n                  GO TO END-ROUTINE.\n\n      * SAVE ORIG VALUES\n\n           MOVE LN-LBOX    TO ORIG-LN-LBOX.\n           MOVE LN-ALLOTCD TO ORIG-LN-ALLOTCD.\n           MOVE LN-OT2BAL  TO ORIG-LN-OT2BAL.\n\n      * SETUP LBOX/ALLOTCD HERE FOR CORRECT LATE CHARGE CALCULATIONS\n\n           MOVE \"N\"        TO LN-LBOX.\n           MOVE \"Y\"        TO LN-ALLOTCD.\n\n      * CLEAR HOLD-BP-TRCD HERE:\n      *  - IF AN EXCEPTION CAUSING A NON CASH TRASACTION REQUIREMENT\n      *       IS FOUND AND BR-????-PAYOFF-NONCASH = \"Y\", THAN \"99\"\n      *       WILL BE PUT INTO HOLD-BP-TRCD TO INDICATE A CALL TO\n      *       LONPFA.C SHOULD BE DONE AND NOT A CALL TO LONPFC.C\n\n           MOVE \" \" TO HOLD-BP-TRCD.\n\n           MOVE BP-REFCD TO LP-REFNO.\n\n      * ADDED ABILITY TO SEND NEGATIVES, IF 1ST BYTE OF AMT  IS \"-\",\n      * BUT BP-ALLOW-NEGATIVE FLAG MUST ALSO BE Y, NEEDED FOR RE'S\n      * (REGACC PR#382). ERROR IF NEG BUT FLAG NOT SET:\n\n           IF BP-TRAMT < 0\n              IF BP-ALLOW-NEGATIVE NOT = \"Y\"\n                 MOVE \"NEGATIVE BUT FLAG NOT SET\" TO LOG-MSG\n                 MOVE 20                          TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n      * TEST FOR PAYMENT AMOUNT = 0.00\n\n           IF NOT (CD-BR-FILE-TYPE = \"B\" OR \"P\")\n              IF BP-ALLOW-NEGATIV"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "25280f8afca9e3baacfa1804983192ddd828beb2",
+        "name": "SKIP-EARLY-PAYOFF-TEST",
+        "kind": "paragraph",
+        "start_line": 1120,
+        "end_line": 1136,
+        "text": "       SKIP-EARLY-PAYOFF-TEST.\n           IF LN-OTHBAL = 0\n              GO TO TEST-PAYOFF-ALLOWED.\n\n           IF ( ( CD-BR-ALLOT-OPTION = \"Y\"          ) AND\n                ( HOLD-BP-ALLOW-PMT-ACCT-OTHBAL = \"Y\" ) )\n              OR\n              ( ( CD-BR-LBOX-OPTION = \"Y\"             ) AND\n                ( HOLD-LBOX-ALLOW-PMT-ACCT-OTHBAL = \"Y\" ) )\n              IF BP-TRAMT > (VALID-POSTING-NOPOFF - LN-OTHBAL)\n                 MOVE \"AMT > POFF - .01 WITH OTH\" TO LOG-MSG\n                 MOVE 51                 TO RETURN-STATUS\n                 PERFORM CREATE-LOG\n                 GO TO END-ROUTINE.\n\n      * TEST IF PAYOFF IS ALLOWED:\n\n"
+      }
+    ]
+  },
+  {
+    "fact_id": "0da051e0f42739908e56",
+    "score": 0.018518518518518517,
+    "rank_sources": {
+      "vector": 4
+    },
+    "program_id": "APIPAY",
+    "fact_confidence": 0.6,
+    "action_role": "REVERSAL",
+    "posting_type": null,
+    "gating_cond": null,
+    "fact_text": "Program APIPAY paragraph INVALID-REVERSAL performs reversal",
+    "paragraphs": [
+      {
+        "@search.score": 5.948493,
+        "para_id": "cb1df810bace481036bc309656ab3647be50ce23",
+        "name": "INVALID-REVERSAL",
+        "kind": "paragraph",
+        "start_line": 1342,
+        "end_line": 1362,
+        "text": "       INVALID-REVERSAL.\n           MOVE \"N\" TO VALID-REVERSAL-FG.\n           MOVE \"NO VALID PMT FOR REVERSAL\" TO LOG-MSG.\n           MOVE 60                 TO RETURN-STATUS.\n           IF LP-PAYDATE NOT = BP-PAYDATE\n              MOVE 61                 TO RETURN-STATUS\n              MOVE \"NO REVERSE: NO DATE MATCH\" TO LOG-MSG.\n           IF LP-TRAMT NOT = BP-TRAMT\n              MOVE 62                 TO RETURN-STATUS\n              MOVE \"NO REVERSE: NO AMT MATCH\"  TO LOG-MSG.\n           IF LP-REFNO NOT = BP-REFCD\n              MOVE 63                 TO RETURN-STATUS\n              MOVE \"NO REVERSE:NO REFNO MATCH\" TO LOG-MSG.\n           IF LP-TRCD = \"RV\" OR LP-REV = \"Y\"\n              MOVE 64                 TO RETURN-STATUS\n              MOVE \"NO REVERSE:LAST PMT IS RV\" TO LOG-MSG.\n           IF LP-TRCD NOT = \"PA\"\n              MOVE 65                 TO RETURN-STATUS\n              MOVE \"NO REVERSE: NOT A 'PA'   \" TO LOG-MSG.\n           PERFORM CREATE-LOG.\n\n"
+      }
+    ],
+    "context_paragraphs": [
+      {
+        "@search.score": 1.0,
+        "para_id": "a8c27ecf37e658c16836d37ae5ef7fae305a5ecd",
+        "name": "EXIT-VALIDATE-REVERSAL",
+        "kind": "paragraph",
+        "start_line": 1363,
+        "end_line": 1366,
+        "text": "       EXIT-VALIDATE-REVERSAL.\n           PERFORM CLOSE-LP1-FILE.\n\n      ******************************************\n"
+      }
+    ]
+  }
+]

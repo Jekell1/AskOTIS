@@ -1,0 +1,52 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-CALL-CJUL Module]
+    B --> C[Initialize CJUL-INPUT]
+    C --> D[Julian Date Processing]
+    
+    D --> E[Mathematical Conversion]
+    E --> F[4-Year Cycle Division]
+    F --> G[Year Calculation]
+    G --> H[Day-of-Year Processing]
+    
+    H --> I[Leap Year Logic]
+    I --> J[Month Determination]
+    J --> K[Day-of-Month Calculation]
+    
+    K --> L[Date Assembly]
+    L --> M[Return to Caller]
+    
+    subgraph "CJUL Working Storage"
+        N[CJWS-JUL-BY4]
+        O[CJWS-MOD-JUL]
+        P[CJWS-WORK]
+        Q[CJWS-MM]
+    end
+    
+    subgraph "DYTOM Array"
+        R[Month Boundaries]
+        S[Jan=0, Feb=31, Mar=59...]
+    end
+    
+    subgraph "Input/Output"
+        T[P-CJUL-JULIAN-DATE Input]
+        U[WS-CJUL-OUT-CCYY]
+        V[WS-CJUL-OUT-MM]
+        W[WS-CJUL-OUT-DD]
+    end
+    
+    B --> N
+    B --> O
+    B --> P
+    B --> Q
+    
+    J --> R
+    J --> S
+    
+    C --> T
+    L --> U
+    L --> V
+    L --> W
+    
+    style A fill:#e1f5fe
+    style M fill:#c8e6c9
+    style B fill:#f3e5f5

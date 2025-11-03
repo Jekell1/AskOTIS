@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFA Payoff Processor Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #17a2b8;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #17a2b8;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #17a2b8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #17a2b8;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #17a2b8;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY</a> > LONPFA Payoff Processor
+    </div>
+
+    <div class="header">
+        <h1>LONPFA Payoff Processor</h1>
+        <div class="meta">
+            <strong>Payment Types:</strong> Payoff Processing (All Transaction Types)<br>
+            <strong>Purpose:</strong> Loan Account Payoff and Closure Processing<br>
+            <strong>Called From:</strong> All LONPF Programs when payoff conditions are met
+        </div>
+    </div>
+
+    <h2>Program Overview</h2>
+    
+    <p><strong>LONPFA</strong> is the specialized processor responsible for handling loan account payoffs and closures. This program is called automatically by other LONPF programs when a payment or transaction results in the complete satisfaction of the loan balance. It ensures proper account closure, final interest calculations, and all necessary administrative tasks for loan completion.</p>
+
+    <div class="success">
+        <p><strong>Account Completion:</strong> LONPFA represents the successful completion of the loan relationship, ensuring all final calculations and closure procedures are properly executed.</p>
+    </div>
+
+    <h3>Key Responsibilities</h3>
+    <ul>
+        <li><strong>Payoff Calculation</strong>: Calculates final payoff amounts including all fees and interest</li>
+        <li><strong>Account Closure</strong>: Properly closes loan accounts upon payoff</li>
+        <li><strong>Final Interest Calculation</strong>: Computes final interest accrual through payoff date</li>
+        <li><strong>Refund Processing</strong>: Handles overpayment refunds and credit balances</li>
+        <li><strong>Reporting and Documentation</strong>: Generates payoff statements and closure documentation</li>
+        <li><strong>Administrative Cleanup</strong>: Performs necessary administrative tasks for account closure</li>
+    </ul>
+
+    <h2>Payoff Processing Logic</h2>
+
+    <h3>Payoff Detection and Triggering</h3>
+    <p>LONPFA is automatically called when:</p>
+    <ul>
+        <li><strong>Zero Balance Achieved</strong>: Payment reduces all balances to zero or credit</li>
+        <li><strong>Payoff Intent</strong>: Transaction is specifically marked as a payoff transaction</li>
+        <li><strong>Overpayment Detected</strong>: Payment exceeds total amount due</li>
+        <li><strong>Final Payment Made</strong>: Last scheduled payment completes the loan</li>
+    </ul>
+
+    <h3>Payoff Processing Workflow</h3>
+    <ol>
+        <li><strong>Pre-Payoff Calculations</strong>
+            <ul>
+                <li>Calculate final interest accrual through payoff date</li>
+                <li>Assess any final fees or charges</li>
+                <li>Determine total payoff amount required</li>
+                <li>Calculate any overpayment or refund amount</li>
+            </ul>
+        </li>
+        <li><strong>Balance Verification</strong>
+            <ul>
+                <li>Verify all loan components are paid in full</li>
+                <li>Check for any outstanding fees or charges</li>
+                <li>Confirm principal balance is zero</li>
+                <li>Validate interest calculations</li>
+            </ul>
+        </li>
+        <li><strong>Account Status Updates</strong>
+            <ul>
+                <li>Update account status to "Paid in Full"</li>
+                <li>Set payoff date and final payment information</li>
+                <li>Zero out all remaining balances</li>
+                <li>Update payment history with final transaction</li>
+            </ul>
+        </li>
+        <li><strong>Refund Processing</strong>
+            <ul>
+                <li>Calculate refund amount for overpayments</li>
+                <li>Generate refund transactions if applicable</li>
+                <li>Handle prepaid interest refunds</li>
+                <li>Process insurance refunds if applicable</li>
+            </ul>
+        </li>
+        <li><strong>Administrative Tasks</strong>
+            <ul>
+                <li>Generate payoff letter or statement</li>
+                <li>Update credit bureau reporting</li>
+                <li>Release collateral liens if applicable</li>
+                <li>Archive account records appropriately</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Payoff Calculation Components</h2>
+
+    <h3>Final Amount Due Calculation</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Description</th>
+                <th>Calculation Method</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Principal Balance</strong></td>
+                <td>Remaining principal amount</td>
+                <td>Current outstanding principal</td>
+            </tr>
+            <tr>
+                <td><strong>Accrued Interest</strong></td>
+                <td>Interest through payoff date</td>
+                <td>Daily interest × Days since last payment</td>
+            </tr>
+            <tr>
+                <td><strong>Late Fees</strong></td>
+                <td>Outstanding late charges</td>
+                <td>Current unpaid late fees</td>
+            </tr>
+            <tr>
+                <td><strong>Other Fees</strong></td>
+                <td>Miscellaneous charges</td>
+                <td>Court costs, collection fees, etc.</td>
+            </tr>
+            <tr>
+                <td><strong>Prepayment Penalty</strong></td>
+                <td>Early payoff penalty (if applicable)</td>
+                <td>Per loan agreement terms</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Refund Components</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Refund Type</th>
+                <th>Description</th>
+                <th>Calculation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Overpayment</strong></td>
+                <td>Payment exceeds amount due</td>
+                <td>Payment Amount - Total Due</td>
+            </tr>
+            <tr>
+                <td><strong>Prepaid Interest</strong></td>
+                <td>Interest paid in advance</td>
+                <td>Based on prepayment method</td>
+            </tr>
+            <tr>
+                <td><strong>Insurance Refund</strong></td>
+                <td>Unearned insurance premium</td>
+                <td>Pro-rated based on remaining term</td>
+            </tr>
+            <tr>
+                <td><strong>Credit Life Refund</strong></td>
+                <td>Unearned credit life premium</td>
+                <td>Per regulatory requirements</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Business Rules and Policies</h2>
+
+    <h3>Payoff Eligibility Rules</h3>
+    <ul>
+        <li><strong>Account Status</strong>: Account must be in active status</li>
+        <li><strong>Payment Application</strong>: All payments must be properly applied</li>
+        <li><strong>Balance Verification</strong>: All balances must be zero or credit</li>
+        <li><strong>Fee Resolution</strong>: All fees and charges must be addressed</li>
+        <li><strong>Legal Clearance</strong>: No legal holds or restrictions on account</li>
+    </ul>
+
+    <h3>Payoff Date Rules</h3>
+    <ul>
+        <li><strong>Interest Cutoff</strong>: Interest calculated through payoff date</li>
+        <li><strong>Weekend/Holiday Handling</strong>: Business day calculation rules</li>
+        <li><strong>Grace Periods</strong>: Application of grace period policies</li>
+        <li><strong>Timing Restrictions</strong>: Processing time limitations</li>
+    </ul>
+
+    <h2>Payoff Types and Scenarios</h2>
+
+    <h3>Standard Payoff Scenarios</h3>
+    <ul>
+        <li><strong>Scheduled Payoff</strong>: Final scheduled payment completes loan</li>
+        <li><strong>Early Payoff</strong>: Customer pays off loan before maturity</li>
+        <li><strong>Refinance Payoff</strong>: Loan paid off through refinancing</li>
+        <li><strong>Sale Payoff</strong>: Collateral sale pays off loan</li>
+        <li><strong>Insurance Payoff</strong>: Insurance settlement pays off loan</li>
+    </ul>
+
+    <h3>Special Payoff Handling</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Scenario</th>
+                <th>Special Considerations</th>
+                <th>Processing Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Prepayment Penalty</strong></td>
+                <td>Early payoff fees may apply</td>
+                <td>Check loan terms and calculate penalty</td>
+            </tr>
+            <tr>
+                <td><strong>Rule of 78s</strong></td>
+                <td>Precomputed interest calculation</td>
+                <td>Calculate earned vs. unearned interest</td>
+            </tr>
+            <tr>
+                <td><strong>Simple Interest</strong></td>
+                <td>Daily interest calculation</td>
+                <td>Calculate interest through payoff date</td>
+            </tr>
+            <tr>
+                <td><strong>Add-On Interest</strong></td>
+                <td>Interest included in original amount</td>
+                <td>Calculate rebate of unearned interest</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Integration Points</h2>
+
+    <h3>Called By Other LONPF Programs</h3>
+    <p>LONPFA is automatically invoked by:</p>
+    <ul>
+        <li><strong>LONPFC</strong>: When payments result in payoff</li>
+        <li><strong>LONPFB</strong>: When rebates result in payoff</li>
+        <li><strong>LONPF9</strong>: When P&L transactions complete payoff</li>
+        <li><strong>LONPF7</strong>: When repossession sales complete payoff</li>
+        <li><strong>LONPF2</strong>: When bankruptcy discharge completes payoff</li>
+    </ul>
+
+    <h3>Input from Calling Programs</h3>
+    <p>Receives payoff context through LONPF buffer:</p>
+    <ul>
+        <li><strong>Account Information</strong>: Complete loan account details</li>
+        <li><strong>Payment Information</strong>: Final payment amount and source</li>
+        <li><strong>Payoff Date</strong>: Effective date of payoff</li>
+        <li><strong>Transaction Context</strong>: How payoff was triggered</li>
+        <li><strong>Calculation Parameters</strong>: Interest calculation methods and rates</li>
+    </ul>
+
+    <h2>Error Handling and Validation</h2>
+
+    <h3>Payoff Validation Checks</h3>
+    <ul>
+        <li><strong>Balance Verification</strong>: Ensure all balances are properly zeroed</li>
+        <li><strong>Interest Accuracy</strong>: Verify interest calculations are correct</li>
+        <li><strong>Fee Completion</strong>: Confirm all fees are resolved</li>
+        <li><strong>Refund Accuracy</strong>: Validate refund calculations</li>
+        <li><strong>Regulatory Compliance</strong>: Ensure compliance with payoff regulations</li>
+    </ul>
+
+    <h3>Error Recovery</h3>
+    <ul>
+        <li><strong>Calculation Errors</strong>: Recalculate and validate amounts</li>
+        <li><strong>Balance Discrepancies</strong>: Research and resolve imbalances</li>
+        <li><strong>System Errors</strong>: Handle file and system processing errors</li>
+        <li><strong>Regulatory Issues</strong>: Ensure compliance with all requirements</li>
+    </ul>
+
+    <div class="warning">
+        <p><strong>Important:</strong> Payoff processing is irreversible and has significant financial and legal implications. All calculations must be accurate and all procedures must be followed precisely.</p>
+    </div>
+
+    <h2>File Dependencies</h2>
+
+    <h3>Files Read/Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master records</td><td>Read/Write</td></tr>
+            <tr><td><strong>LTP1-FILE</strong></td><td>Payment history</td><td>Write</td></tr>
+            <tr><td><strong>LXE1-FILE</strong></td><td>Extended loan data</td><td>Read/Write</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work/calculation file</td><td>Read/Write</td></tr>
+            <tr><td><strong>REF-FILE</strong></td><td>Refund processing</td><td>Write</td></tr>
+            <tr><td><strong>RPT-FILE</strong></td><td>Payoff reporting</td><td>Write</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Regulatory and Compliance</h2>
+
+    <h3>Truth in Lending Requirements</h3>
+    <ul>
+        <li><strong>Payoff Disclosures</strong>: Accurate payoff amount disclosures</li>
+        <li><strong>Interest Calculations</strong>: Compliant interest calculation methods</li>
+        <li><strong>Fee Disclosures</strong>: Full disclosure of all fees and charges</li>
+        <li><strong>Refund Rights</strong>: Proper handling of customer refund rights</li>
+    </ul>
+
+    <h3>State and Federal Requirements</h3>
+    <ul>
+        <li><strong>Interest Rebate Laws</strong>: Compliance with interest rebate requirements</li>
+        <li><strong>Insurance Refunds</strong>: Proper calculation of insurance refunds</li>
+        <li><strong>Lien Release</strong>: Timely release of collateral liens</li>
+        <li><strong>Credit Reporting</strong>: Accurate credit bureau reporting of payoff</li>
+    </ul>
+
+    <h2>Quality Assurance</h2>
+
+    <h3>Calculation Accuracy</h3>
+    <ul>
+        <li><strong>Multiple Validation</strong>: Multiple checks of all calculations</li>
+        <li><strong>Balance Reconciliation</strong>: Ensure all balances reconcile properly</li>
+        <li><strong>Interest Verification</strong>: Independent verification of interest calculations</li>
+        <li><strong>Refund Validation</strong>: Careful validation of all refund amounts</li>
+    </ul>
+
+    <h3>Process Controls</h3>
+    <ul>
+        <li><strong>Management Review</strong>: Review of significant payoffs</li>
+        <li><strong>Exception Reporting</strong>: Reports of unusual payoff transactions</li>
+        <li><strong>Audit Trail</strong>: Complete documentation of payoff process</li>
+        <li><strong>Customer Communication</strong>: Proper customer notification and documentation</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPFA represents the successful conclusion of the loan relationship. Its proper execution ensures customer satisfaction, regulatory compliance, and institutional protection through accurate final calculations and complete documentation.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

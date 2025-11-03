@@ -1,0 +1,41 @@
+[
+  {
+    "path_id": "e53ef42f736316a9b5e252ca5902bd74179c3a03",
+    "root_program_id": "BALAID",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"BALAID\", \"EMCARG\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"BALAID\", \"EMCARG\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 2,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 0.9492
+  },
+  {
+    "path_id": "32580866a06374fce3ad7da360b8aaea38d2c5b0",
+    "root_program_id": "PGMENU",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"PGMENU\", \"GBMENU\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"PGMENU\", \"GBMENU\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 3,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 1.4113
+  },
+  {
+    "path_id": "10e8b53b4477b6b11e451f4846bdfb0b2fa6195f",
+    "root_program_id": "WIMENU",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"WIMENU\", \"CPINQ0\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"WIMENU\", \"CPINQ0\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 3,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 1.4113
+  }
+]

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXCJ
+           SELECT XCJ-FILE ASSIGN TO XCJ-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XCJ-KEY
+                  FILE STATUS FILE-STAT.

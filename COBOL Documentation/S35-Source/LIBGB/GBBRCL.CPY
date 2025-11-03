@@ -1,0 +1,72 @@
+      * COPYMEMBER: LIBGB/GBBRCL
+
+      ******************************************************************
+      *    GBBRCL    BRFILE CLEAR ROUTINE
+      *
+      * REV:
+      * MJD 082797 ADDED BR-NO-FT-EMP AND BR-NO-PT-EMP
+      * KEC 100698 ADDED BR-FAX-NUMBER.
+      * GLF 990715 ADDED BR-TAX-PREBOOK-CUST AND BR-TAX-PREBOOK-NONCUST
+      *            WORLD PR#211
+      *
+      * MJD 990722 *****   RECONCILED TO GB01BR  AND BRMAN1 *****.
+      * CS  020926 ADDED BR-LI-DLCOMM-PP-MAX, BR-LI-DLCOMM-O3-MAX
+      * BAH 030918 REMOVED BR-AS-TRAILER-NUMBER, NOT USED ANYWHERE
+      * CS  040902 ADD BR-REGION-NUMBER [PR#76 REGIONAL]
+      * BAH 151021 ADDED OLD B2 FIELDS, BR-INS-PRODUCER-NUM, ADDITIONAL
+      *            BR-OPEN-BAL, PD0003
+      *  CS 160121 REMOVED BR-REB-METHOD-2, CL-LVL IS NOW BR-REB-METHOD(7)
+      *            O3 IS BR-REB-METHOD(6)
+      * BLM 160928 ADDED CLEAR OF BR-CHECK-DEPOSIT-GL, WORLD PR# 1188
+      * BAH 180215 ADDED CLEAR OF BR-GL-DEBIT-CARD-PROCEEDS, WORLD PR#1306
+      *  CS 190124 ADD CLEAR OF BR-WKDAY-BANKID PR#1353A WORLD
+      *  CS 190408 CLEAR OF FUTURE FIELDS
+      * BAH 20190711 ADDED CLEAR OF BR-FUTURE-PERCENT
+      * BAH 20210421 REMOVED FUTURE FIELDS
+      * BAH 20220921 ADDED CLEAR OF BR-VERITEC-LICENSE, #1570
+      ******************************************************************
+       CLEAR-BR-FILE SECTION.
+           MOVE SPACES TO BR-REC.
+
+      *    -------------------------------------------------------------
+      *    WEEKLY, ETC NOT ALLOWED:
+      *    YEARLY, DAILY NOT ALLOWED EVEN THOUGH THEY WILL WORK
+      *    WHEN WEEKLY IS MADE TO WORK!!!!!!!!!!
+      *    -------------------------------------------------------------
+           MOVE "N" TO BR-UNITPER-FG
+                       BR-UNITPER-Y-D-FG.
+
+           MOVE 0 TO BR-NO BR-PHONE BR-RETAIN BR-NEXT-CHECK
+                     BR-PRINTER(1) BR-PRINTER(2) BR-PRINTER(3)
+                     BR-PRINTER(4) BR-FEE-GL-BRNO BR-BP-NEXT-BATCH
+                     BR-BP-MAXCON BR-BP-MAXREC BR-BP-BRANCH
+                     BR-DEFAULT-SC-CLASS BR-INS-PRODUCER-NUM
+                     BR-NO-FT-EMP BR-NO-PT-EMP BR-NEXT-SOLICIT-NO
+                     BR-FAX-NUMBER 
+                     BR-TAX-PREBOOK-CUST BR-TAX-PREBOOK-NONCUST
+                     BR-GLOVERSHORT BR-GLBANK BR-GLONHAND BR-BANKBAL
+                     BR-RETAIN-AMT BR-BANK-ROUTING-NO
+                     BR-BANK-CLEARING-GL BR-GLBANK-DEPOSIT
+                     BR-DEFAULT-SC-SUBCLASS BR-BYINQ-START-PAGE
+                     BR-DSINQ-START-PAGE BR-TIME-ZONE-FACTOR
+                     BR-NODEF-1ST-X-MONTHS BR-LI-DLCOMM-CMSI-PP-MAX,
+                     BR-LI-DLCOMM-CMSI-O3-MAX BR-REGION-NUMBER.
+
+           MOVE 0 TO BR-COLLECT-PHONE BR-COLLECT-EXT BR-MIN-MONTHS-DEF    
+                     BR-MIN-MONTHS-D2 BR-GL-ESCROW-BALANCE
+                     BR-GL-ESCROW-PAYABLE BR-ACH-BANK-NO
+                     BR-CHECK-DEPOSIT-GL BR-GL-DEBIT-CARD-PROCEEDS
+                     BR-WKDAY-BANKID BR-VERITEC-LICENSE.
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 20
+              MOVE 0 TO BR-OPEN-BAL(SUB)
+           END-PERFORM.
+
+           PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 11
+              MOVE 0 TO BR-REB-METHOD(SUB)
+                        BR-REBDAYS-MONTH(SUB)
+                        BR-ACCRUAL-MONTHS(SUB)
+              IF SUB < 4
+                 MOVE "~~~~~" TO BR-TENDER-CD(SUB)
+              END-IF
+           END-PERFORM.

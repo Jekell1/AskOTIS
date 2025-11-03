@@ -1,0 +1,17 @@
+      * COPYMEMBER: LIBUP/UPFSALTL
+           SELECT ALTL-FILE ASSIGN TO ALTL-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY ALTL-KEY
+                  FILE STATUS FILE-STAT.
+           SELECT ALTL-DONE-FILE ASSIGN ALTL-DONE-PATH
+                  ORGANIZATION LINE SEQUENTIAL
+                  FILE STATUS FILE-STAT.
+~
+~
+~
+~
+~
+~
+~

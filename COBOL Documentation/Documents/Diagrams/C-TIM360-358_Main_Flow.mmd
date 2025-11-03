@@ -1,0 +1,87 @@
+flowchart TD
+    A[Start C-TIM360-358] --> B[PERFORM C-TIMBEG]
+    B --> C[Initialize Working Variables]
+    C --> D[Day Standardization]
+    
+    D --> E{WS-DATE1-DD > 30?}
+    E -->|Yes| F[MOVE 30 TO WS-DATE1-DD]
+    E -->|No| G[Keep Original Day]
+    
+    F --> H{WS-DATE2-DD > 30?}
+    G --> H
+    H -->|Yes| I[MOVE 30 TO WS-DATE2-DD]
+    H -->|No| J[February Processing]
+    
+    I --> J
+    J --> K[MOVE WS-DATE2-CCYY TO LEAP-YEAR-CCYY]
+    K --> L[PERFORM C-LEAP-YEAR-TEST]
+    L --> M[Forward February Logic]
+    
+    M --> N{DATE2-MM = 2 AND DATE2-DD > DATE1-DD?}
+    N -->|Yes| O{DATE2-DD = 29 AND LEAP-YEAR-TRUE?}
+    N -->|No| P[Backward February Logic]
+    
+    O -->|Yes| Q[MOVE 30 TO WS-DATE2-DD]
+    O -->|No| R{DATE2-DD = 28 AND LEAP-YEAR-FALSE?}
+    
+    R -->|Yes| Q
+    R -->|No| S[Continue Processing]
+    
+    P --> T{DATE2-MM = 2 AND DATE2-DD < DATE1-DD?}
+    T -->|Yes| U{DATE2-DD = 29 AND LEAP-YEAR-TRUE?}
+    T -->|No| V[358-Day Processing]
+    
+    U -->|Yes| W[MOVE 29 TO WS-DATE1-DD]
+    U -->|No| X{DATE2-DD = 28 AND LEAP-YEAR-FALSE?}
+    
+    X -->|Yes| Y[MOVE 28 TO WS-DATE1-DD]
+    X -->|No| V
+    
+    Q --> V
+    S --> V
+    W --> V
+    Y --> V
+    
+    V --> Z{TA-YRTYPE = 358?}
+    Z -->|Yes| AA[358 Special Processing]
+    Z -->|No| BB[Final Calculation]
+    
+    AA --> CC[MOVE WS-DATE1-CCYY TO LEAP-YEAR-CCYY]
+    CC --> DD[PERFORM C-LEAP-YEAR-TEST]
+    DD --> EE{DATE1-MM = 2 AND DATE1-DD > DATE2-DD?}
+    
+    EE -->|Yes| FF{LEAP-YEAR-FALSE?}
+    EE -->|No| BB
+    
+    FF -->|Yes| GG[ADD 2 TO WS-DATE1-DD]
+    FF -->|No| HH[ADD 1 TO WS-DATE1-DD]
+    
+    GG --> BB
+    HH --> BB
+    
+    BB --> II[COMPUTE WS-XDAYS]
+    II --> JJ[Years Component: DATE2-CCYY - DATE1-CCYY × 360]
+    JJ --> KK[Months Component: DATE2-MM - DATE1-MM × 30]
+    KK --> LL[Days Component: DATE2-DD - DATE1-DD]
+    LL --> MM[Sum All Components]
+    
+    MM --> NN[PERFORM C-TIMEND]
+    NN --> OO[End C-TIM360-358]
+    
+    style A fill:#e1f5fe
+    style OO fill:#c8e6c9
+    style E fill:#fff3e0
+    style H fill:#fff3e0
+    style N fill:#fff3e0
+    style O fill:#fff3e0
+    style R fill:#fff3e0
+    style T fill:#fff3e0
+    style U fill:#fff3e0
+    style X fill:#fff3e0
+    style Z fill:#fff3e0
+    style EE fill:#fff3e0
+    style FF fill:#fff3e0
+    style B fill:#e8f5e8
+    style L fill:#e8f5e8
+    style DD fill:#e8f5e8
+    style NN fill:#e8f5e8

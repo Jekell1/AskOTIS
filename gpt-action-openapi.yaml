@@ -1,0 +1,125 @@
+openapi: 3.1.0
+info:
+  title: COBOL Search API
+  version: 1.0.0
+  description: |
+    Search COBOL code at line level using Azure AI Search.
+    Provides full-text search, symbol filtering, and code pattern matching.
+servers:
+  - url: https://az-use1-ai-search.search.windows.net
+paths:
+  /indexes/cobol-index/docs/search:
+    post:
+      summary: Search the COBOL index
+      description: |
+        Search across indexed COBOL code lines with support for:
+        - Full-text search with ranking
+        - Symbol type filtering (program, variable, procedure)
+        - Field-specific searches
+        - Result pagination
+      security:
+        - apiKeyHeader: []
+      parameters:
+        - in: query
+          name: api-version
+          required: true
+          schema:
+            type: string
+            default: "2024-07-01"
+          description: Azure Search API version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                search:
+                  type: string
+                  description: |
+                    Search query. Use quotes for exact matches, * for all documents.
+                    Examples: "CUSTOMER-ACCNT-NO", "PROGRAM-ID", "*"
+                  example: "CUSTOMER-ACCNT-NO"
+                select:
+                  type: string
+                  description: |
+                    Comma-separated fields to return.
+                    Available: id,repo_path,line,code,symbol_name,symbol_kind,calls
+                  example: "repo_path,line,code,symbol_name,symbol_kind"
+                filter:
+                  type: string
+                  description: |
+                    OData filter to narrow results.
+                    Examples: "symbol_kind eq 'variable'", "symbol_kind eq 'program'"
+                  example: "symbol_kind eq 'variable'"
+                top:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  default: 50
+                  description: Maximum results to return
+                  example: 20
+                count:
+                  type: boolean
+                  default: false
+                  description: Include total count of matches
+                orderby:
+                  type: string
+                  description: Sort field with optional direction
+                  example: "repo_path"
+              required:
+                - search
+              additionalProperties: false
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "@odata.count":
+                    type: integer
+                    description: Total matching documents (if count=true)
+                  value:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        "@search.score":
+                          type: number
+                          description: Relevance score
+                        id:
+                          type: string
+                          description: Document ID
+                        repo_path:
+                          type: string
+                          description: Source file path
+                        line:
+                          type: integer
+                          description: Line number
+                        code:
+                          type: string
+                          description: COBOL code line
+                        symbol_name:
+                          type: string
+                          description: Symbol name (if extracted)
+                        symbol_kind:
+                          type: string
+                          description: Symbol type (program/variable/procedure)
+                        calls:
+                          type: array
+                          items:
+                            type: string
+                          description: Called programs/procedures
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: api-key
+      description: Azure AI Search API key

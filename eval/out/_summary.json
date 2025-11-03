@@ -1,0 +1,164 @@
+[
+  {
+    "question": "Explain how APIPAY.CBL works",
+    "slug": "explain-how-apipay-cbl-works",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What is the purpose of LONPF2?",
+    "slug": "what-is-the-purpose-of-lonpf2",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Where is the variable BT-BRANCH instigated?",
+    "slug": "where-is-the-variable-bt-branch-instigated",
+    "passed": true,
+    "reasons": [],
+    "scope": "variable",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "How is BT-BRANCH used?",
+    "slug": "how-is-bt-branch-used",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What external programs does APIPAY call?",
+    "slug": "what-external-programs-does-apipay-call",
+    "passed": true,
+    "reasons": [],
+    "scope": "dependency",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What dependencies does LONPF2 have?",
+    "slug": "what-dependencies-does-lonpf2-have",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Where is TIM360 used?",
+    "slug": "where-is-tim360-used",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What does TIM360 do?",
+    "slug": "what-does-tim360-do",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Show me a flow of DAILY.CBL",
+    "slug": "show-me-a-flow-of-daily-cbl",
+    "passed": true,
+    "reasons": [],
+    "scope": "flow",
+    "diagram": true,
+    "evidence_count": 6
+  },
+  {
+    "question": "What CopyBooks are used in DAILY.CBL",
+    "slug": "what-copybooks-are-used-in-daily-cbl",
+    "passed": true,
+    "reasons": [],
+    "scope": "variable",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What programs use SCREEN.CPY",
+    "slug": "what-programs-use-screen-cpy",
+    "passed": true,
+    "reasons": [],
+    "scope": "ui",
+    "diagram": true,
+    "evidence_count": 6
+  },
+  {
+    "question": "Tell me about the variable DS-BRANCH. Where is it initially defined and what is it used for?",
+    "slug": "tell-me-about-the-variable-ds-branch-where-is-it-initially-defined-and",
+    "passed": true,
+    "reasons": [],
+    "scope": "variable",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Show me a flow of user interface screens starting from the main program.",
+    "slug": "show-me-a-flow-of-user-interface-screens-starting-from-the-main-progra",
+    "passed": true,
+    "reasons": [],
+    "scope": "flow",
+    "diagram": true,
+    "evidence_count": 6
+  },
+  {
+    "question": "What is IRMAIN.CBL used for?",
+    "slug": "what-is-irmain-cbl-used-for",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "What does the full set of code do?",
+    "slug": "what-does-the-full-set-of-code-do",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Show me a flow for LNQUOT.CBL",
+    "slug": "show-me-a-flow-for-lnquot-cbl",
+    "passed": true,
+    "reasons": [],
+    "scope": "flow",
+    "diagram": true,
+    "evidence_count": 6
+  },
+  {
+    "question": "How is a loan payment received?",
+    "slug": "how-is-a-loan-payment-received",
+    "passed": true,
+    "reasons": [],
+    "scope": "mixed",
+    "diagram": false,
+    "evidence_count": 6
+  },
+  {
+    "question": "Show me a complete user screen flow from the main menu down to the bottom of the tree.",
+    "slug": "show-me-a-complete-user-screen-flow-from-the-main-menu-down-to-the-bot",
+    "passed": true,
+    "reasons": [],
+    "scope": "flow",
+    "diagram": true,
+    "evidence_count": 6
+  }
+]

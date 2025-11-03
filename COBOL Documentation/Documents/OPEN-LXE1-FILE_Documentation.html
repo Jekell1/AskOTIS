@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPEN-LXE1-FILE Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">OPEN-LXE1-FILE Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="open-lxe1-file-documentation">OPEN-LXE1-FILE Documentation</h1>
+<p><strong>Location:</strong> APIPAY/OPEN-LXE1-FILE.cpy<br />
+<strong>Generated on:</strong> 2025-08-05<br />
+<strong>Program ID:</strong> OPEN-LXE1-FILE<br />
+<strong>Date Written:</strong> See source comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>This routine opens the LXE1 file for processing. It is used to ensure the LXE1 file is available for reading or writing as part of batch or sequential operations.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>File open (sequential or indexed, as defined in the copybook)</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>File assignment and status fields as defined in the copybook.</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>File status code after open attempt.</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<div class="mermaid">graph TD;
+    Start --> Open_LXE1_File;
+    Open_LXE1_File --> Check_Status;
+    Check_Status --> [Success] Success;
+    Check_Status --> [Failure] Error_Handler;
+    Error_Handler --> End;
+    Success --> End;
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title OPEN-LXE1-FILE Batch Timeline
+    section File Open
+    Open LXE1 File :done, 2025-08-05, 1d
+    Check Status  :done, after Open LXE1 File, 1d
+    Handle Error  :active, after Check Status, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li>OPEN-LXE1: Attempts to open the LXE1 file.</li>
+<li>ERROR-HANDLER: Handles any errors encountered during the open operation.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD;
+    InputParams[Input Parameters] --> OpenOp[OPEN-LXE1];
+    OpenOp --> Status[File Status];
+    Status --> Output[Output Fields];
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>None (standalone file open routine)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>If the file open fails, the error handler is invoked and the status code is set accordingly.</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>File not found</li>
+<li>Permission denied</li>
+<li>File already open</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses COBOL OPEN statement for the LXE1 file.</li>
+<li>File status is checked after the open operation.</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Called by batch jobs or other programs requiring access to the LXE1 file.</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>APIPAY/OPEN-LXE1-FILE.cpy (copybook)</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD;
+    OPEN-LXE1 --> ERROR-HANDLER;
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+%%{init: {"theme": "default", "themeVariables": {"primaryColor": "#28a745", "primaryTextColor": "#fff", "primaryBorderColor": "#1e7e34", "lineColor": "#28a745", "sectionBkgColor": "#f8f9fa", "altSectionBkgColor": "#e9ecef", "gridColor": "#dee2e6", "secondaryColor": "#6c757d", "tertiaryColor": "#f8f9fa"}}}%%
+
+flowchart TD
+    A[Start LONPFC] --> B[Initialize Program]
+    B --> C[Connect to SQL]
+    C --> D[Restore Screen]
+    D --> E[Read Configuration Files]
+    E --> F{Batch Payment?}
+    
+    F -->|Yes| G[Batch Payment Routine]
+    F -->|No| H[Selection Module]
+    
+    G --> I[End Routine]
+    H --> I
+    
+    subgraph "Selection Module"
+        H --> J[Initialize Routine]
+        J --> K{Route Code?}
+        K -->|1| L[Initial Transaction]
+        K -->|3| M[Entry Line Calculations]
+        K -->|4| N[Amount Entry]
+        K -->|7| O[Return to Entry]
+        K -->|8| P[Return to Reference Entry]
+        
+        L --> M
+        M --> Q[Display Entry]
+        N --> Q
+        Q --> R[Accept Entry Routine]
+        R --> S[Setup Interest/LC Records]
+        S --> T[Save Screen]
+    end
+    
+    T --> I
+    O --> I
+    P --> I
+    I --> U[End Program]
+    
+    style A fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style U fill:#dc3545,stroke:#c82333,stroke-width:2px,color:#fff
+    style F fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style K fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff

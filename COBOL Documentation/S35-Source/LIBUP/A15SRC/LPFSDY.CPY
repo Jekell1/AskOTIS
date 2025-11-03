@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBLP/LPFSDY
+           SELECT DY-FILE ASSIGN TO "../LP/DYFILE"
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY DY1-KEY
+                  ALTERNATE RECORD KEY DY2-KEY WITH DUPLICATES
+                  FILE STATUS FILE-STAT.

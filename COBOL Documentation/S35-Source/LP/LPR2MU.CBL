@@ -1,0 +1,280 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      LPR2MU.
+      *************************************************************************
+      *
+      *  DIR : LP
+      *  DESC: LOAN REPORTS MENU PAGE 2
+      *
+      * REV:
+      *  020115 BAH NEW, REGACC NEEDED LNAGAU, PR# 1706
+      *  030918 BAH ADDED 5. CUSTOM CHECK EXTRACT REPORT, MODERN 2143
+      *  040102 BAH ADDED 6. FOLLOWUP DATE LISTING, FINMGM, PR# 1487
+      *  040413 BAH ADDED 7. PAYOFF TITLE, REGACC PR# 53
+      *  040524 BAH ADDED 8. TITLE LIEN REPORT/FORM EXTRACT, REGACC PR# 60
+      *  050117 BAH ADDED 9. PERCENT EARNED REPORT, PACE PR# 2454
+      *  050408 BLF ADDED 10. BORROWER DO NOT SOLICIT REPORT, WORLD PR# 393
+      *  060112 BAH ADDED 11. BANKRUPT/LEGAL REPORT, WORLD PR# 452
+      *  060116 BAH ADDED 12. FLASHING MESSAGE REPORT, MODERN PR# 2683
+      *  060509 BAH ADDED 13. PROMISE KEPT REPORT, SUPPORT PR# 2721
+      *  060516 BAH ADDED 14. OPEN CASH DRAWER REPORT, REGACC PR# 131
+      *  060727 BAH ADDED 15. CHARGE OFF/DEFICIENCY BAL LETTER REGACC PR#138
+      *  070411  CS ADDED 16. BANKRUPT/LEGAL REPORT ORDERED BY STATUS DATE
+      *                                                         PR#537
+      *  070524 BLF ADDED 17. INSURANCE AUDIT REPORT, WORLD PR# 543
+      *  071001 BAH ADDED 18 & 19. AML REVIEWS FOR REGENCY PR# 3063
+      *  071001 BAH ADDED 20. BORROWER EMPLOYER REPORT, WORLD PR# 571
+      *  081008 BAH ADDED 21. BORROWER CURRENCY REPORT, REGENCY PR# 3252
+      *  081016 BAH ADDED 22. BANKRUPTCY REPORT, REGACC PR# 223
+      *  081112 KEC ADDED 23. POTENTIAL INCREASED LOANS REPORT;
+      *             WORLD PR#00605
+      *  090612  CS ADDED 24. AGE TRIAL BALANCE IB STATUS LOANS ONLY WITH
+      *             IB TRUE ACCRUAL AMOUNTS REPLACING UNEARNED PR#3374
+      *  100305 BLM ADDED 25. ESCROW TRANSACTION REPORT, REGWAN PR# 3506
+      *  100305 BLM ADDED 26. ESCROW EXPIRATION REPORT, REGWAN PR# 3506
+      *  100414  CS ADDED 27. MEXICO PL OVER/UNDER 5000   PR#680 WORLD
+      *  110415 BLM ADDED 28. ALPAH AGED TRIAL BALANCE, SUPPORT PR#3767
+      *  111122 BLM ADDED 29. MEXICO UNION PMT REPORT, WORLD PR# 771
+      *  120725 BAH ADDED 30. TRANS REGISTER BY ACTIONCD, ACC PR# 4080
+      *  121005 KEC ADDED 31. LOAN PYMTS WITHIN X DAYS    WORLD PR# 821
+      *  121017 BAH ADDED 32. AGED TRIAL BY ACTION CODE, MULLEN PR# 4130
+      *  130305 BAH ADDED 33. DEFERMENTS GRANTED, AMERICAN THRIFT, PR# 4216
+      *  130813 BLM ADDED 34. PB RENEWALS < 10% REPORT/EXTRACT,
+      *                       WORLD, PR# 916
+      *  130905 BLM ADDED 35. GA 4% CLOSING FEE REPORT, WORLD PR# 921
+      *  140224 BLM ADDED 36. LOANS BY BORROWER STATE REPORT, WORLD PR# 968
+      *  140626 BLM ADDED OPTION FOR REPORT MENU, PAGE 3 (F4), WORLD PR# 1000
+      *  150326  CS CHANGED M06 FROM FOLLOW TO FOLRPT,DUPLICATE IN WI
+      *  160118 BLM, WASN'T RUNNING, DIDN'T HAVE NEW LOGIC TO NOT RETURN TO
+      *         TCLP, NOT SURE IF WE MISSED IT OR WHAT?
+      *  190815 COMMENT #5 SP/RPT4NX, #19, NP/KNOWIV
+      *  20191030 REMOVE 27. MEXICO PL OVER/UNDER 5000 "LP/PL5000" PER KM
+      *  2023.0523 MOVED 3 SELECTIONS FROM LPR3MU TO 7,8 AND 9
+      * SMR 2024-0201 ADDED OTIS TRACE LOGGING LOGIC
+      *************************************************************************
+       COPY "LIBGB/MENU1A.CPY".
+       COPY "LIBLP/LPR2MU_DEF.CPY".
+       COPY "LIBLP/LPR2MU_WKS.CPY".
+       COPY "LIBGB/MENU1B.CPY".
+       COPY "LIBLP/LPR2MU_SCN.CPY".
+       PROCEDURE DIVISION
+             USING FORM-PATHNAME EXIT-PATHNAME.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEED TO SET EXT-TCLP-TRACE-FORM-PATHNAME BEFORE GOING INTO
+      *    'TRACE-PROGRAM-START' SO THAT IT CAN GET THE EXACT PROGRAM
+      *    NAME IN THE TRACE LOG.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE FORM-PATHNAME TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "LPR2MU"      TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-PROGRAM-START.
+
+       DISPLAY-MENU.
+      D    STOP MESS.
+           MOVE FORM-PATHNAME TO FORM-PATH EXIT-PATHNAME.
+           MOVE "LPR2MU" TO VDU-FORM-NAME.
+
+           PERFORM FORM-RESET.
+
+           ACCEPT GP-REC FROM ENVIRONMENT "GPENV".
+
+      * SECURITY CHECK
+           MOVE FORM-PATH TO CHKSEC-FORM-PATH.
+           CALL "CHKSEC" USING CHKSEC-FIELDS.
+           CANCEL "CHKSEC".
+
+           PERFORM MISC-TRACE-RETURN.               *> UPDATE TRACE LOG
+
+           IF CHKSEC-STAT NOT = "00"
+              MOVE "1>" TO STAT VDUSTATUS
+              GO TO MENU-EXIT.
+
+       GET-MENU-SELECTION-CLR.
+           MOVE 0 TO VDU-PROGRAMMING.
+
+      ************************************************
+      *    GET SELECTION
+      ************************************************
+       GET-MENU-SELECTION.
+           MOVE FORM-LIST TO WR-LIST.
+           MOVE SPACES TO WR-BUF.
+           PERFORM CALL-WRFORM.
+
+           MOVE "E  N020SEL." TO VDU.
+           PERFORM SCREENIO.
+           MOVE VDUNUM0 TO FORM-BUF.
+
+           IF VDUSTATUS = "10"
+              MOVE 1 TO RETURN-CODE
+              GO TO EXIT-PROG.
+
+       MENU-EXIT.
+           IF VDUSTATUS = "1>"
+              MOVE "LP/LPRPMU" TO FORM-NAM
+              GO TO EXIT-PROG.
+           IF VDUSTATUS = "1<"
+              MOVE "GB/PERUSE" TO FORM-NAM
+              GO TO RUN-PROG.
+           IF VDUSTATUS NOT = "00"
+              GO TO GET-MENU-SELECTION.
+
+      * MUST INITIALIZE FOR MENU SELECTIONS, IF PREVIOUSLY RAN IN BATCH
+      * THE EXT-ROUTE-BUF WONT BE CORRECT
+           MOVE "00" TO EXT-ROUTE-BUF.
+
+           GO TO M01 M02 M03 M04 M05 M06 M07 M08
+                 M09 M10 M11 M12 M13 M14 M15 M16
+                 M17 M18 M19 M20 M21 M22 M23 M24
+                 M25 M26 M27 M28 M29 M30 M31 M32
+                 M33 M34 M35 M36
+              DEPENDING ON FORM-BUF.
+
+           GO TO GET-MENU-SELECTION.
+
+       M01. MOVE "LP/LASTPY" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M02. MOVE "LP/COLLET" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M03. MOVE "LP/LNAGD2" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M04. GO TO GET-MENU-SELECTION.       
+       M05. GO TO GET-MENU-SELECTION.       
+       M06. MOVE "LP/FOLRPT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M07. MOVE "LP/BWTXT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M08. MOVE "LP/BKREPT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M09. MOVE "LP/AC2DAY" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M10. MOVE "LP/DNSRPT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M11. MOVE "LP/BNKLGL" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M12. GO TO GET-MENU-SELECTION.
+       M13. GO TO GET-MENU-SELECTION.
+       M14. MOVE "LS/DRAWER" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M15. GO TO GET-MENU-SELECTION.
+       M16. MOVE "LP/BNKLG2" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M17. MOVE "LP/INSAUD" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M18. GO TO GET-MENU-SELECTION.
+       M19. GO TO GET-MENU-SELECTION.
+       M20. MOVE "LP/BOREMP" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M21. GO TO GET-MENU-SELECTION.
+       M22. MOVE "LP/BANKRT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M23. MOVE "LP/PILRPT" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M24. GO TO GET-MENU-SELECTION.
+       M25. GO TO GET-MENU-SELECTION.
+       M26. GO TO GET-MENU-SELECTION.
+       M27. GO TO GET-MENU-SELECTION.
+       M28. MOVE "LP/AGEALP" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M29. GO TO GET-MENU-SELECTION.
+       M30. GO TO GET-MENU-SELECTION.
+       M31. GO TO GET-MENU-SELECTION.
+       M32. MOVE "LP/LNAGAC" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M33. MOVE "LP/UERNR2" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M34. MOVE "LP/RENEW1" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M35. MOVE "LP/CLOSRP" TO FORM-NAM.
+            GO TO RUN-PROG.
+       M36. MOVE "LP/BWLNST" TO FORM-NAM.
+            GO TO RUN-PROG.
+
+       RUN-PROG.
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LPR2MU-SCREEN.
+
+           MOVE FORM-PATH TO FORM-PATHNAME.
+           CALL FORM-PROGX USING FORM-PATHNAME EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+
+           PERFORM MISC-TRACE-RETURN.               *> UPDATE TRACE LOG
+
+           IF RETURN-CODE = 1
+              GO TO EXIT-PROG.
+
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEED TO SET EXT-TCLP-TRACE-FORM-PATHNAME BEFORE GOING INTO
+      *    'TRACE-PROGRAM-RETURN' SO THAT IT CAN GET THE EXACT
+      *    PROGRAM NAME IN THE TRACE LOG
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE FORM-PATHNAME TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "LPR2MU"      TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-PROGRAM-RETURN.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           GO TO DISPLAY-MENU.
+       EXIT-PROG.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      *    NEED TO SET EXT-TCLP-TRACE-FORM-PATHNAME BEFORE GOING INTO
+      *    'TRACE-PROGRAM-FINISH' SO THAT IT CAN GET THE EXACT
+      *    PROGRAM NAME IN THE TRACE LOG
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           MOVE FORM-PATHNAME TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "LPR2MU"      TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-PROGRAM-FINISH.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LPR2MU-SCREEN.
+           MOVE FORM-PATH TO FORM-PATHNAME.
+           EXIT PROGRAM.
+
+       COPY "LIBCL/TRACE.CPY".
+       COPY "LIBGB/CONAME_XFER.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+
+      ******************************************
+       VDU-CONVERT-FIELD SECTION.
+      ******************************************
+           MOVE "2A" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBLP/LPR2MU_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      ******************************************
+       SETUP-LINK-INFO SECTION.
+      ******************************************
+           MOVE LPR2MU-HELP--FILE TO HELP-LINK-FILE.
+           MOVE LPR2MU-HELP--DIR TO HELP-LINK-DIR.
+
+      ******************************************
+       FORM-RESET SECTION.
+      ******************************************
+           DISPLAY LPR2MU-SCREEN UPON TCLP-MAIN-WINDOW-HANDLE.
+           MOVE LPR2MU-FORM-FIELDS TO WR-BUF.
+           MOVE LPR2MU-FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+           PERFORM CONAME-XFER.
+       FORM-RESET-EXIT.
+           EXIT.
+
+      ******************************************
+       MISC-ROUTINES SECTION.
+      ******************************************
+       COPY "LIBGB/SENDMESS.CPY".
+
+      *=================================================================
+      *    NEED TO SET EXT-TCLP-TRACE-FORM-PATHNAME BEFORE GOING INTO
+      *    'TRACE-PROGRAM-RETURN' SO THAT IT CAN GET THE EXACT
+      *    PROGRAM NAME IN THE TRACE LOG
+      *=================================================================
+       MISC-TRACE-RETURN.
+
+           MOVE FORM-PATHNAME TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "LPR2MU"      TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-PROGRAM-RETURN.
+

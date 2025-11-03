@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM361 Program Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM361 Program Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-tim361-program-documentation">C-TIM361 Program Documentation</h1>
+<hr />
+<p><strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-TIM361<br />
+<strong>Date Written:</strong> See Source Comments</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ul>
+<h2 id="program-overview">Program Overview</h2>
+<p>C-TIM361 computes the elapsed time between two dates using a 360-day year convention, adjusting for leap years and month boundaries. It is used in financial calculations where months are standardized to 30 days.</p>
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Elapsed time calculation between two dates (360-day year type)</li>
+</ul>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><code>WS-DATE1-CCYY</code>, <code>WS-DATE1-MM</code>, <code>WS-DATE1-DD</code>: Start date (year, month, day)</li>
+<li><code>WS-DATE2-CCYY</code>, <code>WS-DATE2-MM</code>, <code>WS-DATE2-DD</code>: End date (year, month, day)</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><code>WS-XDAYS</code>: Total elapsed days (360-day year basis)</li>
+<li><code>ELAPSED_MONTHS</code>, <code>ELAPSED_DAYS</code>, <code>ELAPSED_REM</code>: Derived fields for reporting</li>
+</ul>
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    A[Start] --> B[PERFORM C-TIMBEG]
+    B --> C[Adjust Date1/Date2 Day Fields]
+    C --> D[Leap Year Adjustment]
+    D --> E[Compute Elapsed Days]
+    E --> F[PERFORM C-TIMEND]
+    F --> G[End]
+</div>
+<h3 id="detailed-flow-see-diagramsc-tim361_detailedmmd">Detailed Flow (see Diagrams/C-TIM361_Detailed.mmd)</h3>
+<p>
+<div class="diagram-container">
+    <h4 class="diagram-title">C-TIM361 Detailed Flow</h4>
+    <div class="mermaid">
+%% C-TIM361 Detailed Flow Diagram
+%% This diagram shows the detailed paragraph and decision flow for C-TIM361
+
+flowchart TD
+    Start([Start]) --> Init[PERFORM C-TIMBEG]
+    Init --> Adjust1[IF WS-DATE1-DD > 30 THEN MOVE 30 TO WS-DATE1-DD]
+    Adjust1 --> Adjust2[IF WS-DATE2-DD > 30 THEN MOVE 30 TO WS-DATE2-DD]
+    Adjust2 --> LeapFeb1[IF WS-DATE2-MM = 2 AND WS-DATE2-DD > WS-DATE1-DD]
+    LeapFeb1 --> LeapTest1[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest1 --> LeapTrue1[IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29 THEN MOVE 30 TO WS-DATE2-DD]
+    LeapTest1 --> LeapFalse1[IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28 THEN MOVE 30 TO WS-DATE2-DD]
+    Adjust2 --> LeapFeb2[IF WS-DATE2-MM = 2 AND WS-DATE2-DD < WS-DATE1-DD]
+    LeapFeb2 --> LeapTest2[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest2 --> LeapTrue2[IF LEAP-YEAR-TRUE AND WS-DATE2-DD = 29 THEN MOVE 29 TO WS-DATE1-DD]
+    LeapTest2 --> LeapFalse2[IF LEAP-YEAR-FALSE AND WS-DATE2-DD = 28 THEN MOVE 28 TO WS-DATE1-DD]
+    Adjust2 --> LeapEdge[IF NOT (WS-DATE1-MM NOT = 2 OR ...)]
+    LeapEdge --> LeapTest3[PERFORM C-LEAP-YEAR-TEST]
+    LeapTest3 --> LeapFalse3[IF LEAP-YEAR-FALSE THEN ADD 2 TO WS-DATE1-DD]
+    LeapTest3 --> LeapTrue3[IF LEAP-YEAR-TRUE THEN ADD 1 TO WS-DATE1-DD]
+    LeapEdge --> Compute[COMPUTE WS-XDAYS]
+    Compute --> End[PERFORM C-TIMEND]
+    End --> Finish([End])
+    </div>
+</div></p>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-TIM361 Batch Timeline
+    section Initialization
+    C-TIMBEG :done, a1, 2025-07-31, 1d
+    section Adjustment
+    Adjust Days :active, a2, after a1, 1d
+    Leap Year Test :a3, after a2, 1d
+    section Calculation
+    Compute Elapsed Days :a4, after a3, 1d
+    section Finalization
+    C-TIMEND :a5, after a4, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-TIMBEG</strong>: Initializes working variables.</li>
+<li><strong>Adjust Date1/Date2 Day Fields</strong>: Ensures day fields do not exceed 30, handles February edge cases.</li>
+<li><strong>Leap Year Adjustment</strong>: Calls C-LEAP-YEAR-TEST to adjust for leap years.</li>
+<li><strong>Compute Elapsed Days</strong>: Calculates elapsed days using the 360-day year formula.</li>
+<li><strong>C-TIMEND</strong>: Finalizes and outputs results.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    WS-DATE1-CCYY --> WS-XDAYS
+    WS-DATE1-MM --> WS-XDAYS
+    WS-DATE1-DD --> WS-XDAYS
+    WS-DATE2-CCYY --> WS-XDAYS
+    WS-DATE2-MM --> WS-XDAYS
+    WS-DATE2-DD --> WS-XDAYS
+    WS-XDAYS --> ELAPSED_MONTHS
+    WS-XDAYS --> ELAPSED_DAYS
+    WS-XDAYS --> ELAPSED_REM
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>C-TIMBEG (internal)</li>
+<li>C-LEAP-YEAR-TEST (internal)</li>
+<li>C-TIMEND (internal)</li>
+</ul>
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<ul>
+<li>Checks for invalid day values (&gt;30)</li>
+<li>Adjusts for leap year inconsistencies</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates input date fields</li>
+<li>Ensures leap year logic is applied correctly</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Day field exceeds valid range</li>
+<li>Incorrect leap year adjustment</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses working-storage fields for date manipulation</li>
+<li>No external file I/O</li>
+<li>Key algorithms: 360-day year calculation, leap year adjustment</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by other date calculation routines in APIPAY_Inlined.CBL</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; uses internal paragraphs and working-storage</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    C-TIM361 --> C-TIMBEG
+    C-TIM361 --> C-LEAP-YEAR-TEST
+    C-TIM361 --> C-TIMEND
+</div>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

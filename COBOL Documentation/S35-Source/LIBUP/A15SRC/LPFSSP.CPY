@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSSP
+           SELECT SP-FILE ASSIGN TO SP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY SP1-KEY
+                  FILE STATUS FILE-STAT.

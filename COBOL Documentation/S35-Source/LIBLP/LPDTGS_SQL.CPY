@@ -1,0 +1,146 @@
+      * COPYMEMBER: LIBLP/LPDTGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - DTFILE
+      *
+      *=================================================================
+      * REV:
+      * BAH 2021-0510 ***NEW***
+      *
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD DT-REC FROM QDT-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-DT-FIELDS.
+           MOVE QDT-STATUS TO DT-STATUS.
+           MOVE QDT-BRNO TO DT-BRNO.
+           MOVE QDT-NUM TO DT-NUM.
+           MOVE QDT-CLASS TO DT-CLASS.
+           MOVE QDT-ACCTNO TO DT-ACCTNO.
+
+           IF ( QDT-DATE = "1900-01-01" )
+              MOVE ZEROES TO DT-DATE
+           ELSE
+              MOVE QDT-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO DT-DATE.
+
+           MOVE QDT-SEQ TO DT-SEQ.
+
+           IF ( QDT-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO DT-LTOUCH-DATE
+           ELSE
+              MOVE QDT-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO DT-LTOUCH-DATE.
+
+           MOVE QDT-TYPE TO DT-TYPE.
+           MOVE QDT-LPSEQNO TO DT-LPSEQNO.
+           MOVE QDT-TRCD TO DT-TRCD.
+           MOVE QDT-DLRVPRIN-1 TO DT-DLRVPRIN(1).
+           MOVE QDT-DLRVPRIN-2 TO DT-DLRVPRIN(2).
+           MOVE QDT-DLRVPRIN-3 TO DT-DLRVPRIN(3).
+           MOVE QDT-DLRVCHGS-1 TO DT-DLRVCHGS(1).
+           MOVE QDT-DLRVCHGS-2 TO DT-DLRVCHGS(2).
+           MOVE QDT-DLRVCHGS-3 TO DT-DLRVCHGS(3).
+           MOVE QDT-DLPARVHELD TO DT-DLPARVHELD.
+           MOVE QDT-DLPARVPAID TO DT-DLPARVPAID.
+           MOVE QDT-PROCEEDS TO DT-PROCEEDS.
+           MOVE QDT-RELEASED TO DT-RELEASED.
+           MOVE QDT-PAYMENTS TO DT-PAYMENTS.
+           MOVE QDT-CKNO TO DT-CKNO.
+
+           IF ( QDT-CKDATE = "1900-01-01" )
+              MOVE ZEROES TO DT-CKDATE
+           ELSE
+              MOVE QDT-CKDATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO DT-CKDATE.
+
+           MOVE QDT-BATCHID TO DT-BATCHID.
+           MOVE QDT-BATCHID-SEQ TO DT-BATCHID-SEQ.
+           MOVE QDT-PAID TO DT-PAID.
+           MOVE QDT-REVERSE TO DT-REVERSE.
+           MOVE QDT-REVERSE-TRCD TO DT-REVERSE-TRCD.
+           MOVE QDT-PURBAL TO DT-PURBAL.
+           MOVE QDT-APCUR TO DT-APCUR.
+           MOVE QDT-DLRVNO TO DT-DLRVNO.
+           MOVE QDT-SELECTED TO DT-SELECTED.
+           MOVE QDT-P4P5-TRCD TO DT-P4P5-TRCD.
+           MOVE QDT-DLRVPRIN-PAY TO DT-DLRVPRIN-PAY.
+           MOVE QDT-DLRVCHGS-PAY TO DT-DLRVCHGS-PAY.
+           MOVE QDT-DLPARVHELD-PAY TO DT-DLPARVHELD-PAY.
+           MOVE QDT-CHECK-VOID TO DT-CHECK-VOID.
+           MOVE QDT-UNPAID TO DT-UNPAID.
+           MOVE QDT-MEMO TO DT-MEMO.
+           MOVE QDT-EVENT-CD TO DT-EVENT-CD.
+           MOVE QDT-PART-HELD-STATUS TO DT-PART-HELD-STATUS.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QDT-REC FROM DT-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-DT-FIELDS.
+           MOVE DT-STATUS TO QDT-STATUS.
+           MOVE DT-BRNO TO QDT-BRNO.
+           MOVE DT-NUM TO QDT-NUM.
+           MOVE DT-CLASS TO QDT-CLASS.
+           MOVE DT-ACCTNO TO QDT-ACCTNO.
+
+           IF ( DT-DATE = ZEROES )
+              MOVE "1900-01-01" TO QDT-DATE
+           ELSE
+              MOVE DT-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QDT-DATE.
+
+           MOVE DT-SEQ TO QDT-SEQ.
+
+           IF ( DT-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QDT-LTOUCH-DATE
+           ELSE
+              MOVE DT-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QDT-LTOUCH-DATE.
+
+           MOVE DT-TYPE TO QDT-TYPE.
+           MOVE DT-LPSEQNO TO QDT-LPSEQNO.
+           MOVE DT-TRCD TO QDT-TRCD.
+           MOVE DT-DLRVPRIN(1) TO QDT-DLRVPRIN-1.
+           MOVE DT-DLRVPRIN(2) TO QDT-DLRVPRIN-2.
+           MOVE DT-DLRVPRIN(3) TO QDT-DLRVPRIN-3.
+           MOVE DT-DLRVCHGS(1) TO QDT-DLRVCHGS-1.
+           MOVE DT-DLRVCHGS(2) TO QDT-DLRVCHGS-2.
+           MOVE DT-DLRVCHGS(3) TO QDT-DLRVCHGS-3.
+           MOVE DT-DLPARVHELD TO QDT-DLPARVHELD.
+           MOVE DT-DLPARVPAID TO QDT-DLPARVPAID.
+           MOVE DT-PROCEEDS TO QDT-PROCEEDS.
+           MOVE DT-RELEASED TO QDT-RELEASED.
+           MOVE DT-PAYMENTS TO QDT-PAYMENTS.
+           MOVE DT-CKNO TO QDT-CKNO.
+
+           IF ( DT-CKDATE = ZEROES )
+              MOVE "1900-01-01" TO QDT-CKDATE
+           ELSE
+              MOVE DT-CKDATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QDT-CKDATE.
+
+           MOVE DT-BATCHID TO QDT-BATCHID.
+           MOVE DT-BATCHID-SEQ TO QDT-BATCHID-SEQ.
+           MOVE DT-PAID TO QDT-PAID.
+           MOVE DT-REVERSE TO QDT-REVERSE.
+           MOVE DT-REVERSE-TRCD TO QDT-REVERSE-TRCD.
+           MOVE DT-PURBAL TO QDT-PURBAL.
+           MOVE DT-APCUR TO QDT-APCUR.
+           MOVE DT-DLRVNO TO QDT-DLRVNO.
+           MOVE DT-SELECTED TO QDT-SELECTED.
+           MOVE DT-P4P5-TRCD TO QDT-P4P5-TRCD.
+           MOVE DT-DLRVPRIN-PAY TO QDT-DLRVPRIN-PAY.
+           MOVE DT-DLRVCHGS-PAY TO QDT-DLRVCHGS-PAY.
+           MOVE DT-DLPARVHELD-PAY TO QDT-DLPARVHELD-PAY.
+           MOVE DT-CHECK-VOID TO QDT-CHECK-VOID.
+           MOVE DT-UNPAID TO QDT-UNPAID.
+           MOVE DT-MEMO TO QDT-MEMO.
+           MOVE DT-EVENT-CD TO QDT-EVENT-CD.
+           MOVE DT-PART-HELD-STATUS TO QDT-PART-HELD-STATUS.
+ 

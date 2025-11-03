@@ -1,0 +1,36 @@
+gantt
+    title MAIN-PROGRAM Processing Timeline
+    dateFormat X
+    axisFormat %s
+    
+    section Environment Setup
+    GB/SETENV Call           :env1, 0, 1
+    SQL Connection          :env2, after env1, 2
+    GET-GPENV              :env3, after env2, 1
+    Input Processing       :env4, after env3, 2
+    
+    section Initialization
+    INITIALIZATION         :init1, after env4, 3
+    Error Check           :init2, after init1, 1
+    
+    section Validation Phase
+    Branch Validation     :val1, after init2, 2
+    Reference Code Check  :val2, after val1, 2
+    Machine Validation    :val3, after val2, 1
+    Global Config Setup   :val4, after val3, 2
+    Business Day Check    :val5, after val4, 2
+    
+    section Account Processing
+    Account Lookup        :acc1, after val5, 2
+    Account Validation    :acc2, after acc1, 3
+    Payment Validation    :acc3, after acc2, 4
+    G/L Interface Check   :acc4, after acc3, 1
+    
+    section Transaction Processing
+    Transaction Routing   :trans1, after acc4, 1
+    Module Processing     :trans2, after trans1, 5
+    
+    section Completion
+    Success Logging       :comp1, after trans2, 1
+    File Cleanup         :comp2, after comp1, 2
+    Resource Cleanup     :comp3, after comp2, 1

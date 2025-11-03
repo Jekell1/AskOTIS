@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGL/GLFSJD
+      *    INCLUDE IN AUTOCR
+           SELECT JD-FILE ASSIGN JD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY JD1-KEY
+                  FILE STATUS FILE-STAT.

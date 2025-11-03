@@ -1,0 +1,8 @@
+flowchart LR
+    WS_XSIGN["WS-XSIGN"] --> WS_XDAYS["WS-XDAYS"]
+    TA_YRTYPE["TA-YRTYPE"] --> YearType["Year Type Check"]
+    WS_XDAYS --> WS_XMONTHS["WS-XMONTHS"]
+    WS_XMONTHS --> WS_XREM["WS-XREM"]
+    WS_JUL_1["WS-JUL-1"] --> Compare["Compare Julian"]
+    WS_JUL_2["WS-JUL-2"] --> Compare
+    Compare --> WS_XSIGN

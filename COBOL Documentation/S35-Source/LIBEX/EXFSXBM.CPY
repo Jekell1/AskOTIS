@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXBM
+           SELECT XBM-FILE ASSIGN TO XBM-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XBM-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,13 @@
+%% Mermaid: C-TIM360-358 Logic
+flowchart TD
+    Begin([Begin C-TIM360-358]) --> TimBeg[PERFORM C-TIMBEG]
+    TimBeg --> CheckD1[IF WS-DATE1-DD > 30]
+    CheckD1 -- Yes --> SetD1[Set WS-DATE1-DD = 30]
+    CheckD1 -- No --> CheckD2
+    SetD1 --> CheckD2[IF WS-DATE2-DD > 30]
+    CheckD2 -- Yes --> SetD2[Set WS-DATE2-DD = 30]
+    CheckD2 -- No --> LeapYear[Handle leap year for Feb]
+    SetD2 --> LeapYear
+    LeapYear --> Compute[Compute elapsed: (years*360)+(months*30)+(days)]
+    Compute --> TimEnd[PERFORM C-TIMEND]
+    TimEnd --> End([End C-TIM360-358])

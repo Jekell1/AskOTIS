@@ -1,0 +1,167 @@
+[
+  {
+    "root_program_id": "BALAID",
+    "tree_json": "{\"program_id\": \"BALAID\", \"role\": \"DISPATCH\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"EMCKRG\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TRCFILE\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"FOR\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"EMTRR2\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"EMCASH\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"TRPFILE\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 10,
+    "total_ui_nodes": 2,
+    "max_depth": 2,
+    "ui_ratio": 0.2,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "PGMENU",
+    "tree_json": "{\"program_id\": \"PGMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"GBMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}, {\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"EXTVAR\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"STATEMENT\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"LPMNMU\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"PASSWD\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}, {\"program_id\": \"LTMAIN\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"LNMAIN\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 16,
+    "total_ui_nodes": 6,
+    "max_depth": 3,
+    "ui_ratio": 0.375,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "XONPC0",
+    "tree_json": "{\"program_id\": \"XONPC0\", \"role\": \"DISPATCH\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"MORELN\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"FROM\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"LONPC1\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"OF\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 6,
+    "total_ui_nodes": 2,
+    "max_depth": 1,
+    "ui_ratio": 0.3333,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "WIMENU",
+    "tree_json": "{\"program_id\": \"WIMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"CPINQ0\", \"role\": \"UNKNOWN\", \"ui\": true, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"BILNSC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"BWLNS2\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 3, \"children\": [{\"program_id\": \"LNFILE\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 4, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 5, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 5, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}, {\"program_id\": \"LNFILE\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 3, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 4, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 4, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"WAS\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"XFER\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"THE\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"XPINQ\", \"role\": \"UNKNOWN\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"SIMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"PASSWD\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"PROGRAM\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"INBRTR\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"WRFORM\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"MKTEMP\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"GLOBAL\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"SETENV\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"ACUMEM\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 31,
+    "total_ui_nodes": 10,
+    "max_depth": 5,
+    "ui_ratio": 0.3226,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "ZONPC0",
+    "tree_json": "{\"program_id\": \"ZONPC0\", \"role\": \"DISPATCH\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"FROM\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"VERIFY-PASSWORD\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"OF\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"XFER\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 6,
+    "total_ui_nodes": 2,
+    "max_depth": 1,
+    "ui_ratio": 0.3333,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "LONPB0",
+    "tree_json": "{\"program_id\": \"LONPB0\", \"role\": \"DISPATCH\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"WRFORM\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"SS\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"BUYRATE\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"XFER\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"OF\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 7,
+    "total_ui_nodes": 3,
+    "max_depth": 1,
+    "ui_ratio": 0.4286,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "UTMENU",
+    "tree_json": "{\"program_id\": \"UTMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"PASSWD\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"PROGRAM\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"VIDEO\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 11,
+    "total_ui_nodes": 4,
+    "max_depth": 2,
+    "ui_ratio": 0.3636,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "OPMENU",
+    "tree_json": "{\"program_id\": \"OPMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"NEW\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"PASSWD\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"PROGRAM\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 11,
+    "total_ui_nodes": 4,
+    "max_depth": 2,
+    "ui_ratio": 0.3636,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "LPMENU",
+    "tree_json": "{\"program_id\": \"LPMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"WHOAMI\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"C\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 10,
+    "total_ui_nodes": 5,
+    "max_depth": 2,
+    "ui_ratio": 0.5,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "GLMENU",
+    "tree_json": "{\"program_id\": \"GLMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"JEMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"NEW\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 7,
+    "total_ui_nodes": 4,
+    "max_depth": 2,
+    "ui_ratio": 0.5714,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "SPMENU",
+    "tree_json": "{\"program_id\": \"SPMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"LPCVMU\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 3, \"children\": [], \"terminal\": true}], \"terminal\": false}, {\"program_id\": \"LONI\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 2, \"children\": [{\"program_id\": \"GTFORM\", \"role\": \"UNKNOWN\", \"ui\": true, \"depth\": 3, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 3, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 4, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 4, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 15,
+    "total_ui_nodes": 7,
+    "max_depth": 4,
+    "ui_ratio": 0.4667,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "BIBUID",
+    "tree_json": "{\"program_id\": \"BIBUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"ON\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"SSP\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [], \"terminal\": true}], \"terminal\": false}",
+    "total_nodes": 4,
+    "total_ui_nodes": 2,
+    "max_depth": 1,
+    "ui_ratio": 0.5,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "GBMENU",
+    "tree_json": "{\"program_id\": \"GBMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 5,
+    "total_ui_nodes": 3,
+    "max_depth": 2,
+    "ui_ratio": 0.6,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "UPMENU",
+    "tree_json": "{\"program_id\": \"UPMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 5,
+    "total_ui_nodes": 3,
+    "max_depth": 2,
+    "ui_ratio": 0.6,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  },
+  {
+    "root_program_id": "TWMENU",
+    "tree_json": "{\"program_id\": \"TWMENU\", \"role\": \"UI\", \"ui\": true, \"depth\": 0, \"children\": [{\"program_id\": \"FORM-PROGX\", \"role\": \"LEAF\", \"ui\": true, \"depth\": 1, \"children\": [], \"terminal\": true}, {\"program_id\": \"CHKSEC\", \"role\": \"UNKNOWN\", \"ui\": false, \"depth\": 1, \"children\": [{\"program_id\": \"LOGUID\", \"role\": \"UI\", \"ui\": true, \"depth\": 2, \"children\": [], \"terminal\": true}, {\"program_id\": \"TO\", \"role\": \"LEAF\", \"ui\": false, \"depth\": 2, \"children\": [], \"terminal\": true}], \"terminal\": false}], \"terminal\": false}",
+    "total_nodes": 5,
+    "total_ui_nodes": 3,
+    "max_depth": 2,
+    "ui_ratio": 0.6,
+    "generated_at": "2025-09-24T17:10:31Z",
+    "build_params_json": "{\"non_ui_hop_budget\": 4, \"max_depth\": 18, \"prune_dead\": true}",
+    "doc_type": "menu_tree"
+  }
+]

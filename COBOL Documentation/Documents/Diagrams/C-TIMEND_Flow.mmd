@@ -1,0 +1,30 @@
+graph TD
+    A[C-TIMEND Section] --> B[Apply Sign to Days]
+    B --> C{Year Type = 998?}
+    C -->|Yes| D[Apply Sign to Months]
+flowchart TD
+    Start --> ComputeDays
+    ComputeDays --> YearTypeCheck
+    YearTypeCheck -- "998" --> ComputeMonths
+    YearTypeCheck -- "365" --> ComputeJulian
+    YearTypeCheck -- "Other" --> DivideDays
+    ComputeMonths --> ComputeRemainder
+    DivideDays --> ComputeRemainder
+    ComputeJulian --> End
+    ComputeRemainder --> End
+    Start["Start"]
+    ComputeDays["COMPUTE WS-XDAYS = WS-XSIGN * WS-XDAYS"]
+    YearTypeCheck["Check TA-YRTYPE"]
+    ComputeMonths["COMPUTE WS-XMONTHS = WS-XMONTHS * WS-XSIGN"]
+    ComputeRemainder["COMPUTE WS-XREM"]
+    DivideDays["DIVIDE WS-XDAYS BY 30"]
+    ComputeJulian["COMPUTE WS-XDAYS for TA-YRTYPE=365"]
+    
+    subgraph "998 YRTYPE (Elapsed Unit Periods)"
+    D --> D1[WS-XMONTHS = WS-XMONTHS * WS-XSIGN]
+    E --> E1[WS-XREM = WS-XDAYS - WS-XMONTHS * 30]
+    end
+    
+    subgraph "365 YRTYPE (Actual Calendar)"
+    I --> I1[WS-XDAYS = WS-XSIGN * (WS-JUL-2 - WS-JUL-1)]
+    end

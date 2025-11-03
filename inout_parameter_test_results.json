@@ -1,0 +1,28 @@
+{
+  "test_description": "Input/Output parameter direction logic test",
+  "file_info": {
+    "program_id": "INOUT-TEST",
+    "procedure_using": [
+      "L-INPUT-ONLY",
+      "L-OUTPUT-ONLY",
+      "L-INOUT-PARAM",
+      "L-MODIFY-PARAM"
+    ]
+  },
+  "parameter_analysis": {
+    "L-INOUT-PARAM": {
+      "read_count": 0,
+      "write_count": 1,
+      "final_direction": "param_out",
+      "expected_direction": "param_out",
+      "correct": true,
+      "usage_sequence": [
+        {
+          "line": 24,
+          "kind": "write",
+          "direction": "param_out"
+        }
+      ]
+    }
+  }
+}

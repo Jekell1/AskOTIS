@@ -1,0 +1,48 @@
+graph TD
+    A[MAIN-PROGRAM START] --> B[SQL-CONNECT]
+    B --> C[GET-GPENV]
+    C --> D[OPEN-SP1-FILE]
+    D --> E[READ-SP1-FILE]
+    E --> F{SP1 File Valid?}
+    F -->|No| G[INVALID STATE PARAMETER ERROR]
+    F -->|Yes| H[OPEN-BR-FILE]
+    H --> I[READ-BR-FILE]
+    I --> J{BR File Valid?}
+    J -->|No| K[INVALID BRANCH RECORD ERROR]
+    J -->|Yes| L[Set Environment Variables]
+    L --> M{HOLD-BP-TRCD Present?}
+    M -->|Yes| N[BATCH-PAYMENT-ROUTINE]
+    M -->|No| O[SELECTION-MODULE]
+    N --> P[END-ROUTINE]
+    O --> P
+    G --> Q[Error Exit]
+    K --> Q
+
+    subgraph "Batch Processing"
+        N --> R[SET-BAL-IBPC-LPREC]
+        R --> S{Transaction = F9?}
+        S -->|Yes| T[Set PO Transaction]
+        S -->|No| U{Rebate Transaction?}
+        T --> V[REBATE-CANCEL-ROUTINE]
+        U -->|No| V
+        U -->|Yes| W[Skip Rebate Calculation]
+        V --> X[Update LP-APCUR]
+        W --> X
+        X --> Y[Update LP-CURBAL]
+        Y --> Z[PAID-THRU-CALCULATION]
+        Z --> AA[COMPUTE-BW-INTPAID]
+        AA --> BB[SAVE-SCREEN]
+    end
+
+    subgraph "Interactive Processing"
+        O --> CC[Display Menu]
+        CC --> DD[Accept User Input]
+        DD --> EE[Process Selection]
+        EE --> FF[Transaction Processing]
+        FF --> GG[Screen Update]
+    end
+
+    style N fill:#e1f5fe
+    style O fill:#f3e5f5
+    style G fill:#ffcdd2
+    style K fill:#ffcdd2

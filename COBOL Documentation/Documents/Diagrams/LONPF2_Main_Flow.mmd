@@ -1,0 +1,37 @@
+graph TD
+    A[Program Start] --> B[SQL-CONNECT]
+    B --> C[Get Environment Variables]
+    C --> D[Restore Screen Display]
+    D --> E[Open and Read LN1-FILE]
+    E --> F{Loan Record Changed?}
+    F -->|Yes| G[Set Error: Loan Changed]
+    F -->|No| H[Get Control Records]
+    G --> Z[Exit with Error]
+    H --> I[Read State Parameters SP1]
+    I --> J[Read Branch Parameters BR]
+    J --> K[Get Loan Control LC]
+    K --> L[Save Original Values]
+    L --> M[Calculate Payment Due]
+    M --> N{Transaction Type?}
+    
+    N -->|RV - Reversal| O[UPDATE-LP-REVERSE]
+    N -->|Payment Types| P[Normal Processing]
+    
+    O --> Q[File Update Sequence]
+    P --> Q
+    
+    Q --> R[UPDATE-BW1-FILE - Borrower]
+    R --> S[UPDATE-CA1-FILE - Cash Drawer]
+    S --> T[UPDATE-DS1-FILE - Dealer Stats]
+    T --> U[UPDATE-TY1-FILE - Branch Stats]
+    U --> V[UPDATE-LN1-FILE - Loan Master]
+    V --> W[UPDATE-LT1-FILE - Loan Trailers]
+    W --> X[UPDATE-TR1 - Transaction GL]
+    X --> Y[Check Request Processing]
+    Y --> AA[Close Files and Exit]
+    
+    style A fill:#e1f5fe
+    style Z fill:#ffebee
+    style AA fill:#e8f5e8
+    style N fill:#fff3e0
+    style Q fill:#f3e5f5

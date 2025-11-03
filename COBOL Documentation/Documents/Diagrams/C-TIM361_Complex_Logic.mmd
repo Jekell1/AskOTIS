@@ -1,0 +1,76 @@
+flowchart TD
+    A[Complex February Logic Entry] --> B[Evaluate Multiple Conditions]
+    B --> C[Condition 1: Month Check]
+    C --> D{WS-DATE1-MM NOT = 2?}
+    D -->|Yes| E[Skip Special Processing - Not February]
+    D -->|No| F[Condition 2: Day Range Check]
+    
+    F --> G[Sub-condition 2A]
+    G --> H{WS-DATE1-DD < 28?}
+    H -->|Yes| I{WS-DATE1-DD NOT > WS-DATE2-DD?}
+    H -->|No| J[Condition 2B: Date Equality]
+    
+    I -->|Yes| E
+    I -->|No| J
+    
+    J --> K[Sub-condition 2B Components]
+    K --> L{WS-DATE1-DD = WS-DATE2-DD?}
+    L -->|Yes| M{WS-DATE1-MM = WS-DATE2-MM?}
+    L -->|No| N[Condition Failed]
+    
+    M -->|Yes| O{WS-DATE1-CCYY = WS-DATE2-CCYY?}
+    M -->|No| N
+    
+    O -->|Yes| P[Same Date - Skip Special Processing]
+    O -->|No| N
+    
+    N --> Q[Complex Condition Met]
+    Q --> R[Apply February 28 Special Logic]
+    R --> S[Check DATE1 Leap Year]
+    S --> T[MOVE WS-DATE1-CCYY TO LEAP-YEAR-CCYY]
+    T --> U[PERFORM C-LEAP-YEAR-TEST]
+    
+    U --> V{LEAP-YEAR-FALSE?}
+    V -->|Yes| W[Non-Leap Year Adjustment]
+    V -->|No| X[Leap Year Adjustment]
+    
+    W --> Y[ADD 2 TO WS-DATE1-DD]
+    W --> Z[Feb 28 → Feb 30]
+    X --> AA[ADD 1 TO WS-DATE1-DD]
+    X --> BB[Feb 29 → Feb 30]
+    
+    Y --> CC[Special Processing Complete]
+    AA --> CC
+    E --> DD[No Special Processing]
+    P --> DD
+    
+    CC --> EE[Continue to Final Calculation]
+    DD --> EE
+    
+    subgraph "Condition Logic Breakdown"
+        FF[NOT Condition A OR Condition B OR Condition C]
+        GG[A: Month ≠ February]
+        HH[B: Day < 28 AND Day ≤ End Day]
+        II[C: Exact Same Date]
+        JJ[If ALL are false → Apply Special Logic]
+    end
+    
+    subgraph "February 28 Rules"
+        KK[Feb 28 non-leap + 2 days → Feb 30]
+        LL[Feb 29 leap + 1 day → Feb 30]
+        MM[Cross-month spans only]
+        NN[Same date spans excluded]
+    end
+    
+    style A fill:#e3f2fd
+    style EE fill:#e8f5e8
+    style D fill:#fff8e1
+    style H fill:#fff8e1
+    style I fill:#fff8e1
+    style L fill:#fff8e1
+    style M fill:#fff8e1
+    style O fill:#fff8e1
+    style V fill:#fff8e1
+    style Q fill:#fff3e0
+    style R fill:#fff3e0
+    style U fill:#e8f5e8

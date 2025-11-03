@@ -1,0 +1,75 @@
+graph TD
+    A[Deferment Request] --> B[Validate Transaction Code]
+    B --> C{Valid Deferment Code?}
+    C -->|No| D[Display Error - Invalid Code]
+    C -->|Yes| E{Deferment Code Type?}
+    
+    E -->|DF| F[Standard Deferment]
+    E -->|D2-D9| G[Specialized Deferment]
+    
+    F --> H[Check SP-LCFRMLA Settings]
+    G --> H
+    H --> I{Formula Supports Deferment?}
+    I -->|No| J[Display Error - Formula Conflict]
+    I -->|Yes| K[Calculate Deferment Eligibility]
+    
+    K --> L{Deferment Formula Type?}
+    L -->|97| M[Formula 97: 1/3 Payment or Interest]
+    L -->|98| N[Formula 98: Interest-bearing Variation]
+    L -->|99| O[Formula 99: Complex Interest-bearing]
+    L -->|Standard| P[Standard Deferment Calculation]
+    
+    M --> Q[Calculate 1/3 of Regular Payment]
+    Q --> R[Compare with Interest Due]
+    R --> S[Use Lesser Amount]
+    S --> T[Apply Interest-bearing Charges]
+    
+    N --> U[Calculate Interest-bearing Amount]
+    U --> V[Apply to LP-APINT and LP-APCUR]
+    V --> T
+    
+    O --> W[Complex Interest Calculation]
+    W --> X[Validate Against Payment Limits]
+    X --> T
+    
+    P --> Y[Calculate Standard Deferment]
+    Y --> Z[Apply Non-interest Bearing]
+    Z --> AA[Update Deferment Counter]
+    
+    T --> AA
+    AA --> BB{Deferment Amount > 0?}
+    BB -->|No| CC[No Deferment Applied]
+    BB -->|Yes| DD[Apply Deferment Amount]
+    
+    DD --> EE[Update Paid-Through Date]
+    EE --> FF[Calculate New Payment Schedule]
+    FF --> GG[Update Deferment History]
+    GG --> HH{Password Override Available?}
+    
+    HH -->|Yes| II[Allow Manual Override]
+    HH -->|No| JJ[Use Calculated Amount]
+    
+    II --> KK{Override Amount Valid?}
+    KK -->|No| LL[Display Override Error]
+    KK -->|Yes| MM[Apply Override Amount]
+    
+    JJ --> NN[Apply Calculated Amount]
+    MM --> NN
+    NN --> OO[Update LN-LCPDTH-DATE]
+    OO --> PP[Update LN-TOTNODEFACT]
+    PP --> QQ[Update YTD Accumulations]
+    QQ --> RR[Write Deferment Record]
+    RR --> SS[Return Success Status]
+    
+    CC --> TT[Continue Without Deferment]
+    TT --> SS
+    
+    D --> UU[Return to Input]
+    J --> UU
+    LL --> UU
+    
+    style A fill:#e1f5fe
+    style DD fill:#fff3e0
+    style SS fill:#c8e6c9
+    style D fill:#ffcdd2
+    style J fill:#ffcdd2

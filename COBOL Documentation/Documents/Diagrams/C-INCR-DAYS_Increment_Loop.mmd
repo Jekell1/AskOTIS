@@ -1,0 +1,66 @@
+flowchart TD
+    A[Enter Day Loop] --> B{Remaining Days > 0?}
+    B -->|No| C[Exit Loop - Complete]
+    B -->|Yes| D{Direction?}
+    
+    D -->|FORWARD| E[Forward Day Processing]
+    D -->|BACKWARD| F[Backward Day Processing]
+    
+    E --> G[Current Day = Current Day + 1]
+    G --> H[Get Days in Current Month]
+    H --> I{Is Leap Year and February?}
+    I -->|Yes| J[Days = 29]
+    I -->|No| K[Days = Standard Month Days]
+    
+    J --> L{Current Day > Days?}
+    K --> L
+    L -->|No| M[Continue in Same Month]
+    L -->|Yes| N[Month Boundary Crossed]
+    
+    N --> O[Current Day = 1]
+    O --> P[Current Month = Current Month + 1]
+    P --> Q{Current Month > 12?}
+    Q -->|Yes| R[Year Boundary Crossed]
+    Q -->|No| S[Month Updated]
+    
+    R --> T[Current Year = Current Year + 1]
+    T --> U[Current Month = 1]
+    U --> S
+    
+    F --> V[Current Day = Current Day - 1]
+    V --> W{Current Day < 1?}
+    W -->|No| M
+    W -->|Yes| X[Month Boundary Crossed Backward]
+    
+    X --> Y[Current Month = Current Month - 1]
+    Y --> Z{Current Month < 1?}
+    Z -->|Yes| AA[Year Boundary Crossed Backward]
+    Z -->|No| BB[Get Days in New Month]
+    
+    AA --> CC[Current Year = Current Year - 1]
+    CC --> DD[Current Month = 12]
+    DD --> BB
+    
+    BB --> EE{Is Leap Year and February?}
+    EE -->|Yes| FF[Days = 29]
+    EE -->|No| GG[Days = Standard Month Days]
+    
+    FF --> HH[Current Day = Days]
+    GG --> HH
+    HH --> S
+    
+    M --> II[Decrement Remaining Days]
+    S --> II
+    II --> JJ[Remaining = Remaining - 1]
+    JJ --> A
+    
+    style A fill:#e3f2fd
+    style C fill:#c8e6c9
+    style B fill:#fff8e1
+    style D fill:#fff8e1
+    style I fill:#fff8e1
+    style L fill:#fff8e1
+    style Q fill:#fff8e1
+    style W fill:#fff8e1
+    style Z fill:#fff8e1
+    style EE fill:#fff8e1

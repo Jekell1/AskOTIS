@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSGP
+           SELECT OGP-FILE ASSIGN OGP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OGP-KEY
+                  FILE STATUS FILE-STAT.

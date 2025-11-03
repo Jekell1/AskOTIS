@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXLN
+           SELECT XLN-FILE ASSIGN TO XLN-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XLN-KEY
+                  FILE STATUS FILE-STAT.

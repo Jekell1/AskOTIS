@@ -1,0 +1,68 @@
+graph TD
+    A[Error Detection] --> B{Error Type}
+    
+    B -->|Invalid State| C[State Parameter Error]
+    B -->|Invalid Branch| D[Branch Record Error]
+    B -->|Invalid Global| E[Global Record Error]
+    B -->|Password| F[Password Validation Error]
+    B -->|Amount| G[Amount Validation Error]
+    B -->|Balance| H[Balance Limit Error]
+    B -->|Transaction| I[Transaction Code Error]
+    
+    C --> C1[Display: INVALID STATE PARAMETER RECORD]
+    C1 --> C2[Set ERRCD = X]
+    C2 --> Z[Exit Program]
+    
+    D --> D1[Display: INVALID BRANCH RECORD]
+    D1 --> D2[Set ERRCD = X]
+    D2 --> Z
+    
+    E --> E1[Display: INVALID GLOBAL RECORD]
+    E1 --> E2[Set ERRCD = X]
+    E2 --> Z
+    
+    F --> F1{Password Type}
+    F1 -->|WL/WI| F2[Display: WAIVERS NOT ALLOWED WITHOUT PASSWORD]
+    F1 -->|OT/AP| F3[Display: TRANSACTION NOT ALLOWED WITHOUT PASSWORD]
+    F1 -->|WO/W2| F4[Display: WRITE-OFFS NOT ALLOWED WITHOUT PASSWORD]
+    F2 --> F5[Set ROUTE-CD = 7]
+    F3 --> F5
+    F4 --> F5
+    F5 --> Y[Return to Entry]
+    
+    G --> G1{Amount Error Type}
+    G1 -->|Zero Amount| G2[Display: 0.00 NOT ALLOWED]
+    G1 -->|Negative Invalid| G3[Display: NEGATIVE AMOUNT NOT ALLOWED]
+    G1 -->|Exceeds Balance| G4[Display Balance Exceeded Message]
+    G2 --> Y
+    G3 --> Y
+    G4 --> Y
+    
+    H --> H1{Balance Type}
+    H1 -->|Late Charge| H2[Display: EXCEEDS LATE CHARGE BALANCE OF X.XX]
+    H1 -->|Interest| H3[Display: EXCEEDS INTEREST CHARGE BALANCE OF X.XX]
+    H1 -->|Purchase| H4[Display: THE PURCHASE BAL IS X.XX]
+    H2 --> Y
+    H3 --> Y
+    H4 --> Y
+    
+    I --> I1{Transaction Error}
+    I1 -->|Interest Only| I2[Display: INTEREST BEARING LOANS ONLY]
+    I1 -->|No LC Formula| I3[Display: NO LATE CHARGE FORMULA FOR THIS CLASS]
+    I1 -->|Invalid Code| I4[Display: INVALID TRANSACTION CODE]
+    I2 --> Y
+    I3 --> Y
+    I4 --> Y
+    
+    Y --> Y1[Clear Error Fields]
+    Y1 --> Y2[Redisplay Entry Screen]
+    Y2 --> Y3[Wait for User Input]
+    Y3 --> A
+    
+    Z --> Z1[Close All Files]
+    Z1 --> Z2[Return to Calling Program]
+    
+    style A fill:#ffebee
+    style Z fill:#c8e6c9
+    style Y fill:#fff9c4
+    style B fill:#e3f2fd

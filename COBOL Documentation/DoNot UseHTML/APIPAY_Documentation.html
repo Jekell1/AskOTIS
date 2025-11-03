@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIPAY - Single Payment Reference Codes Processing</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">APIPAY - Single Payment Reference Codes Processing</span>
+        </nav>
+        <main class="content">
+<h1>APIPAY - Single Payment Reference Codes Processing</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 21, 2025<br />
+<strong>Program ID:</strong> APIPAY<br />
+<strong>Date Written:</strong> August 16, 2023</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>APIPAY</strong> is a sophisticated COBOL batch processing program designed for <strong>Single Payment Reference Codes Processing</strong>. This program operates in a headless mode ($ sign run, no screens) and is specifically designed for automated batch payment processing in a loan management system.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Command-line batch processing (no interactive screens)</li>
+<li><strong>Input Method:</strong> Accepts payment data via input string parameters</li>
+<li><strong>Processing Type:</strong> Single payment transaction processing per execution</li>
+<li><strong>Output:</strong> Creates transaction logs and updates loan databases</li>
+<li><strong>Error Handling:</strong> Comprehensive validation and error logging</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>APIPAY serves as a critical component in the loan servicing ecosystem by:</p>
+<ol>
+<li><strong>Processing Payment Transactions:</strong> Handles various types of loan payments including regular payments, payoffs, rebates, and special transaction codes</li>
+<li><strong>Data Validation:</strong> Performs extensive validation of input parameters, account status, and business rules</li>
+<li><strong>Database Updates:</strong> Updates multiple loan-related files and maintains transactional integrity</li>
+<li><strong>Audit Trail:</strong> Creates comprehensive logging for compliance and troubleshooting</li>
+<li><strong>Integration:</strong> Interfaces with multiple specialized loan processing programs (LONPF series)</li>
+</ol>
+<h3>Historical Context</h3>
+<p>According to the program comments, APIPAY was created by combining logic from several existing programs:
+- <strong>REFUPD and LONPW9:</strong> For general payment processing logic
+- <strong>OTHUPD and LONPWA:</strong> For "OT" (Other) transaction processing</p>
+<hr />
+<h2>Transaction Types Supported</h2>
+<p>APIPAY supports multiple transaction types through its integration with specialized processing programs:</p>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Processing Program</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RP</strong></td>
+<td>Rebate Payment</td>
+<td>LONPFB</td>
+<td>Interest rebate processing and "IN" rebate fixes</td>
+</tr>
+<tr>
+<td><strong>PL</strong></td>
+<td>Principal Loan Payment</td>
+<td>LONPF9</td>
+<td>Principal-only payments</td>
+</tr>
+<tr>
+<td><strong>P2</strong></td>
+<td>Payment Type 2</td>
+<td>LONPF9</td>
+<td>Special payment processing (requires BT-PL-REASON)</td>
+</tr>
+<tr>
+<td><strong>P3</strong></td>
+<td>Payment Type 3</td>
+<td>LONPF9</td>
+<td>Special payment processing (requires BT-PL-REASON)</td>
+</tr>
+<tr>
+<td><strong>RE</strong></td>
+<td>Repossession</td>
+<td>LONPF7</td>
+<td>Repossession-related transactions</td>
+</tr>
+<tr>
+<td><strong>O2</strong></td>
+<td>Other Type 2</td>
+<td>LONPF7</td>
+<td>Secondary other transaction processing</td>
+</tr>
+<tr>
+<td><strong>RV</strong></td>
+<td>Reversal</td>
+<td>LONPF2</td>
+<td>Transaction reversals</td>
+</tr>
+<tr>
+<td><strong>BK</strong></td>
+<td>Bank</td>
+<td>LONPF2</td>
+<td>Bank-related transactions</td>
+</tr>
+<tr>
+<td><strong>BD</strong></td>
+<td>Bank Draft</td>
+<td>LONPF2</td>
+<td>Bank draft processing</td>
+</tr>
+<tr>
+<td><strong>PY</strong></td>
+<td>Payment</td>
+<td>LONPFC</td>
+<td>Standard payment processing</td>
+</tr>
+<tr>
+<td><strong>PA</strong></td>
+<td>Payment Alternative</td>
+<td>LONPFC</td>
+<td>Alternative payment processing</td>
+</tr>
+<tr>
+<td><strong>OT</strong></td>
+<td>Other</td>
+<td>LONPF7</td>
+<td>General other transaction processing</td>
+</tr>
+</tbody>
+</table>
+<h3>Payment Processing Flow by Transaction Type</h3>
+<p>Each transaction type follows a specific processing pattern:</p>
+<ol>
+<li><strong>Input Validation:</strong> Verify transaction code and associated parameters</li>
+<li><strong>Specialized Processing:</strong> Route to appropriate LONPF program</li>
+<li><strong>Update Processing:</strong> Execute LONPF2 for database updates</li>
+<li><strong>Audit Logging:</strong> Record transaction results</li>
+</ol>
+<hr />
+<h2>Input Parameters</h2>
+<p>APIPAY receives input through two primary mechanisms:</p>
+<h3>Command Line Parameters</h3>
+<p>The program is invoked with two parameters:</p>
+<pre><code>APIPAY.SH (DATA STRING OF BT-REC) (REPAY TRANS ID)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code>SH ./APIPAY.SH 00100786740000001000CUACH090123OT 1234567890
+</code></pre>
+<h3>Input String Structure (BT-REC)</h3>
+<p>The input string contains a packed data structure with the following components:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Position</th>
+<th>Length</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BT-BRANCH</strong></td>
+<td>1-4</td>
+<td>4</td>
+<td>Numeric</td>
+<td>Branch number</td>
+<td>0010</td>
+</tr>
+<tr>
+<td><strong>BT-ACCTNO</strong></td>
+<td>5-10</td>
+<td>6</td>
+<td>Numeric</td>
+<td>Account number</td>
+<td>078674</td>
+</tr>
+<tr>
+<td><strong>BT-AMT</strong></td>
+<td>11-20</td>
+<td>10</td>
+<td>Packed Decimal (8.2)</td>
+<td>Payment amount</td>
+<td>0000001000</td>
+</tr>
+<tr>
+<td><strong>BT-REFCD</strong></td>
+<td>21-25</td>
+<td>5</td>
+<td>Alphanumeric</td>
+<td>Reference code</td>
+<td>CUACH</td>
+</tr>
+<tr>
+<td><strong>BT-PAYDATE</strong></td>
+<td>26-31</td>
+<td>6</td>
+<td>Numeric (MMDDYY)</td>
+<td>Payment date</td>
+<td>090123</td>
+</tr>
+<tr>
+<td><strong>BT-TRCD</strong></td>
+<td>32-33</td>
+<td>2</td>
+<td>Alphanumeric</td>
+<td>Transaction code</td>
+<td>OT</td>
+</tr>
+</tbody>
+</table>
+<h3>Input Validation Rules</h3>
+<ol>
+<li><strong>Branch Number:</strong> Must exist in branch file (BR-FILE)</li>
+<li><strong>Account Number:</strong> Must be valid and exist in loan file (LN-FILE)</li>
+<li><strong>Amount:</strong> Must be greater than zero for most transaction types</li>
+<li><strong>Reference Code:</strong> Must exist in code file (CD-FILE) and be valid for branch</li>
+<li><strong>Payment Date:</strong> Must be valid date format and within business rules</li>
+<li><strong>Transaction Code:</strong> Must be one of the supported transaction types</li>
+</ol>
+<hr />
+<h2>Output Fields</h2>
+<h3>Return Status Codes</h3>
+<p>APIPAY communicates processing results through return status codes:</p>
+<table>
+<thead>
+<tr>
+<th>Return Code</th>
+<th>Description</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0</strong></td>
+<td>Successful Update</td>
+<td>Transaction processed successfully</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>Branch Not Found</td>
+<td>Specified branch number not on file</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>Reference Code Invalid</td>
+<td>Reference code not found or invalid for branch</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>Machine Mismatch</td>
+<td>Branch not assigned to current processing machine</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>Global Record Missing</td>
+<td>Required global configuration record not found</td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td>Day Not Open</td>
+<td>Processing day not open for transactions</td>
+</tr>
+<tr>
+<td><strong>66</strong></td>
+<td>Alt Prepayment Error</td>
+<td>Alternative prepayment processing rejected</td>
+</tr>
+<tr>
+<td><strong>67</strong></td>
+<td>LONPFB Error</td>
+<td>Rebate processing program rejected transaction</td>
+</tr>
+<tr>
+<td><strong>68</strong></td>
+<td>Payment Not Applied</td>
+<td>General payment processing rejection</td>
+</tr>
+<tr>
+<td><strong>69</strong></td>
+<td>Update Rejected</td>
+<td>LONPF2 update program rejected transaction</td>
+</tr>
+<tr>
+<td><strong>99</strong></td>
+<td>General Error</td>
+<td>Unspecified error condition</td>
+</tr>
+</tbody>
+</table>
+<h3>Log File Output</h3>
+<p><strong>Log File Location:</strong> <code>SC9990/EO/APIMMDDYY/0000LOG</code></p>
+<p><strong>Log Record Format:</strong></p>
+<pre><code>LOG-STATUS(4) RETURN-CODE(4) DATE(10) TIME(8) BRANCH(4) ACCOUNT(6) MESSAGE(38)
+</code></pre>
+<p><strong>Example Log Entries:</strong></p>
+<pre><code>PASS 2023/08/18 01:04 PM 0010 078674 SUCCESSFUL UPDATE
+FAIL 2023/08/18 01:04 PM 0010 033333 ACCOUNT NOT ON FILE, ABORTED
+</code></pre>
+<h3>Database Updates</h3>
+<p>APIPAY updates multiple database files through the LONPF program series:</p>
+<ol>
+<li><strong>Loan Master File (LN-FILE):</strong> Account balances, payment history</li>
+<li><strong>Payment History File (LP-FILE):</strong> Transaction records</li>
+<li><strong>General Ledger Files:</strong> Accounting entries</li>
+<li><strong>Audit Files:</strong> Compliance and tracking records</li>
+</ol>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3>High-Level Processing Flow</h3>
+<pre><code class="language-mermaid">graph TD
+    A[Program Start] --&gt; B[Initialize Environment]
+    B --&gt; C[Parse Input Parameters]
+    C --&gt; D{Input Valid?}
+    D --&gt;|No| E[Return Error Code]
+    D --&gt;|Yes| F[Validate Branch]
+    F --&gt; G{Branch Valid?}
+    G --&gt;|No| H[Log Error &amp; Exit]
+    G --&gt;|Yes| I[Validate Reference Code]
+    I --&gt; J{RefCode Valid?}
+    J --&gt;|No| K[Log Error &amp; Exit]
+    J --&gt;|Yes| L[Check Machine Assignment]
+    L --&gt; M{Machine Match?}
+    M --&gt;|No| N[Log Error &amp; Exit]
+    M --&gt;|Yes| O[Validate Processing Day]
+    O --&gt; P{Day Open?}
+    P --&gt;|No| Q[Log Error &amp; Exit]
+    P --&gt;|Yes| R[Read Account Data]
+    R --&gt; S[Determine Transaction Type]
+    S --&gt; T[Route to Specialized Processor]
+    T --&gt; U[Execute Payment Processing]
+    U --&gt; V{Processing Success?}
+    V --&gt;|No| W[Log Error &amp; Exit]
+    V --&gt;|Yes| X[Update Database]
+    X --&gt; Y[Create Audit Log]
+    Y --&gt; Z[Return Success]
+
+    E --&gt; AA[End Program]
+    H --&gt; AA
+    K --&gt; AA
+    N --&gt; AA
+    Q --&gt; AA
+    W --&gt; AA
+    Z --&gt; AA
+</code></pre>
+<h3>Detailed Transaction Processing Flow</h3>
+<p><img alt="Detailed Transaction Processing Flow" src="Diagrams/APIPAY_Transaction_Processing.mmd" /></p>
+<h3>Error Handling Flow</h3>
+<p><img alt="Error Handling Flow" src="Diagrams/APIPAY_Error_Handling.mmd" /></p>
+<h3>Database Update Flow</h3>
+<p><img alt="Database Update Flow" src="Diagrams/APIPAY_Database_Updates.mmd" /></p>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<pre><code class="language-mermaid">gantt
+    title APIPAY Batch Processing Timeline
+    dateFormat X
+    axisFormat %s
+
+    section Initialization
+    Environment Setup    :milestone, env, 0, 0
+    Parameter Parsing    :init, after env, 100ms
+
+    section Validation
+    Branch Validation    :val1, after init, 50ms
+    RefCode Validation   :val2, after val1, 30ms
+    Machine Check        :val3, after val2, 20ms
+    Day Open Check       :val4, after val3, 40ms
+
+    section Data Access
+    Account Read         :data1, after val4, 80ms
+    Supporting Data      :data2, after data1, 60ms
+
+    section Processing
+    Transaction Routing  :proc1, after data2, 20ms
+    Specialized Process  :proc2, after proc1, 200ms
+    Database Update      :proc3, after proc2, 150ms
+
+    section Completion
+    Audit Logging        :log, after proc3, 30ms
+    Cleanup              :clean, after log, 20ms
+    Program Exit         :milestone, exit, after clean, 0
+</code></pre>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>Main Program Structure</h3>
+<p>The program follows a hierarchical structure with clearly defined functional areas:</p>
+<h4>MAIN-PROGRAM SECTION</h4>
+<p><strong>Purpose:</strong> Primary control flow and orchestration
+<strong>Key Actions:</strong>
+- Environment initialization
+- Parameter validation
+- Branch and security validation<br />
+- Transaction routing
+- Error handling coordination</p>
+<h4>INITIALIZATION Section</h4>
+<p><strong>Purpose:</strong> System setup and environment preparation
+<strong>Key Actions:</strong>
+- SQL connection establishment
+- File path configuration
+- Global environment setup
+- Working storage initialization</p>
+<h4>VALIDATION Sections</h4>
+<p><strong>Purpose:</strong> Comprehensive input and business rule validation</p>
+<p><strong>BRANCH-VALIDATION:</strong>
+- Validates branch number existence
+- Checks machine assignment
+- Verifies processing authority</p>
+<p><strong>ACCOUNT-VALIDATION:</strong>
+- Confirms account existence
+- Validates account status
+- Checks processing restrictions</p>
+<p><strong>REFERENCE-CODE-VALIDATION:</strong>
+- Verifies reference code validity
+- Checks branch-specific permissions
+- Validates payoff flags and restrictions</p>
+<h4>PROCESSING Sections</h4>
+<p><strong>PAYMENT-POSTING:</strong>
+- Routes transactions to appropriate LONPF programs
+- Manages specialized processing based on transaction type
+- Handles payment application logic</p>
+<p><strong>DATABASE-UPDATE:</strong>
+- Coordinates database updates through LONPF2
+- Maintains transactional integrity
+- Manages concurrent access controls</p>
+<h4>UTILITY Sections</h4>
+<p><strong>FILE-HANDLING:</strong>
+- File open/close operations
+- Path management
+- Error recovery for file operations</p>
+<p><strong>ERROR-HANDLING:</strong>
+- Comprehensive error detection
+- Error message formatting
+- Audit trail creation</p>
+<h3>Control Flow Patterns</h3>
+<p>The program uses several control flow patterns:</p>
+<ol>
+<li><strong>Sequential Processing:</strong> Linear execution for validation steps</li>
+<li><strong>Conditional Branching:</strong> Transaction type routing</li>
+<li><strong>Subroutine Calls:</strong> Specialized processing via PERFORM</li>
+<li><strong>Error Handling:</strong> GO TO statements for error conditions</li>
+<li><strong>Program Calls:</strong> External program invocation for specialized processing</li>
+</ol>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Key Data Transformations</h3>
+<pre><code class="language-mermaid">graph LR
+    A[Input String] --&gt; B[BT-REC Structure]
+    B --&gt; C[BP-REC Structure] 
+    C --&gt; D[LONPF-BUFFER]
+    D --&gt; E[Specialized Processor]
+    E --&gt; F[Database Updates]
+    F --&gt; G[Log Records]
+
+    H[Branch File] --&gt; I[Processing Rules]
+    J[Account File] --&gt; K[Current Balances]
+    L[Reference Codes] --&gt; M[Transaction Rules]
+
+    I --&gt; E
+    K --&gt; E
+    M --&gt; E
+</code></pre>
+<h3>Data Structure Relationships</h3>
+<table>
+<thead>
+<tr>
+<th>Source Structure</th>
+<th>Target Structure</th>
+<th>Transformation Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>INPUT-STRING</strong></td>
+<td><strong>BT-REC</strong></td>
+<td>Parse input parameters</td>
+</tr>
+<tr>
+<td><strong>BT-REC</strong></td>
+<td><strong>BP-REC</strong></td>
+<td>Standardize payment data</td>
+</tr>
+<tr>
+<td><strong>BP-REC</strong></td>
+<td><strong>LONPF-BUFFER</strong></td>
+<td>Prepare for processing</td>
+</tr>
+<tr>
+<td><strong>BR-REC</strong></td>
+<td><strong>Processing Flags</strong></td>
+<td>Apply branch rules</td>
+</tr>
+<tr>
+<td><strong>LN-REC</strong></td>
+<td><strong>Account Context</strong></td>
+<td>Current account state</td>
+</tr>
+<tr>
+<td><strong>CD-REC</strong></td>
+<td><strong>Transaction Rules</strong></td>
+<td>Reference code validation</td>
+</tr>
+</tbody>
+</table>
+<h3>Field Mapping Examples</h3>
+<p><strong>Input to Payment Record:</strong></p>
+<pre><code class="language-cobol">MOVE BT-ACCTNO    TO BP-LNNO
+MOVE BT-AMT       TO BP-TRAMT  
+MOVE BT-REFCD     TO BP-REFCD
+MOVE BT-PAYDATE   TO BP-PAYDATE (after date conversion)
+MOVE BT-TRCD      TO BP-TRCD
+</code></pre>
+<p><strong>Date Conversion Logic:</strong></p>
+<pre><code class="language-cobol">MOVE BT-PAYDATE   TO DATE-MMDDYY
+PERFORM CONVERT-MMDDYY-TO-YYYYMMDD
+MOVE DATE-YYYYMMDD TO BP-PAYDATE
+</code></pre>
+<hr />
+<h2>Referenced Programs</h2>
+<p>APIPAY integrates with multiple external programs through CALL statements:</p>
+<h3>Primary Payment Processors (LONPF Series)</h3>
+<h4><a href="LONPFB_Documentation.html">LONPFB - Rebate Payment Processor</a></h4>
+<p><strong>Purpose:</strong> Interest rebate processing<br />
+<strong>Transaction Types:</strong> RP<br />
+<strong>Key Functions:</strong>
+- Interest rebate calculations
+- Regulatory compliance for rebates
+- Early payoff processing</p>
+<h4><a href="LONPF7_Documentation.html">LONPF7 - Repossession and Other Processor</a></h4>
+<p><strong>Purpose:</strong> Repossession and secondary transaction processing<br />
+<strong>Transaction Types:</strong> RE, O2, OT<br />
+<strong>Key Functions:</strong>
+- Repossession transaction handling
+- Other/miscellaneous transaction processing</p>
+<h4><a href="LONPF9_Documentation.html">LONPF9 - Principal Payment Processor</a></h4>
+<p><strong>Purpose:</strong> Principal and special payment processing<br />
+<strong>Transaction Types:</strong> PL, P2, P3<br />
+<strong>Key Functions:</strong>
+- Principal-only payments
+- Special payment scenarios requiring additional reasoning codes</p>
+<h4><a href="LONPFC_Documentation.html">LONPFC - Standard Payment Processor</a></h4>
+<p><strong>Purpose:</strong> Standard payment processing<br />
+<strong>Transaction Types:</strong> PY, PA<br />
+<strong>Key Functions:</strong>
+- Regular payment processing
+- Alternative payment methods</p>
+<h4><a href="LONPF2_Documentation.html">LONPF2 - Payment Update Processor</a></h4>
+<p><strong>Purpose:</strong> Database update coordination<br />
+<strong>Used By:</strong> All transaction types<br />
+<strong>Key Functions:</strong>
+- Final database updates
+- Transaction posting
+- Audit trail creation</p>
+<h3>Utility Programs</h3>
+<h4>Environment Configuration</h4>
+<ul>
+<li><strong><a href="GET-GPENV_Documentation.html">GET-GPENV</a></strong> - Environment variable retrieval and configuration</li>
+<li><strong><a href="MAIN-PROGRAM_Documentation.html">MAIN-PROGRAM</a></strong> - Main program initialization with GB/SETENV calls</li>
+</ul>
+<h4>Date/Time Processing Utilities</h4>
+<ul>
+<li><strong><a href="C-DATER-MAIN_Documentation.html">C-DATER-MAIN</a></strong> - Main date processing router with multiple action codes</li>
+<li><strong><a href="C-TIMALL_Documentation.html">C-TIMALL</a></strong> - Comprehensive timing and date calculation suite</li>
+<li><strong><a href="C-TIMBEG_Documentation.html">C-TIMBEG</a></strong> - Beginning date calculations and setup</li>
+<li><strong><a href="C-TIMEND_Documentation.html">C-TIMEND</a></strong> - Ending date calculations and finalization</li>
+<li><strong><a href="C-TIM-RESULTS_Documentation.html">C-TIM-RESULTS</a></strong> - Time calculation result processing</li>
+<li><strong><a href="C-TIM360-358_Documentation.html">C-TIM360-358</a></strong> - 360/358 day year calculations</li>
+<li><strong><a href="C-TIM361_Documentation.html">C-TIM361</a></strong> - 361 day year calculations</li>
+<li><strong><a href="C-TIM362_Documentation.html">C-TIM362</a></strong> - 362 day year calculations</li>
+<li><strong><a href="C-TIM365-367_Documentation.html">C-TIM365-367</a></strong> - 365/367 day year calculations (standard/leap)</li>
+<li><strong><a href="C-TIM999-998_Documentation.html">C-TIM999-998</a></strong> - Special timing calculations</li>
+<li><strong><a href="C-ELAPSED-TIME_Documentation.html">C-ELAPSED-TIME</a></strong> - Calculate elapsed time between dates</li>
+<li><strong><a href="C-INCREMENT-PERIODS_Documentation.html">C-INCREMENT-PERIODS</a></strong> - Increment date by specified periods</li>
+<li><strong><a href="C-INCR-DAYS_Documentation.html">C-INCR-DAYS</a></strong> - Day-based date arithmetic</li>
+<li><strong><a href="C-INCR-MONTHS_Documentation.html">C-INCR-MONTHS</a></strong> - Month-based date arithmetic with intelligent day adjustment</li>
+<li><strong><a href="C-INCR-HALF-MONTHS_Documentation.html">C-INCR-HALF-MONTHS</a></strong> - Half-month date arithmetic using 15-day periods</li>
+<li><strong><a href="C-DATE-COMPARE_Documentation.html">C-DATE-COMPARE</a></strong> - Compare dates for relative positioning</li>
+<li><strong><a href="C-DATE-TEST_Documentation.html">C-DATE-TEST</a></strong> - Date validation and testing</li>
+<li><strong><a href="C-LEAP-YEAR-TEST_Documentation.html">C-LEAP-YEAR-TEST</a></strong> - Leap year determination</li>
+<li><strong><a href="C-WEEKDAY_Documentation.html">C-WEEKDAY</a></strong> - Day of week calculations</li>
+<li><strong><a href="C-CALL-CJUL_Documentation.html">C-CALL-CJUL</a></strong> - Julian to Gregorian date conversion</li>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Standard julian date processing</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Multi-format date conversion and standardization</li>
+<li><strong>CJUL</strong> - Julian date conversion utilities</li>
+<li><strong>JUL</strong> - Julian date processing</li>
+<li><strong>WEEKDAY</strong> - Weekday determination utilities</li>
+<li><strong>TIM</strong> - Basic timing utilities</li>
+<li><strong>TIM360</strong> - 360-day year timing</li>
+<li><strong>TIM365</strong> - 365-day year timing</li>
+<li><strong>TIMALL</strong> - All timing calculation methods</li>
+<li><strong>TIMUPER</strong> - Unit period timing calculations</li>
+<li><strong>GET-TIME</strong> - System time retrieval</li>
+<li><strong>DATER-ROUTINE</strong> - Date processing routines</li>
+</ul>
+<h4>Date Format Conversion Utilities</h4>
+<ul>
+<li><strong>CONVERT-00MMDDYY-TO-CCYYMMDD</strong> - Convert 2-digit to 4-digit year format</li>
+<li><strong>CONVERT-CCYYMMDD-TO-00MMDDYY</strong> - Convert 4-digit to 2-digit year format</li>
+<li><strong>CONVERT-MMDDYY-TO-YYYYMMDD</strong> - Convert MM/DD/YY to YYYY/MM/DD format</li>
+<li><strong>CONVERT-YYYYMMDD-TO-MMDDYY</strong> - Convert YYYY/MM/DD to MM/DD/YY format</li>
+<li><strong>CONVERT-SYS-NUM-NDTE-DATES-IN</strong> - Convert system numeric dates to internal format</li>
+<li><strong>CONVERT-SYS-NUM-NDTE-DATES-OUT</strong> - Convert internal dates to system numeric format</li>
+<li><strong>NEW-DATE-CALCULATION</strong> - New date format calculations</li>
+</ul>
+<h4>File Management - Open Operations</h4>
+<ul>
+<li><strong>OPEN-BR-FILE</strong> - Open branch file</li>
+<li><strong>OPEN-BW1-FILE</strong> - Open BW1 work file</li>
+<li><strong>OPEN-CD1-FILE</strong> - Open CD1 certificate file</li>
+<li><strong>OPEN-GB-FILE</strong> - Open general batch file</li>
+<li><strong>OPEN-GI1-FILE</strong> - Open GI1 general inquiry file</li>
+<li><strong>OPEN-IT</strong> - Open internal transaction file</li>
+<li><strong>OPEN-LN1-FILE</strong> - Open LN1 loan file</li>
+<li><strong>OPEN-LOG-FILE</strong> - Open log file for processing</li>
+<li><strong>OPEN-LOG-FILE-EXTEND</strong> - Open log file in extend mode</li>
+<li><strong>OPEN-LOG-FILE-OUTPUT</strong> - Open log file for output</li>
+<li><strong>OPEN-LP1-FILE</strong> - Open LP1 loan payment file</li>
+<li><strong>OPEN-LTI1-FILE</strong> - Open LTI1 loan transaction inquiry file</li>
+<li><strong>OPEN-LTP1-FILE</strong> - Open LTP1 loan transaction posting file</li>
+<li><strong>OPEN-LXE1-FILE</strong> - Open LXE1 loan extension file</li>
+<li><strong>OPEN-LXG1-FILE</strong> - Open LXG1 loan extended general file</li>
+<li><strong>OPEN-OP-FILE</strong> - Open output processing file</li>
+<li><strong>OPEN-OP-FILE-OUTPUT</strong> - Open output processing file for output</li>
+<li><strong>OPEN-RC2-FILE</strong> - Open RC2 reference code file</li>
+<li><strong>OPEN-SP1-FILE</strong> - Open SP1 special processing file</li>
+<li><strong>OPEN-SPA1-FILE</strong> - Open SPA1 special processing A file</li>
+<li><strong>OPEN-SPB1-FILE</strong> - Open SPB1 special processing B file</li>
+<li><strong>OPEN-SPC1-FILE</strong> - Open SPC1 special processing C file</li>
+<li><strong>OPEN-WK-FILE</strong> - Open work file</li>
+<li><strong>OPEN-WK-FILE-OUTPUT</strong> - Open work file for output</li>
+<li><strong>OPEN-WK-OUTPUT</strong> - Open work file output stream</li>
+</ul>
+<h4>File Management - Close Operations</h4>
+<ul>
+<li><strong>CLOSE-BR-FILE</strong> - Close branch file</li>
+<li><strong>CLOSE-BW1-FILE</strong> - Close BW1 work file</li>
+<li><strong>CLOSE-CD1-FILE</strong> - Close CD1 certificate file</li>
+<li><strong>CLOSE-FILES</strong> - Close all open files</li>
+<li><strong>CLOSE-GB-FILE</strong> - Close general batch file</li>
+<li><strong>CLOSE-GI1-FILE</strong> - Close GI1 general inquiry file</li>
+<li><strong>CLOSE-IT</strong> - Close internal transaction file</li>
+<li><strong>CLOSE-LN1-FILE</strong> - Close LN1 loan file</li>
+<li><strong>CLOSE-LOG-FILE</strong> - Close log file</li>
+<li><strong>CLOSE-LP1-FILE</strong> - Close LP1 loan payment file</li>
+<li><strong>CLOSE-LTI1-FILE</strong> - Close LTI1 loan transaction inquiry file</li>
+<li><strong>CLOSE-LTP1-FILE</strong> - Close LTP1 loan transaction posting file</li>
+<li><strong>CLOSE-LXE1-FILE</strong> - Close LXE1 loan extension file</li>
+<li><strong>CLOSE-LXG1-FILE</strong> - Close LXG1 loan extended general file</li>
+<li><strong>CLOSE-OP-FILE</strong> - Close output processing file</li>
+<li><strong>CLOSE-RC2-FILE</strong> - Close RC2 reference code file</li>
+<li><strong>CLOSE-SP1-FILE</strong> - Close SP1 special processing file</li>
+<li><strong>CLOSE-SPA1-FILE</strong> - Close SPA1 special processing A file</li>
+<li><strong>CLOSE-SPB1-FILE</strong> - Close SPB1 special processing B file</li>
+<li><strong>CLOSE-SPC1-FILE</strong> - Close SPC1 special processing C file</li>
+<li><strong>CLOSE-WK-FILE</strong> - Close work file</li>
+</ul>
+<h4>File Management - Clear Operations</h4>
+<ul>
+<li><strong>CLEAR-LP-FILE</strong> - Clear loan payment file</li>
+<li><strong>CLEAR-LXG-FILE</strong> - Clear loan extended general file</li>
+</ul>
+<h4>File Management - Read Operations</h4>
+<ul>
+<li><strong>READ-BR-FILE</strong> / <strong>READ-BR-FILE-NEXT</strong> - Read branch file records</li>
+<li><strong>READ-BW1-FILE</strong> / <strong>READ-BW1-FILE-NEXT</strong> - Read BW1 work file records</li>
+<li><strong>READ-CD1-FILE</strong> / <strong>READ-CD1-FILE-NEXT</strong> / <strong>READ-CD1-FILE-PREVIOUS</strong> - Read CD1 certificate file records</li>
+<li><strong>READ-EARNINGS</strong> - Read earnings data</li>
+<li><strong>READ-GB-FILE</strong> / <strong>READ-GB-FILE-NEXT</strong> - Read general batch file records</li>
+<li><strong>READ-GI1-FILE</strong> / <strong>READ-GI1-FILE-NEXT</strong> - Read GI1 general inquiry file records</li>
+<li><strong>READ-IT</strong> - Read internal transaction file</li>
+<li><strong>READ-LN1-FILE</strong> / <strong>READ-LN1-FILE-NEXT</strong> - Read LN1 loan file records</li>
+<li><strong>READ-LP1-FILE</strong> / <strong>READ-LP1-FILE-NEXT</strong> / <strong>READ-LP1-FILE-PREVIOUS</strong> - Read LP1 loan payment file records</li>
+<li><strong>READ-LTI1-FILE</strong> / <strong>READ-LTI1-FILE-NEXT</strong> - Read LTI1 loan transaction inquiry file records</li>
+<li><strong>READ-LTP1-FILE</strong> / <strong>READ-LTP1-FILE-NEXT</strong> - Read LTP1 loan transaction posting file records</li>
+<li><strong>READ-LXE1-FILE</strong> / <strong>READ-LXE1-FILE-NEXT</strong> - Read LXE1 loan extension file records</li>
+<li><strong>READ-LXG1-FILE</strong> / <strong>READ-LXG1-FILE-NEXT</strong> - Read LXG1 loan extended general file records</li>
+<li><strong>READ-RC2-FILE</strong> / <strong>READ-RC2-FILE-NEXT</strong> - Read RC2 reference code file records</li>
+<li><strong>READ-SP1-FILE</strong> / <strong>READ-SP1-FILE-NEXT</strong> - Read SP1 special processing file records</li>
+<li><strong>READ-SPA1-FILE</strong> / <strong>READ-SPA1-FILE-NEXT</strong> - Read SPA1 special processing A file records</li>
+<li><strong>READ-SPB1-FILE</strong> - Read SPB1 special processing B file records</li>
+<li><strong>READ-SPC1-FILE</strong> - Read SPC1 special processing C file records</li>
+<li><strong>READ-WK-FILE</strong> - Read work file records</li>
+</ul>
+<h4>File Management - Write Operations</h4>
+<ul>
+<li><strong>WRITE-IT</strong> - Write internal transaction file</li>
+<li><strong>WRITE-LOG-FILE</strong> - Write to log file</li>
+<li><strong>WRITE-WK-FILE</strong> - Write to work file</li>
+</ul>
+<h4>File Management - Load/Count Operations</h4>
+<ul>
+<li><strong>LOAD-BR-FILE</strong> - Load branch file data</li>
+<li><strong>LOAD-BW1-FILE</strong> - Load BW1 work file data</li>
+<li><strong>LOAD-CD1-FILE</strong> - Load CD1 certificate file data</li>
+<li><strong>LOAD-GB-FILE</strong> - Load general batch file data</li>
+<li><strong>LOAD-GI1-FILE</strong> - Load GI1 general inquiry file data</li>
+<li><strong>LOAD-LN1-FILE</strong> - Load LN1 loan file data</li>
+<li><strong>LOAD-LP1-FILE</strong> - Load LP1 loan payment file data</li>
+<li><strong>LOAD-LTI1-FILE</strong> - Load LTI1 loan transaction inquiry file data</li>
+<li><strong>LOAD-LTP1-FILE</strong> - Load LTP1 loan transaction posting file data</li>
+<li><strong>LOAD-LXE1-FILE</strong> - Load LXE1 loan extension file data</li>
+<li><strong>LOAD-LXG1-FILE</strong> - Load LXG1 loan extended general file data</li>
+<li><strong>LOAD-OP-FILE</strong> - Load output processing file data</li>
+<li><strong>LOAD-OPEN-FILE</strong> - Load open file data</li>
+<li><strong>LOAD-RC2-FILE</strong> - Load RC2 reference code file data</li>
+<li><strong>LOAD-SPA1-FILE</strong> - Load SPA1 special processing A file data</li>
+<li><strong>LOAD-SPB1-FILE</strong> - Load SPB1 special processing B file data</li>
+<li><strong>LOAD-SPC1-FILE</strong> - Load SPC1 special processing C file data</li>
+<li><strong>COUNT-BR-FILE</strong> - Count branch file records</li>
+<li><strong>COUNT-GI1-FILE</strong> - Count GI1 general inquiry file records</li>
+<li><strong>COUNT-IT</strong> - Count internal transaction file records</li>
+</ul>
+<h4>File Management - Start/Positioning Operations</h4>
+<ul>
+<li><strong>START-IT</strong> - Start/position internal transaction file</li>
+<li><strong>START-LP1-FILE-NOT-GREATER</strong> - Start LP1 file positioning (not greater than)</li>
+<li><strong>START-LTI1-FILE</strong> - Start/position LTI1 loan transaction inquiry file</li>
+<li><strong>START-SP1-FILE</strong> - Start/position SP1 special processing file</li>
+<li><strong>START-SPA1-FILE</strong> - Start/position SPA1 special processing A file</li>
+</ul>
+<h4>File Management - Work File Operations</h4>
+<ul>
+<li><strong>CREATE-WK-FILE</strong> - Create work file</li>
+<li><strong>DELETE-WK-FILE</strong> - Delete work file</li>
+<li><strong>REWRITE-WK-FILE</strong> - Rewrite work file records</li>
+<li><strong>REMOVE-WORKFILE</strong> - Remove work file completely</li>
+</ul>
+<h4>File Management - Special Operations</h4>
+<ul>
+<li><strong>REWRITE-IT</strong> - Rewrite internal transaction file</li>
+<li><strong>DELETE-IT</strong> - Delete internal transaction file records</li>
+<li><strong>PACK-LT</strong> - Pack loan transaction data</li>
+<li><strong>UNPACK-LT</strong> - Unpack loan transaction data</li>
+<li><strong>UNPACK-PAYMENT-SCHEDULE</strong> - Unpack payment schedule data</li>
+</ul>
+<h4>Data Retrieval Utilities</h4>
+<ul>
+<li><strong>GET-BR-FIELDS</strong> - Get branch file field data</li>
+<li><strong>GET-BW-FIELDS</strong> - Get BW work file field data</li>
+<li><strong>GET-CD-FIELDS</strong> - Get CD certificate file field data</li>
+<li><strong>GET-GB-FIELDS</strong> - Get general batch file field data</li>
+<li><strong>GET-GI-FIELDS</strong> - Get general inquiry file field data</li>
+<li><strong>GET-LN-FIELDS</strong> - Get loan file field data</li>
+<li><strong>GET-LP-FIELDS</strong> - Get loan payment file field data</li>
+<li><strong>GET-LT-P-REC</strong> - Get loan transaction payment record</li>
+<li><strong>GET-LTI-FIELDS</strong> - Get loan transaction inquiry file field data</li>
+<li><strong>GET-LTP-FIELDS</strong> - Get loan transaction posting file field data</li>
+<li><strong>GET-LXE-FIELDS</strong> - Get loan extension file field data</li>
+<li><strong>GET-LXG-FIELDS</strong> - Get loan extended general file field data</li>
+<li><strong>GET-RC-FIELDS</strong> - Get reference code file field data</li>
+<li><strong>GET-SPA-FIELDS</strong> - Get special processing A file field data</li>
+<li><strong>GET-SPB-FIELDS</strong> - Get special processing B file field data</li>
+<li><strong>GET-SPC-FIELDS</strong> - Get special processing C file field data</li>
+<li><strong>GET-SPR</strong> - Get special processing records</li>
+</ul>
+<h4>APR (Annual Percentage Rate) Calculation Utilities</h4>
+<ul>
+<li><strong>APR-REGZ</strong> / <strong>APR-REGZ-EXIT</strong> - Regulation Z APR calculations</li>
+<li><strong>APRZ-APR-MAIN</strong> - Main APR calculation routine</li>
+<li><strong>APRZ-APR-PROCESS</strong> - APR calculation processing</li>
+<li><strong>APRZ-APR-GET-ARGS</strong> - Get APR calculation arguments</li>
+<li><strong>APRZ-APR-FIN</strong> - Finalize APR calculations</li>
+<li><strong>APRS-RATE</strong> - APR rate calculations</li>
+<li><strong>APRS-GET-EFFRATE</strong> - Get effective rate for APR</li>
+<li><strong>APRS-GET-RATE-TABLE</strong> - Get rate table for APR calculations</li>
+<li><strong>APRS-GET-SIMPLE-RATE</strong> - Get simple rate for APR</li>
+<li><strong>APRS-EFFRATE-ADDON</strong> - Effective rate add-on calculations</li>
+<li><strong>APRS-EFFRATE-DISCOUNT</strong> - Effective rate discount calculations</li>
+</ul>
+<h4>Interest Rate and Payment Calculation Utilities</h4>
+<ul>
+<li><strong>LPRATE-ACCELERATION</strong> - Loan payment rate acceleration calculations</li>
+<li><strong>LPRATE-CALC-BREAK-DATES</strong> - Calculate rate break dates</li>
+<li><strong>LPRATE-CALC-IT</strong> - Calculate loan payment rates</li>
+<li><strong>LPRATE-COMPARE-RATES</strong> - Compare different loan rates</li>
+<li><strong>LPRATE-EXPIRED-INT</strong> / <strong>LPRATE-EXPIRED-INT-LOOP</strong> - Handle expired interest</li>
+<li><strong>LPRATE-FIND-THRU-DATE</strong> - Find rate through dates</li>
+<li><strong>LPRATE-JUDGEMENT</strong> - Rate judgement calculations</li>
+<li><strong>LPRATE-PREPARE-PMT-1</strong> / <strong>LPRATE-PREPARE-PMT-2</strong> - Prepare payment calculations</li>
+<li><strong>LPRATE-SET-INTPDTH-DATE</strong> - Set interest paid through date</li>
+<li><strong>LPRATE-USE-EXPIRED-RATES</strong> - Use expired rate calculations</li>
+</ul>
+<h4>Unit Period Calculation Utilities</h4>
+<ul>
+<li><strong>UPER-CALCULATION</strong> / <strong>UPER-CALCULATE-EXIT</strong> - Main unit period calculations</li>
+<li><strong>UPER-DAILY-UNIT-PERIODS</strong> - Daily unit period calculations</li>
+<li><strong>UPER-MONTHLY-UNIT-PERIODS</strong> / <strong>UPER-MONTHLY-UNIT-PERIODS-EXIT</strong> - Monthly unit period calculations</li>
+<li><strong>UPER-SEMI-MONTHLY-UNIT-PERIODS</strong> - Semi-monthly unit period calculations</li>
+<li><strong>UPER-WEEKLY-UNIT-PERIODS</strong> - Weekly unit period calculations</li>
+<li><strong>UPER-YEARLY-UNIT-PERIODS</strong> / <strong>UPER-YEARLY-UNIT-PERIODS-EXIT</strong> - Yearly unit period calculations</li>
+<li><strong>UPER-SINGLE-PAYS</strong> / <strong>UPER-SINGLE-PAYS-EXIT</strong> - Single payment unit period calculations</li>
+</ul>
+<h4>Unit Period Work File Utilities</h4>
+<ul>
+<li><strong>UPWK-CALC-CONTR-WK</strong> - Calculate contractual work periods</li>
+<li><strong>UPWK-CALC-DEF-WK</strong> - Calculate deferment work periods</li>
+<li><strong>UPWK-CALC-LC-WK</strong> - Calculate late charge work periods</li>
+<li><strong>UPWK-CONTR-CALC-EXIT</strong> - Exit contractual work calculations</li>
+<li><strong>UPWK-DEF-CALC</strong> / <strong>UPWK-DEF-CALC-EXIT</strong> - Deferment calculation work</li>
+<li><strong>UPWK-GET-UPER-INFO</strong> / <strong>UPWK-GET-UPER-INFO-EXIT</strong> - Get unit period information</li>
+<li><strong>UPWK-LC-CALC</strong> / <strong>UPWK-LC-CALC-EXIT</strong> - Late charge calculation work</li>
+</ul>
+<h4>Contractual Payment Calculation Utilities</h4>
+<ul>
+<li><strong>COMPUTE-CONTRACTUAL</strong> / <strong>COMPUTE-CONTRACTUAL-EXIT</strong> - Main contractual payment calculations</li>
+<li><strong>COMPUTE-CONTRACTUAL-D</strong> / <strong>COMPUTE-CONTRACTUAL-D-EXIT</strong> - Contractual payment type D calculations</li>
+<li><strong>COMPUTE-CONTRACTUAL-F</strong> / <strong>COMPUTE-CONTRACTUAL-F-EXIT</strong> - Contractual payment type F calculations</li>
+<li><strong>COMPUTE-CONTRACTUAL-GET-PDTH</strong> - Get paid through date for contractual calculations</li>
+<li><strong>COMPUTE-CONTRACTUAL-PAYS-TODAY</strong> - Calculate payments due today</li>
+<li><strong>COMPUTE-CONTRACTUAL-POT-CHGOFF</strong> - Calculate potential charge-off amounts</li>
+<li><strong>COMPUTE-CONTRACTUAL-POT30</strong> - Calculate 30-day potential amounts</li>
+<li><strong>COMPUTE-CONTR-UNITP-A-D</strong> / <strong>COMPUTE-CONTR-UNITP-A-D-EXIT</strong> - Contractual unit period A-D calculations</li>
+</ul>
+<h4>Recency and Delinquency Calculation Utilities</h4>
+<ul>
+<li><strong>COMPUTE-RECENCY</strong> / <strong>COMPUTE-RECENCY-EXIT</strong> - Main recency calculations</li>
+<li><strong>COMPUTE-RECENCY-DELINQ</strong> - Recency delinquency calculations</li>
+<li><strong>COMPUTE-RECENCY-DELINQ-D</strong> / <strong>COMPUTE-RECENCY-DELINQ-D-EXIT</strong> - Recency delinquency type D calculations</li>
+<li><strong>COMPUTE-RECENCY-DELINQ-F</strong> / <strong>COMPUTE-RECENCY-DELINQ-F-EXIT</strong> - Recency delinquency type F calculations</li>
+<li><strong>COMPUTE-RECENCY-SET-EXTERNAL</strong> - Set external recency data</li>
+<li><strong>COMPUTE-TRUE-RECENCY</strong> - Calculate true recency values</li>
+<li><strong>RECENCY-ROUTINE</strong> / <strong>RECENCY-ROUTINE-EXIT</strong> - Recency calculation routines</li>
+</ul>
+<h4>Elapsed Time and Period Calculation Utilities</h4>
+<ul>
+<li><strong>CONTRACTUAL-ELAPSED-PAYPER</strong> - Calculate elapsed payment periods for contractual loans</li>
+<li><strong>CONTRAL-ELAPSED-PAYPER-EXIT</strong> - Exit contractual elapsed payment period calculations</li>
+<li><strong>CALC-ELAPSED-REF-THRU-PODATE</strong> - Calculate elapsed time from reference through payoff date</li>
+<li><strong>CALC-HOLD-LN-ACCERN</strong> - Calculate hold loan accrued earnings</li>
+<li><strong>INCREMENT-COMMON</strong> - Common increment calculations</li>
+<li><strong>INCREMENT-DAYS</strong> - Increment by days</li>
+<li><strong>INCREMENT-MONTHS</strong> - Increment by months</li>
+<li><strong>INCREMENT-UNITPER</strong> - Increment by unit periods</li>
+</ul>
+<h4>Interest Due Calculation Utilities</h4>
+<ul>
+<li><strong>INTEREST-DUE-CALCULATION</strong> - Main interest due calculations</li>
+<li><strong>INTEREST-DUE-EXIT</strong> - Exit interest due calculations</li>
+<li><strong>INTEREST-DUE-FINAL</strong> - Final interest due calculations</li>
+<li><strong>INTEREST-DUE-LOOP</strong> - Interest due calculation loop</li>
+<li><strong>INTEREST-DUE-MAXIMUM</strong> - Maximum interest due calculations</li>
+<li><strong>INTEREST-DUE-MINIMUM</strong> - Minimum interest due calculations</li>
+<li><strong>INTEREST-DUE-SPECIAL-OPTIONS</strong> - Special options for interest due</li>
+</ul>
+<h4>Interest Due Penalty Utilities (State-Specific)</h4>
+<ul>
+<li><strong>INTEREST-DUE-PENALTY</strong> / <strong>INTEREST-DUE-PENALTY-EXIT</strong> - Main penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-21</strong> - Interest penalty calculations for code 21</li>
+<li><strong>INTEREST-DUE-PENALTY-25</strong> - Interest penalty calculations for code 25</li>
+<li><strong>INTEREST-DUE-PENALTY-GA</strong> - Georgia-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-MS</strong> - Mississippi-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-NC</strong> - North Carolina-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-NEWS</strong> - News-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-NV</strong> - Nevada-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-OH</strong> - Ohio-specific interest penalty calculations</li>
+<li><strong>INTEREST-DUE-PENALTY-WI</strong> - Wisconsin-specific interest penalty calculations</li>
+<li><strong>NO-PENALTY-21</strong> - No penalty calculations for code 21</li>
+<li><strong>NO-PENALTY-25</strong> - No penalty calculations for code 25</li>
+<li><strong>NO-PENALTY-GA</strong> - Georgia no penalty calculations</li>
+<li><strong>NO-PENALTY-MS</strong> - Mississippi no penalty calculations</li>
+<li><strong>NO-PENALTY-OH</strong> - Ohio no penalty calculations</li>
+</ul>
+<h4>Late Charge Assessment Utilities</h4>
+<ul>
+<li><strong>LATE-ASSESS-ROUTINE</strong> / <strong>LATE-ASSESS-EXIT</strong> - Main late charge assessment</li>
+<li><strong>LATE-CHARGE-CALCULATION</strong> - Late charge calculation routines</li>
+<li><strong>LATE-CHARGE-CALC-END</strong> - End late charge calculations</li>
+<li><strong>LATE-CHARGE-CALC-EXIT</strong> - Exit late charge calculations</li>
+<li><strong>LATE-CHARGE-CALC-NORMAL-END</strong> - Normal end late charge calculations</li>
+<li><strong>LATE-CHARGE-APPLY</strong> - Apply late charges</li>
+<li><strong>LATE-CHARGE-TEST-ELREAD</strong> - Test and read late charge data</li>
+</ul>
+<h4>Late Charge Assessment Period Utilities (LCAP)</h4>
+<ul>
+<li><strong>LCAP-A-ACCUM</strong> - LCAP type A accumulation</li>
+<li><strong>LCAP-A-AL-OK-TEST</strong> - LCAP type A Alabama OK test</li>
+<li><strong>LCAP-A-C-BEGIN</strong> / <strong>LCAP-A-C</strong> / <strong>LCAP-A-C-EXIT</strong> / <strong>LCAP-A-C-PMT</strong> - LCAP type A-C processing</li>
+<li><strong>LCAP-APP-EXIT</strong> - LCAP application exit</li>
+<li><strong>LCAP-ASSESS-CHK</strong> - LCAP assessment check</li>
+<li><strong>LCAP-ASSURE-LCPDTH</strong> - LCAP assure late charge paid through date</li>
+<li><strong>LCAP-B-J-DATE-CHK</strong> / <strong>LCAP-B-J</strong> / <strong>LCAP-B-J-EXIT</strong> / <strong>LCAP-B-J-PMT</strong> / <strong>LCAP-B-J-RETRY</strong> - LCAP type B-J processing</li>
+<li><strong>LCAP-CALC-PDTH</strong> / <strong>LCAP-CALC-PDTH-EXIT</strong> / <strong>LCAP-CALC-PDTH-ADDON</strong> - LCAP calculate paid through date</li>
+<li><strong>LCAP-CALC-TEST</strong> - LCAP calculation test</li>
+<li><strong>LCAP-COMPUTE-PAYS</strong> - LCAP compute payments</li>
+<li><strong>LCAP-D-BEGIN</strong> / <strong>LCAP-D</strong> / <strong>LCAP-D-EXIT</strong> / <strong>LCAP-D-ADVANCE</strong> / <strong>LCAP-D-NOASSESS</strong> - LCAP type D processing</li>
+<li><strong>LCAP-E-X-DATE-CHK</strong> / <strong>LCAP-E-X</strong> / <strong>LCAP-E-X-EXIT</strong> / <strong>LCAP-E-X-PMT</strong> / <strong>LCAP-E-X-RETRY</strong> - LCAP type E-X processing</li>
+<li><strong>LCAP-F-BEGIN</strong> / <strong>LCAP-F</strong> / <strong>LCAP-F-EXIT</strong> / <strong>LCAP-F-ADVANCE</strong> / <strong>LCAP-F-NOASSESS</strong> - LCAP type F processing</li>
+<li><strong>LCAP-F-CURRENT-PERIOD</strong> / <strong>LCAP-F-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-F-CURRENT-PERIOD-NEWCUR</strong> - LCAP type F current period</li>
+<li><strong>LCAP-G-K-BEGIN</strong> / <strong>LCAP-G-K</strong> / <strong>LCAP-G-K-EXIT</strong> / <strong>LCAP-G-K-ADVANCE</strong> / <strong>LCAP-G-K-NOASSESS</strong> - LCAP type G-K processing</li>
+<li><strong>LCAP-H-BEGIN</strong> / <strong>LCAP-H</strong> / <strong>LCAP-H-EXIT</strong> / <strong>LCAP-H-ADVANCE</strong> / <strong>LCAP-H-NOASSESS</strong> - LCAP type H processing</li>
+<li><strong>LCAP-H-CURRENT-PERIOD</strong> / <strong>LCAP-H-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-H-CURRENT-PERIOD-NEWCUR</strong> - LCAP type H current period</li>
+<li><strong>LCAP-I-L-BEGIN</strong> / <strong>LCAP-I-L</strong> / <strong>LCAP-I-L-EXIT</strong> / <strong>LCAP-I-L-ADVANCE</strong> / <strong>LCAP-I-L-NOASSESS</strong> - LCAP type I-L processing</li>
+<li><strong>LCAP-I-L-CURRENT-PERIOD</strong> / <strong>LCAP-I-L-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-I-L-CURRENT-PERIOD-NEWCUR</strong> / <strong>LCAP-I-L-CURRENT-PERIOD-SETDUE</strong> - LCAP type I-L current period</li>
+<li><strong>LCAP-LCPDTH-DATE-TEST</strong> - LCAP late charge paid through date test</li>
+<li><strong>LCAP-M-BEGIN</strong> / <strong>LCAP-M</strong> / <strong>LCAP-M-EXIT</strong> / <strong>LCAP-M-ADVANCE</strong> / <strong>LCAP-M-NOASSESS</strong> - LCAP type M processing</li>
+<li><strong>LCAP-M-CURRENT-PERIOD</strong> / <strong>LCAP-M-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-M-CURRENT-PERIOD-NEWCUR</strong> / <strong>LCAP-M-CURRENT-PERIOD-SETDUE</strong> - LCAP type M current period</li>
+<li><strong>LCAP-MDTE-CHK</strong> - LCAP maturity date check</li>
+<li><strong>LCAP-N-DATE-CHK</strong> / <strong>LCAP-N</strong> / <strong>LCAP-N-EXIT</strong> / <strong>LCAP-N-PMT</strong> / <strong>LCAP-N-RETRY</strong> - LCAP type N processing</li>
+<li><strong>LCAP-P-BEGIN</strong> / <strong>LCAP-P</strong> / <strong>LCAP-P-EXIT</strong> / <strong>LCAP-P-ADVANCE</strong> / <strong>LCAP-P-NOASSESS</strong> - LCAP type P processing</li>
+<li><strong>LCAP-P-CURRENT-PERIOD</strong> / <strong>LCAP-P-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-P-CURRENT-PERIOD-NEWCUR</strong> / <strong>LCAP-P-CURRENT-PERIOD-SETDUE</strong> - LCAP type P current period</li>
+<li><strong>LCAP-PAID-THRU-ADDON-NEXT</strong> - LCAP paid through add-on next</li>
+<li><strong>LCAP-PAID-THRU-ADDON-SUM</strong> / <strong>LCAP-PAID-THRU-ADDON-SUM-EXIT</strong> - LCAP paid through add-on sum</li>
+<li><strong>LCAP-PICK-PDTH-CALC</strong> - LCAP pick paid through date calculation</li>
+<li><strong>LCAP-S-BEGIN</strong> / <strong>LCAP-S</strong> / <strong>LCAP-S-EXIT</strong> / <strong>LCAP-S-ADVANCE</strong> / <strong>LCAP-S-NOASSESS</strong> - LCAP type S processing</li>
+<li><strong>LCAP-S-CURRENT-PERIOD</strong> / <strong>LCAP-S-CURRENT-PERIOD-EXIT</strong> / <strong>LCAP-S-CURRENT-PERIOD-NEWCUR</strong> - LCAP type S current period</li>
+<li><strong>LCAP-UPD-LCPD</strong> - LCAP update late charge paid date</li>
+</ul>
+<h4>Late Charge Assessment Schedule Utilities (LCAS)</h4>
+<ul>
+<li><strong>LCAS-ADJUST-FOR-MONTH-END</strong> - LCAS adjust for month end</li>
+<li><strong>LCAS-CHECK-DAY</strong> - LCAS check day</li>
+<li><strong>LCAS-CHECK-EXTENDING-GRACE</strong> - LCAS check extending grace period</li>
+<li><strong>LCAS-CHECK-HOLIDAY</strong> - LCAS check holiday</li>
+<li><strong>LCAS-FIND-LAST-GRACE-DAY</strong> - LCAS find last grace day</li>
+<li><strong>LCAS-GET-GRACE-DATE</strong> - LCAS get grace date</li>
+</ul>
+<h4>Paid Through Date Calculation Utilities</h4>
+<ul>
+<li><strong>PAID-THRU-CALCULATION</strong> - Main paid through date calculations</li>
+<li><strong>PAID-THRU-CALC-ADDON</strong> - Paid through calculations with add-ons</li>
+<li><strong>PAID-THRU-CALC-NORMAL</strong> / <strong>PAID-THRU-CALC-NORMAL-EXIT</strong> - Normal paid through calculations</li>
+<li><strong>PAID-THRU-CALC-NORMAL-E</strong> / <strong>PAID-THRU-CALC-NORMAL-E-EXIT</strong> - Normal paid through calculations type E</li>
+<li><strong>PAID-THRU-ADDON-NEXT</strong> - Paid through add-on next calculations</li>
+<li><strong>PAID-THRU-ADDON-SUM</strong> / <strong>PAID-THRU-ADDON-SUM-EXIT</strong> - Paid through add-on sum calculations</li>
+<li><strong>PAST-DUE-DAYS-CALCULATION</strong> - Past due days calculations</li>
+<li><strong>PAST-DUE-DAYS-COMPUTE</strong> - Past due days computation</li>
+<li><strong>PAST-DUE-DAYS-EXIT</strong> - Past due days calculation exit</li>
+</ul>
+<h4>Maturity and Expiration Date Utilities</h4>
+<ul>
+<li><strong>MATURITY-DATE-CALCULATION</strong> - Maturity date calculations</li>
+<li><strong>EXPIRATION-DATE-CALCULATION</strong> - Expiration date calculations</li>
+<li><strong>INS-TERM-CALCULATION</strong> - Insurance term calculations</li>
+</ul>
+<h4>Rebate Calculation Utilities (Comprehensive Suite)</h4>
+<ul>
+<li><strong>REBATE</strong> - Main rebate calculation routine</li>
+<li><strong>REBATE-EXIT</strong> - Rebate calculation exit</li>
+<li><strong>REBATE-78</strong> - Rule of 78s rebate calculations</li>
+<li><strong>REBATE-78-EXIT</strong> - Rule of 78s rebate exit</li>
+<li><strong>REBATE-78-DAYS-0D</strong> / <strong>REBATE-78-DAYS-0D-EXIT</strong> - 78s rebate days type 0D</li>
+<li><strong>REBATE-78-NET-1</strong> - 78s rebate net calculation type 1</li>
+<li><strong>REBATE-78-REBATE</strong> - 78s rebate calculation</li>
+<li><strong>REBATE-78-ROUTINE</strong> - 78s rebate routine</li>
+<li><strong>REBATE-78-SUMORG</strong> - 78s rebate sum original</li>
+<li><strong>RULE-78THS-MEAN</strong> - Rule of 78ths mean calculation</li>
+</ul>
+<h4>Actuarial Rebate Utilities</h4>
+<ul>
+<li><strong>REBATE-ACTUARIAL-0E</strong> - Actuarial rebate type 0E</li>
+<li><strong>REBATE-ACTUARIAL-2</strong> / <strong>REBATE-ACTUARIAL-2-EXIT</strong> - Actuarial rebate type 2</li>
+<li><strong>REBATE-ACTUARIAL-7-B</strong> - Actuarial rebate type 7-B</li>
+<li><strong>REBATE-ACTUARIAL-C</strong> / <strong>REBATE-ACTUARIAL-C-EXIT</strong> - Actuarial rebate type C</li>
+<li><strong>REBATE-ACTUARIAL-D</strong> / <strong>REBATE-ACTUARIAL-D-EXIT</strong> - Actuarial rebate type D</li>
+<li><strong>REBATE-ACTUARIAL-F-06</strong> - Actuarial rebate type F-06</li>
+<li><strong>REBATE-ACTUARIAL-IB</strong> - Actuarial rebate type IB</li>
+<li><strong>REBATE-ACTUARIAL-Q</strong> - Actuarial rebate type Q</li>
+<li><strong>RBACT-ACTUARIAL</strong> / <strong>RBACT-ACTUARIAL-EXIT</strong> - Actuarial rebate calculations</li>
+<li><strong>RBACT-ACTUARIAL-PV</strong> - Actuarial rebate present value</li>
+</ul>
+<h4>Anticipated Rebate Utilities</h4>
+<ul>
+<li><strong>REBATE-ANTICIPATED</strong> - Anticipated rebate calculations</li>
+<li><strong>REBATE-ANTICIPATED-N-P</strong> - Anticipated rebate types N-P</li>
+<li><strong>REBATE-ANTICIPATED-O</strong> - Anticipated rebate type O</li>
+</ul>
+<h4>State-Specific Rebate Utilities</h4>
+<ul>
+<li><strong>REBATE-CA-AH-ANTICIPATED</strong> / <strong>REBATE-CA-AH-ANTICIPATED-EXIT</strong> - California AH anticipated rebate</li>
+<li><strong>REBATE-CA-ANTICIPATED</strong> - California anticipated rebate</li>
+<li><strong>REBATE-CA-CL-ANTICIPATED</strong> - California CL anticipated rebate</li>
+<li><strong>REBATE-GA-SC</strong> - Georgia SC rebate</li>
+<li><strong>REBATE-MA-AH-ANTICIPATED</strong> - Massachusetts AH anticipated rebate</li>
+<li><strong>REBATE-MX-CL-ANTICIPATED</strong> - Mexico CL anticipated rebate</li>
+<li><strong>REBATE-TX-ANTICIPATED</strong> - Texas anticipated rebate</li>
+<li><strong>REBATE-TX-INT-0H</strong> / <strong>REBATE-TX-INT-0H-END</strong> / <strong>REBATE-TX-INT-0H-EXIT</strong> / <strong>REBATE-TX-INT-0H-LOOP</strong> - Texas interest type 0H rebate</li>
+<li><strong>REBATE-TX-INT-UNITED</strong> / <strong>REBATE-TX-INT-UNITED-END</strong> / <strong>REBATE-TX-INT-UNITED-EXIT</strong> / <strong>REBATE-TX-INT-UNITED-LOOP</strong> - Texas United interest rebate</li>
+<li><strong>REBATE-TX-INTEREST</strong> / <strong>REBATE-TX-INTEREST-END</strong> / <strong>REBATE-TX-INTEREST-EXIT</strong> / <strong>REBATE-TX-INTEREST-LOOP</strong> - Texas interest rebate</li>
+<li><strong>REBTX-CALC-INT-0H</strong> / <strong>REBTX-CALC-INT-0H-END</strong> / <strong>REBTX-CALC-INT-0H-LOOP</strong> - Texas calculate interest type 0H rebate</li>
+</ul>
+<h4>Pro-Rata Rebate Utilities</h4>
+<ul>
+<li><strong>REBATE-PRORATA</strong> / <strong>REBATE-PRORATA-EXIT</strong> - Pro-rata rebate calculations</li>
+<li><strong>REBATE-PRORATA-EXACT</strong> - Exact pro-rata rebate</li>
+<li><strong>REBATE-PRORATA-GA-NO-SWING</strong> - Georgia pro-rata rebate no swing</li>
+<li><strong>REBATE-PRORATA-GA-SWING</strong> - Georgia pro-rata rebate with swing</li>
+<li><strong>REBATE-PRORATA-ROUTINE</strong> - Pro-rata rebate routine</li>
+<li><strong>REBATE-TRUE-PRORATA-0F</strong> - True pro-rata rebate type 0F</li>
+<li><strong>REBATE-MEAN-OF-PRORATA-78</strong> - Mean of pro-rata and 78s rebate</li>
+</ul>
+<h4>Specialized Rebate Utilities</h4>
+<ul>
+<li><strong>REBATE-EARLY-97</strong> / <strong>REBATE-EARLY-97-EXIT</strong> - Early rebate type 97</li>
+<li><strong>REBATE-EARLY-98</strong> - Early rebate type 98</li>
+<li><strong>REBATE-EARLY-99</strong> - Early rebate type 99</li>
+<li><strong>REBATE-RBEARLY-21</strong> - Early rebate type 21</li>
+<li><strong>REBATE-RBEARLY-26</strong> - Early rebate type 26</li>
+<li><strong>REBATE-RBEARLY-VYBA-28-EXIT</strong> - Early rebate VYBA type 28</li>
+<li><strong>REBATE-SHORT-RATE-0C</strong> - Short rate rebate type 0C</li>
+<li><strong>REBATE-WI-CPI</strong> - Wisconsin CPI rebate</li>
+<li><strong>REBATE-TRIST-CPI-0I</strong> / <strong>REBATE-TRIST-CPI-0I-EXIT</strong> - Trist CPI rebate type 0I</li>
+</ul>
+<h4>Rebate Reduction Utilities</h4>
+<ul>
+<li><strong>REBATE-RBREDUC-NJ</strong> / <strong>REBATE-RBREDUC-NJ-EXIT</strong> - New Jersey rebate reduction</li>
+<li><strong>REBATE-RBREDUC-NJ-21</strong> / <strong>REBATE-RBREDUC-NJ-21-EXIT</strong> - New Jersey rebate reduction type 21</li>
+<li><strong>REBATE-RBREDUC-OH</strong> - Ohio rebate reduction</li>
+<li><strong>REBATE-RBREDUC-OH-25</strong> - Ohio rebate reduction type 25</li>
+<li><strong>REBATE-RBREDUC-VYBA-28</strong> - VYBA rebate reduction type 28</li>
+<li><strong>REBATE-SPEC-RBREDUC</strong> / <strong>REBATE-SPEC-RBREDUC-EXIT</strong> - Special rebate reduction</li>
+<li><strong>REBATE-SPEC-RBREDUC-NV</strong> - Nevada special rebate reduction</li>
+</ul>
+<h4>Rebate Adjustment and Processing Utilities</h4>
+<ul>
+<li><strong>REBATE-ADJUST-REB-REBATE</strong> - Adjust rebate rebate</li>
+<li><strong>REBATE-ADJUST-REB-REBATE-FLOOR</strong> - Adjust rebate rebate floor</li>
+<li><strong>REBATE-CHECK-ADDON-TRAILER</strong> / <strong>REBATE-CHECK-ADDON-TRAILER-EXIT</strong> / <strong>REBATE-CHECK-ADDON-TRAILER-NEXT</strong> - Check add-on trailer for rebate</li>
+<li><strong>REBATE-DEDUCT-CHARGE</strong> / <strong>REBATE-DEDUCT-CHARGE-EXIT</strong> - Deduct charge from rebate</li>
+<li><strong>REBATE-END-ADJ</strong> - End rebate adjustments</li>
+<li><strong>REBATE-GET-EXTDAYS</strong> - Get extension days for rebate</li>
+<li><strong>REBATE-NET-POFF-MULL</strong> / <strong>REBATE-NET-POFF-MULL-EXIT</strong> - Net payoff Mullen rebate</li>
+<li><strong>REBATE-REFDATE</strong> / <strong>REBATE-REFDATE-EXIT</strong> - Rebate reference date</li>
+<li><strong>REBATE-TEST-SWING</strong> - Test rebate swing</li>
+<li><strong>REBATE-TRIGGER-DATE</strong> - Rebate trigger date</li>
+</ul>
+<h4>Rebate Deferment and Early Payoff Utilities</h4>
+<ul>
+<li><strong>REBATE-DEFERMENT-EOKMYZ05</strong> / <strong>REBATE-DEFERMENT-EOKMYZ05-EXIT</strong> - Deferment rebate EOKMYZ05</li>
+<li><strong>REBATE-EP1</strong> through <strong>REBATE-EP54</strong> (Multiple Early Payoff types) - Various early payoff rebate calculations</li>
+<li><strong>REBATE-EP2-REBATE-CHG</strong> / <strong>REBATE-EP2-REBATE-EXTCHG</strong> - Early payoff type 2 rebate charges</li>
+<li><strong>REBATE-EP18-REBATE-CHG</strong> - Early payoff type 18 rebate charges</li>
+<li><strong>REBATE-EP27-REBATE-CHG</strong> - Early payoff type 27 rebate charges</li>
+</ul>
+<h4>Rebate Insurance Utilities</h4>
+<ul>
+<li><strong>REBATE-INS-ANTICIPATED</strong> - Insurance anticipated rebate</li>
+<li><strong>REBATE-FIND-INS-RATE</strong> / <strong>REBATE-FIND-INS-RATE-EXIT</strong> - Find insurance rate for rebate</li>
+<li><strong>REBATE-FIND-INS-RATE-COMPUTE</strong> - Compute insurance rate for rebate</li>
+<li><strong>REBATE-FIND-INS-RATE-INTERPO</strong> - Interpolate insurance rate for rebate</li>
+<li><strong>REBATE-FIND-INS-TABLE</strong> - Find insurance table for rebate</li>
+</ul>
+<h4>Rebate Specialized Company Utilities</h4>
+<ul>
+<li><strong>REBATE-MERC-AH-ANTIC</strong> - Mercantile AH anticipated rebate</li>
+<li><strong>REBATE-MERC-DAILY-PRORATA</strong> - Mercantile daily pro-rata rebate</li>
+<li><strong>REBATE-MERC-TO-THE-DAY</strong> - Mercantile to-the-day rebate</li>
+<li><strong>REBATE-MULLEN-AH-07</strong> - Mullen AH type 07 rebate</li>
+<li><strong>REBATE-MULLEN-CL-07</strong> / <strong>REBATE-MULLEN-CL-07-EXIT</strong> - Mullen CL type 07 rebate</li>
+<li><strong>REBATE-MULLEN-CL-AH-07</strong> - Mullen CL AH type 07 rebate</li>
+</ul>
+<h4>Rebate Interest and Special Calculations</h4>
+<ul>
+<li><strong>REBATE-SAME-PROP-INT-SC-0G</strong> - Same proportion interest SC type 0G rebate</li>
+<li><strong>REBATE-TABLE-FORMULA</strong> / <strong>REBATE-TABLE-FORMULA-EXIT</strong> - Table formula rebate</li>
+<li><strong>REBATE-CALL-SUBPROG</strong> / <strong>REBATE-CALL-SUBPROG-RETRY</strong> - Call subprogram for rebate</li>
+</ul>
+<h4>Payment Processing Utilities</h4>
+<ul>
+<li><strong>PAYMENT-POSTING</strong> / <strong>PAYMENT-POSTING-EXIT</strong> - Main payment posting</li>
+<li><strong>MOVE-PAYMENT</strong> - Move payment data</li>
+<li><strong>MOVE-TO-LT</strong> - Move data to loan transaction</li>
+</ul>
+<h4>Payoff Processing Utilities</h4>
+<ul>
+<li><strong>PAYOFF-LOAN-ROUTINE</strong> - Main payoff loan routine</li>
+<li><strong>PAYOFF-EXIT</strong> - Payoff processing exit</li>
+<li><strong>PAYOFF-GET-REBATE</strong> - Get rebate for payoff</li>
+<li><strong>PAYOFF-POSTING</strong> / <strong>PAYOFF-POSTING-EXIT</strong> - Payoff posting</li>
+<li><strong>PAYOFF-INT-ADDONS</strong> / <strong>PAYOFF-INT-ADDONS-NEXT</strong> / <strong>PAYOFF-INT-ADDONS-GET-LP-REC</strong> - Payoff interest add-ons</li>
+<li><strong>END-PAYOFF-INT-ADDONS</strong> - End payoff interest add-ons</li>
+<li><strong>PAYOFF-OTHER-INS</strong> - Payoff other insurance</li>
+<li><strong>PAYOFF-SET-ADDON-INS</strong> - Set add-on insurance for payoff</li>
+<li><strong>PAYOFF-SET-CL-REBSUB</strong> - Set CL rebate sub for payoff</li>
+<li><strong>PAYOFF-SET-INT-CHARGES</strong> - Set interest charges for payoff</li>
+<li><strong>PAYOFF-SET-LATE-CHARGES</strong> - Set late charges for payoff</li>
+<li><strong>PAYOFF-SERCHG-REBATE</strong> / <strong>PAYOFF-SERCHG-REBATE-EXIT</strong> - Payoff service charge rebate</li>
+</ul>
+<h4>Special Posting Utilities</h4>
+<ul>
+<li><strong>POST-PO</strong> / <strong>POST-PO-EXIT</strong> - Post payoff</li>
+<li><strong>POST-REFUNDS-PLUS-PY</strong> / <strong>POST-REFUNDS-PLUS-PY-EXIT</strong> / <strong>POST-REFUNDS-PLUS-PY-AGAIN</strong> / <strong>POST-REFUNDS-PLUS-PY-NOW</strong> - Post refunds plus payment</li>
+<li><strong>POST-Z2</strong> / <strong>POST-Z2-EXIT</strong> - Post Z2 transactions</li>
+<li><strong>OTHER-CHG-POSTING</strong> / <strong>OTHER-CHG-POSTING-EXIT</strong> - Other charge posting</li>
+<li><strong>BANKRUPT-POSTING</strong> - Bankruptcy posting</li>
+<li><strong>REVERSAL-POSTING</strong> - Reversal posting</li>
+</ul>
+<h4>Loan Calculation Utilities</h4>
+<ul>
+<li><strong>LOAN-CALCULATIONS</strong> - Main loan calculations</li>
+<li><strong>SETUP-LP-RECORD</strong> - Setup loan payment record</li>
+<li><strong>SETUP-LONPF-BUFFER</strong> - Setup LONPF buffer</li>
+</ul>
+<h4>Data Movement and Transfer Utilities</h4>
+<ul>
+<li><strong>SET-ALL-TO-SP1</strong> - Set all data to SP1 format</li>
+<li><strong>SET-SP1-TO-ALL</strong> - Set SP1 data to all formats</li>
+<li><strong>SET-PY-RATE</strong> / <strong>SET-PY-RATE-EXIT</strong> - Set payment rate</li>
+</ul>
+<h4>Validation and Verification Utilities</h4>
+<ul>
+<li><strong>CDV-VERIFY</strong> / <strong>CDV-VERIFY-EXIT</strong> / <strong>CDV-VERIFY-NEXT</strong> - Certificate data verification</li>
+<li><strong>VALIDATE-DF-POLICY</strong> - Validate deferment policy</li>
+<li><strong>VALIDATE-REVERSAL</strong> - Validate reversal transactions</li>
+<li><strong>VALIDATE-SPR-TABLE</strong> - Validate special processing table</li>
+<li><strong>CHECK-PREV-STATUS</strong> - Check previous status</li>
+</ul>
+<h4>Rate and Table Processing Utilities</h4>
+<ul>
+<li><strong>SELECT-SP-ELAPSED-TIMTBL</strong> - Select special elapsed time table</li>
+<li><strong>SELECT-SPR-TABLE</strong> - Select special processing table</li>
+<li><strong>SETCTBL</strong> / <strong>SETCTBL-EXIT</strong> - Set calculation table</li>
+<li><strong>FIND-ADDON-SPR</strong> / <strong>FIND-ADDON-SPR-EXIT</strong> / <strong>FIND-ADDON-SPR-RESTORE</strong> - Find add-on special processing</li>
+</ul>
+<h4>Insurance and Default Policy Utilities</h4>
+<ul>
+<li><strong>INDU-GET-ALL-INSPREM</strong> - Individual get all insurance premiums</li>
+<li><strong>DEFPOL-MINIMUM-MONTHS-BETWEEN</strong> / <strong>DEFPOL-MINIMUM-MONTHS-BETWEEN-EXIT</strong> / <strong>DEFPOL-MINIMUM-MONTHS-NEXT</strong> - Default policy minimum months between</li>
+</ul>
+<h4>Special State and Regional Processing</h4>
+<ul>
+<li><strong>CALIFORNIA-SPECIAL-OPTION</strong> / <strong>EXIT-CALIFORNIA-SPECIAL-OPTION</strong> - California special processing options</li>
+<li><strong>BYPASS-SERVICE</strong> - Bypass service processing</li>
+<li><strong>ADVANCE-SCHED</strong> - Advance schedule processing</li>
+<li><strong>ACCEL-INT-LOOP</strong> - Acceleration interest loop</li>
+</ul>
+<h4>Test and Validation Utilities</h4>
+<ul>
+<li><strong>IBPC-TEST</strong> / <strong>IBPC-TEST-EXIT</strong> - IBPC test processing</li>
+<li><strong>TEST-PAYOFF-ALLOWED</strong> - Test if payoff is allowed</li>
+<li><strong>SKIP-EARLY-PAYOFF-TEST</strong> - Skip early payoff test</li>
+<li><strong>SKIP-PAYOFF-CALC</strong> - Skip payoff calculations</li>
+</ul>
+<h4>Utility and System Services</h4>
+<ul>
+<li><strong>ACCESS-CALL</strong> / <strong>DIR-ACCESS-CALL</strong> - Access call utilities</li>
+<li><strong>SYSTEM-CALL</strong> - System call interface</li>
+<li><strong>MKTEMP-CALL</strong> - Make temporary file call</li>
+<li><strong>ALARM</strong> - Alarm processing</li>
+<li><strong>SUSPEND</strong> - Suspend processing</li>
+<li><strong>SEND-MESS</strong> - Send message</li>
+<li><strong>SAVE-SCREEN</strong> - Save screen data</li>
+<li><strong>TRY-NEXT-STEP-NO</strong> - Try next step number</li>
+</ul>
+<h4>Error Handling and Logging Utilities</h4>
+<ul>
+<li><strong>FILE-ERRORS</strong> / <strong>FILE-ERRORS-TERMINATE</strong> - File error handling</li>
+<li><strong>IO-ERROR</strong> - Input/output error handling</li>
+<li><strong>SQL-ERROR</strong> - SQL error handling</li>
+<li><strong>INVALID-REVERSAL</strong> - Invalid reversal handling</li>
+<li><strong>CREATE-LOG</strong> - Create log file</li>
+<li><strong>CREATE-SPOOL-DIR</strong> / <strong>EXIT-CREATE-SPOOL-DIR</strong> - Create spool directory</li>
+</ul>
+<h4>SQL Database Utilities</h4>
+<ul>
+<li><strong>SQL-CONNECT</strong> / <strong>SQL-CONNECT-MAKE</strong> / <strong>SQL-CONNECT-WHENEVER</strong> / <strong>SQL-CONNECT-ERROR</strong> - SQL connection management</li>
+<li><strong>SQL-DISCONNECT</strong> - SQL disconnection</li>
+<li><strong>SQL-GET-DATE</strong> - Get date from SQL database</li>
+<li><strong>SQL-SET-DATE</strong> - Set date in SQL database</li>
+<li><strong>SQL-IO-VALIDATION</strong> - SQL input/output validation</li>
+<li><strong>SQL-TEXT-FIND-ASCII</strong> - SQL text find ASCII</li>
+</ul>
+<h4>Program Flow Control Utilities</h4>
+<ul>
+<li><strong>INITIALIZATION</strong> - Program initialization</li>
+<li><strong>END-INIT</strong> - End initialization</li>
+<li><strong>END-DECLARE</strong> - End declarations</li>
+<li><strong>END-PROGRAM</strong> - End program processing</li>
+<li><strong>END-ROUTINE</strong> - End routine processing</li>
+<li><strong>EXIT-INITIALIZE</strong> - Exit initialization</li>
+<li><strong>EXIT-PROG</strong> - Exit program</li>
+<li><strong>EXIT-VALIDATE-REVERSAL</strong> - Exit validate reversal</li>
+<li><strong>EXIT-TN-PP-SHORT-RATE</strong> - Exit TN PP short rate</li>
+<li><strong>ITRM-EXIT</strong> - Interest term exit</li>
+<li><strong>TN-PP-SHORT-RATE</strong> - Tennessee PP short rate</li>
+</ul>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Error Categories</h3>
+<h4>1. Input Validation Errors</h4>
+<p><strong>Scenarios:</strong>
+- Invalid branch number
+- Account not found
+- Invalid reference code
+- Invalid date format
+- Invalid transaction amount</p>
+<p><strong>Handling:</strong>
+- Immediate termination with specific error code
+- Detailed error logging
+- No database modifications</p>
+<h4>2. Business Rule Violations</h4>
+<p><strong>Scenarios:</strong>
+- Day not open for processing
+- Machine assignment mismatch
+- Account status restrictions
+- Transaction type not permitted</p>
+<p><strong>Handling:</strong>
+- Graceful termination with business error code
+- Audit trail creation
+- Manager notification where required</p>
+<h4>3. System Errors</h4>
+<p><strong>Scenarios:</strong>
+- Database access failures
+- File system errors
+- Memory allocation issues
+- Network connectivity problems</p>
+<p><strong>Handling:</strong>
+- Comprehensive error logging
+- Automatic retry mechanisms where appropriate
+- Fallback procedures
+- Administrative alerts</p>
+<h4>4. Processing Errors</h4>
+<p><strong>Scenarios:</strong>
+- LONPF program rejections
+- Calculation errors
+- Concurrent update conflicts
+- Insufficient funds</p>
+<p><strong>Handling:</strong>
+- Transaction rollback
+- Detailed error reporting
+- Customer notification procedures</p>
+<h3>Error Recovery Mechanisms</h3>
+<h4>File Error Handling</h4>
+<pre><code class="language-cobol">DECLARATIVES.
+DECLARE-ERROR SECTION.
+    USE AFTER ERROR PROCEDURE ON WK-FILE OP-FILE LOG-FILE.
+</code></pre>
+<p><strong>Features:</strong>
+- Automatic retry logic for locked records
+- File recovery procedures
+- Alternative path processing
+- Error escalation protocols</p>
+<h4>Lock Contention Resolution</h4>
+<ul>
+<li>Multiple retry attempts with delays</li>
+<li>Lock timeout handling</li>
+<li>Alternative processing windows</li>
+<li>User notification of conflicts</li>
+</ul>
+<h3>Logging and Audit Trail</h3>
+<h4>Log Entry Format</h4>
+<p><strong>Standard Format:</strong></p>
+<pre><code>STATUS(4) RETURN-CODE(4) DATE(10) TIME(8) BRANCH(4) ACCOUNT(6) MESSAGE(38)
+</code></pre>
+<p><strong>Log Categories:</strong>
+- <strong>PASS:</strong> Successful transactions
+- <strong>FAIL:</strong> Failed transactions with reason codes
+- <strong>WARN:</strong> Warning conditions
+- <strong>INFO:</strong> Informational messages</p>
+<h4>Audit Requirements</h4>
+<ul>
+<li>Complete transaction trail</li>
+<li>User identification</li>
+<li>Timestamp precision</li>
+<li>Error code documentation</li>
+<li>Recovery action logging</li>
+</ul>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4>Working Storage Organization</h4>
+<p><strong>Primary Buffer (UPDATE-BUF):</strong></p>
+<pre><code class="language-cobol">01  UPDATE-BUF.
+    03  ENTRY-FLAG                PIC 9.
+    03  BYPASS-AMT-ENT-FG         PIC 9.
+    03  FULL-DISPLAY              PIC X.
+    03  REV-REBATE                PIC X.
+    03  MAKER-CD                  PIC X.
+    -- Additional control fields --
+</code></pre>
+<p><strong>Payment Buffer (BT-REC):</strong></p>
+<pre><code class="language-cobol">01  BT-REC.
+    03  BT-BRANCH             PIC 9(04).
+    03  BT-ACCTNO             PIC 9(06).
+    03  BT-AMT                PIC 9(08)V9(02).
+    03  BT-REFCD              PIC X(05).
+    03  BT-PAYDATE            PIC 9(06).
+    03  BT-TRCD               PIC X(2).
+</code></pre>
+<h4>File Definitions</h4>
+<p><strong>Master Files:</strong>
+- <strong>LN-FILE:</strong> Loan master records
+- <strong>BR-FILE:</strong> Branch configuration
+- <strong>CD-FILE:</strong> Reference code definitions
+- <strong>GB-FILE:</strong> Global system parameters</p>
+<p><strong>Transaction Files:</strong>
+- <strong>LP-FILE:</strong> Payment history
+- <strong>WK-FILE:</strong> Work file for processing
+- <strong>OP-FILE:</strong> Output processing file</p>
+<p><strong>Audit Files:</strong>
+- <strong>LOG-FILE:</strong> Transaction logging
+- <strong>RC-FILE:</strong> Day control records</p>
+<h3>Key Algorithms</h3>
+<h4>Date Conversion Algorithm</h4>
+<pre><code class="language-cobol">CONVERT-MMDDYY-TO-YYYYMMDD.
+    -- Convert 6-digit date to 8-digit format
+    -- Handle century determination
+    -- Validate date ranges
+</code></pre>
+<h4>Amount Processing</h4>
+<pre><code class="language-cobol">-- Signed amount handling
+03  BT-SIGNED-AMT REDEFINES BT-AMT PIC S9(08)V9(02).
+-- Amount validation and conversion
+</code></pre>
+<h4>Transaction Routing Logic</h4>
+<pre><code class="language-cobol">IF (HOLD-BP-TRCD = &quot;RE&quot; OR &quot;O2&quot;)
+   MOVE &quot;LP/LONPF7&quot; TO FORM-NAM
+ELSE
+IF HOLD-BP-TRCD = &quot;RP&quot;
+   MOVE &quot;LP/LONPFB&quot; TO FORM-NAM
+ELSE
+IF (HOLD-BP-TRCD = &quot;PL&quot; OR &quot;P2&quot; OR &quot;P3&quot;)
+   MOVE &quot;LP/LONPF9&quot; TO FORM-NAM
+ELSE
+   MOVE &quot;LP/LONPFC&quot; TO FORM-NAM.
+</code></pre>
+<h3>Memory Management</h3>
+<h4>Buffer Organization</h4>
+<ul>
+<li><strong>PROG-BUF:</strong> Program communication buffer (356 bytes)</li>
+<li><strong>UPDATE-BUF:</strong> Processing control buffer (720 bytes)</li>
+<li><strong>Working Storage:</strong> Approximately 50KB total</li>
+<li><strong>Copybook Integration:</strong> Extensive use of embedded copybooks</li>
+</ul>
+<h4>Performance Optimizations</h4>
+<ul>
+<li><strong>File Buffering:</strong> Optimized I/O operations</li>
+<li><strong>Memory Pooling:</strong> Efficient buffer reuse</li>
+<li><strong>Index Usage:</strong> Strategic file access patterns</li>
+<li><strong>Caching:</strong> Frequently accessed data retention</li>
+</ul>
+<hr />
+<h2>Integration Points</h2>
+<h3>External System Interfaces</h3>
+<h4>Database Systems</h4>
+<p><strong>Primary Database:</strong> ISAM/VSAM file system
+<strong>Access Method:</strong> COBOL file I/O with SQL integration
+<strong>Transaction Control:</strong> Automatic rollback capabilities
+<strong>Concurrency:</strong> Record-level locking with retry logic</p>
+<h4>Batch Processing Environment</h4>
+<p><strong>Scheduler Integration:</strong> Compatible with enterprise job schedulers
+<strong>Parameter Passing:</strong> Command-line argument processing
+<strong>Return Code Handling:</strong> Standard return code conventions
+<strong>Log Integration:</strong> Standard logging format for monitoring systems</p>
+<h4>Security Framework</h4>
+<p><strong>Authentication:</strong> Environment-based user validation
+<strong>Authorization:</strong> Branch-level security controls
+<strong>Audit Compliance:</strong> Complete transaction logging
+<strong>Data Protection:</strong> Sensitive data handling procedures</p>
+<h3>Service Dependencies</h3>
+<h4>Required Services</h4>
+<ul>
+<li><strong>File System Access:</strong> Read/write permissions to data directories</li>
+<li><strong>Database Connectivity:</strong> ISAM/VSAM database access</li>
+<li><strong>System Environment:</strong> COBOL runtime environment</li>
+<li><strong>Network Access:</strong> For distributed file systems</li>
+</ul>
+<h4>Optional Services</h4>
+<ul>
+<li><strong>SQL Database:</strong> Enhanced reporting capabilities</li>
+<li><strong>Message Queuing:</strong> Asynchronous processing notifications</li>
+<li><strong>Monitoring Tools:</strong> Performance and error tracking</li>
+<li><strong>Backup Systems:</strong> Data protection and recovery</li>
+</ul>
+<h3>Configuration Management</h3>
+<h4>Environment Variables</h4>
+<pre><code class="language-bash">FIL - File path configuration
+POSTNAME - User identification
+</code></pre>
+<h4>Path Configuration</h4>
+<pre><code class="language-cobol">FILPATH-BASE    - Base directory path
+FILPATH-MACHINE - Machine identifier  
+FILPATH-DATA    - Data directory path
+</code></pre>
+<h4>Branch-Specific Settings</h4>
+<ul>
+<li>Machine assignments</li>
+<li>Processing permissions</li>
+<li>Business rule variations</li>
+<li>Security configurations</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access</th>
+<th>Key Structure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch configuration</td>
+<td>Random Read</td>
+<td>BRNO</td>
+</tr>
+<tr>
+<td><strong>CD-FILE</strong></td>
+<td>Reference code definitions</td>
+<td>Random Read</td>
+<td>TYPE + CODE</td>
+</tr>
+<tr>
+<td><strong>GB-FILE</strong></td>
+<td>Global system parameters</td>
+<td>Sequential Read</td>
+<td>BRNO + RECORD-NO</td>
+</tr>
+<tr>
+<td><strong>LN-FILE</strong></td>
+<td>Loan master records</td>
+<td>Random Read/Write</td>
+<td>BRNO + ACCTNO</td>
+</tr>
+<tr>
+<td><strong>RC-FILE</strong></td>
+<td>Day control records</td>
+<td>Random Read</td>
+<td>STATUS + BRNO + DATE</td>
+</tr>
+</tbody>
+</table>
+<h3>Working Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access</th>
+<th>Organization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Processing workspace</td>
+<td>Random Read/Write</td>
+<td>Relative</td>
+</tr>
+<tr>
+<td><strong>OP-FILE</strong></td>
+<td>Output processing</td>
+<td>Sequential Write</td>
+<td>Sequential</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access</th>
+<th>Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LOG-FILE</strong></td>
+<td>Transaction logging</td>
+<td>Sequential Write</td>
+<td>Fixed Length</td>
+</tr>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Payment history</td>
+<td>Sequential Write</td>
+<td>ISAM</td>
+</tr>
+<tr>
+<td><strong>GL-FILES</strong></td>
+<td>General ledger entries</td>
+<td>Sequential Write</td>
+<td>Various</td>
+</tr>
+</tbody>
+</table>
+<h3>Copybook Dependencies</h3>
+<h4>System Copybooks</h4>
+<ul>
+<li><strong>LIBGB/GB01BR.CPY:</strong> Branch record definition</li>
+<li><strong>LIBGB/FERRORS.CPY:</strong> File error handling</li>
+<li><strong>LIBGB/DECLARE.CPY:</strong> Standard error procedures</li>
+</ul>
+<h4>Application Copybooks</h4>
+<ul>
+<li><strong>LIBLP/LP01WK.CPY:</strong> Work file record</li>
+<li><strong>LIBLP/LPLOANW.CPY:</strong> Loan processing buffer</li>
+<li><strong>LIBLP/LPPFBUF.CPY:</strong> Payment processing buffer</li>
+</ul>
+<h4>Database Interface Copybooks</h4>
+<ul>
+<li><strong>Various SQL copybooks:</strong> Database table definitions</li>
+<li><strong>File status copybooks:</strong> I/O status handling</li>
+</ul>
+<h3>File Access Patterns</h3>
+<h4>Read-Only Access</h4>
+<ul>
+<li>Branch configuration (BR-FILE)</li>
+<li>Reference codes (CD-FILE) </li>
+<li>Global parameters (GB-FILE)</li>
+<li>Day control records (RC-FILE)</li>
+</ul>
+<h4>Read-Write Access</h4>
+<ul>
+<li>Loan master (LN-FILE)</li>
+<li>Work files (WK-FILE)</li>
+<li>Payment history (LP-FILE)</li>
+</ul>
+<h4>Write-Only Access</h4>
+<ul>
+<li>Log files (LOG-FILE)</li>
+<li>Output files (OP-FILE)</li>
+<li>Audit trails</li>
+</ul>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<h3>Main Program Call Hierarchy</h3>
+<pre><code class="language-mermaid">graph TD
+    A[MAIN-PROGRAM] --&gt; B[INITIALIZATION]
+    A --&gt; C[GET-GPENV]
+    A --&gt; D[READ-BR-FILE]
+    A --&gt; E[OPEN-CD1-FILE]
+    A --&gt; F[READ-CD1-FILE]
+    A --&gt; G[OPEN-GB-FILE]
+    A --&gt; H[READ-GB-FILE]
+    A --&gt; I[OPEN-LN1-FILE]
+    A --&gt; J[OPEN-BW1-FILE]
+    A --&gt; K[OPEN-RC2-FILE]
+    A --&gt; L[READ-RC2-FILE]
+    A --&gt; M[PAYMENT-POSTING]
+    A --&gt; N[CREATE-LOG]
+    A --&gt; O[END-PROGRAM]
+
+    B --&gt; B1[SQL-CONNECT]
+    B --&gt; B2[File Initialization]
+
+    M --&gt; M1[SETUP-LP-RECORD]
+    M --&gt; M2[SETUP-LONPF-BUFFER]
+    M --&gt; M3[Call LONPF Programs]
+    M --&gt; M4[Database Updates]
+
+    O --&gt; O1[CLOSE-FILES]
+    O --&gt; O2[EXIT-PROG]
+</code></pre>
+<h3>Complete Call Graph</h3>
+<p><img alt="Complete Call Graph" src="Diagrams/APIPAY_Complete_Call_Graph.mmd" /></p>
+<h3>Paragraph Categories</h3>
+<h4>File Operations (100+ procedures)</h4>
+<ul>
+<li><strong>OPEN-xxx-FILE:</strong> File opening procedures</li>
+<li><strong>CLOSE-xxx-FILE:</strong> File closing procedures  </li>
+<li><strong>READ-xxx-FILE:</strong> File reading procedures</li>
+<li><strong>CLEAR-xxx-FILE:</strong> File clearing procedures</li>
+</ul>
+<h4>Date/Time Processing (50+ procedures)</h4>
+<ul>
+<li><strong><a href="C-TIMALL_Documentation.html">C-TIMALL</a>:</strong> Complete time calculations router</li>
+<li><strong><a href="C-DATER-MAIN_Documentation.html">C-DATER-MAIN</a>:</strong> Date processing main routine</li>
+<li><strong>CONVERT-xxx:</strong> Date format conversions</li>
+<li><strong>C-INCREMENT-xxx:</strong> Date arithmetic operations</li>
+<li><strong><a href="C-TIM365-367_Documentation.html">C-TIM365-367</a>:</strong> Elapsed time calculation using 365/367-day year type</li>
+<li><strong><a href="C-TIM999-998_Documentation.html">C-TIM999-998</a>:</strong> Truth in Lending and Elapsed Unit Period calculations</li>
+<li><strong><a href="C-TIMBEG-TIMEND_Documentation.html">C-TIMBEG and C-TIMEND</a>:</strong> Date processing initialization and finalization</li>
+</ul>
+<h4>Business Logic Processing (200+ procedures)</h4>
+<ul>
+<li><strong>PAYMENT-POSTING:</strong> Payment processing coordination</li>
+<li><strong>SETUP-xxx:</strong> Data preparation procedures</li>
+<li><strong>COMPUTE-xxx:</strong> Calculation procedures</li>
+<li><strong>VALIDATE-xxx:</strong> Validation procedures</li>
+</ul>
+<h4>Utility Procedures (300+ procedures)</h4>
+<ul>
+<li><strong>Error handling routines</strong></li>
+<li><strong>Buffer management</strong></li>
+<li><strong>String manipulation</strong></li>
+<li><strong>Mathematical calculations</strong></li>
+</ul>
+<hr />
+<p><em>This documentation provides a comprehensive overview of the APIPAY program for technical staff unfamiliar with COBOL or the specific loan processing system. For detailed implementation information, refer to the source code and associated technical documentation.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+      * COPYMEMBER: LIBWI/CISCANW
+      * REV:
+      *  2024.0424 BAH MADE 01 LEVEL AND CALL, NOT WINDOW
+       01  CISCAN-BUF.
+           03  CISCAN-SSNO       PIC 9(9).

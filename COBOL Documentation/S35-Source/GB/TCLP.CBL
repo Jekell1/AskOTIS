@@ -1,0 +1,323 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.        TCLP IS INITIAL.
+      ******************************************************************
+      *
+      *   TRANSACTION DRIVER
+      *
+      *         ...TO SET EVALUATION PERIOD SEE BELOW
+      * 
+      *   JUST FYI, AS OF 8/2014, WHEN YOU TYPE TCLP IN A30, 
+      *   THIS IS WHAT GETS EXECUTED.   BLM
+      *        GB/TCLP
+      *        GB/SETENV
+      *        LP/LPMENU
+      *        CL/CHKSEC
+      *        LP/WHOAMI
+      *  
+      *=================================================================
+      * REV:
+      * BLV 070298 ADDED LOGIC AT STOP-RUN TO DO A LOGUID
+      *            CALL WITH A PROGRAM NAME OF "LOGGEDOFF"
+      * MG  991008 FIXED VDUSTATUS/IO-FG/STAT PER DEVELOPMENT MEETING.
+      * MJD 991203 ADDED SECURITY TO LIMIT NUMBER OF USERS
+      * MJD 121214 ADDED DISPLAY OF INITIAL WINDOW W/ HANDLE.
+      * BLM 130213 CHANGED LOGUID TO NOT CALL C PROGRAM
+      * BAH 130703 CHANGED CELL HEIGHT TO 18 FROM 10
+      * KEC 131025 MOVED LOGIC OF SETTING EXT-FILPATH TO GB/SETENV
+      * MJD 140604 ADDED EXT- WORKERS FOR WINDOW CONTROL. MOVED
+      *            DISPLAY OF WINDOW TO OCCUR AFTER CALLING SETENV
+      *            TO DEFINE EXT WORKERS.
+      * MJD 150317 REMOVED IS????? COPYBOOKS.
+      * BLM 150610 CHANGES FOR NOT RETURNING TO TCLP
+      * JKC 210702 ADDED SQL-DISCONNECT BEFORE 'STOP RUN'; WE FOUND THAT
+      *            THE USE OF SQL-DISCONNECT WHEN EXITING THE
+      *            APPLICATION IS ONLY NEEDED; DOING A SQL-DISCONNECT
+      *            WHEN EXITING A PROGRAM WILL CAUSE ALL CURSORS TO BE
+      *            CLOSED FROM THE CALLING PROGRAM WHICH EFFECTS IT 
+      *            WHEN CONTINUING WITH A READ-NEXT.
+      *
+      * JKC 2020-0726 ADDED EXT-SQL-CONNECT-STAT FOR CHECKING IF 
+      *               CONNECTION TO SQL SERVER HAS ALREADY BEEN MADE;
+      *               USED TO ONLY CONNECT ONE-TIME INSTEAD OF MULTIPLE
+      *               TIMES IN EVERY PROGRAM; PLACED IN GB/TCLP SO TO
+      *               INITIALLY SET IT TO "XX" (BAD) SO THAT IT WILL
+      *               CONNECT TO SQL SERVER ON FIRST CALL TO SQL-CONNECT
+      *
+      * JKC 2021-0910 CHANGED TO USE EXT-ACUSQL-CONNECT-STAT 
+      *               INSTEAD OF EXT-SQL-CONNECT-STAT
+      *
+      * JKC 220623 HAD TO ADD `EXEC SQL INCLUDE` (SQLCA & SQLDA) FOR
+      *            THE USE OF LIBGB/DISCONNECT_SQL.CPY TO COMPILE
+      *            WITHOUT WARNINGS WHICH DOES NOT SHOW ANY WARNING
+      *            MESSAGE BUT SHOWS 1,000+ DUPLICATION OF THIS LINE:
+      *               EXEC SQL WHENEVER SQLERROR CONTINUE END-EXEC.
+      *
+      * BAH 20220802 COMMENTED OUT LOGUID
+      *
+      * JKC 2024-0124 ADDED OTIS TRACE LOGGING LOGIC
+      *
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.  3B.
+       OBJECT-COMPUTER.  3B.
+       DATA DIVISION.
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(35) VALUE
+           "@(#)GB/TCLP S35 03/17/25-14:32:52 >".
+
+       EXEC SQL INCLUDE SQLCA END-EXEC.
+       EXEC SQL INCLUDE SQLDA END-EXEC.
+
+       01  EXT-EOBUF-MESS        PIC X(60).
+
+       01  FORM-PATHNAME     PIC X(22).
+       01  EXIT-PATHNAME     PIC X(22).
+
+       77  SCRN-LINES PIC 9(4).
+       77  SCRN-SIZE PIC 9(4).
+
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/UNAMEW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBGB/ACCESSW.CPY".
+       COPY "LIBGB/LOADCOW.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+
+
+       PROCEDURE DIVISION.
+
+      * FORCE TO 80X24.  IF NOT VEERYANT WILL FILL ENTORE SCREEN WITH WINDOW.
+      *  IF CHANGING HERE CHANGE CL/PGMENU, CL/SIMENU, CL/WIMENU AS WELL.
+            MOVE 80  TO SCRN-SIZE.
+            MOVE 24 TO SCRN-LINES.
+       
+
+      * NEED TO SET EXT-ACUSQL-CONNECT-STAT TO BAD SO THAT IT MAKES
+      * INITIAL CONNECTION TO SQL SERVER ON FIRST CALL TO SQL-CONNECT.
+           MOVE STAT---BAD TO EXT-ACUSQL-CONNECT-STAT.
+
+       MAIN-LINE.
+      D     STOP MESS.
+       
+        SCREENSETUP.
+
+      * MOVED DISPLAY OF WINDOW FURTHUR DOWN, IT NEEDS TO OCCUR
+      *  AFTER CALLING SWETENV |MJD
+
+      * OLD DISPLAY , PRIOR TO JOHNS VISIT 5/14 |MJD
+      *     DISPLAY STANDARD GRAPHICAL WINDOW
+      *            AT SCREEN LINE 1
+      *            AT SCREEN COL 1
+      *             CELL HEIGHT 18
+      *             CELL WIDTH 10
+      *             SIZE 84
+      *             LINES 24
+      *             TITLE "PARADATA FINANCIAL SYSTEMS"
+      *             BLANK SCREEN
+      *             WITH NO SCROLL
+      *             WITH NO WRAP
+      *             HANDLE IS TCLP-MAIN-WINDOW-HANDLE.
+
+           MOVE "/   /   /  /" TO FORM-PATH.
+
+      * I DO NOT KNOW IF WE NEED THIS ??? BAH 1/29/2013
+      *
+      * TO FIX PIGGY BACK FLOW CONTROL PROBLEM
+      *    MOVE STTY-PIGGY-ON TO SYSTEM-BUF.
+      *    PERFORM SYSTEM-CALL.
+
+      * PRE-LOAD OPTIONS (DEBUG MODE, ETC)
+           MOVE "OPT" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF STAT-GOOD
+              MOVE GETENV-BUF TO LOADCO-OPT.
+
+      * SET CONAME & GPFILE & BRFILE ENVIRONMENT VARIABLES:
+           MOVE "REL" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF STAT-BAD
+              MOVE "ENV ERROR: REL" TO MESS
+              PERFORM SEND-MESS
+              GO TO STOP-RUN.
+
+      * SETUP FORM-PATHNAME FOR USE IN SENDMESS
+      * IT DID NOT EXIST PREVIOUSLY IN TCLP.C
+           MOVE GETENV-BUF TO FORM-REL.
+           MOVE "CO" TO FORM-OBJ.
+           MOVE "GB/TCLP  " TO FORM-NAM.
+           MOVE FORM-PATH TO FORM-PATHNAME EXIT-PATHNAME.
+
+      * OTIS TRACE LOGGING - SET EXTERNAL FIELDS & LAUNCH 
+      
+           PERFORM TCLP-TRACE-MODULE.
+
+           MOVE "GB/SETENV" TO FORM-NAM.
+
+      * NEED THIS MOVE STATEMENT SO IF AN ERROR OCCURS, YOU DISPLAY THE CORRECT
+      * PROGRAM NAME IN SQL-IO-VALIDATION
+
+           MOVE FORM-PATH TO FORM-PATHNAME.
+           CALL FORM-PROGX USING FORM-PATHNAME EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+
+      * NEED TO SET EXT-TCLP-TRACE-FORM-PATHNAME BEFORE GOING INTO
+      * 'TRACE-PROGRAM-RETURN' SO THAT IT CAN GET THE EXACT
+      * PROGRAM NAME IN THE TRACE LOG
+      
+           MOVE FORM-PATHNAME TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "TCLP"        TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-PROGRAM-RETURN.
+
+
+      * MOVED DISPLAY OF WINDOW HERE, NEED TO EXECUTE SETENV TO
+      * CONFIGURE EXT WORKERS.
+      D     STOP FORM-PATHNAME.
+
+            DISPLAY STANDARD GRAPHICAL WINDOW
+                LINES SCRN-LINES * VDU-WIN-L-OFFSET
+                SIZE SCRN-SIZE * VDU-WIN-C-OFFSET
+                LABEL-OFFSET VDU-LABEL-OFFSET
+                RESIZABLE
+                AUTO-MINIMIZE
+                MODELESS 
+      *         LAYOUT-MANAGER LM-RESIZE
+           COLOR IS VDU-WCOLOR-TCLP,CONTROL VALUE IS VDU-WCTRL-TCLP
+      *          ICON W-ICON20         REPLACE WITH OUR LOGO ICON
+      *          FOREGROUND-COLOR RGB X#000000
+                TITLE "  PARADATA FINANCIAL SYSTEMS  "
+      *          EVENT  WIN-EVT
+                HANDLE IS TCLP-MAIN-WINDOW-HANDLE.
+
+           GO TO SET-MNU.
+
+      *----------------------------------------------------------
+       LOAD-RESTART.
+           MOVE "REL" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF STAT-BAD
+              MOVE "ENV ERROR: REL" TO MESS
+              PERFORM SEND-MESS
+              GO TO STOP-RUN.
+           MOVE GETENV-BUF TO FORM-REL.
+
+       SET-MNU.
+           MOVE "MNU" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF STAT-BAD
+              MOVE "ENV ERROR: MNU" TO MESS
+              PERFORM SEND-MESS
+              GO TO STOP-RUN.
+
+      * RE-START LOGIC: IF NO ACCESS TO PROG,
+      * TRY STARTUP PROG; IF NO ACCESS TO
+      * STARTUP PROG, ABORT.
+           MOVE FORM-NAM TO ACCESS-BUF.
+           MOVE GETENV-BUF TO FORM-NAM.
+           IF GETENV-BUF = ACCESS-BUF
+              GO TO STOP-RUN.
+
+       LOAD-POST.
+       COPY "LIBGB/LOADCO.CPY".
+
+      ******************************************************************
+      *
+      *    T C L P - T R A C E - M O D U L E 
+      *
+      *=================================================================
+      * IN  : FORM-REL
+      * OUT : EXT-TCLP-TRACE-WORKERS
+      * DESC: TCLP/OTIS TRACE LOGGING.  CHECK IF `TCLP_TRACE`
+      *       ENVIRONMENT VARIABLE IS "Y" (ENABLE TRACE WITHOUT BRANCH)
+      *       OR IS "B" (ENABLE TRACE WITH READ OF BRANCH FILE; BRFILE).
+      *       IF TRACE IS ENABLE THEN SEND TO LOG THE LAUNCH OF OTIS.
+      ******************************************************************
+       TCLP-TRACE-MODULE SECTION.
+
+           MOVE ZEROES TO EXT-TCLP-TRACE-LEVEL.
+           MOVE SPACES TO EXT-TCLP-TRACE-FORM-PATH
+                          EXT-TCLP-TRACE-MESS.
+
+      * SKIP EVENT
+
+           MOVE "N"    TO EXT-TCLP-TRACE-SKIP-YN. 
+
+           MOVE "TCLP_TRACE"  TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF ( STAT-BAD )
+      * DISABLE TRACE
+              MOVE "N" TO EXT-TCLP-TRACE
+              GO TO TCLP-TRACE-MODULE-EXIT.
+
+           MOVE GETENV-BUF TO EXT-TCLP-TRACE.
+
+           IF ( NOT EXT-TCLP-TRACE-VALID   ) OR
+              (     EXT-TCLP-TRACE-DISABLE )
+      * DISABLE TRACE
+              MOVE "N" TO EXT-TCLP-TRACE 
+              GO TO TCLP-TRACE-MODULE-EXIT.
+
+           MOVE "ROOT" TO MESS.
+           CALL "C$TOLOWER" USING MESS, VALUE 10.
+      * GET USERID
+           PERFORM UNAME-CALL.
+
+      * DISABLE FOR ROOT
+           IF ( UNAME-BUF = MESS )
+      * DISABLE TRACE
+              MOVE "N" TO EXT-TCLP-TRACE
+              GO TO TCLP-TRACE-MODULE-EXIT.
+
+           MOVE ALL "="                    TO EXT-TCLP-TRACE-MESS.
+           MOVE FORM-PATHNAME              TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "TCLP"                     TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-SEND-MESS.
+
+           STRING "OTIS SESSION STARTED /", FORM-REL
+                  DELIMITED BY SIZE      INTO EXT-TCLP-TRACE-MESS.
+           MOVE FORM-PATHNAME              TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "TCLP"                     TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-SEND-MESS.
+
+       TCLP-TRACE-MODULE-EXIT.
+           EXIT.
+
+       COPY "LIBCL/TRACE.CPY".
+
+      ***************************
+       MISC-ROUTINES SECTION.
+      ***************************
+       COPY "LIBGB/GETENV.CPY".
+       COPY "LIBGB/ACCESS.CPY".
+       COPY "LIBGB/UNAME.CPY".
+       COPY "LIBGB/SYSTEM.CPY".
+       COPY "LIBGB/SENDMESS.CPY".
+       COPY "LIBGB/ERRMSG.CPY".
+       COPY "LIBGB/DISCONNECT_SQL.CPY".
+       STOP-RUN.
+      *    STRING LOGUID-LOGNAME, " ",
+      *           LOGUID-REL, " ",
+      *           "LOGGEDOFF ",
+      *           LOGUID-MO, "/", LOGUID-DA, "/", LOGUID-YR, " ",
+      *           LOGUID-HH, ":", LOGUID-MM,  " ",
+      *           LOGUID-POSTBRANCH, " ",
+      *           LOGUID-INTERBR, " ",
+      *           DELIMITED BY SIZE
+      *           INTO LOGUID-BUF.
+      *    MOVE "CL/LOGUID" TO FORM-NAM.
+      *    CALL FORM-PROGX USING FORM-PATHNAME LOGUID-BUF EXIT-PATHNAME.
+      *    CANCEL FORM-PROGX.
+
+      
+           MOVE "OTIS SESSION COMPLETED" TO EXT-TCLP-TRACE-MESS.
+           MOVE FORM-PATHNAME            TO EXT-TCLP-TRACE-FORM-PATH.
+           MOVE "TCLP"                   TO EXT-TCLP-TRACE-FORM-PROGX.
+           PERFORM TRACE-SEND-MESS.
+
+      * NEED TO BE LAST BEFORE 'STOP RUN'
+
+           PERFORM SQL-DISCONNECT.
+           STOP RUN.

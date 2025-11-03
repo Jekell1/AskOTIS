@@ -1,0 +1,29 @@
+Fetched copybook chunks: 1480 phrase=LABEL LINE
+  + Fetched 10 chunks for LPMENU_SCN.CPY
+[INFO] No chunks matched phrase search; consider relaxing phrase or verifying index content.
+  + Fetched 2 chunks for FDMENU_SCN.CPY
+  + Fetched 3 chunks for ASMENU_SCN.CPY
+Fetched candidate chunks: 2664 phrase= SCREEN SECTION
+[SKIP] Duplicate section: EA66581C142E6BA08A83D2DC773BC990... hash=b56e547d1da6...
+[SKIP] Duplicate section: EA66581C142E6BA08A83D2DC773BC990... hash=b56e547d1da6...
+[SKIP] Duplicate section: EA66581C142E6BA08A83D2DC773BC990... hash=b56e547d1da6...
+[SKIP] Duplicate section: EA66581C142E6BA08A83D2DC773BC990... hash=ed548fb431c0...
+[SKIP] Duplicate section: 7F1DBB678B6CFE0015F656EE5BA7AB24... hash=ea7e52459c15...
+[SKIP] Duplicate section: 8941DC5DE662766018A70AC3359C9E91... hash=d80a0f454472...
+Dry run only. Would upload 2647
+[
+  {
+    "screen_id": "E78C59BFACFA632BA69118A1D9BC6B5878BD773E_1",
+    "program_id": "E78C59BFACFA632BA69118A1D9BC6B5878BD773E",
+    "screen_name": "E78C59BFACFA632BA69118A1D9BC6B5878BD773E_SCREEN_1",
+    "field_count": 0,
+    "action_count": 0,
+    "transition_count": 0,
+    "fields_json": "[]",
+    "actions_json": "[]",
+    "transitions_json": "[]",
+    "display_literals_json": "[]",
+    "value_clauses_json": "[]",
+    "label_literals_json": "[]",
+    "raw_span_text": "\n",
+    "summary_text": "Screen E78C59BFACFA632BA69118A1D9BC6B5878BD773E_SCREEN_1 represents a COBOL user interface screen.\nThis screen provides a user interface for COBOL application interaction.\nThe screen may contain data entry fields, navigation options, or system interface elements.\nTechnical details: fields=0; 

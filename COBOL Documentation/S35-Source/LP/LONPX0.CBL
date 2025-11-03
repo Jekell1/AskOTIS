@@ -1,0 +1,393 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      LONPX0.
+       DATE-WRITTEN.    092788.
+      *********************************************************************
+      *                 (LP)
+      *  DESCRIPTION:   CHANGES MENU
+      * REV:
+      *  JTG 092597 ADDED BRANCH OPTION BR-BALLOON-LOANS-FG, CASTLE FINANCE
+      *  JTG 110598 ADDED BRACH FILE READ FOR LPMENU REVOLVING FIELDS
+      *  MJD 990201 ADDED CHLOCK
+      *  KEC 990527 REMOVED 'CHANGE CREDIT BUREAU' OPTION (LP/CHTRWF)
+      *  BLV 000313 ADDED SEL 10, CHANGE WCBC CREDIT LIMIT, WORLD PR# 225
+      *  MJD 000918 ADDED SEL 11 CHANGE ALLOTCD/LBOX (MFC PR#227)
+      *  BAH 020626 ADDED 12. CHARGE OFF (P&L) REASON CODE REGACC PR# 1775
+      *  CS  020906 ADDED 13. LOAN ORIGIN  MODERN [PR#1876]
+      *  BLF 051013 ADDED REDEFINITION OF FORM-PATHNAME FOR TEST IN
+      *             DECLARATIVES
+      *  BAH 060518 ADDED 14. ADDED 14. CREATE/ADD CO-SIGNER REGACC PR# 128
+      *  BLM 090527 ADDED SELECTION 15, CREATE/CHANGE PAYEE, WORLD PR# 638
+      *  BLM 090527 ADDED SELECTION 16, LOAN RESCHEDULE, FORCED PASSWORD
+      *             MUST EXIST TO RUN: LP/RESCHD/0, REGACC PR# 254
+      *  BLM 100305 ADDED SELECTION 16, LOAN ESCROW INPUT, REGWAN PR# 3506
+      *  BLM 100305 ADDED SELECTION 17, CHANGE ESCROW TO INACTIVE,
+      *             REGWAN PR# 3506
+      *  BLM 101202 CHECK GLOBAL PARAMETER SECURITY FLAG, IF NEW SECURITY,
+      *             RUN NEW SECURITY ROUTINES, PR# NEWSECURITY
+      *   CS 110225 ADDED SELECTION 19, SET CEASE & DESIST STATUS, THIS
+      *             STATUS IS NOT TIED TO A DATE IN THE LOAN RECORD, WHEN IT
+      *             READS THE LOAN, IT LOOPS THRU LN-STATUSFLAGS LOOKING FOR
+      *             A 'C' IF THE ACCOUNT IS IN CEIST STATUS MODERN PR#3720
+      *  BAH 111107 ADDED SELECTION 20, CHANGE GROSS INCOME PR# 776 WORLD
+      *  BLM 111130 ACTIVATE NEW SECURITY ROUTINES IN A15, PR# NEWSECURITY
+      *   CS 121127 A30 CONVERSION COMPLETED
+      *  BLM 111130 FIX SECURITY ROUTINES
+      *   CS 130424 ADD SELECTION 21, CHANGE TDR'S (DEBT RESTRUCTURE)
+      *             REGACC PR#338
+      * BAH 140814 ADDED TEST FOR LPSMNU IN HELP
+      *  CS 150326 CHANGED CHCRED TO CHCRE2, DUPLICATE PROGRAM NAMES IN
+      *            LP/WI
+      *  BAH 161214 ALLOW GP-I-AM-SECURITY ACCESS TO 19. CEASE AND DESIST
+      *                                                          PR#5219
+      *   CS 170328 ADD SELECTION 22, CHANGE LN-SRCD WORLD PR#1238
+      *  BAH 180329 ADD SELECTION 23, CHANGE LN-GIFTNET, LOAN DUAL
+      *             OVERRIDE FLAG,  WORLD PR#1308
+      *  AMM 190207 CHANGED PAMAN1-PA-NO TO PAMAN1-PA-NUMBER
+      *  BAH 20190709 REMOVED 21. CHTDRS - TRIAD PT0151
+      *  BAH 20191030 REMOVED 10. CHWCBC - WCBC HIGH CREDIT, KM
+      *  BAH 2020.01.24 ADD SELECTION 24, ASSIGN/UNASSIGN INVESTINET #1415
+      *  BAH 2022.01.14 ADD SELECTION 25, CHANGE COLLATERAL CODE #1536
+      *  BAH 2022.0314 REMOVED EXT-SPANISH-FORMS AND ALL MX FORMS
+      *  BAH 2022.04.21 ADDED  26. CHANGE SECURITIZATION POOLID (CHACTN) #1551
+      *  BAH 2023.0908 REMOVED 11. CHLBOX AND 15. PAMAN1
+      *  BAH 2023.0926 ADDED 27. CHANGE LOAN BORROWER(S) (CHLOAN) #1625
+      *  BAH 2024.1122 CHANGED 19 TO CALL CEASMU, NEW CEASE & DESIST #1686
+      *                                                           S35Q-145
+      *********************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)LP/LONPX0.CBL S35 09/26/23-08:18:10 >".
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+
+       01  FORM-BUF                    PIC 9(6) VALUE 0.
+       01  FORM-LIST                   PIC X(4) VALUE "SEL.".
+       01  MSEL-LIST                   PIC X(5) VALUE "MSEL.".
+
+       COPY "LIBLP/LPEDPATH.CPY".
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBLP/LPMENUW.CPY".
+       COPY "LIBGB/LOADCOW.CPY".
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/GPENVW.CPY".
+       COPY "LIBGB/PASSWDW.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBLP/LONPX_DEF.CPY".
+       COPY "LIBLP/LPSMNU_DEF.CPY".
+       COPY "LIBLP/LPLNMU_DEF.CPY".
+       COPY "LIBLP/LPCAMU_DEF.CPY".
+       COPY "LIBLP/LPVDMU_DEF.CPY".
+       COPY "LIBLP/LONPX_WKS.CPY".
+       COPY "LIBLP/LPSMNU_WKS.CPY".
+       COPY "LIBLP/LPLNMU_WKS.CPY".
+       COPY "LIBLP/LPCAMU_WKS.CPY".
+       COPY "LIBLP/LPVDMU_WKS.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+
+       LINKAGE SECTION.
+       01  FORM-PATHNAME            PIC X(22).
+       01  EXIT-PATHNAME            PIC X(22).
+
+       COPY "LIBLP/LPLOANW.CPY".
+       COPY "LIBLP/LPPFBUF.CPY".
+
+
+       SCREEN SECTION.
+       COPY "LIBLP/LONPX_SCN.CPY".
+       COPY "LIBLP/LPSMNU_SCN.CPY".
+       COPY "LIBLP/LPLNMU_SCN.CPY".
+       COPY "LIBLP/LPCAMU_SCN.CPY".
+       COPY "LIBLP/LPVDMU_SCN.CPY".
+
+       PROCEDURE DIVISION
+             USING FORM-PATHNAME EXIT-PATHNAME PROG-BUF UPDATE-BUF.
+
+      ********************************
+      *  C O N T R O L   M O D U L E *
+      ********************************
+       MAIN-PROGRAM SECTION.
+
+           PERFORM SQL-CONNECT.
+
+      D    STOP MESS.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "LONPX"      TO VDU-FORM-NAME.
+
+           MOVE SPACES TO ERRCD.
+
+           PERFORM GET-GPENV.
+
+           MOVE BRANCH TO BR-NO.
+           PERFORM OPEN-BR-FILE.
+           PERFORM READ-BR-FILE.
+           PERFORM CLOSE-BR-FILE.
+
+       GET-SEL.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+
+           PERFORM FORM-RESET.
+
+           MOVE SPACES    TO WR-BUF.
+           MOVE FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+           MOVE "ENTER SELECTION, F7-MENU:" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           MOVE "ENNN060SEL." TO VDU.
+           PERFORM SCREENIO.
+
+           IF VDUSTATUS = "1>"
+              DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN
+              DESTROY LONPX-SCREEN
+              PERFORM MENU-SELECTION
+              IF MENU-FG = 99
+                 GO TO GET-SEL
+              ELSE
+                 GO TO EXIT-PROG.
+           IF VDUSTATUS NOT = "00"
+              GO TO GET-SEL.
+
+           MOVE VDUNUM0 TO FORM-BUF.
+
+           GO TO M01 M02 M03 M04 M05 M06 M07 M08 M09 M10 M11 M12 M13
+                 M14 M15 M16 M17 M18 M19 M20 M21 M22 M23 M24 M25 M26
+                 M27
+                DEPENDING ON FORM-BUF.
+           MOVE "LP/LONPX" TO FORM-NAM.
+           MOVE FORM-PATH  TO FORM-PATHNAME.
+           GO TO GET-SEL.
+       M01.
+           MOVE "LP/CHSSNO" TO FORM-NAM.
+           GO TO GET-PROG.
+       M02.
+           MOVE "LP/CHCRE2" TO FORM-NAM.
+           GO TO GET-PROG.
+       M03.
+           MOVE "LP/CHDEBT" TO FORM-NAM.
+           GO TO GET-PROG.
+       M04.
+           MOVE "LP/CHLEG2" TO FORM-NAM.
+           GO TO GET-PROG.
+       M05.
+           MOVE "LP/CHDLNO" TO FORM-NAM.
+           GO TO GET-PROG.
+       M06.
+           MOVE "LP/CHCONF" TO FORM-NAM.
+           GO TO GET-PROG.
+       M07.
+           GO TO GET-SEL.
+       M08.
+           MOVE "LP/CHLOCK" TO FORM-NAM.
+           GO TO GET-PROG.
+       M09.
+           GO TO GET-SEL.
+       M10.
+           GO TO GET-SEL.
+       M11.
+           GO TO GET-SEL.
+      * CHARGE OFF (P&L) REASON CODE
+       M12.
+           MOVE "LP/CHPLRS" TO FORM-NAM.
+           GO TO GET-PROG.
+
+      * LOAN ORIGIN
+       M13.
+           MOVE "LP/CHORIG" TO FORM-NAM.
+           GO TO GET-PROG.
+       M14.
+           MOVE "WI/COSIGN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH EXIT-PATHNAME
+           CANCEL FORM-PROGX.
+           MOVE "LP/LONPX" TO FORM-NAM.
+           MOVE FORM-PATH TO FORM-PATHNAME.
+           GO TO GET-SEL.
+       M15.
+           GO TO GET-SEL.
+       M16.
+           MOVE "EX"       TO PASSWDW-STAT.
+           MOVE "RESCHD"   TO PASSWDW-PGM.
+           MOVE 0          TO PASSWDW-SEQ.
+           MOVE "FOR LOAN RESCHEDULE." TO PASSWDW-PROMPT2.
+           PERFORM VERIFY-PASSWORD.
+           IF PASSWDW-STAT NOT = "OK"
+              MOVE "RESCHEDULE OPTION NOT AVAILABLE." TO MESS
+              PERFORM SEND-MESS
+              GO TO GET-SEL.
+           MOVE "LP/RESCHD" TO FORM-NAM.
+           GO TO GET-PROG.
+
+       M17.
+           MOVE "OPTION NOT AVAILABLE." TO MESS.
+           PERFORM SEND-MESS.
+           GO TO GET-SEL.
+
+       M18.
+           MOVE "OPTION NOT AVAILABLE." TO MESS.
+           PERFORM SEND-MESS.
+           GO TO GET-SEL.
+
+       M19.
+           MOVE "LP/CEASMU" TO FORM-NAM.
+           GO TO GET-PROG.
+
+       M20.
+
+      * SAME CHECK AS IN XONPC0 TO ENTER GROSS INCOME
+           MOVE "LP/CHGROS" TO FORM-NAM.
+           GO TO GET-PROG.
+
+       M21.
+           MOVE "OPTION NOT AVAILABLE." TO MESS.
+           PERFORM SEND-MESS.
+           GO TO GET-SEL.
+       M22. 
+           MOVE "LP/CHSRCD" TO FORM-NAM.
+           GO TO GET-PROG.
+       M23. 
+           MOVE "LP/CHDUAL" TO FORM-NAM.
+           GO TO GET-PROG.
+       M24. 
+           MOVE "LP/CHINV" TO FORM-NAM.
+           GO TO GET-PROG.
+       M25. 
+           MOVE "LP/CHCOCD" TO FORM-NAM.
+           GO TO GET-PROG.
+       M26. 
+           MOVE "LP/CHACTN" TO FORM-NAM.
+           GO TO GET-PROG.
+       M27. 
+           MOVE "LP/CHLOAN" TO FORM-NAM.
+           GO TO GET-PROG.
+
+       GET-PROG.
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LONPX-SCREEN.
+      **************************************************************
+      * THE SECURITY CHECK HERE IS HARD-CODED INSTEAD OF COPYING
+      * LIBGB/GETFM.  COPY MEMBER GOES TO EXIT-PROG ON ERROR & THE
+      * SECURITY ERROR MSG IS NOT DISPLAYED, EVEN THO IT STOPS
+      * YOU FROM RUNNING SELECTION.  NOTE, THE SAME THING HAPPENED
+      * IN A15, SECURITY WORKED BUT NO MSG.  I THINK THIS IS A
+      * SPECIAL SITUATION SINCE THIS IS CALLED BY LONP.  BARB
+      * 1/17/17 REMOVE SEND-MESS WITH SECURITY ERROR, THIS IS IN
+      *         CHKSEC SO WE WERE GETTING IT TWICE.  BARB
+      **************************************************************
+       CHECK-SECURITY.
+           MOVE FORM-PATH TO CHKSEC-FORM-PATH.
+           MOVE "CO" TO FORM-OBJ.
+           MOVE "CL/CHKSEC" TO FORM-NAM.
+           CALL "CHKSEC" USING CHKSEC-FIELDS ON OVERFLOW
+                MOVE CHKSEC-FORM-PATH TO FORM-PATH
+                MOVE "3Z" TO FORM-OBJ
+                GO TO EXIT-PROG
+           END-CALL.
+
+           CANCEL "CHKSEC".
+           MOVE CHKSEC-FORM-PATH TO FORM-PATH.
+           IF CHKSEC-STAT = "3S"
+              MOVE "1>" TO STAT VDUSTATUS
+              GO TO GET-SEL.
+           IF CHKSEC-STAT = "3O"
+              MOVE "1>" TO STAT VDUSTATUS
+              GO TO GET-SEL.
+
+       COPY "LIBGB/LOADCOLP.CPY".
+
+       LOAD-POST.
+           MOVE "LP/LONPX" TO FORM-NAM.
+           MOVE FORM-PATH TO FORM-PATHNAME.
+           GO TO GET-SEL.
+
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBLP/LPMENU.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/GPENV.CPY".
+
+      ************************************
+       VDU-CONVERT-FIELD SECTION.
+      ************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBLP/LONPX_EVA.CPY".
+              COPY "LIBLP/LPSMNU_EVA.CPY".
+              COPY "LIBLP/LPLNMU_EVA.CPY".
+              COPY "LIBLP/LPCAMU_EVA.CPY".
+              COPY "LIBLP/LPVDMU_EVA.CPY".
+               WHEN OTHER   MOVE "2A" TO STAT.
+
+      ***********************************
+       SETUP-LINK-INFO SECTION.
+      ***********************************
+           IF VDU-FORM-NAME = "LPSMNU"
+              MOVE LPSMNU-HELP--FILE TO HELP-LINK-FILE
+              MOVE LPSMNU-HELP--DIR  TO HELP-LINK-DIR
+           ELSE
+              MOVE LONPX-HELP--FILE TO HELP-LINK-FILE
+              MOVE LONPX-HELP--DIR TO HELP-LINK-DIR.
+
+
+      ***********************************
+       FORM-RESET SECTION.
+      ***********************************
+           MOVE LPLOAN-SYSDATE TO LONPX-SYSDATE.
+           MOVE LPLOAN-CONAME  TO LONPX-CONAME.
+           DISPLAY LONPX-SCREEN UPON TCLP-MAIN-WINDOW-HANDLE.
+           MOVE LONPX-FORM-FIELDS TO WR-BUF.
+           MOVE LONPX-FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+       FORM-RESET-EXIT.
+           EXIT.
+
+      ***********************************
+       MISC-ROUTINES SECTION.
+      ***********************************
+       COPY "LIBGB/SYSTEM.CPY".
+       SEND-LEGEND.
+           MOVE MESS TO WR-BUF.
+           MOVE MSEL-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+       VERIFY-PASSWORD.
+           MOVE "PLEASE ENTER THE PASSWORD" TO PASSWDW-PROMPT1.
+           MOVE "CL/PASSWD" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH PASSWDW-BUF.
+           CANCEL FORM-PROGX.
+
+      *********************************
+       IO-ROUTINES SECTION.
+      *********************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBGB/DECLARE_SQL.CPY".
+           PERFORM CLOSE-BR-FILE.
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBGB/FERRORS.CPY".
+            MOVE "E" TO ERRCD.
+
+      *********************************
+       END-ROUTINE SECTION.
+      *********************************
+       END-RUN.
+       EXIT-PROG.
+       LOAD-RESTART.
+       STOP-RUN.
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LONPX-SCREEN.
+       EXIT-RETURN.
+           EXIT PROGRAM.

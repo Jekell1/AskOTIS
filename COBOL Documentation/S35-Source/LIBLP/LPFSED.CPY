@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSED
+           SELECT ED-FILE ASSIGN TO ED-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ED-KEY
+                  FILE STATUS FILE-STAT.

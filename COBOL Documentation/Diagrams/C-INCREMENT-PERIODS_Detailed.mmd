@@ -1,0 +1,21 @@
+%% Mermaid Flowchart: C-INCREMENT-PERIODS Detailed Flow
+graph TD
+    Start([Start])
+    MoveFields["Move NDTE fields to working storage"]
+    CalcWork["Compute WS-UP-WORK"]
+    EvalUnit{Evaluate DATER-UNITPER-CD}
+    Months["PERFORM C-INCR-MONTHS"]
+    HalfMonths["PERFORM C-INCR-HALF-MONTHS"]
+    Days["PERFORM C-INCR-DAYS"]
+    SetFields["Move results back to NDTE fields"]
+    CallNewDate["PERFORM C-CALL-NEWDATE"]
+    End([End])
+
+    Start --> MoveFields --> CalcWork --> EvalUnit
+    EvalUnit -- "M" --> Months --> SetFields
+    EvalUnit -- "S" --> HalfMonths --> SetFields
+    EvalUnit -- "W" --> Days --> SetFields
+    EvalUnit -- "B" --> Days --> SetFields
+    EvalUnit -- "D" --> Days --> SetFields
+    EvalUnit -- "Y" --> Months --> SetFields
+    SetFields --> CallNewDate --> End

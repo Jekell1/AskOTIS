@@ -1,0 +1,20 @@
+graph TD
+    A[GPENV Environment String] --> B[COBOL ACCEPT Processing]
+    B --> C[GP-ALLOW-SET-FOR-NONCASH]
+    B --> D[GP-TRUE-NEXT-BATCH]
+    B --> E[GP-REPO-CODE]
+    B --> F[Other GP Configuration Fields]
+    
+    C --> G[Payment Processing Control]
+    D --> H[Batch Processing Control]
+    E --> I[Repossession Control]
+    F --> J[System Behavior Control]
+    
+    G --> K[Available to APIPAY System]
+    H --> K
+    I --> K
+    J --> K
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style K fill:#e8f5e8

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIMBEG Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIMBEG Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-TIMBEG Documentation</h1>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-TIMBEG<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Date Order Normalization and Julian Conversion Setup<br />
+<strong>Source File:</strong> <code>C-TIMBEG.cpy</code><br />
+<strong>Usage:</strong> Initial setup routine for all elapsed time calculations  </p>
+<h2>Purpose and Description</h2>
+<p>C-TIMBEG is a foundational date processing utility that performs critical setup operations for elapsed time calculations. The program ensures that dates are processed in chronological order and converts dates to Julian format for efficient mathematical operations.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Date Order Normalization</strong> - Automatically reorders dates if the first date is chronologically after the second date</li>
+<li><strong>Julian Date Conversion</strong> - Converts both input dates to Julian format for mathematical operations</li>
+<li><strong>Sign Management</strong> - Sets appropriate sign indicators for elapsed time calculations</li>
+<li><strong>Date Preservation</strong> - Maintains original date values while working with normalized copies</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-DATE1</strong> - First date for comparison/calculation</li>
+<li><strong>WS-DATE2</strong> - Second date for comparison/calculation  </li>
+<li><strong>NUM-DATE</strong> - Numeric date value (preserved)</li>
+<li><strong>SYS-DATE</strong> - System date value (preserved)</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>WS-JUL-1</strong> - Julian representation of first date (chronologically)</li>
+<li><strong>WS-JUL-2</strong> - Julian representation of second date (chronologically)</li>
+<li><strong>WS-XSIGN</strong> - Sign indicator (-1 for reversed dates, +1 for normal order)</li>
+<li><strong>WS-DATE1/WS-DATE2</strong> - Dates in chronological order</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-TIMBEG Main Flow" src="Diagrams/C-TIMBEG_Main_Flow.mmd" /></p>
+<h4>Date Processing Steps</h4>
+<ol>
+<li>
+<p><strong>Date Preservation</strong>
+   <code>cobol
+   MOVE NUM-DATE TO SV-NUM-DATE
+   MOVE SYS-DATE TO SV-SYS-DATE</code></p>
+</li>
+<li>
+<p><strong>Julian Conversion</strong>
+   <code>cobol
+   MOVE WS-DATE1 TO P-DATE-IN
+   PERFORM C-CALL-JUL
+   MOVE P-JULIAN-DATE TO WS-JUL-1</code></p>
+</li>
+<li>
+<p><strong>Order Validation and Correction</strong>
+   <code>cobol
+   IF WS-JUL-1 &gt; WS-JUL-2
+      MOVE WS-DATE1 TO WS-HOLDDATE
+      MOVE WS-DATE2 TO WS-DATE1
+      MOVE WS-HOLDDATE TO WS-DATE2
+      MOVE -1 TO WS-XSIGN
+   ELSE
+      MOVE 1 TO WS-XSIGN</code></p>
+</li>
+<li>
+<p><strong>Value Restoration</strong>
+   <code>cobol
+   MOVE SV-NUM-DATE TO NUM-DATE
+   MOVE SV-SYS-DATE TO SYS-DATE</code></p>
+</li>
+</ol>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>C-TIMALL</strong> - Comprehensive timing calculations</li>
+<li><strong>C-ELAPSED-TIME</strong> - Elapsed time calculations</li>
+<li><strong>Date comparison routines</strong> - Various date validation processes</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li><strong>C-CALL-JUL</strong> - Julian date conversion utility</li>
+</ul>
+<p><img alt="C-TIMBEG Call Graph" src="Diagrams/C-TIMBEG_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-DATE1</td>
+<td>DATE</td>
+<td>First input date</td>
+</tr>
+<tr>
+<td>WS-DATE2</td>
+<td>DATE</td>
+<td>Second input date</td>
+</tr>
+<tr>
+<td>WS-JUL-1</td>
+<td>NUMERIC</td>
+<td>Julian representation of first date</td>
+</tr>
+<tr>
+<td>WS-JUL-2</td>
+<td>NUMERIC</td>
+<td>Julian representation of second date</td>
+</tr>
+<tr>
+<td>WS-XSIGN</td>
+<td>NUMERIC</td>
+<td>Order sign indicator (-1 or +1)</td>
+</tr>
+<tr>
+<td>WS-HOLDDATE</td>
+<td>DATE</td>
+<td>Temporary date storage for swapping</td>
+</tr>
+<tr>
+<td>WS-HOLDJUL</td>
+<td>NUMERIC</td>
+<td>Temporary Julian storage for swapping</td>
+</tr>
+<tr>
+<td>SV-NUM-DATE</td>
+<td>DATE</td>
+<td>Saved numeric date</td>
+</tr>
+<tr>
+<td>SV-SYS-DATE</td>
+<td>DATE</td>
+<td>Saved system date</td>
+</tr>
+</tbody>
+</table>
+<h3>Sign Management</h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>WS-XSIGN</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-JUL-1 &lt;= WS-JUL-2</td>
+<td>+1</td>
+<td>Dates in chronological order</td>
+</tr>
+<tr>
+<td>WS-JUL-1 &gt; WS-JUL-2</td>
+<td>-1</td>
+<td>Dates were reversed</td>
+</tr>
+</tbody>
+</table>
+<h2>Error Handling</h2>
+<p>C-TIMBEG relies on the Julian conversion routine (C-CALL-JUL) for date validation. Invalid dates will result in Julian conversion errors that propagate to calling routines.</p>
+<h3>Common Issues</h3>
+<ul>
+<li><strong>Invalid Date Format</strong> - Handled by C-CALL-JUL</li>
+<li><strong>Zero Dates</strong> - Processed but may cause calculation issues in subsequent routines</li>
+<li><strong>Date Range Limits</strong> - Subject to Julian date conversion limitations</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Conditional Swapping</strong> - Only performs date reordering when necessary</li>
+<li><strong>In-Place Operations</strong> - Minimizes memory usage with efficient variable reuse</li>
+<li><strong>Julian Caching</strong> - Converts dates once for subsequent calculations</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Constant time operations</li>
+<li><strong>Space Complexity:</strong> O(1) - Fixed working storage usage</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard Date Setup</h3>
+<pre><code class="language-cobol">MOVE 20240315 TO WS-DATE1
+MOVE 20240310 TO WS-DATE2
+PERFORM C-TIMBEG
+* Result: WS-DATE1=20240310, WS-DATE2=20240315, WS-XSIGN=-1
+</code></pre>
+<h3>Chronological Order Maintenance</h3>
+<pre><code class="language-cobol">MOVE 20240301 TO WS-DATE1
+MOVE 20240315 TO WS-DATE2
+PERFORM C-TIMBEG
+* Result: WS-DATE1=20240301, WS-DATE2=20240315, WS-XSIGN=+1
+</code></pre>
+<h2>Dependencies</h2>
+<h3>Required Utilities</h3>
+<ul>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Julian date conversion</li>
+<li><strong><a href="C-CALL-NEWDATE_Documentation.html">C-CALL-NEWDATE</a></strong> - Date format processing</li>
+</ul>
+<h3>Data Requirements</h3>
+<ul>
+<li>Valid date formats supported by Julian conversion</li>
+<li>Proper working storage initialization</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Date Normalization Pattern</strong> - Ensures consistent chronological ordering</li>
+<li><strong>State Preservation Pattern</strong> - Saves and restores original values</li>
+<li><strong>Sign Indicator Pattern</strong> - Tracks processing modifications for downstream use</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Maintain sign logic consistency for elapsed time calculations</li>
+<li>Preserve original date values for audit trail requirements</li>
+<li>Ensure Julian conversion error handling propagates properly</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-TIMEND_Documentation.html">C-TIMEND</a></strong> - Companion end routine for elapsed time calculations</li>
+<li><strong><a href="C-TIM-RESULTS_Documentation.html">C-TIM-RESULTS</a></strong> - Date comparison result processing</li>
+<li><strong><a href="C-TIMALL_Documentation.html">C-TIMALL</a></strong> - Main timing calculation controller</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

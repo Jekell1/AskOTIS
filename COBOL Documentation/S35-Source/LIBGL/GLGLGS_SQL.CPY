@@ -1,0 +1,192 @@
+      * COPYMEMBER: LIBGL/GLGLGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - GLFILE
+      *
+      *=================================================================
+      * REV:
+      * BAH 2021-0507 ***NEW***
+      *
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD GL-REC FROM QGL-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-GL-FIELDS.
+           MOVE QGL-FLAG TO GL-FLAG.
+           MOVE QGL-BR-ACCOUNT TO GL-BR-ACCOUNT.
+
+           IF ( QGL-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO GL-LTOUCH-DATE
+           ELSE
+              MOVE QGL-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO GL-LTOUCH-DATE.
+
+           MOVE QGL-DESCRIPTION TO GL-DESCRIPTION.
+           MOVE QGL-CONSOL TO GL-CONSOL.
+           MOVE QGL-OPENBAL TO GL-OPENBAL.
+           MOVE QGL-CYBAL-1 TO GL-CYBAL(1).
+           MOVE QGL-CYBAL-2 TO GL-CYBAL(2).
+           MOVE QGL-CYBAL-3 TO GL-CYBAL(3).
+           MOVE QGL-CYBAL-4 TO GL-CYBAL(4).
+           MOVE QGL-CYBAL-5 TO GL-CYBAL(5).
+           MOVE QGL-CYBAL-6 TO GL-CYBAL(6).
+           MOVE QGL-CYBAL-7 TO GL-CYBAL(7).
+           MOVE QGL-CYBAL-8 TO GL-CYBAL(8).
+           MOVE QGL-CYBAL-9 TO GL-CYBAL(9).
+           MOVE QGL-CYBAL-10 TO GL-CYBAL(10).
+           MOVE QGL-CYBAL-11 TO GL-CYBAL(11).
+           MOVE QGL-CYBAL-12 TO GL-CYBAL(12).
+           MOVE QGL-LYBAL-1 TO GL-LYBAL(1).
+           MOVE QGL-LYBAL-2 TO GL-LYBAL(2).
+           MOVE QGL-LYBAL-3 TO GL-LYBAL(3).
+           MOVE QGL-LYBAL-4 TO GL-LYBAL(4).
+           MOVE QGL-LYBAL-5 TO GL-LYBAL(5).
+           MOVE QGL-LYBAL-6 TO GL-LYBAL(6).
+           MOVE QGL-LYBAL-7 TO GL-LYBAL(7).
+           MOVE QGL-LYBAL-8 TO GL-LYBAL(8).
+           MOVE QGL-LYBAL-9 TO GL-LYBAL(9).
+           MOVE QGL-LYBAL-10 TO GL-LYBAL(10).
+           MOVE QGL-LYBAL-11 TO GL-LYBAL(11).
+           MOVE QGL-LYBAL-12 TO GL-LYBAL(12).
+           MOVE QGL-CYBUD-1 TO GL-CYBUD(1).
+           MOVE QGL-CYBUD-2 TO GL-CYBUD(2).
+           MOVE QGL-CYBUD-3 TO GL-CYBUD(3).
+           MOVE QGL-CYBUD-4 TO GL-CYBUD(4).
+           MOVE QGL-CYBUD-5 TO GL-CYBUD(5).
+           MOVE QGL-CYBUD-6 TO GL-CYBUD(6).
+           MOVE QGL-CYBUD-7 TO GL-CYBUD(7).
+           MOVE QGL-CYBUD-8 TO GL-CYBUD(8).
+           MOVE QGL-CYBUD-9 TO GL-CYBUD(9).
+           MOVE QGL-CYBUD-10 TO GL-CYBUD(10).
+           MOVE QGL-CYBUD-11 TO GL-CYBUD(11).
+           MOVE QGL-CYBUD-12 TO GL-CYBUD(12).
+           MOVE QGL-LYBUD-1 TO GL-LYBUD(1).
+           MOVE QGL-LYBUD-2 TO GL-LYBUD(2).
+           MOVE QGL-LYBUD-3 TO GL-LYBUD(3).
+           MOVE QGL-LYBUD-4 TO GL-LYBUD(4).
+           MOVE QGL-LYBUD-5 TO GL-LYBUD(5).
+           MOVE QGL-LYBUD-6 TO GL-LYBUD(6).
+           MOVE QGL-LYBUD-7 TO GL-LYBUD(7).
+           MOVE QGL-LYBUD-8 TO GL-LYBUD(8).
+           MOVE QGL-LYBUD-9 TO GL-LYBUD(9).
+           MOVE QGL-LYBUD-10 TO GL-LYBUD(10).
+           MOVE QGL-LYBUD-11 TO GL-LYBUD(11).
+           MOVE QGL-LYBUD-12 TO GL-LYBUD(12).
+           MOVE QGL-NYBUD-1 TO GL-NYBUD(1).
+           MOVE QGL-NYBUD-2 TO GL-NYBUD(2).
+           MOVE QGL-NYBUD-3 TO GL-NYBUD(3).
+           MOVE QGL-NYBUD-4 TO GL-NYBUD(4).
+           MOVE QGL-NYBUD-5 TO GL-NYBUD(5).
+           MOVE QGL-NYBUD-6 TO GL-NYBUD(6).
+           MOVE QGL-NYBUD-7 TO GL-NYBUD(7).
+           MOVE QGL-NYBUD-8 TO GL-NYBUD(8).
+           MOVE QGL-NYBUD-9 TO GL-NYBUD(9).
+           MOVE QGL-NYBUD-10 TO GL-NYBUD(10).
+           MOVE QGL-NYBUD-11 TO GL-NYBUD(11).
+           MOVE QGL-NYBUD-12 TO GL-NYBUD(12).
+           MOVE QGL-TYPE TO GL-TYPE.
+           MOVE QGL-CLEAR TO GL-CLEAR.
+           MOVE QGL-NUMBER1 TO GL-NUMBER1.
+           MOVE QGL-NUMBER2 TO GL-NUMBER2.
+           MOVE QGL-FS-FLAG TO GL-FS-FLAG.
+           MOVE QGL-REPORTS-1 TO GL-REPORTS(1).
+           MOVE QGL-REPORTS-2 TO GL-REPORTS(2).
+           MOVE QGL-REPORTS-3 TO GL-REPORTS(3).
+           MOVE QGL-REPORTS-4 TO GL-REPORTS(4).
+           MOVE QGL-REPORTS-5 TO GL-REPORTS(5).
+           MOVE QGL-LYOPENBAL TO GL-LYOPENBAL.
+           MOVE QGL-DLALLOC-GL TO GL-DLALLOC-GL.
+           MOVE QGL-SPANISH-DESC TO GL-SPANISH-DESC.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QGL-REC FROM GL-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-GL-FIELDS.
+           MOVE GL-FLAG TO QGL-FLAG.
+           MOVE GL-BR-ACCOUNT TO QGL-BR-ACCOUNT.
+
+           IF ( GL-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QGL-LTOUCH-DATE
+           ELSE
+              MOVE GL-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QGL-LTOUCH-DATE.
+
+           MOVE GL-DESCRIPTION TO QGL-DESCRIPTION.
+           MOVE GL-CONSOL TO QGL-CONSOL.
+           MOVE GL-OPENBAL TO QGL-OPENBAL.
+           MOVE GL-CYBAL(1) TO QGL-CYBAL-1.
+           MOVE GL-CYBAL(2) TO QGL-CYBAL-2.
+           MOVE GL-CYBAL(3) TO QGL-CYBAL-3.
+           MOVE GL-CYBAL(4) TO QGL-CYBAL-4.
+           MOVE GL-CYBAL(5) TO QGL-CYBAL-5.
+           MOVE GL-CYBAL(6) TO QGL-CYBAL-6.
+           MOVE GL-CYBAL(7) TO QGL-CYBAL-7.
+           MOVE GL-CYBAL(8) TO QGL-CYBAL-8.
+           MOVE GL-CYBAL(9) TO QGL-CYBAL-9.
+           MOVE GL-CYBAL(10) TO QGL-CYBAL-10.
+           MOVE GL-CYBAL(11) TO QGL-CYBAL-11.
+           MOVE GL-CYBAL(12) TO QGL-CYBAL-12.
+           MOVE GL-LYBAL(1) TO QGL-LYBAL-1.
+           MOVE GL-LYBAL(2) TO QGL-LYBAL-2.
+           MOVE GL-LYBAL(3) TO QGL-LYBAL-3.
+           MOVE GL-LYBAL(4) TO QGL-LYBAL-4.
+           MOVE GL-LYBAL(5) TO QGL-LYBAL-5.
+           MOVE GL-LYBAL(6) TO QGL-LYBAL-6.
+           MOVE GL-LYBAL(7) TO QGL-LYBAL-7.
+           MOVE GL-LYBAL(8) TO QGL-LYBAL-8.
+           MOVE GL-LYBAL(9) TO QGL-LYBAL-9.
+           MOVE GL-LYBAL(10) TO QGL-LYBAL-10.
+           MOVE GL-LYBAL(11) TO QGL-LYBAL-11.
+           MOVE GL-LYBAL(12) TO QGL-LYBAL-12.
+           MOVE GL-CYBUD(1) TO QGL-CYBUD-1.
+           MOVE GL-CYBUD(2) TO QGL-CYBUD-2.
+           MOVE GL-CYBUD(3) TO QGL-CYBUD-3.
+           MOVE GL-CYBUD(4) TO QGL-CYBUD-4.
+           MOVE GL-CYBUD(5) TO QGL-CYBUD-5.
+           MOVE GL-CYBUD(6) TO QGL-CYBUD-6.
+           MOVE GL-CYBUD(7) TO QGL-CYBUD-7.
+           MOVE GL-CYBUD(8) TO QGL-CYBUD-8.
+           MOVE GL-CYBUD(9) TO QGL-CYBUD-9.
+           MOVE GL-CYBUD(10) TO QGL-CYBUD-10.
+           MOVE GL-CYBUD(11) TO QGL-CYBUD-11.
+           MOVE GL-CYBUD(12) TO QGL-CYBUD-12.
+           MOVE GL-LYBUD(1) TO QGL-LYBUD-1.
+           MOVE GL-LYBUD(2) TO QGL-LYBUD-2.
+           MOVE GL-LYBUD(3) TO QGL-LYBUD-3.
+           MOVE GL-LYBUD(4) TO QGL-LYBUD-4.
+           MOVE GL-LYBUD(5) TO QGL-LYBUD-5.
+           MOVE GL-LYBUD(6) TO QGL-LYBUD-6.
+           MOVE GL-LYBUD(7) TO QGL-LYBUD-7.
+           MOVE GL-LYBUD(8) TO QGL-LYBUD-8.
+           MOVE GL-LYBUD(9) TO QGL-LYBUD-9.
+           MOVE GL-LYBUD(10) TO QGL-LYBUD-10.
+           MOVE GL-LYBUD(11) TO QGL-LYBUD-11.
+           MOVE GL-LYBUD(12) TO QGL-LYBUD-12.
+           MOVE GL-NYBUD(1) TO QGL-NYBUD-1.
+           MOVE GL-NYBUD(2) TO QGL-NYBUD-2.
+           MOVE GL-NYBUD(3) TO QGL-NYBUD-3.
+           MOVE GL-NYBUD(4) TO QGL-NYBUD-4.
+           MOVE GL-NYBUD(5) TO QGL-NYBUD-5.
+           MOVE GL-NYBUD(6) TO QGL-NYBUD-6.
+           MOVE GL-NYBUD(7) TO QGL-NYBUD-7.
+           MOVE GL-NYBUD(8) TO QGL-NYBUD-8.
+           MOVE GL-NYBUD(9) TO QGL-NYBUD-9.
+           MOVE GL-NYBUD(10) TO QGL-NYBUD-10.
+           MOVE GL-NYBUD(11) TO QGL-NYBUD-11.
+           MOVE GL-NYBUD(12) TO QGL-NYBUD-12.
+           MOVE GL-TYPE TO QGL-TYPE.
+           MOVE GL-CLEAR TO QGL-CLEAR.
+           MOVE GL-NUMBER1 TO QGL-NUMBER1.
+           MOVE GL-NUMBER2 TO QGL-NUMBER2.
+           MOVE GL-FS-FLAG TO QGL-FS-FLAG.
+           MOVE GL-REPORTS(1) TO QGL-REPORTS-1.
+           MOVE GL-REPORTS(2) TO QGL-REPORTS-2.
+           MOVE GL-REPORTS(3) TO QGL-REPORTS-3.
+           MOVE GL-REPORTS(4) TO QGL-REPORTS-4.
+           MOVE GL-REPORTS(5) TO QGL-REPORTS-5.
+           MOVE GL-LYOPENBAL TO QGL-LYOPENBAL.
+           MOVE GL-DLALLOC-GL TO QGL-DLALLOC-GL.
+           MOVE GL-SPANISH-DESC TO QGL-SPANISH-DESC.
+ 

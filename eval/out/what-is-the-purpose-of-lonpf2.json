@@ -1,0 +1,67 @@
+{
+  "question": "What is the purpose of LONPF2?",
+  "scope": "mixed",
+  "expanded_query": "LONPF2 What is of purpose the",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_program_deps",
+      "id": "THE",
+      "path": "THE",
+      "line": null,
+      "snippet": "THE ; ROLE:UNKNOWN ; OUT: ; IN:CPINQ0,LONPFC ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "LONPF2",
+      "path": "LONPF2",
+      "line": null,
+      "snippet": "LONPF2 ; ROLE:UNKNOWN ; OUT:CRNOR2,FLDVAL,FORM-PROGX,INSTEAD,ON,TO,XFER ; IN:LONPW9 ; COPY:ACCESS,ACCESSW,ADDONSPR,AGEING,AGEINGW,CLMENUW_EXT,CONAME_EXT,CONNECTW_SQL,CONNECT_SQL,DACCESS,DACCESSW,DATER,DATERW,DECLAR2,DECLARE,DEFPOL,DEFPOLW,EX01XNO,EX01XTRP,FERRORS,FILEWK,GB01BR,GB01BR_SQL,GB01GB,GB01GB_SQL,GBBRRN,GBGBGS_SQL,GBGBRN,GBWSBR,GBWSGB,GETENV,GETENVW,GETFMW,GETPR,GETPRW,GL01GL,GL01GL_SQL,G"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "IS",
+      "path": "IS",
+      "line": null,
+      "snippet": "IS ; ROLE:UNKNOWN ; OUT: ; IN:PEVERI,SFQUOT ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "PWSCAN",
+      "path": "PWSCAN",
+      "line": null,
+      "snippet": "Paragraphs=27; edges=26; depth=5; cycles=N; entries=20; exits=18; fanout_max=7; risk=0.355. Entry: MAIN-PROGRAM.... High fanout: SELECT-FIELD-FROM-DISPLAY (7)."
+    },
+    {
+      "index": "new_cobol_calls",
+      "id": "3ddf500b192250236cc24860eeb079038c098506",
+      "path": "cobol_src\\LP\\LONPF2.CBL",
+      "line": 1029,
+      "snippet": "* NOTE: THIS IS USED IN CALL TO TENDER.C"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "ALMAIN",
+      "path": "ALMAIN",
+      "line": null,
+      "snippet": "Paragraphs=71; edges=102; depth=8; cycles=Y; entries=34; exits=31; fanout_max=11; risk=0.82. Entry: STOP-RUN.... High fanout: EXIT (11)."
+    }
+  ],
+  "meta": {
+    "ts": 1759097665.1964884,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths"
+    ],
+    "enriched_symbol_tokens": [],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": false,
+    "api_version": "2025-08-01-preview"
+  }
+}

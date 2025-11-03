@@ -1,0 +1,216 @@
+{
+  "index": "new_cobol_copybook_meta",
+  "count": 23,
+  "entries": [
+    {
+      "name": "CALLID",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "CHBORRW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "COLLINFO",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "COLLINFOW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "DATESC",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "DATESCW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "EOBUF",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "GB01UL",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "GBWSUL",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPBW1R",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPCD1R",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPLC1R",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPLT1RN",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPWSLT",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "LPWSRT",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "MKDIR-CMD",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "MKTEMPW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "RM-CMD",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "RVCALCW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "TSTINTW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "UPPER-CMD",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "WINDOWS",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    },
+    {
+      "name": "WINDOWSW",
+      "status": "empty_paths",
+      "paths_total": 0,
+      "paths_existing": 0,
+      "paths_cpy_existing": 0,
+      "has_summary": false,
+      "summary_trunc": ""
+    }
+  ],
+  "status_counts": {
+    "empty_paths": 23
+  }
+}

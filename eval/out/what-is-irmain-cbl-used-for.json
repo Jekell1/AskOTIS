@@ -1,0 +1,72 @@
+{
+  "question": "What is IRMAIN.CBL used for?",
+  "scope": "mixed",
+  "expanded_query": "CBL IRMAIN What for is used",
+  "aliases": {},
+  "answer_outline": "- Blend flow, dependencies, variable, and UI aspects as applicable.\n- Cite evidence snippets with program + line references.",
+  "diagram": null,
+  "evidence": [
+    {
+      "index": "new_cobol_calls",
+      "id": "94aad34077ac4b7f3959c2016f1d7ea7241aeb88",
+      "path": "cobol_src\\WI\\SFQUOT.CBL",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "new_cobol_symbol_refs",
+      "id": "d764f287d4b32cbacf61aa40712c8ade2349690d",
+      "path": "A8F2868BD2BB8807B0597D2911174B4452546B83",
+      "line": 19,
+      "snippet": "*             MODIFIED UNTIL AFTER CALL IS MADE."
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "IS",
+      "path": "IS",
+      "line": null,
+      "snippet": "IS ; ROLE:UNKNOWN ; OUT: ; IN:PEVERI,SFQUOT ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_deps",
+      "id": "FOR",
+      "path": "FOR",
+      "line": null,
+      "snippet": "FOR ; ROLE:LEAF ; OUT: ; IN:CKMAIN,EMCKR2,EMCKRG,LONPFZ,LONPL0,SFMAST ; COPY:"
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "LONPW1",
+      "path": "LONPW1",
+      "line": null,
+      "snippet": "Paragraphs=65; edges=121; depth=7; cycles=Y; entries=37; exits=34; fanout_max=15; risk=0.805. Entry: WORKING-STORAGE.... High fanout: SET-NEW-BATCH-NO-ACCEPT (15)."
+    },
+    {
+      "index": "new_cobol_program_flows",
+      "id": "REFUPD",
+      "path": "REFUPD",
+      "line": null,
+      "snippet": "Paragraphs=61; edges=66; depth=4; cycles=N; entries=41; exits=41; fanout_max=18; risk=0.46. Entry: FORM-RESET.... High fanout: EXIT (18)."
+    }
+  ],
+  "meta": {
+    "ts": 1759097704.7728055,
+    "k": 6,
+    "candidate_indexes": [
+      "program_flows",
+      "program_deps",
+      "calls",
+      "variable_usage",
+      "ui_paths",
+      "symbol_refs",
+      "copybook_usage"
+    ],
+    "enriched_symbol_tokens": [
+      "IRMAIN",
+      "CBL"
+    ],
+    "enriched_symbol_ref_count": 0,
+    "where_used_mode": true,
+    "api_version": "2025-08-01-preview"
+  }
+}

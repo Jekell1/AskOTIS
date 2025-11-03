@@ -1,0 +1,37 @@
+%%{init: {"theme": "default", "themeVariables": {"primaryColor": "#28a745", "primaryTextColor": "#fff", "primaryBorderColor": "#1e7e34", "lineColor": "#28a745", "sectionBkgColor": "#f8f9fa", "altSectionBkgColor": "#e9ecef", "gridColor": "#dee2e6", "secondaryColor": "#6c757d", "tertiaryColor": "#f8f9fa"}}}%%
+
+flowchart TD
+    A[Deferment Request] --> B[Validate Deferment Policy]
+    B --> C{Valid Deferment?}
+    
+    C -->|No| D[Display Error Message]
+    C -->|Yes| E[Check Deferment Formula]
+    
+    E --> F{Formula Type}
+    F -->|Standard| G[Calculate Standard Deferment]
+    F -->|Interest Bearing| H[Calculate IB Deferment]
+    F -->|Percentage| I[Calculate Percentage Deferment]
+    F -->|Fixed Amount| J[Calculate Fixed Deferment]
+    
+    G --> K[Apply Deferment Amount]
+    H --> L[Add Interest to Deferment]
+    I --> M[Calculate % of Balance]
+    J --> N[Use Fixed Amount]
+    
+    L --> K
+    M --> K
+    N --> K
+    
+    K --> O[Update Paid Through Date]
+    O --> P[Create Deferment Record]
+    P --> Q[Update Account Status]
+    Q --> R[Complete Deferment]
+    
+    D --> S[Return to Entry]
+    R --> T[End Processing]
+    S --> T
+    
+    style A fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style C fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style F fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff
+    style T fill:#dc3545,stroke:#c82333,stroke-width:2px,color:#fff

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMALL Core Engine Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIMALL Core Engine Documentation</span>
+        </nav>
+        <main class="content">
+<h1>TIMALL Core Engine Documentation</h1>
+<p><strong>Program ID:</strong> TIMALL<br />
+<strong>Program Type:</strong> Date/Time Processing Engine<br />
+<strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2024-12-19 14:30:00</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#business-context">Business Context</a></li>
+<li><a href="#technical-specifications">Technical Specifications</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#related-components">Related Components</a></li>
+</ul>
+<h2>Overview</h2>
+<p>TIMALL is the central timing calculation engine within the APIPAY system that provides comprehensive elapsed time calculations between two dates. It serves as the foundation for all timing utilities in the system, handling various year type conventions and providing consistent, accurate date arithmetic for financial and business processing.</p>
+<h2>Purpose</h2>
+<p>The TIMALL engine provides:
+- <strong>Universal Date Calculations</strong>: Core engine for all date arithmetic operations
+- <strong>Multiple Year Conventions</strong>: Supports 360, 365, 361, 362, 367, and actual day calculations
+- <strong>Comprehensive Results</strong>: Returns elapsed days, months, remainders, and comparison results
+- <strong>Data Integrity</strong>: Preserves input data while performing calculations</p>
+<h2>Business Context</h2>
+<p>TIMALL is fundamental to:
+- <strong>Financial Calculations</strong>: Interest, payment, and accrual computations
+- <strong>Business Processing</strong>: Period calculations and date comparisons<br />
+- <strong>System Operations</strong>: Core date arithmetic for all APIPAY functions
+- <strong>Data Consistency</strong>: Ensures uniform calculation standards across modules</p>
+<p>The engine supports all major date calculation requirements:
+- Banking and financial industry standards
+- General business date arithmetic
+- Regulatory compliance calculations
+- System processing needs</p>
+<h2>Technical Specifications</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong>: Starting date (YYYYMMDD format)</li>
+<li><strong>SYS-DATE</strong>: Ending date (YYYYMMDD format)  </li>
+<li><strong>ELAPSED-YRTYPE</strong>: Year calculation method (360, 365, 361, 362, 367, 999)</li>
+<li><strong>NDTE-DATE</strong>: Preserved during calculations</li>
+<li><strong>DATER-UNITPER-INFO</strong>: Unit period information</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>ELAPSED-DAYS</strong>: Total elapsed days</li>
+<li><strong>ELAPSED-MONTHS</strong>: Elapsed months</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days after month calculation</li>
+<li><strong>ELAPSED-RESULTS</strong>: Comparison results (LT, GT, EQ, etc.)</li>
+</ul>
+<h3>Processing Logic</h3>
+<pre><code class="language-cobol">TIMALL SECTION.
+    IF ( NUM-DATE = 0 ) OR ( SYS-DATE = 0 )
+       MOVE 0 TO ELAPSED-DAYS
+                 ELAPSED-MONTHS  
+                 ELAPSED-REM
+       MOVE SPACES TO ELAPSED-RESULTS
+    ELSE
+       MOVE NDTE-DATE          TO DATER-HOLD-NDTE-DATE
+       MOVE DATER-UNITPER-INFO TO HOLD-UNITPER-INFO
+       MOVE &quot;M&quot;                TO DATER-UNITPER-CD
+       MOVE 1                  TO DATER-UNITPER-FREQ
+       MOVE &quot;E&quot;                TO DATER-ACTION-CODE
+       PERFORM DATER-ROUTINE
+       MOVE HOLD-UNITPER-INFO  TO DATER-UNITPER-INFO
+       MOVE DATER-HOLD-NDTE-DATE TO NDTE-DATE.
+</code></pre>
+<h2>Implementation Details</h2>
+<h3>Core Processing Steps</h3>
+<ol>
+<li><strong>Input Validation</strong></li>
+<li>Checks for zero dates in NUM-DATE or SYS-DATE</li>
+<li>
+<p>Handles invalid date scenarios gracefully</p>
+</li>
+<li>
+<p><strong>Data Preservation</strong></p>
+</li>
+<li>Saves NDTE-DATE to prevent side effects</li>
+<li>
+<p>Preserves DATER-UNITPER-INFO for restoration</p>
+</li>
+<li>
+<p><strong>Calculation Setup</strong></p>
+</li>
+<li>Sets unit period code to "M" (monthly)</li>
+<li>Sets frequency to 1</li>
+<li>
+<p>Sets action code to "E" (elapsed time)</p>
+</li>
+<li>
+<p><strong>Calculation Execution</strong></p>
+</li>
+<li>Calls DATER-ROUTINE for core calculations</li>
+<li>
+<p>Uses configured year type for calculations</p>
+</li>
+<li>
+<p><strong>Data Restoration</strong></p>
+</li>
+<li>Restores original NDTE-DATE value</li>
+<li>Restores original unit period information</li>
+</ol>
+<h3>Key Features</h3>
+<ul>
+<li><strong>Data Safety</strong>: Preserves input parameters during calculations</li>
+<li><strong>Flexible Year Types</strong>: Supports multiple year calculation conventions</li>
+<li><strong>Comprehensive Results</strong>: Provides days, months, remainders, and comparisons</li>
+<li><strong>Error Handling</strong>: Graceful handling of invalid inputs</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Basic Date Calculation</h3>
+<pre><code class="language-cobol">* Setup parameters
+MOVE 20240101 TO NUM-DATE
+MOVE 20241231 TO SYS-DATE
+MOVE 365 TO ELAPSED-YRTYPE
+PERFORM TIMALL
+* Results available in ELAPSED-DAYS, ELAPSED-MONTHS, ELAPSED-REM
+</code></pre>
+<h3>Financial Calculation with 360-Day Year</h3>
+<pre><code class="language-cobol">* Interest calculation setup
+MOVE LOAN-START-DATE TO NUM-DATE
+MOVE PAYMENT-DATE TO SYS-DATE
+MOVE 360 TO ELAPSED-YRTYPE
+PERFORM TIMALL
+* Use ELAPSED-DAYS for interest calculations
+</code></pre>
+<h3>Through Timing Utility Wrappers</h3>
+<pre><code class="language-cobol">* Use specific year type utilities
+PERFORM TIM360  * Sets ELAPSED-YRTYPE=360 and calls TIMALL
+PERFORM TIM365  * Sets ELAPSED-YRTYPE=365 and calls TIMALL
+PERFORM TIM999  * Sets ELAPSED-YRTYPE=999 and calls TIMALL
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Zero Date Processing</h3>
+<ul>
+<li>Returns zero values for all elapsed time fields</li>
+<li>Sets ELAPSED-RESULTS to spaces</li>
+<li>Prevents calculation errors from invalid dates</li>
+</ul>
+<h3>Data Protection</h3>
+<ul>
+<li>Saves and restores NDTE-DATE to prevent side effects</li>
+<li>Preserves unit period information</li>
+<li>Maintains system state integrity</li>
+</ul>
+<h3>Common Error Scenarios</h3>
+<ul>
+<li><strong>Zero Dates</strong>: Handled with zero result values</li>
+<li><strong>Invalid Formats</strong>: Managed by underlying DATER-ROUTINE</li>
+<li><strong>Calculation Errors</strong>: Protected by data validation</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Efficiency Features</h3>
+<ul>
+<li><strong>Optimized Flow</strong>: Minimal overhead for common cases</li>
+<li><strong>Data Preservation</strong>: Efficient save/restore operations</li>
+<li><strong>Delegate Processing</strong>: Leverages optimized DATER-ROUTINE</li>
+</ul>
+<h3>Performance Guidelines</h3>
+<ul>
+<li>Zero date check provides fast exit for invalid cases</li>
+<li>Data preservation adds minimal overhead</li>
+<li>Calculation delegation provides maximum efficiency</li>
+</ul>
+<h2>Related Components</h2>
+<h3>Direct Dependencies</h3>
+<ul>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE</a></strong>: Core date processing engine</li>
+<li><strong><a href="NEWDATE_Documentation.html">NEWDATE</a></strong>: Date formatting and conversion</li>
+</ul>
+<h3>Dependent Utilities</h3>
+<ul>
+<li><strong><a href="TIM_Documentation.html">TIM</a></strong>: Default 365-day calculations</li>
+<li><strong><a href="TIM360_Documentation.html">TIM360</a></strong>: 360-day financial calculations</li>
+<li><strong><a href="TIM365_Documentation.html">TIM365</a></strong>: Standard calendar calculations</li>
+<li><strong><a href="TIM361_Documentation.html">TIM361</a></strong>: 361-day calculations</li>
+<li><strong><a href="TIM362_Documentation.html">TIM362</a></strong>: 362-day calculations</li>
+<li><strong><a href="TIM999_Documentation.html">TIM999</a></strong>: Actual day calculations</li>
+</ul>
+<h3>Integration Points</h3>
+<ul>
+<li>Central engine for all APIPAY date calculations</li>
+<li>Used by financial processing modules</li>
+<li>Supports business logic throughout the system</li>
+</ul>
+<h2>Diagrams</h2>
+<h3>Main Flow Diagram</h3>
+<p><img alt="TIMALL Main Flow" src="../Diagrams/TIMALL_Main_Flow.svg" /></p>
+<h3>Call Graph</h3>
+<p><img alt="TIMALL Call Graph" src="../Diagrams/TIMALL_Call_Graph.svg" /></p>
+<hr />
+<p><em>This documentation is automatically generated from the COBOL source code and is intended for system maintenance and integration purposes.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

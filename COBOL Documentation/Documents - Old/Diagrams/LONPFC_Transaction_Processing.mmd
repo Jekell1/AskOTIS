@@ -1,0 +1,36 @@
+%%{init: {"theme": "default", "themeVariables": {"primaryColor": "#28a745", "primaryTextColor": "#fff", "primaryBorderColor": "#1e7e34", "lineColor": "#28a745", "sectionBkgColor": "#f8f9fa", "altSectionBkgColor": "#e9ecef", "gridColor": "#dee2e6", "secondaryColor": "#6c757d", "tertiaryColor": "#f8f9fa"}}}%%
+
+flowchart TD
+    A[Transaction Input] --> B{Transaction Type}
+    
+    B -->|PY, PA, PE| C[Payment Processing]
+    B -->|DF, D2-D9| D[Deferment Processing]
+    B -->|PR, PC, PP| E[Principal Processing]
+    B -->|SS| F[Repossession Processing]
+    B -->|PX| G[Partial Charge-off]
+    B -->|Z2| H[Other Balance Processing]
+    
+    C --> I[Calculate Interest]
+    D --> J[Calculate Deferment]
+    E --> K[Apply to Principal]
+    F --> L[Handle Repo Logic]
+    G --> M[Charge-off Logic]
+    H --> N[Apply to OT2BAL]
+    
+    I --> O[Distribute Payment]
+    J --> P[Update Deferment]
+    K --> O
+    L --> O
+    M --> O
+    N --> O
+    
+    O --> Q[Update Balances]
+    Q --> R[Create History Record]
+    R --> S[Generate GL Entries]
+    S --> T[Save Transaction]
+    T --> U[Complete Processing]
+    
+    style A fill:#28a745,stroke:#1e7e34,stroke-width:2px,color:#fff
+    style B fill:#ffc107,stroke:#e0a800,stroke-width:2px,color:#000
+    style U fill:#dc3545,stroke:#c82333,stroke-width:2px,color:#fff
+    style O fill:#17a2b8,stroke:#138496,stroke-width:2px,color:#fff

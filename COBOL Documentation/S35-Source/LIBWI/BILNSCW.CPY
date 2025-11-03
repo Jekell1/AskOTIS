@@ -1,0 +1,13 @@
+      * COPYMEMBER: LIBWI/BILNSCW
+      * REV:
+      * 2024.0122 ADDED BILNSC-CALLED-FROM, REMOVED BILNSC-CUR-ONLY AND
+      *           BILNSC-DELINQ-CD
+      * 2024.0503 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  BILNSC-BUF.
+           03  BILNSC-ACCTNO       PIC 9(8).
+           03  BILNSC-SSNO         PIC 9(9).
+           03  BILNSC-SYSDATE      PIC X(8).
+           03  BILNSC-BRANCH       PIC 9(4).
+           03  BILNSC-BR-ALP REDEFINES BILNSC-BRANCH PIC X(4).
+           03  BILNSC-CALLED-FROM  PIC X(6) VALUE " ".
+           03  BILNSC-ERROR        PIC X    VALUE " ".

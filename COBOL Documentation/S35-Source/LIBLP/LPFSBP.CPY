@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSBP
+           SELECT BP-FILE ASSIGN TO BP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY BP1-KEY
+                  FILE STATUS FILE-STAT.

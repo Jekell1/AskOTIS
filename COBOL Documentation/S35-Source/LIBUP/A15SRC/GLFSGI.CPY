@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGL/GLFSGI
+           SELECT GI-FILE ASSIGN TO GI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY GI1-KEY
+                  FILE STATUS FILE-STAT.

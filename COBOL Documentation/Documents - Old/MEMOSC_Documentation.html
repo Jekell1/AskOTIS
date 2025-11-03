@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEMOSC Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MEMOSC Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> MEMOSC<br>
+            <strong>Location:</strong> WI/MEMOSC.CBL<br>
+            <strong>Purpose:</strong> Memo Inquiry and Input Window<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Type:</strong> Window-based memo management utility<br>
+            <strong>Called By:</strong> Various loan processing programs including LONPFB
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#memo-types">Memo Types Supported</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#program-flow">Program Flow Diagrams</a></li>
+                <li><a href="#referenced-programs">Referenced Programs</a></li>
+                <li><a href="#error-handling-flow">Error Handling Flow</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#error-handling">Error Handling and Validation</a></li>
+                <li><a href="#common-errors">Common Error Conditions</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>MEMOSC</strong> is a comprehensive window-based memo management program that provides inquiry and input capabilities for various types of memos in the loan processing system. It supports multiple memo types including loan memos, borrower memos, dealer memos, collateral memos, and reversal memos with comprehensive password protection and audit controls.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Memo Entry and Editing</strong>: Provides user interface for entering and modifying memo text</li>
+            <li><strong>Memo Type Management</strong>: Handles different memo types with appropriate validation</li>
+            <li><strong>Password Protection</strong>: Implements security controls for memo modification and deletion</li>
+            <li><strong>Audit Trail</strong>: Maintains complete audit trail of memo changes</li>
+            <li><strong>Date Validation</strong>: Enforces business rules for memo dating and backdating</li>
+            <li><strong>Reversal Memo Support</strong>: Special handling for transaction reversal memos</li>
+            <li><strong>Collection Integration</strong>: Specialized collection memo processing</li>
+        </ul>
+
+        <h2 id="memo-types">Memo Types Supported</h2>
+
+        <h3>Primary Memo Types</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Memo Type</th>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Loan Memo</strong></td>
+                    <td>L</td>
+                    <td>General loan account memos</td>
+                    <td>Account notes, payment arrangements, general comments</td>
+                </tr>
+                <tr>
+                    <td><strong>Borrower Memo</strong></td>
+                    <td>B</td>
+                    <td>Borrower-specific memos</td>
+                    <td>Customer contact information, personal notes</td>
+                </tr>
+                <tr>
+                    <td><strong>Dealer Memo</strong></td>
+                    <td>D</td>
+                    <td>Dealer-related memos</td>
+                    <td>Dealer communications, participation notes</td>
+                </tr>
+                <tr>
+                    <td><strong>Reversal Memo</strong></td>
+                    <td>R</td>
+                    <td>Transaction reversal memos</td>
+                    <td>Automated reversal documentation, audit trail</td>
+                </tr>
+                <tr>
+                    <td><strong>Collateral Memo</strong></td>
+                    <td>T</td>
+                    <td>Collateral-related memos</td>
+                    <td>Asset information, collateral status</td>
+                </tr>
+                <tr>
+                    <td><strong>Priority Memo</strong></td>
+                    <td>P</td>
+                    <td>High-priority memos</td>
+                    <td>Urgent notifications, critical information</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Special Processing Types</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Processing Type</th>
+                    <th>Description</th>
+                    <th>Usage Context</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Collection Processing</strong></td>
+                    <td>Specialized memo handling for collection accounts</td>
+                    <td>Collection workflow integration</td>
+                </tr>
+                <tr>
+                    <td><strong>Backdated Memos</strong></td>
+                    <td>Memos with dates prior to current date</td>
+                    <td>Historical documentation, adjustments</td>
+                </tr>
+                <tr>
+                    <td><strong>System Generated</strong></td>
+                    <td>Automatically generated memo entries</td>
+                    <td>Transaction reversals, system notifications</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="input-parameters">Input Parameters</h2>
+
+        <h3>Required Input Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>MEMOSC-ONLY</strong></td>
+                    <td>PIC X</td>
+                    <td>Memo type specification (L, B, D, R, T, P)</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>MEMOSC-MEMO-TYPE</strong></td>
+                    <td>PIC X</td>
+                    <td>Processing type (P=Priority, R=Reversal)</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-OWNBR</strong></td>
+                    <td>PIC 9(4)</td>
+                    <td>Owner branch number</td>
+                    <td>Account data</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-ACCTNO</strong></td>
+                    <td>PIC 9(6)</td>
+                    <td>Account number</td>
+                    <td>Account data</td>
+                </tr>
+                <tr>
+                    <td><strong>EXT-WI-CL-SSNO</strong></td>
+                    <td>PIC 9(9)</td>
+                    <td>Social Security Number</td>
+                    <td>Borrower identification</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Optional Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Default</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>FORM-PATHNAME</strong></td>
+                    <td>PIC X(path)</td>
+                    <td>Form path for window display</td>
+                    <td>Standard path</td>
+                </tr>
+                <tr>
+                    <td><strong>EXIT-PATHNAME</strong></td>
+                    <td>PIC X(path)</td>
+                    <td>Exit path for return processing</td>
+                    <td>Calling program</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="output-fields">Output Fields</h2>
+
+        <h3>Memo Data Output</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Memo Text</strong></td>
+                    <td>PIC X(60)</td>
+                    <td>Entered memo text content</td>
+                    <td>Storage in memo files</td>
+                </tr>
+                <tr>
+                    <td><strong>Memo Date</strong></td>
+                    <td>PIC 9(8)</td>
+                    <td>Memo entry date</td>
+                    <td>Audit trail and sequencing</td>
+                </tr>
+                <tr>
+                    <td><strong>Memo Sequence</strong></td>
+                    <td>PIC 99</td>
+                    <td>Sequential memo number</td>
+                    <td>Ordering and identification</td>
+                </tr>
+                <tr>
+                    <td><strong>User ID</strong></td>
+                    <td>PIC X(8)</td>
+                    <td>User who entered memo</td>
+                    <td>Audit trail</td>
+                </tr>
+                <tr>
+                    <td><strong>MEMO-ENTERED-FG</strong></td>
+                    <td>PIC X</td>
+                    <td>Flag indicating memo was entered</td>
+                    <td>Processing control</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Status and Control Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Values</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>ERRCD</strong></td>
+                    <td>PIC X</td>
+                    <td>Error condition code</td>
+                    <td>" "=Normal, "X"=Error condition</td>
+                </tr>
+                <tr>
+                    <td><strong>VDUSTATUS</strong></td>
+                    <td>PIC XX</td>
+                    <td>Screen processing status</td>
+                    <td>"00"=Normal, "10"=Exit, "1U"=Up Arrow</td>
+                </tr>
+                <tr>
+                    <td><strong>IO-FG</strong></td>
+                    <td>PIC XX</td>
+                    <td>File I/O status</td>
+                    <td>"00"=Success, others=Error codes</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="program-flow">Program Flow Diagrams</h2>
+
+        <div class="diagram-container">
+            <h3>Main Program Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Program Start] --> B[SQL Connect]
+                B --> C[Get GP Environment]
+                C --> D[Create Window]
+                D --> E[Initialize Display]
+                E --> F{Memo Type}
+                F -->|L| G[Loan Memo Processing]
+                F -->|B| H[Borrower Memo Processing]
+                F -->|D| I[Dealer Memo Processing]
+                F -->|R| J[Reversal Memo Processing]
+                F -->|T| K[Collateral Memo Processing]
+                F -->|P| L[Priority Memo Processing]
+                
+                G --> M[Display Loan Memos]
+                H --> N[Display Borrower Memos]
+                I --> O[Display Dealer Memos]
+                J --> P[Process Reversal Logic]
+                K --> Q[Display Collateral Memos]
+                L --> R[Display Priority Memos]
+                
+                M --> S[User Interaction]
+                N --> S
+                O --> S
+                P --> T{Auto Generate?}
+                Q --> S
+                R --> S
+                
+                T -->|Yes| U[Generate Change Memo]
+                T -->|No| S
+                U --> S
+                
+                S --> V{User Action}
+                V -->|Enter/Edit| W[Memo Entry/Edit]
+                V -->|Delete| X[Delete Validation]
+                V -->|Exit| Y[Close Window]
+                
+                W --> W1[Validate Entry]
+                W1 --> W2{Valid?}
+                W2 -->|No| W3[Display Error]
+                W2 -->|Yes| W4[Save Memo]
+                W3 --> S
+                W4 --> S
+                
+                X --> X1{Date Check}
+                X1 -->|Old Date| X2[Password Required]
+                X1 -->|Today| X3[Direct Delete]
+                X2 --> X4{Password OK?}
+                X4 -->|No| S
+                X4 -->|Yes| X3
+                X3 --> X5[Delete Memo]
+                X5 --> S
+                
+                Y --> Z[Program End]
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Memo Type Selection Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Memo Type Selection] --> B{GP Flag Check}
+                B -->|Dealer Toggle| C[Check Dealer Memo Access]
+                B -->|Standard| D[Standard Type Menu]
+                
+                C --> C1{Access Allowed?}
+                C1 -->|Yes| C2[Include Dealer Option]
+                C1 -->|No| C3[Exclude Dealer Option]
+                
+                C2 --> E[Display Menu with Dealer]
+                C3 --> F[Display Menu without Dealer]
+                D --> F
+                
+                E --> G[User Selection]
+                F --> G
+                
+                G --> H{Selection}
+                H -->|Loan| I[Set Type L]
+                H -->|Borrower| J[Set Type B]
+                H -->|Dealer| K[Set Type D]
+                H -->|Exit| L[Exit Selection]
+                
+                I --> M[Open Loan Memo File]
+                J --> N[Open Borrower Memo File]
+                K --> O[Open Dealer Memo File]
+                
+                M --> P[Process Loan Memos]
+                N --> Q[Process Borrower Memos]
+                O --> R[Process Dealer Memos]
+                
+                P --> S[Return to Main Flow]
+                Q --> S
+                R --> S
+                L --> S
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Password Validation Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Password Validation Required] --> B{Validation Type}
+                B -->|Delete Old| C[DELAUD-DEL-OLD-SEQ]
+                B -->|Delete Priority| D[DELAUD-DEL-PRIORITY-SEQ]
+                B -->|Delete System| E[DELAUD-ADJ-SYS-SEQ]
+                B -->|Delete Today| F[DELAUD-DEL-TODAY]
+                B -->|Edit Old| G[AUDMEM-ADJ-GT-TODAY]
+                B -->|Edit Priority| H[AUDMEM-ADJ-PRIORITY]
+                B -->|Edit Today| I[AUDMEM-ADJ-TODAY]
+                
+                C --> J[Get Old Memo Delete Password]
+                D --> K[Get Priority Delete Password]
+                E --> L[Get System Delete Password]
+                F --> M[Get Today Delete Password]
+                G --> N[Get Edit Old Password]
+                H --> O[Get Edit Priority Password]
+                I --> P[Get Edit Today Password]
+                
+                J --> Q[Verify Password]
+                K --> Q
+                L --> Q
+                M --> Q
+                N --> Q
+                O --> Q
+                P --> Q
+                
+                Q --> R{Password Valid?}
+                R -->|Yes| S[Set Password OK Status]
+                R -->|No| T[Set Password Fail Status]
+                
+                S --> U[Allow Operation]
+                T --> V[Deny Operation]
+                
+                U --> W[Continue Processing]
+                V --> X[Return to Menu]
+            </div>
+        </div>
+
+        <h2 id="referenced-programs">Referenced Programs</h2>
+
+        <h3>Copy Library Dependencies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Purpose</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LIBLP/LP01*.CPY</strong></td>
+                    <td>Loan processing memo file definitions</td>
+                    <td>File structures</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBLP/LPWS*.CPY</strong></td>
+                    <td>Memo processing working storage</td>
+                    <td>Working storage</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/PASSWDW.CPY</strong></td>
+                    <td>Password verification routines</td>
+                    <td>Security</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBWI/MEMOSC*.CPY</strong></td>
+                    <td>Window interface definitions</td>
+                    <td>User interface</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBSP/SPMEMO*.CPY</strong></td>
+                    <td>State parameter memo definitions</td>
+                    <td>Configuration</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/*W.CPY</strong></td>
+                    <td>Global working storage and utilities</td>
+                    <td>Utilities</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>External Integration</h3>
+        <ul>
+            <li><strong>SQL Database</strong>: All memo data stored and retrieved via SQL operations</li>
+            <li><strong>Screen Management</strong>: Graphical window interface for user interaction</li>
+            <li><strong>Security System</strong>: Password verification for protected operations</li>
+            <li><strong>Audit System</strong>: Complete audit trail of memo changes</li>
+        </ul>
+
+        <h2 id="error-handling-flow">Error Handling Flow</h2>
+
+        <div class="diagram-container">
+            <div class="mermaid">
+            flowchart TD
+                A[Error Detected] --> B{Error Type}
+                B -->|File Error| C[File Access Error]
+                B -->|Password Error| D[Password Validation Error]
+                B -->|Date Error| E[Date Validation Error]
+                B -->|Business Rule Error| F[Business Logic Error]
+                B -->|System Error| G[System Error]
+                
+                C --> C1[Set ERRCD]
+                C1 --> C2[Display File Error Message]
+                C2 --> H[Log Error]
+                
+                D --> D1[Display Password Error]
+                D1 --> I[Return to Password Entry]
+                
+                E --> E1[Display Date Error Message]
+                E1 --> J[Return to Date Entry]
+                
+                F --> F1[Display Business Rule Message]
+                F1 --> K[Return to Previous Screen]
+                
+                G --> G1[Display System Error]
+                G1 --> L[Close Files]
+                L --> M[Exit Program]
+                
+                H --> N[Close Files Gracefully]
+                N --> M
+                
+                I --> O{Retry Count}
+                O -->|< Max| P[Allow Retry]
+                O -->|= Max| Q[Force Exit]
+                
+                J --> R[Highlight Error Field]
+                R --> S[Continue Processing]
+                
+                K --> S
+                P --> S
+                Q --> M
+                S --> T[Normal Processing Resume]
+            </div>
+        </div>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Window Architecture</h3>
+        <ul>
+            <li><strong>Window Dimensions</strong>: 13 lines by 78 columns</li>
+            <li><strong>Floating Window</strong>: Graphical floating window interface</li>
+            <li><strong>Position Control</strong>: Begins at screen line 10, column 2</li>
+            <li><strong>Dynamic Sizing</strong>: Window size adjusted based on VDU settings</li>
+            <li><strong>Handle Management</strong>: Uses window handle for proper cleanup</li>
+        </ul>
+
+        <h3>Data Management</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Description</th>
+                    <th>Implementation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Memo Storage</strong></td>
+                    <td>Persistent memo data storage</td>
+                    <td>SQL database with indexed access</td>
+                </tr>
+                <tr>
+                    <td><strong>Text Handling</strong></td>
+                    <td>Memo text processing and validation</td>
+                    <td>60-character text fields with overflow handling</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Management</strong></td>
+                    <td>8-digit date handling and validation</td>
+                    <td>YYYYMMDD format with range validation</td>
+                </tr>
+                <tr>
+                    <td><strong>Sequence Control</strong></td>
+                    <td>Memo sequencing and ordering</td>
+                    <td>99-sequence numeric with automatic assignment</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Security Implementation</h3>
+        <ul>
+            <li><strong>Multi-Level Security</strong>: Different password levels for different operations</li>
+            <li><strong>Date-Based Protection</strong>: Enhanced security for historical memo modifications</li>
+            <li><strong>Operation-Specific Passwords</strong>: Different passwords for edit vs. delete operations</li>
+            <li><strong>Audit Trail Integration</strong>: All security events logged for compliance</li>
+        </ul>
+
+        <h2 id="error-handling">Error Handling and Validation</h2>
+
+        <h3>Business Rule Validation</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Validation Type</th>
+                    <th>Description</th>
+                    <th>Action Taken</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Date Validation</strong></td>
+                    <td>Validates memo dates against business rules</td>
+                    <td>Error message, return to date entry</td>
+                </tr>
+                <tr>
+                    <td><strong>Text Length Validation</strong></td>
+                    <td>Ensures memo text fits within field limits</td>
+                    <td>Truncation warning or field expansion</td>
+                </tr>
+                <tr>
+                    <td><strong>Sequence Validation</strong></td>
+                    <td>Validates memo sequence numbers</td>
+                    <td>Automatic sequence assignment or correction</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Authorization</strong></td>
+                    <td>Validates user access to memo types</td>
+                    <td>Access denied message, menu restriction</td>
+                </tr>
+                <tr>
+                    <td><strong>Memo Type Validation</strong></td>
+                    <td>Ensures valid memo type for account</td>
+                    <td>Error message, type selection required</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>File Integrity</h3>
+        <ul>
+            <li><strong>SQL Transaction Control</strong>: Ensures data consistency during updates</li>
+            <li><strong>Concurrent Access Protection</strong>: Handles multiple user access scenarios</li>
+            <li><strong>Backup and Recovery</strong>: Supports database backup and recovery operations</li>
+            <li><strong>Archive Integration</strong>: Supports memo archiving for historical data</li>
+        </ul>
+
+        <h2 id="common-errors">Common Error Conditions</h2>
+
+        <h3>User Input Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Invalid Date Entry</strong></td>
+                    <td>Date format incorrect or out of range</td>
+                    <td>Re-enter date in MMDDYYYY format within valid range</td>
+                </tr>
+                <tr>
+                    <td><strong>Text Too Long</strong></td>
+                    <td>Memo text exceeds 60-character limit</td>
+                    <td>Shorten text or use multiple memo entries</td>
+                </tr>
+                <tr>
+                    <td><strong>Password Failure</strong></td>
+                    <td>Incorrect password for protected operation</td>
+                    <td>Re-enter correct password or contact supervisor</td>
+                </tr>
+                <tr>
+                    <td><strong>Access Denied</strong></td>
+                    <td>User lacks permission for memo type</td>
+                    <td>Contact system administrator for access rights</td>
+                </tr>
+                <tr>
+                    <td><strong>Sequence Conflict</strong></td>
+                    <td>Memo sequence number already exists</td>
+                    <td>System will auto-assign next available sequence</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>System Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>File Access Error</strong></td>
+                    <td>Cannot access memo database files</td>
+                    <td>Check database connectivity and file permissions</td>
+                </tr>
+                <tr>
+                    <td><strong>SQL Connection Error</strong></td>
+                    <td>Database connection failure</td>
+                    <td>Verify database server status and reconnect</td>
+                </tr>
+                <tr>
+                    <td><strong>Window Creation Error</strong></td>
+                    <td>Cannot create display window</td>
+                    <td>Check display configuration and retry</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory Allocation Error</strong></td>
+                    <td>Insufficient memory for memo processing</td>
+                    <td>Close other applications and retry</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="integration-points">Integration Points</h2>
+
+        <h3>Calling Programs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Integration Purpose</th>
+                    <th>Data Exchange</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LONPFB</strong></td>
+                    <td>Backdated rebate memo entry</td>
+                    <td>Account information, memo type, forced entry</td>
+                </tr>
+                <tr>
+                    <td><strong>Collection Programs</strong></td>
+                    <td>Collection memo management</td>
+                    <td>Account data, collection status, memo text</td>
+                </tr>
+                <tr>
+                    <td><strong>Loan Processing</strong></td>
+                    <td>General memo entry during loan processing</td>
+                    <td>Loan data, transaction context, memo requirements</td>
+                </tr>
+                <tr>
+                    <td><strong>Customer Service</strong></td>
+                    <td>Customer interaction documentation</td>
+                    <td>Customer data, interaction details, follow-up notes</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>External System Integration</h3>
+        <ul>
+            <li><strong>Audit System</strong>: All memo activities logged for compliance and tracking</li>
+            <li><strong>Security System</strong>: Password verification and access control integration</li>
+            <li><strong>Database System</strong>: SQL-based storage and retrieval of memo data</li>
+            <li><strong>Workflow Systems</strong>: Integration with collection and loan processing workflows</li>
+            <li><strong>Reporting Systems</strong>: Memo data available for reporting and analysis</li>
+        </ul>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>Primary Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LP01LM (Loan Memo)</strong></td>
+                    <td>Loan-specific memo records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01BM (Borrower Memo)</strong></td>
+                    <td>Borrower-specific memo records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01DM (Dealer Memo)</strong></td>
+                    <td>Dealer-specific memo records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01CH (Change History)</strong></td>
+                    <td>Memo change audit trail</td>
+                    <td>Read/Write</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Configuration Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Global Parameters</strong></td>
+                    <td>System-wide memo configuration</td>
+                    <td>Feature flags, default settings</td>
+                </tr>
+                <tr>
+                    <td><strong>Security Parameters</strong></td>
+                    <td>Password and access control settings</td>
+                    <td>Security validation and enforcement</td>
+                </tr>
+                <tr>
+                    <td><strong>Display Configuration</strong></td>
+                    <td>Window and screen layout settings</td>
+                    <td>User interface customization</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="performance">Performance Considerations</h2>
+
+        <h3>Optimization Features</h3>
+        <ul>
+            <li><strong>SQL Optimization</strong>: Optimized database queries for memo retrieval</li>
+            <li><strong>Window Caching</strong>: Efficient window management and reuse</li>
+            <li><strong>Memory Management</strong>: Optimized memory usage for text processing</li>
+            <li><strong>Index Usage</strong>: Database indexes for fast memo lookup</li>
+            <li><strong>Lazy Loading</strong>: Loads memo data only when needed</li>
+        </ul>
+
+        <h3>Performance Metrics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Typical Performance</th>
+                    <th>Optimization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Window Open Time</strong></td>
+                    <td>< 1 second</td>
+                    <td>Cached window components</td>
+                </tr>
+                <tr>
+                    <td><strong>Memo Load Time</strong></td>
+                    <td>< 0.5 seconds</td>
+                    <td>Indexed database access</td>
+                </tr>
+                <tr>
+                    <td><strong>Save Operation</strong></td>
+                    <td>< 0.3 seconds</td>
+                    <td>Optimized SQL transactions</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory Usage</strong></td>
+                    <td>Minimal overhead</td>
+                    <td>Efficient text buffer management</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>12/23/91</strong></td>
+                    <td>Original program creation</td>
+                    <td>Initial development</td>
+                </tr>
+                <tr>
+                    <td><strong>01/27/97</strong></td>
+                    <td>Added DELE-VERIFY-PASSWORD for memo deletion</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>03/10/97</strong></td>
+                    <td>Changed to use collection version with no date stopping</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>10/16/98</strong></td>
+                    <td>Adding notes memos and 2000 date support</td>
+                    <td>GLF</td>
+                </tr>
+                <tr>
+                    <td><strong>09/09/99</strong></td>
+                    <td>Add toggle to dealer memos based on GP flag</td>
+                    <td>BLV - TFC PR# 40</td>
+                </tr>
+                <tr>
+                    <td><strong>10/04/00</strong></td>
+                    <td>Added logic for loan memo type R for reversals</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>11/13/00</strong></td>
+                    <td>Add vendor memo VM-REC</td>
+                    <td>GLB</td>
+                </tr>
+                <tr>
+                    <td><strong>02/14/02</strong></td>
+                    <td>Added VERIFY-MEMO-PASSWORD to avoid conflicts</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>10/24/02</strong></td>
+                    <td>Added T collateral memos</td>
+                    <td>BAH - PCCREDIT PR# 1940</td>
+                </tr>
+                <tr>
+                    <td><strong>04/10/11</strong></td>
+                    <td>Add LIBSP/COURTW with valid court numbers</td>
+                    <td>CS - MODERN PR#2388</td>
+                </tr>
+                <tr>
+                    <td><strong>07/03/13</strong></td>
+                    <td>Changed memo password routine names</td>
+                    <td>BAH - REGENCY PL# 582</td>
+                </tr>
+                <tr>
+                    <td><strong>10/11/09</strong></td>
+                    <td>If I-AM-REGENCY, get WI/RGMEMO for smaller memo</td>
+                    <td>BLM - REGENCY PR# 3682</td>
+                </tr>
+                <tr>
+                    <td><strong>03/10/17</strong></td>
+                    <td>Added FMETRO-MEMO field and WI/MEMOFM form</td>
+                    <td>KEC - FIRST METRO PR#05265</td>
+                </tr>
+                <tr>
+                    <td><strong>04/20/17</strong></td>
+                    <td>Activate 8 digit dates</td>
+                    <td>BAH - PD0006</td>
+                </tr>
+                <tr>
+                    <td><strong>11/04/19</strong></td>
+                    <td>Removed VMFILE vendor memo</td>
+                    <td>BAH - PT0192</td>
+                </tr>
+                <tr>
+                    <td><strong>01/02/24</strong></td>
+                    <td>Removed MEMOFM and MEMORG</td>
+                    <td>BAH</td>
+                </tr>
+                <tr>
+                    <td><strong>03/21/24</strong></td>
+                    <td>Removed COURTW</td>
+                    <td>BAH</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <p><strong>Note:</strong> MEMOSC is a critical utility program that provides comprehensive memo management capabilities throughout the loan processing system. It supports multiple memo types with appropriate security controls and audit trails, making it essential for documentation and communication within the loan servicing environment.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

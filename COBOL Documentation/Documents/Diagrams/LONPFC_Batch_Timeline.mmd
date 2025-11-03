@@ -1,0 +1,49 @@
+gantt
+    title LONPFC Batch Processing Timeline
+    dateFormat HH:mm
+    axisFormat %H:%M
+    
+    section System Initialization
+    SQL Connection Setup         :active, init, 00:00, 00:01
+    Load State Parameters        :sp-load, after init, 00:01
+    Load Branch Configuration    :br-load, after sp-load, 00:01
+    Environment Variable Setup   :env-setup, after br-load, 00:01
+    
+    section Pre-Processing
+    Validate Input Files         :validate, after env-setup, 00:03
+    Initialize Working Storage   :ws-init, after validate, 00:01
+    Setup Processing Flags       :flags, after ws-init, 00:01
+    
+    section Core Payment Processing
+    Read Payment Transactions    :read-pay, after flags, 00:08
+    Validate Payment Data        :val-pay, after read-pay, 00:12
+    Calculate Payment Distribution :calc-dist, after val-pay, 00:15
+    Process Late Charges         :late-chg, after calc-dist, 00:10
+    Handle Escrow Collections    :escrow, after late-chg, 00:08
+    
+    section Specialized Processing
+    Process Deferments           :defer, after escrow, 00:12
+    Handle Payment Exceptions    :except, after defer, 00:06
+    Process Non-cash Payments    :noncash, after except, 00:08
+    Charge-off Processing        :chgoff, after noncash, 00:05
+    
+    section Balance Management
+    Update Loan Balances         :bal-upd, after chgoff, 00:18
+    Validate Balance Consistency :bal-val, after bal-upd, 00:08
+    Calculate Accumulations      :accum, after bal-val, 00:06
+    
+    section Earnings and GL
+    Process Earnings Calculations :earn, after accum, 00:12
+    Generate GL Distributions    :gl-dist, after earn, 00:10
+    Update Cash Drawer Records   :cash, after gl-dist, 00:05
+    
+    section Audit and History
+    Write Payment History        :pay-hist, after cash, 00:08
+    Create Transaction Logs      :trans-log, after pay-hist, 00:06
+    Update Audit Trail          :audit, after trans-log, 00:04
+    
+    section Reporting and Cleanup
+    Generate Processing Reports  :reports, after audit, 00:10
+    Close Database Connections   :db-close, after reports, 00:02
+    Archive Processed Files      :archive, after db-close, 00:05
+    System Cleanup              :cleanup, after archive, 00:02

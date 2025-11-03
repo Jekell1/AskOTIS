@@ -1,0 +1,85 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-TIM361 Module]
+    B --> C[Date Standardization]
+    C --> D[Forward February Processing]
+    D --> E[Backward February Processing]
+    E --> F[Complex February Logic]
+    F --> G[Final Calculation]
+    G --> H[Return to Caller]
+    
+    subgraph "Called Modules"
+        I[C-TIMBEG]
+        J[C-LEAP-YEAR-TEST Multiple Calls]
+        K[C-TIMEND]
+    end
+    
+    subgraph "Processing Phases"
+        L[Day Capping Logic]
+        M[Forward February Logic]
+        N[Backward February Logic]
+        O[Complex Conditional Logic]
+        P[February 28 Special Processing]
+        Q[Day Count Calculation]
+    end
+    
+    subgraph "Working Storage"
+        R[WS-DATE1-CCYY/MM/DD]
+        S[WS-DATE2-CCYY/MM/DD]
+        T[LEAP-YEAR-CCYY Multiple Uses]
+        U[WS-XDAYS Result]
+    end
+    
+    subgraph "Output Structure"
+        V[WS-XDAYS Result]
+        W[ELAPSED-MONTHS]
+        X[ELAPSED-DAYS]
+        Y[ELAPSED-REM]
+    end
+    
+    subgraph "Special Logic Constants"
+        Z[DAYS-PER-MONTH = 30]
+        AA[DAYS-PER-YEAR = 360]
+        BB[FEBRUARY-MONTH = 2]
+        CC[FEBRUARY-28-THRESHOLD = 28]
+        DD[LEAP-YEAR-ADJUSTMENT = 1]
+        EE[NON-LEAP-ADJUSTMENT = 2]
+    end
+    
+    B --> I
+    D --> J
+    E --> J
+    F --> J
+    G --> K
+    
+    C --> L
+    D --> M
+    E --> N
+    F --> O
+    F --> P
+    G --> Q
+    
+    B --> R
+    B --> S
+    D --> T
+    E --> T
+    F --> T
+    G --> U
+    
+    H --> V
+    K --> W
+    K --> X
+    K --> Y
+    
+    G --> Z
+    G --> AA
+    F --> BB
+    F --> CC
+    F --> DD
+    F --> EE
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style B fill:#f3e5f5
+    style I fill:#e8f5e8
+    style J fill:#e8f5e8
+    style K fill:#e8f5e8

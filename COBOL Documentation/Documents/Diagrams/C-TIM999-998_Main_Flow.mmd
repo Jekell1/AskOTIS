@@ -1,0 +1,24 @@
+graph TD
+    A[C-TIM999-998 Section] --> B[Perform C-TIMBEG]
+    B --> C[Calculate Month Difference]
+    C --> D{Is Day1 > Day2?}
+    D -->|Yes| E[Subtract 1 Month]
+    D -->|No| F[Keep Month Difference]
+    E --> G[Store Negative Month Value]
+    F --> G
+    G --> H[Set Working Date to Date2]
+    H --> I[Increment Date2 Backwards by Months]
+    I --> J[Convert Dates to Julian]
+    J --> K[Calculate Elapsed Days]
+    K --> L[Perform C-TIMEND]
+    
+    subgraph "Julian Conversion"
+    J --> J1[Move Date to P-DATE-IN]
+    J1 --> J2[Perform C-CALL-JUL]
+    J2 --> J3[Store Julian Dates]
+    end
+    
+    subgraph "Days Calculation"
+    K --> K1[Multiply Months by 30]
+    K1 --> K2[Add Julian Date Difference]
+    end

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFB - Loan Processing Transaction Posting System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">LONPFB - Loan Processing Transaction Posting System</span>
+        </nav>
+        <main class="content">
+<h1 id="lonpfb-loan-processing-transaction-posting-system">LONPFB - Loan Processing Transaction Posting System</h1>
+<p><strong>Location:</strong> .\S35-Source\LP\LONPFB.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> LONPFB<br />
+<strong>Date Written:</strong> March 18, 1986</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p><strong>LONPFB</strong> is a sophisticated COBOL loan processing program specifically designed for <strong>Transaction Posting</strong> in a loan servicing system. It serves as <strong>Program 11</strong> in the loan processing suite and handles rebate calculations, cancellations, and various payment transaction types.</p>
+<h3 id="key-characteristics">Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Interactive screen-based processing with batch capabilities</li>
+<li><strong>Primary Function:</strong> Transaction posting with rebate and cancellation processing</li>
+<li><strong>Transaction Focus:</strong> Handles "R" and "C" series transaction codes for rebates and cancellations</li>
+<li><strong>Integration:</strong> Part of the larger LONPF family of loan processing programs</li>
+<li><strong>Screen Interface:</strong> Uses VDU (Video Display Unit) forms for user interaction</li>
+</ul>
+<h3 id="business-purpose">Business Purpose</h3>
+<p>LONPFB serves critical functions in loan servicing by:</p>
+<ol>
+<li><strong>Rebate Processing:</strong> Calculates and applies insurance rebates, interest rebates, and fee rebates</li>
+<li><strong>Transaction Cancellation:</strong> Handles cancellation of various loan charges and fees</li>
+<li><strong>Insurance Management:</strong> Processes credit life, accident &amp; health, and property protection insurance rebates</li>
+<li><strong>Batch Payment Support:</strong> Provides automated transaction posting for batch payment systems</li>
+<li><strong>Audit Trail:</strong> Maintains comprehensive transaction logs for compliance and tracking</li>
+<li><strong>Integration Support:</strong> Interfaces with multiple loan processing modules (LONPF series)</li>
+</ol>
+<h3 id="historical-context">Historical Context</h3>
+<p>The program has evolved significantly since 1986 with major enhancements including:
+- Insurance rebate formula improvements (multiple revisions)
+- Batch payment reference code support
+- Cash drawer password integration
+- Monthly insurance premium (MIP) handling
+- Mexican formula support for international operations
+- Enhanced error handling and validation</p>
+<hr />
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<p>LONPFB processes two main categories of transaction codes:</p>
+<h3 id="r-series-transactions-rebates">R-Series Transactions (Rebates)</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RC</strong></td>
+<td>Rebate Credit Life</td>
+<td>Processes credit life insurance rebates</td>
+</tr>
+<tr>
+<td><strong>RA</strong></td>
+<td>Rebate Accident &amp; Health</td>
+<td>Handles accident and health insurance rebates</td>
+</tr>
+<tr>
+<td><strong>RP</strong></td>
+<td>Rebate Property Protection</td>
+<td>Manages property protection insurance rebates</td>
+</tr>
+<tr>
+<td><strong>R1</strong></td>
+<td>Rebate Insurance Type 1</td>
+<td>Custom insurance rebate type 1</td>
+</tr>
+<tr>
+<td><strong>R2</strong></td>
+<td>Rebate Insurance Type 2</td>
+<td>Custom insurance rebate type 2</td>
+</tr>
+<tr>
+<td><strong>R3</strong></td>
+<td>Rebate Insurance Type 3</td>
+<td>Custom insurance rebate type 3</td>
+</tr>
+<tr>
+<td><strong>RI</strong></td>
+<td>Rebate Interest</td>
+<td>Interest rebate calculations</td>
+</tr>
+<tr>
+<td><strong>RS</strong></td>
+<td>Rebate Service Charge</td>
+<td>Service charge rebate processing</td>
+</tr>
+<tr>
+<td><strong>RM</strong></td>
+<td>Rebate Maintenance Fee</td>
+<td>Maintenance fee rebate calculations</td>
+</tr>
+<tr>
+<td><strong>RD</strong></td>
+<td>Rebate Deferment</td>
+<td>Deferment fee rebate processing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-series-transactions-cancellations">C-Series Transactions (Cancellations)</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CC</strong></td>
+<td>Cancel Credit Life</td>
+<td>Cancels credit life insurance charges</td>
+</tr>
+<tr>
+<td><strong>CA</strong></td>
+<td>Cancel Accident &amp; Health</td>
+<td>Cancels accident and health insurance</td>
+</tr>
+<tr>
+<td><strong>CP</strong></td>
+<td>Cancel Property Protection</td>
+<td>Cancels property protection insurance</td>
+</tr>
+<tr>
+<td><strong>C1</strong></td>
+<td>Cancel Insurance Type 1</td>
+<td>Custom insurance cancellation type 1</td>
+</tr>
+<tr>
+<td><strong>C2</strong></td>
+<td>Cancel Insurance Type 2</td>
+<td>Custom insurance cancellation type 2</td>
+</tr>
+<tr>
+<td><strong>C3</strong></td>
+<td>Cancel Insurance Type 3</td>
+<td>Custom insurance cancellation type 3</td>
+</tr>
+<tr>
+<td><strong>CD</strong></td>
+<td>Cancel Deferment</td>
+<td>Cancels deferment charges</td>
+</tr>
+</tbody>
+</table>
+<h3 id="special-transaction-codes">Special Transaction Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F9</strong></td>
+<td>Automatic Payoff Rebate</td>
+<td>Triggers automatic rebate calculations for payoffs</td>
+</tr>
+<tr>
+<td><strong>PO</strong></td>
+<td>Payoff Processing</td>
+<td>Handles loan payoff with associated rebates</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<h3 id="primary-input-structure">Primary Input Structure</h3>
+<p>The program receives input through the <code>PROG-BUF</code> parameter which contains:</p>
+<pre><code class="language-cobol">FORM-PATHNAME     - VDU form path for screen display
+EXIT-PATHNAME     - Return path after processing
+PROG-BUF          - Program control buffer
+UPDATE-BUF        - Transaction update buffer
+</code></pre>
+<h3 id="transaction-input-fields">Transaction Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-TRCD</strong></td>
+<td>PIC XX</td>
+<td>Transaction code (RC, RA, RP, etc.)</td>
+</tr>
+<tr>
+<td><strong>LP-TRAMT</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Transaction amount</td>
+</tr>
+<tr>
+<td><strong>LP-ACNO</strong></td>
+<td>PIC 9(6)</td>
+<td>Account number</td>
+</tr>
+<tr>
+<td><strong>LP-PDTH-DATE</strong></td>
+<td>PIC 9(8)</td>
+<td>Paid through date</td>
+</tr>
+<tr>
+<td><strong>LP-INTPAID</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Interest paid amount</td>
+</tr>
+<tr>
+<td><strong>LP-APCUR</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied current amount</td>
+</tr>
+</tbody>
+</table>
+<h3 id="batch-payment-input">Batch Payment Input</h3>
+<p>For batch processing via APIPAY:</p>
+<pre><code class="language-cobol">HOLD-BP-TRCD      - Batch payment transaction code
+HOLD-LN-*         - Various loan field holders
+</code></pre>
+<h3 id="screen-input-fields">Screen Input Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Number</strong></td>
+<td>9(6)</td>
+<td>Target loan account</td>
+</tr>
+<tr>
+<td><strong>Transaction Code</strong></td>
+<td>XX</td>
+<td>R or C series code</td>
+</tr>
+<tr>
+<td><strong>Amount</strong></td>
+<td>Z(5).99-</td>
+<td>Transaction amount</td>
+</tr>
+<tr>
+<td><strong>Rate</strong></td>
+<td>ZZZZ.999-</td>
+<td>Interest rate (when applicable)</td>
+</tr>
+<tr>
+<td><strong>Date Fields</strong></td>
+<td>MM/DD/YY</td>
+<td>Various date inputs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<h3 id="transaction-output-structure">Transaction Output Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-CURBAL</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Updated current balance</td>
+</tr>
+<tr>
+<td><strong>LP-INTPAID</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Computed interest paid</td>
+</tr>
+<tr>
+<td><strong>LP-PDTH-DATE</strong></td>
+<td>PIC 9(8)</td>
+<td>Updated paid through date</td>
+</tr>
+<tr>
+<td><strong>LP-APCUR</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Applied current amount</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rebate-calculation-results">Rebate Calculation Results</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>REB-AMOUNT(1-16)</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Calculated rebate amounts by type</td>
+</tr>
+<tr>
+<td><strong>REB-LN-INTREBATE</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Interest rebate amount</td>
+</tr>
+<tr>
+<td><strong>REB-LN-SC-REBATE</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Service charge rebate</td>
+</tr>
+<tr>
+<td><strong>REB-LN-MF-REBATE</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Maintenance fee rebate</td>
+</tr>
+<tr>
+<td><strong>REB-LN-DF-REBATE</strong></td>
+<td>PIC S9(7)V99</td>
+<td>Deferment fee rebate</td>
+</tr>
+</tbody>
+</table>
+<h3 id="screen-display-output">Screen Display Output</h3>
+<p>The program displays a formatted transaction entry screen showing:
+- Account information and balances
+- Transaction details and amounts
+- Calculated rebates and adjustments
+- Error messages and validation results</p>
+<h3 id="file-updates">File Updates</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Primary loan record updates</td>
+</tr>
+<tr>
+<td><strong>LX-FILE</strong></td>
+<td>Transaction history updates</td>
+</tr>
+<tr>
+<td><strong>LXE-FILE</strong></td>
+<td>Earnings record updates</td>
+</tr>
+<tr>
+<td><strong>LTI-FILE</strong></td>
+<td>Transaction index updates</td>
+</tr>
+<tr>
+<td><strong>LTP-FILE</strong></td>
+<td>Transaction posting file</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-processing-flow"><a href="Diagrams/LONPFB_Main_Flow.mmd">High-Level Processing Flow</a></h3>
+<h3 id="transaction-processing-flow"><a href="Diagrams/LONPFB_Transaction_Processing.mmd">Transaction Processing Flow</a></h3>
+<h3 id="rebate-calculation-flow"><a href="Diagrams/LONPFB_Rebate_Calculation.mmd">Rebate Calculation Flow</a></h3>
+<h3 id="error-handling-flow"><a href="Diagrams/LONPFB_Error_Handling.mmd">Error Handling Flow</a></h3>
+<hr />
+<h2 id="batch-processing-timeline">Batch Processing Timeline</h2>
+<div class="mermaid">gantt
+    title LONPFB Batch Processing Timeline
+    dateFormat X
+    axisFormat %s
+
+    section Initialization
+    Program Start          :0, 1
+    Parameter Validation   :1, 2
+    File Opening          :2, 3
+    Environment Setup     :3, 4
+
+    section Main Processing
+    Account Validation    :4, 6
+    Transaction Setup     :6, 8
+    Rebate Calculations   :8, 12
+    Amount Validations    :12, 14
+
+    section Transaction Posting
+    Balance Updates       :14, 16
+    File Updates         :16, 18
+    Audit Trail Creation :18, 19
+
+    section Completion
+    Screen Updates       :19, 20
+    File Cleanup        :20, 21
+    Program Exit        :21, 22
+</div>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<h3 id="main-program-control-flow">Main Program Control Flow</h3>
+<p><strong>MAIN-PROGRAM SECTION</strong>
+- <strong>Purpose:</strong> Primary program controller and initialization
+- <strong>Flow:</strong> Calls initialization → batch/interactive processing → cleanup
+- <strong>Key Actions:</strong> SQL connection, environment setup, file opening</p>
+<p><strong>BATCH-PAYMENT-ROUTINE SECTION</strong>
+- <strong>Purpose:</strong> Handles automated batch payments from APIPAY
+- <strong>Flow:</strong> Balance setup → rebate processing → amount calculations → file updates
+- <strong>Key Actions:</strong> Sets LP-TRAMT to LP-APCUR, updates LP-CURBAL, computes paid-through dates</p>
+<p><strong>SELECTION-MODULE SECTION</strong>
+- <strong>Purpose:</strong> Interactive user interface for transaction selection
+- <strong>Flow:</strong> Screen display → user input → validation → processing dispatch
+- <strong>Key Actions:</strong> VDU form management, user interaction, transaction routing</p>
+<h3 id="transaction-processing-flow_1">Transaction Processing Flow</h3>
+<p><strong>VERIFY-REBATE-CANCEL SECTION</strong>
+- <strong>Purpose:</strong> Validates rebate and cancellation transactions
+- <strong>Flow:</strong> Account validation → transaction type validation → amount validation
+- <strong>Key Actions:</strong> Checks account status, validates transaction codes, verifies amounts</p>
+<p><strong>REBATE-CANCEL-ROUTINE SECTION</strong>
+- <strong>Purpose:</strong> Core rebate and cancellation processing logic
+- <strong>Flow:</strong> Setup rebate parameters → calculate amounts → apply adjustments
+- <strong>Key Actions:</strong> Rebate calculations, balance adjustments, earning computations</p>
+<p><strong>TRANS-AMOUNT-ENTRY SECTION</strong>
+- <strong>Purpose:</strong> Interactive transaction amount entry and validation
+- <strong>Flow:</strong> Display entry screen → accept user input → validate amounts
+- <strong>Key Actions:</strong> Amount formatting, user validation, error handling</p>
+<h3 id="display-and-interface-management">Display and Interface Management</h3>
+<p><strong>DISPLAY-ENTRY-LINE SECTION</strong>
+- <strong>Purpose:</strong> Formats and displays transaction entry lines
+- <strong>Flow:</strong> Setup display buffer → format amounts → display screen
+- <strong>Key Actions:</strong> Screen formatting, amount display, field positioning</p>
+<p><strong>ACCEPT-ENTRY-ROUTINE SECTION</strong>
+- <strong>Purpose:</strong> Handles user input and keyboard interactions
+- <strong>Flow:</strong> Accept user input → process function keys → validate entries
+- <strong>Key Actions:</strong> User input processing, function key handling, validation</p>
+<h3 id="rebate-calculation-sections">Rebate Calculation Sections</h3>
+<p><strong>REBATE-INTEREST-ADJ SECTION</strong>
+- <strong>Purpose:</strong> Calculates interest rebate adjustments
+- <strong>Flow:</strong> Load interest parameters → calculate rebate → apply adjustments
+- <strong>Key Actions:</strong> Interest calculations, rebate formulas, balance updates</p>
+<p><strong>REBATE-SERCHG-ADJ SECTION</strong>
+- <strong>Purpose:</strong> Processes service charge rebate calculations
+- <strong>Flow:</strong> Retrieve service charges → apply rebate formulas → update balances
+- <strong>Key Actions:</strong> Service charge rebates, formula applications</p>
+<p><strong>REBATE-MAINTFEE-ADJ SECTION</strong>
+- <strong>Purpose:</strong> Handles maintenance fee rebate processing
+- <strong>Flow:</strong> Load maintenance fee data → calculate rebates → apply adjustments
+- <strong>Key Actions:</strong> Maintenance fee rebates, pro-rated calculations</p>
+<h3 id="insurance-rebate-processing">Insurance Rebate Processing</h3>
+<p><strong>REBATE-LN-CL SECTION</strong>
+- <strong>Purpose:</strong> Credit life insurance rebate calculations
+- <strong>Flow:</strong> Load insurance data → apply rebate formulas → update amounts
+- <strong>Key Actions:</strong> Credit life rebates, insurance validations</p>
+<p><strong>REBATE-LN-AH SECTION</strong>
+- <strong>Purpose:</strong> Accident &amp; health insurance rebate processing
+- <strong>Flow:</strong> Retrieve A&amp;H data → calculate rebates → apply adjustments
+- <strong>Key Actions:</strong> A&amp;H rebate calculations, insurance amount updates</p>
+<p><strong>REBATE-GET-INS-AMT SECTION</strong>
+- <strong>Purpose:</strong> Retrieves and calculates insurance amounts for rebates
+- <strong>Flow:</strong> Load addon data → calculate insurance portions → set rebate amounts
+- <strong>Key Actions:</strong> Insurance amount calculations, addon processing</p>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<h3 id="input-data-sources">Input Data Sources</h3>
+<div class="mermaid">graph LR
+    A[APIPAY Batch Input] --> B[LONPFB PROG-BUF]
+    C[Interactive User Input] --> B
+    D[LP-FILE Account Data] --> E[Transaction Processing]
+    B --> E
+    F[SP-FILE State Parameters] --> E
+    G[BR-FILE Branch Data] --> E
+</div>
+<h3 id="key-data-transformations">Key Data Transformations</h3>
+<table>
+<thead>
+<tr>
+<th>Source Field</th>
+<th>Transformation</th>
+<th>Target Field</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HOLD-BP-TRCD</td>
+<td>Direct assignment</td>
+<td>LP-TRCD</td>
+<td>Set transaction code for batch</td>
+</tr>
+<tr>
+<td>LP-TRAMT</td>
+<td>Copy to LP-APCUR</td>
+<td>LP-APCUR</td>
+<td>Apply transaction amount</td>
+</tr>
+<tr>
+<td>LP-APCUR</td>
+<td>Subtract from LP-CURBAL</td>
+<td>LP-CURBAL</td>
+<td>Update account balance</td>
+</tr>
+<tr>
+<td>LN-1STPYDATE</td>
+<td>Paid-through calculation</td>
+<td>LP-PDTH-DATE</td>
+<td>Update paid through date</td>
+</tr>
+<tr>
+<td>Rebate calculations</td>
+<td>Formula application</td>
+<td>REB-AMOUNT(1-16)</td>
+<td>Store calculated rebates</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-flow-through-processing-steps">Data Flow Through Processing Steps</h3>
+<p><strong>Step 1: Input Validation</strong>
+- PROG-BUF → Field validation → Working storage
+- Account number → LP-FILE read → LN-record validation</p>
+<p><strong>Step 2: Transaction Setup</strong>
+- Transaction code → Transaction type determination
+- Amount validation → LP-TRAMT field setup
+- Date calculations → LP-PDTH-DATE computation</p>
+<p><strong>Step 3: Rebate Calculations</strong>
+- Insurance data → Rebate formula application → REB-AMOUNT fields
+- Interest data → Interest rebate calculation → REB-LN-INTREBATE
+- Service charges → Service charge rebates → REB-LN-SC-REBATE</p>
+<p><strong>Step 4: Balance Updates</strong>
+- Current balance calculations → LP-CURBAL updates
+- Applied amounts → LP-APCUR adjustments
+- Interest paid → LP-INTPAID calculations</p>
+<p><strong>Step 5: File Updates</strong>
+- LP-record updates → LP-FILE write
+- Transaction history → LX-FILE write
+- Earnings updates → LXE-FILE write</p>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<h3 id="called-programs">Called Programs</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Integration Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LIBGB/REBATE</strong></td>
+<td>Rebate calculation engine</td>
+<td>Called for complex rebate formulas</td>
+</tr>
+<tr>
+<td><strong>LIBLP/ADDONRB</strong></td>
+<td>Addon rebate processing</td>
+<td>Insurance addon rebate calculations</td>
+</tr>
+<tr>
+<td><strong>LIBLP/ADDONSPR</strong></td>
+<td>Addon insurance parameters</td>
+<td>Insurance rate and term calculations</td>
+</tr>
+<tr>
+<td><strong>LIBGB/GLENT</strong></td>
+<td>General ledger entry</td>
+<td>Financial posting and GL distribution</td>
+</tr>
+</tbody>
+</table>
+<h3 id="calling-programs">Calling Programs</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>APIPAY</strong></td>
+<td>Batch payment processing</td>
+<td>Calls LONPFB for "RP" rebate transactions</td>
+</tr>
+<tr>
+<td><strong>LONPF9</strong></td>
+<td>Insurance payment processor</td>
+<td>Calls LONPFB for automatic "PL" rebates</td>
+</tr>
+<tr>
+<td><strong>Interactive Menu</strong></td>
+<td>User interface</td>
+<td>Direct user access to LONPFB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="copybooks-and-libraries">Copybooks and Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Copybook</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LIBLP/LP01DL.CPY</strong></td>
+<td>Direct loan record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01LP.CPY</strong></td>
+<td>Loan processing record layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01LX.CPY</strong></td>
+<td>Transaction history layout</td>
+</tr>
+<tr>
+<td><strong>LIBLP/LP01SP.CPY</strong></td>
+<td>State parameter layout</td>
+</tr>
+<tr>
+<td><strong>LIBGB/GB01BR.CPY</strong></td>
+<td>Branch record layout</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<h3 id="input-validation">Input Validation</h3>
+<table>
+<thead>
+<tr>
+<th>Validation Type</th>
+<th>Error Condition</th>
+<th>Error Message</th>
+<th>Recovery Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Validation</strong></td>
+<td>Account not found</td>
+<td>"INVALID ACCOUNT NUMBER"</td>
+<td>Return to input</td>
+</tr>
+<tr>
+<td><strong>Transaction Code</strong></td>
+<td>Invalid code</td>
+<td>"INVALID TRANSACTION CODE"</td>
+<td>Prompt for valid code</td>
+</tr>
+<tr>
+<td><strong>Amount Validation</strong></td>
+<td>Negative or zero amount</td>
+<td>"INVALID AMOUNT ENTERED"</td>
+<td>Re-enter amount</td>
+</tr>
+<tr>
+<td><strong>Date Validation</strong></td>
+<td>Invalid date format</td>
+<td>"INVALID DATE FORMAT"</td>
+<td>Re-enter date</td>
+</tr>
+</tbody>
+</table>
+<h3 id="business-rule-validation">Business Rule Validation</h3>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Condition</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rebate Limit</strong></td>
+<td>Rebate exceeds original charge</td>
+<td>Display warning, require confirmation</td>
+</tr>
+<tr>
+<td><strong>Account Status</strong></td>
+<td>Account closed or charged off</td>
+<td>Prevent transaction, display error</td>
+</tr>
+<tr>
+<td><strong>Insurance Status</strong></td>
+<td>Insurance not active</td>
+<td>Skip insurance rebate calculation</td>
+</tr>
+<tr>
+<td><strong>Batch vs Interactive</strong></td>
+<td>Conflicting operation modes</td>
+<td>Set appropriate processing flags</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-recovery-mechanisms">Error Recovery Mechanisms</h3>
+<ol>
+<li><strong>Screen Redisplay:</strong> Invalid inputs redisplay entry screen with error message</li>
+<li><strong>Transaction Rollback:</strong> Failed transactions rollback file changes</li>
+<li><strong>Audit Logging:</strong> All errors logged for troubleshooting</li>
+<li><strong>User Confirmation:</strong> Critical operations require user confirmation</li>
+</ol>
+<h3 id="common-error-conditions">Common Error Conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File Not Found</strong></td>
+<td>Missing data files</td>
+<td>Check file availability, retry</td>
+</tr>
+<tr>
+<td><strong>Record Lock</strong></td>
+<td>Concurrent access</td>
+<td>Wait and retry, or abort</td>
+</tr>
+<tr>
+<td><strong>Calculation Error</strong></td>
+<td>Invalid data for formulas</td>
+<td>Validate input data, recalculate</td>
+</tr>
+<tr>
+<td><strong>Permission Denied</strong></td>
+<td>Insufficient user rights</td>
+<td>Verify user permissions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="data-structures">Data Structures</h3>
+<p><strong>Primary Working Storage Fields</strong></p>
+<pre><code class="language-cobol">01  REBATE-OVERRIDE-FG     PIC X              VALUE &quot; &quot;.
+01  IO-TYPE                PIC X(3)           VALUE &quot; &quot;.
+01  ELE                    PIC 99             VALUE 0.
+01  FIRST-ELE              PIC 99             VALUE 0.
+01  DISP-REV-BAL           PIC X              VALUE &quot;Y&quot;.
+01  LN-WK                  PIC 9(6)     COMP  VALUE 0.
+01  SUB                    PIC 9(6)     COMP  VALUE 0.
+01  WORKER                 PIC S9(7)V99 COMP.
+01  ADDON-INT-WORKER       PIC S9(6)V99 COMP.
+01  TOTEARN                PIC S9(6)V99 COMP.
+01  EARNINGS-WORKER        PIC S9(6)V99 COMP.
+</code></pre>
+<p><strong>Transaction Buffer Structure</strong></p>
+<pre><code class="language-cobol">01  LN-BUF              VALUE SPACES.
+    03  L-010           PIC 9(6).          /* Account Number */
+    03  L-020           PIC XX.            /* Transaction Code */
+    03  L-030           PIC X(5).          /* Date Field */
+    03  L-040           PIC Z(5).99-.      /* Amount Field */
+    03  L-050           PIC Z(4).99-.      /* Rate Field */
+    03  L-060           PIC Z(4).99-.      /* Secondary Amount */
+    03  L-070           PIC Z(5).99-.      /* Balance Field */
+    03  L-080           PIC 9(4).          /* Term Field */
+    03  L-090           PIC Z(5).99-.      /* Other Balance */
+    03  L-100           PIC Z(4).99-.      /* Applied Amount */
+    03  L-110           PIC Z(5)9.99-.     /* Total Field */
+</code></pre>
+<h3 id="file-handling">File Handling</h3>
+<p><strong>File Access Patterns</strong>
+- <strong>LP-FILE:</strong> Random access by account number for loan records
+- <strong>LX-FILE:</strong> Sequential append for transaction history
+- <strong>LXE-FILE:</strong> Direct access for earnings updates
+- <strong>SP-FILE:</strong> Read-only access for state parameters
+- <strong>WK-FILE:</strong> Temporary work file for complex calculations</p>
+<p><strong>Database Operations</strong></p>
+<pre><code class="language-cobol">PERFORM SQL-CONNECT.              /* Database connection */
+PERFORM OPEN-LP1-FILE.           /* Open loan file */
+PERFORM READ-LP1-FILE.           /* Read loan record */
+PERFORM UPDATE-LP1-FILE.         /* Update loan record */
+PERFORM CLOSE-LP1-FILE.          /* Close loan file */
+</code></pre>
+<h3 id="key-algorithms">Key Algorithms</h3>
+<p><strong>Rebate Calculation Algorithm</strong>
+1. Retrieve original charge amount
+2. Calculate elapsed term vs. original term
+3. Apply appropriate rebate formula (Rule of 78, Actuarial, etc.)
+4. Validate rebate amount against business rules
+5. Update account balances and transaction history</p>
+<p><strong>Paid-Through Date Calculation</strong>
+1. Load first payment date from LN-1STPYDATE
+2. Apply payment frequency and term calculations
+3. Compute new paid-through date based on payment amount
+4. Validate date against account parameters
+5. Update LP-PDTH-DATE field</p>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="apipay-integration">APIPAY Integration</h3>
+<ul>
+<li><strong>Trigger:</strong> APIPAY calls LONPFB for "RP" transaction codes</li>
+<li><strong>Data Exchange:</strong> Transaction data passed via HOLD-BP-TRCD variables</li>
+<li><strong>Processing Mode:</strong> Batch mode with no user interaction</li>
+<li><strong>Return Values:</strong> Success/failure status in ERRCD field</li>
+</ul>
+<h3 id="lonpf9-integration">LONPF9 Integration</h3>
+<ul>
+<li><strong>Purpose:</strong> Insurance payment processing calls LONPFB for rebates</li>
+<li><strong>Trigger:</strong> Automatic "PL" (payoff) processing</li>
+<li><strong>Data Flow:</strong> Insurance data and rebate calculations</li>
+<li><strong>Coordination:</strong> Prevents duplicate rebate calculations</li>
+</ul>
+<h3 id="screen-interface-integration">Screen Interface Integration</h3>
+<ul>
+<li><strong>VDU Forms:</strong> Uses "LONPF" form family for user interface</li>
+<li><strong>Menu System:</strong> Integrated with loan processing menu structure</li>
+<li><strong>Help System:</strong> Context-sensitive help via LPSMNU</li>
+<li><strong>Navigation:</strong> Standard function key navigation (F1-F12)</li>
+</ul>
+<h3 id="database-integration">Database Integration</h3>
+<ul>
+<li><strong>SQL Connectivity:</strong> Uses embedded SQL for database operations</li>
+<li><strong>Transaction Management:</strong> Coordinated database commits/rollbacks</li>
+<li><strong>File Locking:</strong> Automatic record locking for concurrent access</li>
+<li><strong>Backup/Recovery:</strong> Participates in database backup procedures</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<h3 id="input-files">Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Key Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Loan master records</td>
+<td>Random</td>
+<td>LN-ACNO</td>
+</tr>
+<tr>
+<td><strong>SP-FILE</strong></td>
+<td>State parameters</td>
+<td>Random</td>
+<td>SP-STATE</td>
+</tr>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch configuration</td>
+<td>Random</td>
+<td>BR-NO</td>
+</tr>
+<tr>
+<td><strong>DL-FILE</strong></td>
+<td>Direct loan details</td>
+<td>Random</td>
+<td>DL-ACNO</td>
+</tr>
+<tr>
+<td><strong>CA-FILE</strong></td>
+<td>Cash advance records</td>
+<td>Random</td>
+<td>CA-ACNO</td>
+</tr>
+</tbody>
+</table>
+<h3 id="output-files">Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Mode</th>
+<th>Update Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP-FILE</strong></td>
+<td>Updated loan records</td>
+<td>Random</td>
+<td>In-place update</td>
+</tr>
+<tr>
+<td><strong>LX-FILE</strong></td>
+<td>Transaction history</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+<tr>
+<td><strong>LXE-FILE</strong></td>
+<td>Earnings records</td>
+<td>Random</td>
+<td>Update/Add</td>
+</tr>
+<tr>
+<td><strong>LTI-FILE</strong></td>
+<td>Transaction index</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+<tr>
+<td><strong>LTP-FILE</strong></td>
+<td>Transaction posting</td>
+<td>Sequential</td>
+<td>Append</td>
+</tr>
+</tbody>
+</table>
+<h3 id="temporary-files">Temporary Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Working calculations</td>
+<td>Program execution</td>
+</tr>
+<tr>
+<td><strong>LOG-FILE</strong></td>
+<td>Error and audit logging</td>
+<td>Session</td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-datasets">External Datasets</h3>
+<ul>
+<li><strong>GL Interface:</strong> General ledger posting files</li>
+<li><strong>Report Files:</strong> Transaction reports and audit trails</li>
+<li><strong>Backup Files:</strong> Automated backup datasets</li>
+<li><strong>Configuration:</strong> Environment and parameter files</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    A[MAIN-PROGRAM] --> B[GET-GPENV]
+    A --> C[OPEN-SP1-FILE]
+    A --> D[READ-SP1-FILE]
+    A --> E[OPEN-BR-FILE]
+    A --> F[READ-BR-FILE]
+    A --> G[BATCH-PAYMENT-ROUTINE]
+    A --> H[SELECTION-MODULE]
+
+    G --> I[SET-BAL-IBPC-LPREC]
+    G --> J[REBATE-CANCEL-ROUTINE]
+    G --> K[PAID-THRU-CALCULATION]
+    G --> L[COMPUTE-BW-INTPAID]
+
+    H --> M[INITIALIZE-ROUTINE]
+    H --> N[VERIFY-REBATE-CANCEL]
+    H --> O[TRANS-AMOUNT-ENTRY]
+
+    J --> P[REBATE-INTEREST-ADJ]
+    J --> Q[REBATE-SERCHG-ADJ]
+    J --> R[REBATE-MAINTFEE-ADJ]
+    J --> S[REBATE-DEFERMENT]
+    J --> T[REBATE-LN-CL]
+    J --> U[REBATE-LN-AH]
+    J --> V[REBATE-LN-PP]
+    J --> W[REBATE-GET-INS-AMT]
+
+    O --> X[DISPLAY-ENTRY-LINE]
+    O --> Y[ACCEPT-ENTRY-ROUTINE]
+    O --> Z[SETUP-LINE]
+
+    Y --> AA[DISPLAY-ENTRY-DOWN]
+    Y --> BB[DISPLAY-ENTRY-UP]
+    Y --> CC[VERIFY-PASSWORD]
+
+    N --> DD[MISCELLANEOUS-ROUTINES]
+
+    subgraph "File Operations"
+        EE[OPEN-LP1-FILE]
+        FF[READ-LP1-FILE]
+        GG[UPDATE-LP1-FILE]
+        HH[CLOSE-LP1-FILE]
+    end
+
+    subgraph "Screen Operations"
+        II[SAVE-SCREEN]
+        JJ[RESTORE-SCREEN]
+        KK[VDU-CONVERT-FIELD]
+    end
+
+    P --> EE
+    P --> FF
+    Q --> FF
+    R --> FF
+    X --> II
+    Y --> JJ
+</div>
+<hr />
+<p>This comprehensive documentation provides a complete technical reference for the LONPFB program, suitable for developers, analysts, and system administrators who need to understand, maintain, or integrate with this loan processing system. The documentation covers all aspects from high-level business purpose to detailed technical implementation, making it accessible to readers with varying levels of COBOL and system knowledge.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:17</p>
+        </footer>
+    </div>
+</body>
+</html>

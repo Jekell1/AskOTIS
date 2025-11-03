@@ -1,0 +1,58 @@
+flowchart TD
+    A[Start C-INCR-HALF-MONTHS] --> B[Save Original Day]
+    B --> C[MOVE WS-NDTE-DD-S TO WS-HOLD-DD]
+    C --> D[Separate Full/Half Months]
+    D --> E[DIVIDE WS-UP-WORK BY 2]
+    E --> F[GIVING WS-DIV-RESULT REMAINDER WS-MOD-2]
+    
+    F --> G[Process Full Months]
+    G --> H[MOVE WS-DIV-RESULT TO WS-UP-WORK]
+    H --> I{WS-UP-WORK ≠ 0?}
+    I -->|Yes| J[PERFORM C-INCR-MONTHS]
+    I -->|No| K[Skip Full Month Processing]
+    
+    J --> L[Process Half-Month Remainder]
+    K --> L
+    L --> M{WS-MOD-2 > 0?}
+    
+    M -->|Yes| N[Forward Half-Month]
+    M -->|No| O{WS-MOD-2 < 0?}
+    O -->|Yes| P[Backward Half-Month]
+    O -->|No| Q[No Half-Month - Complete]
+    
+    N --> R{WS-NDTE-DD-S > 15?}
+    R -->|Yes| S[Cross to Next Month]
+    R -->|No| T[Stay in Current Month]
+    
+    S --> U[COMPUTE WS-NDTE-DD-S = WS-HOLD-DD - 15]
+    U --> V[MOVE 1 TO WS-UP-WORK]
+    V --> W[PERFORM C-INCR-MONTHS]
+    W --> Q
+    
+    T --> X[ADD 15 TO WS-NDTE-DD-S]
+    X --> Q
+    
+    P --> Y{WS-NDTE-DD-S < 16?}
+    Y -->|Yes| Z[Cross to Previous Month]
+    Y -->|No| AA[Stay in Current Month]
+    
+    Z --> BB[ADD 15 TO WS-NDTE-DD-S]
+    BB --> CC[MOVE -1 TO WS-UP-WORK]
+    CC --> DD[PERFORM C-INCR-MONTHS]
+    DD --> Q
+    
+    AA --> EE[COMPUTE WS-NDTE-DD-S = WS-HOLD-DD - 15]
+    EE --> Q
+    
+    Q --> FF[End C-INCR-HALF-MONTHS]
+    
+    style A fill:#e1f5fe
+    style FF fill:#c8e6c9
+    style I fill:#fff3e0
+    style M fill:#fff3e0
+    style O fill:#fff3e0
+    style R fill:#fff3e0
+    style Y fill:#fff3e0
+    style J fill:#e8f5e8
+    style W fill:#e8f5e8
+    style DD fill:#e8f5e8

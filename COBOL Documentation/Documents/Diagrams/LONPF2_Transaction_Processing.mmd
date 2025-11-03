@@ -1,0 +1,69 @@
+graph TD
+    A[Transaction Input] --> B{Validate Transaction Code}
+    B -->|Invalid| C[Set Error Code X]
+    B -->|Valid| D{Check Transaction Type}
+    
+    D -->|PY - Payment| E[Process Regular Payment]
+    D -->|PA - Payment Alt| F[Process Payment Alternative]
+    D -->|PO - Payoff| G[Process Payoff]
+    D -->|RV - Reversal| H[Process Reversal]
+    D -->|SX/SV/SS - Repo| I[Process Repo Transaction]
+    D -->|RI/RC/RA - Rebate| J[Process Rebate]
+    D -->|OV - Overpayment| K[Process Overpayment]
+    D -->|BK/BD - Bankruptcy| L[Process Bankruptcy]
+    D -->|Other| M[Process Other Transaction]
+    
+    E --> N[Validate Payment Amount]
+    F --> N
+    G --> O[Calculate Payoff Amount]
+    H --> P[Locate Original Transaction]
+    I --> Q[Update Repo Status]
+    J --> R[Calculate Rebate Amount]
+    K --> S[Handle Excess Payment]
+    L --> T[Update Bankruptcy Status]
+    M --> U[Standard Processing]
+    
+    N --> V{Amount Valid?}
+    V -->|No| W[Set Error Message]
+    V -->|Yes| X[Distribute Payment]
+    
+    O --> Y{Payoff Complete?}
+    Y -->|No| Z[Partial Payoff]
+    Y -->|Yes| AA[Complete Payoff]
+    
+    P --> BB{Original Found?}
+    BB -->|No| CC[Reversal Error]
+    BB -->|Yes| DD[Reverse Effects]
+    
+    Q --> EE[Update Statistics]
+    R --> EE
+    S --> FF[Create Check Request]
+    T --> GG[Update Account Status]
+    U --> EE
+    
+    X --> HH[Apply to Balances]
+    Z --> HH
+    AA --> II[Set Payoff Flag]
+    DD --> JJ[Restore Balances]
+    
+    HH --> KK[Update Loan Record]
+    II --> KK
+    JJ --> KK
+    EE --> KK
+    FF --> KK
+    GG --> KK
+    
+    KK --> LL[Create Audit Trail]
+    LL --> MM[Transaction Complete]
+    
+    W --> NN[Exit with Error]
+    C --> NN
+    CC --> NN
+    
+    style A fill:#e3f2fd
+    style MM fill:#e8f5e8
+    style NN fill:#ffebee
+    style D fill:#fff3e0
+    style V fill:#fff3e0
+    style Y fill:#fff3e0
+    style BB fill:#fff3e0

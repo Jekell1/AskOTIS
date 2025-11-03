@@ -1,0 +1,21 @@
+%% Mermaid: TIM360 Detailed Flow
+flowchart TD
+    Start([Start: Call TIM360]) --> SetYrtype[Set ELAPSED-YRTYPE = 360]
+    SetYrtype --> PerformTimall[PERFORM TIMALL]
+    PerformTimall --> CheckZero{NUM-DATE or SYS-DATE = 0?}
+    CheckZero -- Yes --> SetZero[Set outputs to 0, exit]
+    CheckZero -- No --> SaveState[Save NDTE-DATE, set unit period to M/1]
+    SaveState --> SetAction[Set action code to 'E']
+    SetAction --> PerformDater[PERFORM DATER-ROUTINE]
+    PerformDater --> RestoreState[Restore NDTE-DATE]
+    RestoreState --> CallElapsed[In DATER-ROUTINE: Call C-ELAPSED-TIME]
+    CallElapsed --> SetupWS[Set up working storage]
+    SetupWS --> PerformCtimall[PERFORM C-TIMALL]
+    PerformCtimall --> CheckYrtype2{TA-YRTYPE = 360?}
+    CheckYrtype2 -- Yes --> PerformCtim360[PERFORM C-TIM360-358]
+    PerformCtim360 --> AdjustDays[Adjust days > 30 to 30]
+    AdjustDays --> LeapYear[Handle leap year for Feb]
+    LeapYear --> ComputeElapsed[Compute elapsed: (years*360)+(months*30)+(days)]
+    ComputeElapsed --> PerformCtimend[PERFORM C-TIMEND]
+    PerformCtimend --> Finalize[Set sign, finalize outputs]
+    Finalize --> Return[Return results]

@@ -1,0 +1,31 @@
+{
+  "indexes": {
+    "cobol-symbols": {
+      "processed": 159208,
+      "ts": 1757821930
+    },
+    "cobol-paragraphs": {
+      "processed": 0,
+      "ts": 1757869466,
+      "last_key": "f009951-WHEN-PAYOFF-GOOD-EXIT",
+      "scanned": 177128
+    },
+    "cobol-calls": {
+      "processed": 0,
+      "ts": 1757869550,
+      "scanned": 7732
+    },
+    "cobol-xrefs": {
+      "processed": 4170,
+      "ts": 1757872008,
+      "last_key": "f009951-972-L2-030-write",
+      "scanned": 220166
+    },
+    "code-chunks": {
+      "processed": 0,
+      "ts": 1757867642,
+      "last_key": "f009951-WORK-REBATE-TAB-349-350",
+      "scanned": 216699
+    }
+  }
+}

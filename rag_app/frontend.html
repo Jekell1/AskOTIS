@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>COBOL RAG Chatbot</title>
+<style>
+  body { font-family: system-ui, Arial, sans-serif; margin: 0; background:#0f1115; color:#e6e6e6; }
+  header { padding:14px 20px; background:#181b21; border-bottom:1px solid #2a2f38; }
+  h1 { font-size: 18px; margin:0; }
+  #chat { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .msg { padding:10px 14px; border-radius: 8px; margin-bottom:14px; line-height:1.4; white-space: pre-wrap; }
+  .user { background:#2b4c7e; align-self:flex-end; }
+  .assistant { background:#1e2430; }
+  .meta { font-size:12px; opacity:0.7; margin-top:4px; }
+  #inputRow { position:sticky; bottom:0; background:#0f1115; padding:16px 0 30px; }
+  textarea { width:100%; resize:vertical; min-height:70px; background:#1b2028; color:#fafafa; border:1px solid #2f3944; border-radius:6px; padding:10px; font-family:inherit; font-size:14px; }
+  button { background:#3d6dd8; color:#fff; border:none; padding:10px 18px; border-radius:6px; font-size:14px; cursor:pointer; margin-top:8px; }
+  button:disabled { opacity:0.5; cursor:not-allowed; }
+  #sourcesTable { width:100%; border-collapse:collapse; margin-top:20px; font-size:13px; }
+  #sourcesTable th,#sourcesTable td { border:1px solid #2a2f38; padding:6px 8px; text-align:left; }
+  #sourcesTable th { background:#222831; }
+  .spinner { display:none; margin-left:10px; }
+  .loading .spinner { display:inline-block; }
+</style>
+</head>
+<body>
+<header><h1>COBOL RAG Chatbot</h1></header>
+<div id="chat"></div>
+<div id="inputRow">
+  <div style="max-width:1100px;margin:0 auto;">
+    <textarea id="question" placeholder="Ask a COBOL system question (e.g., Describe GLMENU navigation paths)..."></textarea>
+    <div>
+      <button id="askBtn">Ask</button>
+      <span class="spinner" id="spinner">Retrieving...</span>
+    </div>
+    <div style="margin-top:8px;">
+      <label style="font-size:12px;opacity:.8;"><input type="checkbox" id="streamToggle" checked> Streaming</label>
+    </div>
+  </div>
+</div>
+<script>
+const chatEl = document.getElementById('chat');
+const questionEl = document.getElementById('question');
+const askBtn = document.getElementById('askBtn');
+const spinner = document.getElementById('spinner');
+const streamToggle = document.getElementById('streamToggle');
+
+function addMessage(role, content) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'assistant');
+  div.textContent = content;
+  chatEl.appendChild(div);
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function addSources(sources) {
+  if (!sources || !sources.length) return;
+  const table = document.createElement('table');
+  table.id = 'sourcesTable';
+  table.innerHTML = `<thead><tr><th>Chunk ID</th><th>Program</th><th>Index</th><th>Score</th><th>Excerpt</th></tr></thead>`;
+  const tbody = document.createElement('tbody');
+  sources.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.id}</td><td>${s.program_id||''}</td><td>${s.index}</td><td>${s.score}</td><td>${(s.content||'').replace(/\n/g,' ').slice(0,120)}</td>`;
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  chatEl.appendChild(table);
+}
+
+async function ask() {
+  const q = questionEl.value.trim();
+  if (!q) return;
+  addMessage('user', q);
+  questionEl.value='';
+  askBtn.disabled = true; spinner.style.display='inline-block';
+  if (streamToggle.checked) {
+    let buffer = '';
+    const evt = new EventSource(`/ask/stream?question=${encodeURIComponent(q)}`);
+    let answerDiv = document.createElement('div');
+    answerDiv.className='msg assistant';
+    chatEl.appendChild(answerDiv);
+    evt.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.stage === 'answer') {
+        buffer += data.content;
+        answerDiv.textContent = buffer;
+      } else if (data.stage === 'done') {
+        evt.close();
+        spinner.style.display='none';
+        askBtn.disabled=false;
+      }
+    };
+    evt.onerror = () => { evt.close(); spinner.style.display='none'; askBtn.disabled=false; };
+    return;
+  }
+  try {
+    const resp = await fetch('/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question: q}) });
+    if (!resp.ok) throw new Error('HTTP '+resp.status);
+    const data = await resp.json();
+    addMessage('assistant', data.answer);
+    addSources(data.chunks);
+  } catch (e) {
+    addMessage('assistant', 'Error: '+e.message);
+  } finally {
+    askBtn.disabled = false; spinner.style.display='none';
+  }
+}
+askBtn.addEventListener('click', ask);
+questionEl.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); ask(); }});
+</script>
+</body>
+</html>

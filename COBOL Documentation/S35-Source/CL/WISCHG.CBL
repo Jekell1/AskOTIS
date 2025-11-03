@@ -1,0 +1,202 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      WISCHG.
+       DATE-WRITTEN.    10/08/2024.
+      ************************************************************
+      *                 (CL)
+      *  DESCRIPTION:   DIRECT LOANS (NON SALES FINANCE)
+      *                 WISCONSIN, SCFRMLA 63
+      *
+      * SCFRMLA 63
+      *  IF CHARGED A SERCHG ON A LOAN WITH AMTFIN NOT EXCEEDING $1000,
+      *     WITHIN 4 MONTHS AFTER THE PRIOR LOAN, THE NEW SERCHG SHOULD
+      *     BE REDUCED BY THE PRIOR SERCHG.
+      *
+      *  IF CHARGED A SERCHG ON A LOAN WITH AMTFIN EXCEEDING $1000,
+      *     WITHIN 6 MONTHS AFTER THE PRIOR LOAN, THE NEW SERCHG SHOULD
+      *     BE REDUCED BY THE PRIOR SERCHG.
+      *
+      *                 CALLED FROM XONPC0.C AND ZONPC0.C
+      *
+      *  REV:
+      *   2024.1008 BAH NEW WORLD SCFRMLA 63 #1682 S35Q-141
+      ************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(37) VALUE
+           "@(#)CL/WISCHG S35 10/16/24-08:22:41 >".
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBLP/LP01LN.CPY".
+       COPY "LIBLP/LP01LN_SQL.CPY".
+       COPY "LIBLP/LPWSLN.CPY".
+       COPY "LIBLP/LP01SP.CPY".
+       COPY "LIBLP/LP01SPA.CPY".
+       COPY "LIBLP/LP01SPB.CPY".
+       COPY "LIBLP/LP01SPC.CPY".
+       COPY "LIBLP/LP01SP_SQL.CPY".
+       COPY "LIBLP/LPWSSP.CPY".
+
+       01  ERRCD           PIC X         VALUE SPACES.
+       01  MSEL-LIST       PIC X(5)      VALUE "MSEL.".
+       01  HOLD-EFFDATE    PIC 9(8)      VALUE 0.
+       01  SUB             PIC 9(3)      VALUE 0.
+       01  SUB1            PIC 9(3)      VALUE 0.
+
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBLP/LPAMTSW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+
+      ****************************************
+      *     LINKAGE PROGRAM SECTION:
+      ****************************************
+       COPY "LIBGB/GETFMW.CPY".
+       COPY "LIBCL/WISCHGW.CPY".
+
+       PROCEDURE DIVISION
+           USING FORM-PATHNAME WISCHG-WORKERS EXIT-PATHNAME.
+
+      ************************************************************
+       MAIN-PROGRAM SECTION.
+      ************************************************************
+
+           PERFORM SQL-CONNECT.
+
+           MOVE FORM-PATHNAME TO FORM-PATH.
+
+           MOVE "SEARCHING FOR PRIOR LOANS....." TO MESS.
+           PERFORM SEND-LEGEND.
+
+           MOVE " " TO WISCHG-ERRCD.
+           MOVE 0   TO WISCHG-PRIOR-SERCHG.
+
+      D    STOP MESS.
+           IF WISCHG-PRIOR-ACCTNO = 0
+              GO TO UPDATE-EXIT.
+
+      * FIND LAST PRIOR LOAN
+           PERFORM OPEN-LN1-FILE.
+           MOVE WISCHG-PRIOR-ACCTNO TO LN-ACCTNO.
+           PERFORM READ-LN1-FILE.
+           IF IO-BAD
+              GO TO UPDATE-EXIT.
+
+           IF LN-SERCHG = 0
+              GO TO UPDATE-EXIT.
+
+      * IF LOAN DATE ON LOAN BEING RENEWED IS PRIOR TO 1/1/25, THEN NO
+      * RESTRICTION APPLIES
+           IF LN-LOANDATE < 20250101
+              GO TO UPDATE-EXIT.
+
+           MOVE LN-OWNBR TO BR-KEY.
+           PERFORM OPEN-BR-FILE.
+           PERFORM READ-BR-FILE.
+           PERFORM CLOSE-BR-FILE.
+           IF IO-FG NOT = 0
+              PERFORM CLEAR-BR-FILE.
+
+      * IF A LICENSEE CHARGES A PREPAID FINCHG ON A LOAN IN WHICH THE AMTFIN
+      * DOES NOT EXCEED $1000 THAT IS PREPAID FROM THE PROCEEDS OF A NEW LOAN
+      * MADE BY THE SAME LICENSEE WITH 4 MONTHS AFTER THE PRIOR LOAN, THEN
+      * THE LICENSEE SHALL REDUCE ANY PREPAID FINANCE CHARGE ON THE NEW LOAN
+      * BY THE AMOUNT OF THE PREPAID FINANCE CHARGE ON THE PRIOR LOAN.
+
+      * IF A LICENSEE CHARGES A PREPAID FINCHG ON A LOAN IN WHICH THE AMTFIN
+      * EXCEEDS $1000 THAT IS PREPAID FROM THE PROCEEDS OF A NEW LOAN
+      * MADE BY THE SAME LICENSEE WITH 6 MONTHS AFTER THE PRIOR LOAN, THEN
+      * THE LICENSEE SHALL REDUCE ANY PREPAID FINANCE CHARGE ON THE NEW LOAN
+      * BY THE AMOUNT OF THE PREPAID FINANCE CHARGE ON THE PRIOR LOAN.
+
+           MOVE LN-ORGST    TO SP-ORGST.
+           MOVE LN-SPRCLASS TO SP-SPRCLASS.
+           MOVE LN-SUBCLASS TO SP-SUBCLASS.
+           MOVE LN-LAWCODE  TO SP-LAWCODE.
+           PERFORM OPEN-SP1-FILE.
+           PERFORM READ-SP1-FILE.
+           PERFORM CLOSE-SP1-FILE.
+           IF IO-FG NOT = 0
+              PERFORM CLEAR-SP-FILE.
+
+           PERFORM LOAN-CALCULATIONS.
+
+           MOVE LN-LOANDATE       TO NUM-DATE.
+           MOVE WISCHG-TRANS-DATE TO SYS-DATE.
+           PERFORM TIM365.
+
+           IF DISCLOSED-FINAMT NOT > 1000.00
+              IF ELAPSED-MONTHS = 4 AND ELAPSED-REM = 0
+                 MOVE LN-SERCHG      TO WISCHG-PRIOR-SERCHG
+              ELSE
+              IF ELAPSED-MONTHS < 4 
+                 MOVE LN-SERCHG      TO WISCHG-PRIOR-SERCHG.
+
+           IF DISCLOSED-FINAMT > 1000.00
+              IF ELAPSED-MONTHS = 6 AND ELAPSED-REM = 0
+                 MOVE LN-SERCHG      TO WISCHG-PRIOR-SERCHG
+              ELSE
+              IF ELAPSED-MONTHS < 6 
+                 MOVE LN-SERCHG      TO WISCHG-PRIOR-SERCHG.
+
+       UPDATE-EXIT.
+           GO TO END-ROUTINE.
+
+
+      *********************************
+       MISC-ROUTINES SECTION.
+      *********************************
+       SETUP-LINK-INFO.
+       FORM-RESET.
+       VDU-CONVERT-FIELD.
+       SEND-LEGEND.
+           MOVE MESS      TO WR-BUF.
+           MOVE MSEL-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBLP/LPAMTS.CPY".
+       COPY "LIBLP/LPSPCL.CPY".
+       COPY "LIBGB/GBBRCL.CPY".
+
+      *********************************
+       IO-ROUTINE SECTION.
+      *********************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBGB/DECLARE_SQL.CPY".
+           PERFORM CLOSE-LN1-FILE.
+           PERFORM CLOSE-SP1-FILE.
+           PERFORM CLOSE-BR-FILE.
+       COPY "LIBLP/LPLNGS_SQL.CPY".
+       COPY "LIBLP/LPSPGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBLP/LPSP1RN.CPY".
+       COPY "LIBLP/LPLN1RN.CPY".
+
+       COPY "LIBGB/FERRORS.CPY".
+
+      *********************************
+       END-ROUTINE SECTION.
+      *********************************
+           PERFORM CLOSE-FILES.
+       EXIT-PROG.
+       STOP-RUN.
+           EXIT PROGRAM.

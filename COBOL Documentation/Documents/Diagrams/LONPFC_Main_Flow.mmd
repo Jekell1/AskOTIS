@@ -1,0 +1,68 @@
+graph TD
+    A[MAIN-PROGRAM] --> B[Initialize SQL Connection]
+    B --> C[Load Configuration Parameters]
+    C --> D[Validate Branch Settings]
+    D --> E[Setup Processing Environment]
+    E --> F[SELECTION-MODULE]
+    
+    F --> G{Transaction Type?}
+    
+    G -->|Payment| H[Payment Processing Route]
+    G -->|Deferment| I[Deferment Processing Route]
+    G -->|Exception| J[Exception Processing Route]
+    G -->|Specialized| K[Specialized Processing Route]
+    
+    H --> L[Validate Payment Amount]
+    L --> M[Calculate Payment Distribution]
+    M --> N[Apply Late Charges]
+    N --> O[Process Escrow Collection]
+    O --> P[Update Loan Balances]
+    
+    I --> Q[Validate Deferment Eligibility]
+    Q --> R[Calculate Deferment Amount]
+    R --> S[Apply Deferment Charges]
+    S --> T[Update Paid-Through Dates]
+    T --> P
+    
+    J --> U[Validate Exception Conditions]
+    U --> V[Process Payment Exception]
+    V --> W[Handle Overpayment/Shortage]
+    W --> P
+    
+    K --> X{Specialized Type?}
+    X -->|Z2| Y[OT2 Balance Paydown]
+    X -->|SS| Z[Sale/Settlement Processing]
+    X -->|PX| AA[Partial Charge-off]
+    X -->|PN/PZ| BB[Non-cash Payment]
+    X -->|IN| CC[Insurance Loss]
+    
+    Y --> P
+    Z --> DD[Auto Repo Window Check]
+    DD --> P
+    AA --> P
+    BB --> EE[GL Distribution Processing]
+    EE --> P
+    CC --> P
+    
+    P --> FF[Validate Balance Consistency]
+    FF --> GG{Validation Passed?}
+    GG -->|Yes| HH[Write Payment History]
+    GG -->|No| II[Set Error Codes]
+    
+    HH --> JJ[Update Cash Drawer]
+    JJ --> KK[Create GL Entries]
+    KK --> LL[Update Earnings/Accumulations]
+    LL --> MM[END-ROUTINE]
+    
+    II --> NN[Display Error Message]
+    NN --> MM
+    
+    MM --> OO[Close Files]
+    OO --> PP[SQL Disconnect]
+    PP --> QQ[Program End]
+    
+    style A fill:#e1f5fe
+    style F fill:#fff3e0
+    style P fill:#e8f5e8
+    style MM fill:#c8e6c9
+    style II fill:#ffcdd2

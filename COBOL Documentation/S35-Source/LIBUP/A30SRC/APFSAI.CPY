@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBAP/APFSAI
+      *    INCLUDE IN AUTOCR
+           SELECT AI-FILE ASSIGN AI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY AI-KEY
+                  FILE STATUS FILE-STAT.

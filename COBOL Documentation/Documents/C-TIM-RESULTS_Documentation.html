@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM-RESULTS - COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM-RESULTS - COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-tim-results-cobol-utility-documentation">C-TIM-RESULTS - COBOL Utility Documentation</h1>
+<p><strong>Location:</strong> .\APIPAY\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-TIM-RESULTS<br />
+<strong>Written:</strong> [See source comments]</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#table-of-contents">Table of Contents</a></li>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-flow">Error Handling Flow</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2 id="program-overview">Program Overview</h2>
+<p>C-TIM-RESULTS is a COBOL utility section that sets the result status for time calculations. It compares Julian dates and sets WS-TIM-RESULTS to indicate whether the second date is greater, less, or equal to the first. This status is used for further processing in batch routines.</p>
+<hr />
+<h2 id="transaction-types-supported">Transaction Types Supported</h2>
+<ul>
+<li>Time result status calculation</li>
+</ul>
+<hr />
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li>WS-JUL-1</li>
+<li>WS-JUL-2</li>
+</ul>
+<hr />
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li>WS-TIM-RESULTS</li>
+</ul>
+<hr />
+<h2 id="program-flow-diagrams">Program Flow Diagrams</h2>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="mermaid">graph TD
+    Start([Start]) --> SetL[Set WS-TIM-RESULTS to "L"]
+    SetL --> CompareJulian[Compare WS-JUL-2 to WS-JUL-1]
+    CompareJulian --> SetG[Set "G" if WS-JUL-2 > WS-JUL-1]
+    CompareJulian --> SetE[Set "E" if WS-JUL-2 = WS-JUL-1]
+    SetG --> End([End])
+    SetE --> End([End])
+</div>
+<hr />
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-TIM-RESULTS Timeline
+    dateFormat  YYYY-MM-DD
+    section Steps
+    Set Initial Status :done, 2025-07-31, 0.05h
+    Compare Julian     :active, 2025-07-31, 0.05h
+    Set Final Status   : 2025-07-31, 0.05h
+</div>
+<hr />
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>Set WS-TIM-RESULTS to "L":</strong> Initializes result status.</li>
+<li><strong>Compare WS-JUL-2 to WS-JUL-1:</strong> Compares Julian dates.</li>
+<li><strong>Set "G" or "E":</strong> Updates status based on comparison.</li>
+</ul>
+<hr />
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    WS-JUL-1 --> CompareJulian
+    WS-JUL-2 --> CompareJulian
+    CompareJulian --> WS-TIM-RESULTS
+</div>
+<hr />
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li><a href="APIPAY_Documentation.html">APIPAY</a>: Main batch payment processor</li>
+</ul>
+<hr />
+<h2 id="error-handling-flow">Error Handling Flow</h2>
+<div class="mermaid">graph TD
+    ErrorDetected([Error Detected]) --> LogError[Log Error]
+    LogError --> End([End])
+</div>
+<hr />
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates Julian date values</li>
+<li>Handles edge cases for equal dates</li>
+</ul>
+<hr />
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid Julian date values</li>
+</ul>
+<hr />
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li><strong>Data Structures:</strong> WS-JUL-1, WS-JUL-2, WS-TIM-RESULTS</li>
+<li><strong>File Handling:</strong> None</li>
+<li><strong>Key Algorithms:</strong> Julian date comparison</li>
+</ul>
+<hr />
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by batch routines in APIPAY</li>
+</ul>
+<hr />
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>Input: WS-JUL-1, WS-JUL-2</li>
+<li>Output: WS-TIM-RESULTS</li>
+<li>Copybooks: None</li>
+</ul>
+<hr />
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    MAIN --> C-TIM-RESULTS
+</div>
+<hr />
+<p><em>For further details, see the APIPAY documentation and embedded diagrams.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

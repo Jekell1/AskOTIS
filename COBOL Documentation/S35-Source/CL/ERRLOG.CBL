@@ -1,0 +1,222 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      ERRLOG.
+       DATE-WRITTEN.    072591.
+      ****************************************************************
+      *   DIRECTORY  : CL
+      *
+      *   DESCRIPTION: CALLED PROGRAM TO LOG FILE ERRORS
+      *
+      *   COPY: LIBCL/ERRLOGW
+      *
+      *   REV:
+      *   MJD 060595 CHANGED LOGIC TO PUT SYSTEM DATE IN ERRLOG-DATE
+      *   BLL 063095 CHANGED TO USE LIBGB/GBWSER, ERRLOG FILES
+      *              NOW IN R1 OR R2/LG
+      *   BLL 073195 CHANGED TO WRITE ADDL REC W/KEY IF READ,WRIT,REWR
+      *   BLL 082395 ADDED OPTION TO WRITE EOM LOG - DIFFERENT FORMAT
+      *   MJD 082595 ADDED ACTION TYPE "A" - "ACR" ACCRUALS.
+      *   MJD 122795 ADDED ACTION TYPE "Y" = "EOM" END OF YEAR.
+      *   BLV 112596 ADDED WRITE KEY RECORD IF ERROR IS DELETE
+      *              OR CLOSE
+      *   MG  990928 FIXED VDUSTATUS/IO-FG/STAT PER DEVELOPMENT MEETING
+      *   BLV 030424 ADDED ACTION TYPE "P" - "EMP" PAYROLL TIME CARDS
+      *   BLV 030424 CHANGE TO GET LOGNAME INSTEAD OF USERID (POSTNAME)
+      *              SO LOGS WILL REFLECT TRUE USER IF ALTERNATE
+      *              BRANCH LOGIN, BUT STILL LEAVE THE ERR.YYMMDD USING
+      *              POSTNAME USERID, SINCE FILE PATH MAY BE RELATIVE!
+      *   GLB 031125 ADD NEW LOG TYPE "W" (WRS) WORLD RATING SHEET
+      *   BLF 050208 REMOVE FLDVAL ON USERID, SYSDATE, SO ERRLOG MAY BE
+      *              CALLED BY PROGRAMS RUNNING WITHOUT SCREEN FORMS
+      *              (E.G. SP/DLRIMP).  SYSDATE WAS ALREADY BEING
+      *              REPLACED BY GET-REAL-DATE, AND I ADDED A GETENV
+      *              ON POSTNAME TO REPLACE USERID-BUF, REGACC PR# 95
+      *   BLF 051012 CHANGES FOR NEW FORMAT OF DETAILED FIELD-BY-FIELD
+      *              LOGGING OF MAINTENANCE CHANGES
+      *   BLF 051016 ADD NEW LOG TYPE "G" FOR GL LOGS IN
+      *              /USR/DATA/R1/LG/GL.YYMMDD, WILL LOG RANGES OF
+      *              GL UPDATES & FIXES WHICH ARE RUN, SUPPORT PR# 2780
+      *    CS 130501 ADD NEW LOG ACTION "T" FOR TDR1 CHANGES RAC #338
+      *   BLM 140429 ADDED LOAD-ERRLOG-FILE BEFORE OPEN, VERYANT
+      *    CS 170322 ADD NEW LOG ACTION "B" FOR BANKRUPT LOG
+      *              OF BK ACCTS ACCESSED IN PAYMENTS,F10, COLLECTION
+      *              WORK SCREEN  WORLD PR#1234
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBGB/GBFSER.CPY".
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBGB/GBFDER.CPY".
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(37) VALUE
+           "@(#)CL/ERRLOG S35 04/28/25-09:44:48 >".
+      **************************************************
+      *     P R O G R A M   W O R K E R S              *
+      **************************************************
+       COPY "LIBGB/GBWSER.CPY".
+
+       01  POSTNAME-USERID     PIC X(10).
+       01  LOGNAME-USERID      PIC X(10).
+
+
+       01  REAL-DATE                   PIC 9(6).
+       01  REAL-DATEX        REDEFINES REAL-DATE.
+           03 REAL-YR                  PIC 9(2).
+           03 REAL-MO                  PIC 9(2).
+           03 REAL-DA                  PIC 9(2).
+
+      ******************************************************************
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/ACCESSW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBGB/CONAME_EXT.CPY".
+
+       COPY "LIBGB/GETFMW.CPY".
+       01  ERRLOG-LINK       PIC X(95).
+       PROCEDURE DIVISION
+            USING FORM-PATHNAME ERRLOG-LINK EXIT-PATHNAME.
+
+      **************************************************
+      *      P R O G R A M   C O N T R O L             *
+      **************************************************
+       MAIN-PROGRAM SECTION.
+      D    STOP MESS.
+           MOVE ERRLOG-LINK TO ERRLOGW-AREA.
+           IF NOT
+            (ERRLOGW-ACTION = "E" OR "C" OR "M" OR "A" OR "Y" OR "P"
+                OR "W" OR "X" OR "F" OR "G" OR "T" OR "B")
+              GO TO END-ROUTINE.
+
+           PERFORM GET-REAL-DATE.
+
+           MOVE "POSTNAME" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           MOVE GETENV-BUF TO POSTNAME-USERID
+                              ERRLOG-USERID.
+
+           MOVE "LOGNAME" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           MOVE GETENV-BUF TO LOGNAME-USERID.
+
+           IF ERRLOGW-ACTION = "E"
+              MOVE "ERR" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-TYPE TO ERRLOG-TYPE
+              MOVE ERRLOGW-FILE TO ERRLOG-FILE
+              MOVE ERRLOGW-CODE TO ERRLOG-CODE
+              MOVE "," TO ERRLOG-COMMA
+              MOVE ERRLOGW-SUBCODE TO ERRLOG-SUBCODE
+           ELSE IF ERRLOGW-ACTION = "C"
+              MOVE "CHG" TO ERRLOG-LOG-TYPE
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-KEY TO ERRLOG-KEY
+           ELSE IF ERRLOGW-ACTION = "M"
+              MOVE "EOM" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG
+           ELSE IF ERRLOGW-ACTION = "A"
+              MOVE "ACR" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG
+           ELSE IF ERRLOGW-ACTION = "Y"
+              MOVE "EOY" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG
+           ELSE IF ERRLOGW-ACTION = "P"
+              MOVE "EMP" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG
+           ELSE IF ERRLOGW-ACTION = "W"
+              MOVE "WRS" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG
+           ELSE IF ERRLOGW-ACTION = "X"
+              MOVE "WRM" TO ERRLOG-LOG-TYPE
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-KEY
+           ELSE IF ERRLOGW-ACTION = "F"
+              MOVE "CHG" TO ERRLOG-LOG-TYPE
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-DETAIL TO ERRLOGF-DETAIL
+           ELSE IF ERRLOGW-ACTION = "G"
+              MOVE "GL" TO ERRLOG-GL-LOG-TYPE
+              MOVE REAL-YR TO ERRLOG-GL-YY
+              MOVE REAL-MO TO ERRLOG-GL-MM
+              MOVE REAL-DA TO ERRLOG-GL-DD
+              MOVE ERRLOG-GL-PATH-FORMAT TO ERRLOG-PATH-FORMAT
+              PERFORM LOAD-ERRLOG-FILE
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-DETAIL TO ERRLOGF-DETAIL
+           ELSE IF ERRLOGW-ACTION = "T"
+              MOVE "TDR" TO ERRLOG-LOG-TYPE
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE ERRLOGW-EOM-MSG TO ERRLOG-EOM-MSG 
+           ELSE IF ERRLOGW-ACTION = "B"
+              MOVE "BK"  TO ERRLOG-BK-LOG-TYPE 
+              MOVE LOGNAME-USERID TO ERRLOG-USERID
+              MOVE ERRLOGW-BRNO TO ERRLOG-BRNO
+              MOVE REAL-YR TO ERRLOG-BK-YY
+              MOVE REAL-MO TO ERRLOG-BK-MM
+              MOVE ERRLOG-BK-PATH-FORMAT  TO ERRLOG-PATH-FORMAT
+              MOVE ERRLOGW-EOM-MSG TO  ERRLOG-EOM-MSG.
+
+           PERFORM LOAD-ERRLOG-FILE.
+           MOVE ERRLOG-PATH        TO ACCESS-BUF.
+           PERFORM ACCESS-CALL.
+           IF STAT-GOOD
+              PERFORM OPEN-ERRLOG-FILE-EXTEND
+           ELSE
+              PERFORM OPEN-ERRLOG-FILE-OUTPUT.
+           PERFORM GET-TIME.
+           MOVE TIME-EDIT TO ERRLOG-TIME.
+           IF (ERRLOGW-ACTION = "F" OR ERRLOGW-ACTION = "G" 
+                                  OR ERRLOGW-ACTION = "B")
+              MOVE ERRLOGW-PROGRAM TO ERRLOGF-PROG
+           ELSE
+              MOVE ERRLOGW-PROG TO ERRLOG-PROG.
+           PERFORM WRITE-ERRLOG-FILE.
+           IF ERRLOGW-ACTION = "E"
+              IF ERRLOG-TYPE = "READ" OR "WRIT" OR "REWR" OR
+                               "DELE" OR "CLOS"
+                 MOVE ERRLOGW-KEY TO ERRLOG-KEY
+                 PERFORM WRITE-ERRLOG-FILE.
+           GO TO END-ROUTINE.
+
+       COPY "LIBGB/TIMEIO.CPY".
+
+      ******************************************
+       MISC SECTION.
+      ******************************************
+       COPY "LIBGB/ACCESS.CPY".
+       COPY "LIBGB/GETENV.CPY".
+       GET-REAL-DATE.
+           ACCEPT REAL-DATE FROM DATE.
+           MOVE REAL-YR TO ERRLOG-YY.
+           MOVE REAL-MO TO ERRLOG-MM.
+           MOVE REAL-DA TO ERRLOG-DD.
+
+      ********************************************
+       IO-ROUTINES SECTION.
+      ********************************************
+       COPY "LIBGB/GBERI.CPY".
+
+       END-ROUTINE.
+           PERFORM CLOSE-ERRLOG-FILE.
+       EXIT-PROG.
+       STOP-RUN.
+           MOVE ERRLOGW-AREA TO ERRLOG-LINK.
+           EXIT PROGRAM.

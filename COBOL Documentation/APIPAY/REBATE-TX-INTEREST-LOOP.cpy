@@ -1,0 +1,30 @@
+       REBATE-TX-INTEREST-LOOP.
+           MOVE REBTX-FROM-DATE TO NUM-DATE.
+           MOVE REBTX-TO-DATE   TO SYS-DATE.
+           PERFORM TIM365.
+           COMPUTE REBTX-CALC-INT ROUNDED =
+               REBTX-AMTFIN * REBI / 365 * ELAPSED-DAYS.
+           ADD REBTX-CALC-INT TO REBTX-CALC-INT-TOT.
+           COMPUTE REBTX-AMTFIN =
+              REBTX-AMTFIN - REBTX-PYAMT
+               + REBTX-CALC-INT + REBTX-SERCHG-SLICE.
+           IF REBTX-AMTFIN < 0
+              MOVE 0 TO REBTX-AMTFIN.
+    
+           MOVE REBTX-TO-DATE   TO REBTX-FROM-DATE
+                                   NDTE-DATE.
+           MOVE 1               TO NDTE-HOLD.
+           PERFORM INCREMENT-UNITPER.
+           MOVE NDTE-DATE       TO REBTX-TO-DATE.
+           MOVE REB-LN-REGPYAMT TO REBTX-PYAMT.
+    
+           IF REB-PAYDATE > REBTX-TO-DATE
+              GO TO REBATE-TX-INTEREST-LOOP.
+    
+           MOVE REBTX-FROM-DATE TO NUM-DATE.
+           MOVE REB-PAYDATE     TO SYS-DATE.
+           PERFORM TIM365.
+           COMPUTE REBTX-CALC-INT ROUNDED =
+               REBTX-AMTFIN * REBI / 365 * ELAPSED-DAYS.
+           ADD REBTX-CALC-INT TO REBTX-CALC-INT-TOT.
+    

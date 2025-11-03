@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBEX/EXFSXDL
+           SELECT XDL-FILE ASSIGN TO XDL-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY XDL-KEY
+                  FILE STATUS FILE-STAT.

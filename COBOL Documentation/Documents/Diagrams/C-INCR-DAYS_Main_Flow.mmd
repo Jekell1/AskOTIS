@@ -1,0 +1,89 @@
+flowchart TD
+    A[Start C-INCR-DAYS] --> B[Initialize Variables]
+    B --> C[Validate Input Date]
+    C --> D{Input Date Valid?}
+    D -->|No| E[Set Error - Invalid Date]
+    D -->|Yes| F[Parse Input Components]
+    
+    F --> G[Extract CCYY, MM, DD]
+    G --> H[Validate Increment Value]
+    H --> I{Increment Valid?}
+    I -->|No| J[Set Error - Invalid Increment]
+    I -->|Yes| K[Determine Direction]
+    
+    K --> L{Increment ≥ 0?}
+    L -->|Yes| M[Forward Processing]
+    L -->|No| N[Backward Processing]
+    
+    M --> O[Set Remaining Days = Increment]
+    N --> P[Set Remaining Days = ABS(Increment)]
+    N --> Q[Set Direction = BACKWARD]
+    
+    O --> R[Day Processing Loop]
+    P --> R
+    Q --> R
+    
+    R --> S{Remaining Days > 0?}
+    S -->|No| T[Processing Complete]
+    S -->|Yes| U{Direction = FORWARD?}
+    
+    U -->|Yes| V[Forward Day Logic]
+    U -->|No| W[Backward Day Logic]
+    
+    V --> X[Add 1 to Current Day]
+    X --> Y[Check Month Boundary]
+    Y --> Z{Day > Days in Month?}
+    Z -->|Yes| AA[Increment Month]
+    Z -->|No| BB[Continue Day Loop]
+    
+    W --> CC[Subtract 1 from Current Day]
+    CC --> DD[Check Month Boundary]
+    DD --> EE{Day < 1?}
+    EE -->|Yes| FF[Decrement Month]
+    EE -->|No| BB
+    
+    AA --> GG[Set Day = 1]
+    GG --> HH[Increment Month]
+    HH --> II{Month > 12?}
+    II -->|Yes| JJ[Increment Year, Set Month = 1]
+    II -->|No| KK[Update Days in Month]
+    
+    FF --> LL[Decrement Month]
+    LL --> MM{Month < 1?}
+    MM -->|Yes| NN[Decrement Year, Set Month = 12]
+    MM -->|No| OO[Get Days in Previous Month]
+    OO --> PP[Set Day = Days in Month]
+    
+    JJ --> KK
+    NN --> QQ[Set Day = 31]
+    KK --> RR[Check Leap Year if February]
+    QQ --> RR
+    PP --> RR
+    
+    RR --> SS[Subtract 1 from Remaining]
+    SS --> R
+    
+    BB --> SS
+    
+    T --> TT[Assemble Output]
+    TT --> UU[Format CCYYMMDD]
+    UU --> VV[Set Success Code]
+    VV --> WW[End C-INCR-DAYS]
+    
+    E --> XX[Set Error Code]
+    J --> XX
+    XX --> WW
+    
+    style A fill:#e1f5fe
+    style WW fill:#c8e6c9
+    style D fill:#fff3e0
+    style I fill:#fff3e0
+    style L fill:#fff3e0
+    style S fill:#fff3e0
+    style U fill:#fff3e0
+    style Z fill:#fff3e0
+    style EE fill:#fff3e0
+    style II fill:#fff3e0
+    style MM fill:#fff3e0
+    style E fill:#ffebee
+    style J fill:#ffebee

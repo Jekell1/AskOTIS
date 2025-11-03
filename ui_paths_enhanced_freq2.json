@@ -1,0 +1,47 @@
+[
+  {
+    "path_id": "32580866a06374fce3ad7da360b8aaea38d2c5b0",
+    "root_program_id": "PGMENU",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"PGMENU\", \"GBMENU\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"PGMENU\", \"GBMENU\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 3,
+    "edge_min_call_frequency": 1,
+    "edge_avg_call_frequency": 1.0,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 1.4632
+  },
+  {
+    "path_id": "8232af0ee45edf083f6568742a32198fde6608b7",
+    "root_program_id": "BALAID",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"BALAID\", \"EMTRRG\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"BALAID\", \"EMTRRG\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 2,
+    "edge_min_call_frequency": 1,
+    "edge_avg_call_frequency": 1.5,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 1.0122
+  },
+  {
+    "path_id": "10e8b53b4477b6b11e451f4846bdfb0b2fa6195f",
+    "root_program_id": "WIMENU",
+    "leaf_program_id": "FORM-PROGX",
+    "program_sequence_json": "[\"WIMENU\", \"CPINQ0\", \"FORM-PROGX\"]",
+    "screen_sequence_json": "[\"WIMENU\", \"CPINQ0\", \"FORM-PROGX\"]",
+    "length": 3,
+    "ui_program_count": 3,
+    "edge_min_call_frequency": 1,
+    "edge_avg_call_frequency": 4.0,
+    "branching_events_json": "[]",
+    "guards_json": "[]",
+    "loop_collapsed": false,
+    "score": 1.509
+  }
+]

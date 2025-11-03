@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSCT
+           SELECT CT-FILE ASSIGN TO CT-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY CT1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,68 @@
+graph TD
+    A[Start File Updates] --> B[File Update Order - CRITICAL SEQUENCE]
+    
+    B --> C[1. UPDATE-BW1-FILE]
+    C --> D[Borrower Record Updates]
+    D --> E[Update Customer Information]
+    E --> F[2. UPDATE-CA1-FILE]
+    
+    F --> G{Cash Transaction?}
+    G -->|Yes| H[Update Cash Drawer]
+    G -->|No| I[3. UPDATE-LM1-FILE]
+    H --> I
+    
+    I --> J{Memo Required?}
+    J -->|Yes| K[Create Loan Memo]
+    J -->|No| L[4. UPDATE-DS1-FILE]
+    K --> L
+    
+    L --> M[Dealer Statistics Update]
+    M --> N[Update Volume and Amounts]
+    N --> O[Calculate Commissions]
+    O --> P[5. UPDATE-TY1-FILE]
+    
+    P --> Q[Branch Statistics Update]
+    Q --> R[Update Collection Stats]
+    R --> S[Update Delinquency Stats]
+    S --> T[6. UPDATE-LN1-FILE]
+    
+    T --> U[Loan Master Update - CRITICAL]
+    U --> V[Calculate New Balances]
+    V --> W[Update Payment History]
+    W --> X[Set Account Status]
+    X --> Y{Addon Products?}
+    
+    Y -->|Yes| Z[7. UPDATE-LT1-FILE]
+    Y -->|No| AA[8. UPDATE-TR1]
+    Z --> BB[Update Insurance/Addons]
+    BB --> AA
+    
+    AA --> CC[Transaction GL Update]
+    CC --> DD[Create GL Entries]
+    DD --> EE[Set Account Distributions]
+    EE --> FF[9. UPDATE-DT1-FILE]
+    
+    FF --> GG{Detail Required?}
+    GG -->|Yes| HH[Create Detail Record]
+    GG -->|No| II[10. UPDATE-LP1-FILE]
+    HH --> II
+    
+    II --> JJ[Payment Record Creation]
+    JJ --> KK[Set Posting Information]
+    KK --> LL[Write Payment Record]
+    LL --> MM[File Updates Complete]
+    
+    MM --> NN{All Updates Successful?}
+    NN -->|Yes| OO[Commit Changes]
+    NN -->|No| PP[Rollback and Error]
+    
+    OO --> QQ[Update Complete]
+    PP --> RR[Error Exit]
+    
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style U fill:#ffecb3
+    style CC fill:#ffecb3
+    style II fill:#ffecb3
+    style QQ fill:#e8f5e8
+    style RR fill:#ffebee

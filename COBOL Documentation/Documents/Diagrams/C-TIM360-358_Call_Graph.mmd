@@ -1,0 +1,74 @@
+flowchart TD
+    A[APIPAY Main Program] --> B[C-TIM360-358 Module]
+    B --> C[Date Standardization]
+    C --> D[February Processing]
+    D --> E[358-Day Adjustments]
+    E --> F[Final Calculation]
+    F --> G[Return to Caller]
+    
+    subgraph "Called Modules"
+        H[C-TIMBEG]
+        I[C-LEAP-YEAR-TEST]
+        J[C-TIMEND]
+    end
+    
+    subgraph "Processing Components"
+        K[Day Capping Logic]
+        L[Forward February Logic]
+        M[Backward February Logic]
+        N[358 Special Processing]
+        O[Day Count Calculation]
+    end
+    
+    subgraph "Working Storage"
+        P[WS-DATE1-CCYY/MM/DD]
+        Q[WS-DATE2-CCYY/MM/DD]
+        R[TA-YRTYPE]
+        S[LEAP-YEAR-CCYY]
+        T[WS-XDAYS]
+    end
+    
+    subgraph "Output Structure"
+        U[WS-XDAYS Result]
+        V[ELAPSED-MONTHS]
+        W[ELAPSED-DAYS]
+        X[ELAPSED-REM]
+    end
+    
+    subgraph "Calculation Constants"
+        Y[DAYS-PER-MONTH = 30]
+        Z[DAYS-PER-YEAR = 360]
+        AA[YEAR-TYPE-358 = Special]
+    end
+    
+    B --> H
+    D --> I
+    F --> J
+    
+    C --> K
+    D --> L
+    D --> M
+    E --> N
+    F --> O
+    
+    B --> P
+    B --> Q
+    B --> R
+    D --> S
+    F --> T
+    
+    G --> U
+    J --> V
+    J --> W
+    J --> X
+    
+    F --> Y
+    F --> Z
+    E --> AA
+    
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style B fill:#f3e5f5
+    style H fill:#e8f5e8
+    style I fill:#e8f5e8
+    style J fill:#e8f5e8

@@ -1,0 +1,30 @@
+flowchart TD
+    A[Start C-TIM-RESULTS] --> B[Set Default Result]
+    B --> C[MOVE L TO WS-TIM-RESULTS]
+    C --> D{WS-JUL-2 > WS-JUL-1?}
+    D -->|Yes| E[Second Date is Later]
+    D -->|No| F{WS-JUL-2 = WS-JUL-1?}
+    E --> G[MOVE G TO WS-TIM-RESULTS]
+    F -->|Yes| H[Dates are Equal]
+    F -->|No| I[Keep Default L]
+    H --> J[MOVE E TO WS-TIM-RESULTS]
+    G --> K[End C-TIM-RESULTS]
+    J --> K
+    I --> K
+    
+    L[Result Meanings]
+    L --> M[L = Less Than, DATE2 < DATE1]
+    L --> N[E = Equal, DATE2 = DATE1]
+    L --> O[G = Greater Than, DATE2 > DATE1]
+    
+    style A fill:#e1f5fe
+    style K fill:#c8e6c9
+    style D fill:#fff3e0
+    style F fill:#fff3e0
+    style E fill:#fff9c4
+    style H fill:#e8f5e8
+    style I fill:#f3e5f5
+    style L fill:#e1f5fe
+    style M fill:#ffebee
+    style N fill:#e8f5e8
+    style O fill:#fff9c4

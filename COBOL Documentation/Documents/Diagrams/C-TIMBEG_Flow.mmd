@@ -1,0 +1,10 @@
+flowchart TD
+    A['Start'] --> B['Move NUM-DATE/SYS-DATE to SV-NUM-DATE/SV-SYS-DATE']
+    B --> C['Convert WS-DATE1 to Julian (C-CALL-JUL)']
+    C --> D['Convert WS-DATE2 to Julian (C-CALL-JUL)']
+    D --> E['If WS-JUL-1 > WS-JUL-2?']
+    E -- Yes --> F['Reverse Dates and Set WS-XSIGN = -1']
+    E -- No --> G['Set WS-XSIGN = 1']
+    F --> H['Restore NUM-DATE/SYS-DATE']
+    G --> H
+    H --> I['End']

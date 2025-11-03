@@ -1,0 +1,16 @@
+%% Mermaid Flowchart: C-TIM365-367 Detailed Flow
+graph TD
+    Start([Start])
+    InitVars["Initialize variables"]
+    ReadInput["Read input records"]
+    ProcessLoop{More records?}
+    Validate["Validate record"]
+    Calc["Calculate 365/366/367 day year values"]
+    WriteOutput["Write output record"]
+    Error["Handle errors"]
+    End([End])
+
+    Start --> InitVars --> ReadInput --> ProcessLoop
+    ProcessLoop -- Yes --> Validate --> Calc --> WriteOutput --> ReadInput
+    ProcessLoop -- No --> End
+    Validate -- Error --> Error --> ReadInput

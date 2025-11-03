@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBAP/APFSTM
+      *    INCLUDE IN AUTOCR
+           SELECT TM-FILE ASSIGN TM-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS MODE DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY TM-KEY
+                  FILE STATUS FILE-STAT.

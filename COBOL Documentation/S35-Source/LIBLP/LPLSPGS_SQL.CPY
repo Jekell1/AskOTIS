@@ -1,0 +1,137 @@
+      * COPYMEMBER: LIBLP/LPLSPGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - LOAN STATUS - PAID THRU (DEFERMENT)
+      *
+      *=================================================================
+      * REV:
+      * AMM 2021-0510 ***NEW***
+      *
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD LSP-REC FROM QLSP-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-LSP-FIELDS.
+           MOVE QLSP-BRNO TO LSP-BRNO.
+           MOVE QLSP-ACCTNO TO LSP-ACCTNO.
+           MOVE QLSP-SEQNO TO LSP-SEQNO.
+
+           IF ( QLSP-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSP-LTOUCH-DATE
+           ELSE
+              MOVE QLSP-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSP-LTOUCH-DATE.
+
+           MOVE QLSP-REASON-CODE TO LSP-REASON-CODE.
+           MOVE QLSP-PERIODS-TO-DEFER TO LSP-PERIODS-TO-DEFER.
+           MOVE QLSP-REASON-FOR-DEFER TO LSP-REASON-FOR-DEFER.
+           MOVE QLSP-MORTGAGE-PAST-DUE TO LSP-MORTGAGE-PAST-DUE.
+           MOVE QLSP-MORTGAGE-BALANCE TO LSP-MORTGAGE-BALANCE.
+           MOVE QLSP-ATTEMPT-REFINANCE TO LSP-ATTEMPT-REFINANCE.
+
+           IF ( QLSP-INFO-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSP-INFO-DATE
+           ELSE
+              MOVE QLSP-INFO-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSP-INFO-DATE.
+
+           MOVE QLSP-INFO-USERID TO LSP-INFO-USERID.
+           MOVE QLSP-BR-MANAGER-COMMENTS TO LSP-BR-MANAGER-COMMENTS.
+
+           IF ( QLSP-BR-MANAGER-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSP-BR-MANAGER-DATE
+           ELSE
+              MOVE QLSP-BR-MANAGER-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSP-BR-MANAGER-DATE.
+
+           MOVE QLSP-BR-MANAGER-USERID TO LSP-BR-MANAGER-USERID.
+           MOVE QLSP-AVP-COMMENTS TO LSP-AVP-COMMENTS.
+
+           IF ( QLSP-AVP-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSP-AVP-DATE
+           ELSE
+              MOVE QLSP-AVP-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSP-AVP-DATE.
+
+           MOVE QLSP-AVP-USERID TO LSP-AVP-USERID.
+           MOVE QLSP-AVP-APPROVE TO LSP-AVP-APPROVE.
+           MOVE QLSP-VP-COMMENTS TO LSP-VP-COMMENTS.
+
+           IF ( QLSP-VP-DATE = "1900-01-01" )
+              MOVE ZEROES TO LSP-VP-DATE
+           ELSE
+              MOVE QLSP-VP-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO LSP-VP-DATE.
+
+           MOVE QLSP-VP-USERID TO LSP-VP-USERID.
+           MOVE QLSP-VP-APPROVE TO LSP-VP-APPROVE.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QLSP-REC FROM LSP-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-LSP-FIELDS.
+           MOVE LSP-BRNO TO QLSP-BRNO.
+           MOVE LSP-ACCTNO TO QLSP-ACCTNO.
+           MOVE LSP-SEQNO TO QLSP-SEQNO.
+
+           IF ( LSP-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSP-LTOUCH-DATE
+           ELSE
+              MOVE LSP-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSP-LTOUCH-DATE.
+
+           MOVE LSP-REASON-CODE TO QLSP-REASON-CODE.
+           MOVE LSP-PERIODS-TO-DEFER TO QLSP-PERIODS-TO-DEFER.
+           MOVE LSP-REASON-FOR-DEFER TO QLSP-REASON-FOR-DEFER.
+           MOVE LSP-MORTGAGE-PAST-DUE TO QLSP-MORTGAGE-PAST-DUE.
+           MOVE LSP-MORTGAGE-BALANCE TO QLSP-MORTGAGE-BALANCE.
+           MOVE LSP-ATTEMPT-REFINANCE TO QLSP-ATTEMPT-REFINANCE.
+
+           IF ( LSP-INFO-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSP-INFO-DATE
+           ELSE
+              MOVE LSP-INFO-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSP-INFO-DATE.
+
+           MOVE LSP-INFO-USERID TO QLSP-INFO-USERID.
+           MOVE LSP-BR-MANAGER-COMMENTS TO QLSP-BR-MANAGER-COMMENTS.
+
+           IF ( LSP-BR-MANAGER-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSP-BR-MANAGER-DATE
+           ELSE
+              MOVE LSP-BR-MANAGER-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSP-BR-MANAGER-DATE.
+
+           MOVE LSP-BR-MANAGER-USERID TO QLSP-BR-MANAGER-USERID.
+           MOVE LSP-AVP-COMMENTS TO QLSP-AVP-COMMENTS.
+
+           IF ( LSP-AVP-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSP-AVP-DATE
+           ELSE
+              MOVE LSP-AVP-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSP-AVP-DATE.
+
+           MOVE LSP-AVP-USERID TO QLSP-AVP-USERID.
+           MOVE LSP-AVP-APPROVE TO QLSP-AVP-APPROVE.
+           MOVE LSP-VP-COMMENTS TO QLSP-VP-COMMENTS.
+
+           IF ( LSP-VP-DATE = ZEROES )
+              MOVE "1900-01-01" TO QLSP-VP-DATE
+           ELSE
+              MOVE LSP-VP-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QLSP-VP-DATE.
+
+           MOVE LSP-VP-USERID TO QLSP-VP-USERID.
+           MOVE LSP-VP-APPROVE TO QLSP-VP-APPROVE.
+ 
+

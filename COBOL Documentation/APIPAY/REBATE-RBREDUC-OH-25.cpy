@@ -1,0 +1,87 @@
+      ********************************************************************
+      *    REGENCY FINANCE (OH RBSPOPT1 = 25) PRE-PAYOFF PENALTY
+      *
+      *    IF THE ORIGINAL PRINCIPLE AMOUNT IS $75,000 OR LESS
+      *       IF PAYOFF IS WITH IN 5 YEARS (360 * 5 = 1800 DAYS) OF LOAN DATE
+      *          REDUCE COMPUTED REBATE BY 1% OF THE LOANS NET BALANCE.
+      *
+      *    IF THE ORIGINAL PRINCIPLE AMOUNT IS OVER $75,000
+      *       IF PAYOFF IS WITHIN 1 YEAR  (360 * 1 = 360  DAYS) OF LOAN DATE
+      *          REDUCE COMPUTED REBATE BY 2% OF THE LOANS NET BALANCE.
+      *       IF PAYOFF IS 1 - 2 YEARS (360 TO 720 DAYS) OF LOAN DATE
+      *          REDUCE COMPUTED REBATE BY 1% OF THE LOANS NET BALANCE.
+      *       IF PAYOFF IS OVER 5 YEARS (360 * 5 = 1800 DAYS) OF LOAN DATE
+      *          THERE IS NO PENALTY.
+      ********************************************************************
+       REBATE-RBREDUC-OH-25 SECTION.
+
+           MOVE 0 TO REB-MS-PENALTY.
+           IF REB-LPTRCD = "PO"
+              PERFORM LOAN-CALCULATIONS
+              IF FINANCED-AMOUNT <= 75000
+                 MOVE LN-LOANDATE TO NUM-DATE
+                 MOVE REB-PAYDATE TO SYS-DATE
+                 PERFORM TIM360
+                 IF ELAPSED-DAYS NOT > 1800
+                    COMPUTE REB-MS-PENALTY = ( LN-CURBAL * 0.01 )
+                    COMPUTE REB-REBATE = REB-REBATE - REB-MS-PENALTY
+                    IF REB-REBATE < 0
+                       MOVE 0 TO REB-REBATE
+                    END-IF
+                 END-IF
+              ELSE
+                 MOVE LN-LOANDATE TO NUM-DATE
+                 MOVE REB-PAYDATE TO SYS-DATE
+                 PERFORM TIM360
+                 IF ELAPSED-DAYS NOT > 360
+                    COMPUTE REB-MS-PENALTY = ( LN-CURBAL * 0.02 )
+                    COMPUTE REB-REBATE = REB-REBATE - REB-MS-PENALTY
+                    IF REB-REBATE < 0
+                       MOVE 0 TO REB-REBATE
+                    END-IF
+                 ELSE IF ELAPSED-DAYS > 360 AND NOT > 720
+                    COMPUTE REB-MS-PENALTY = ( LN-CURBAL * 0.01 )
+                    COMPUTE REB-REBATE = REB-REBATE - REB-MS-PENALTY
+                    IF REB-REBATE < 0
+                       MOVE 0 TO REB-REBATE
+                    END-IF
+                 ELSE
+                    MOVE 0 TO REB-MS-PENALTY.
+
+      ******************************************************************
+      * PREPAYMENT PENALTY FOR MX VYBA LOANS (WORLD PR#0954)
+      *
+      * THE FOLLOWING DESCRIPTION IS COPIED DIRECTLY FROM THE REQEST:
+      * -------------------------------------------------------------
+      *  THE CALCULATION WOULD BE THE AMOUNT FINANCED TIMES THE EFFECTIVE
+      *  RATE, DIVIDED BY 365 TIMES THE NUMBER OF DAYS FROM DATE OF LOAN
+      *  UNTIL FIRST PAY DATE, OR PAYOFF DATE, WHICHEVER IS EARLIER.
+      *
+      *  SO, IF THE LOAN PAYS OFF BEFORE THE FIRST PAY DATE, IT WILL BE FOR
+      *  THE NUMBER OF DAYS LOAN WAS OPEN.  IF IT IS AFTER THE FIRST PAY
+      *  DATE BUT IS IN THE FIRST 12 MONTHS, IT WILL BE THE INTEREST THAT
+      *  SHOULD HAVE BEEN CHARGED FOR THE EXTENDED FIRST PAY DATE.
+      *
+      *  EXAMPLE, DATE OF LOAN 09/01/13.  DATE OF FIRST PAYMENT 11/07/13.
+      *  AMOUNT FINANCED $20,000. RATE IS EFFECTIVE 75%.
+      *
+      *  CUSTOMER PAYS OFF ON 10/25/13.  THIS IS PRIOR TO THE FIRST PAY DATE,
+      *  SO THE CHARGE WILL BE FOR ONLY THE NUMBER OF DAYS FROM DATE OF
+      *  LOAN TO PAYOFF DATE, WHICH ON A 365 DAY YEAR TYPE IS 54 DAYS.
+      *  SO WE WILL TAKE $20,000.00 TIMES .75 DIVIDED BY 365 TIMES 54,
+      *  OR 20000 X .75 = 15000/365=41.09589 X 54 = $2,219.18 EARLY
+      *  PAYOFF PENALTY.
+      *
+      *  CUSTOMER PAYS OFF ON 12/25/13.  THIS IS AFTER THE FIRST PAY DATE,
+      *  SO THE CHARGE WILL BE FOR ONLY THE NUMBER OF DAYS FROM DATE OF
+      *  LOAN TO THE FIRST PAY DATE, WHICH ON A 365 DAY YEAR TYPE IS 67 DAYS.
+      *  SO WE WILL TAKE $20,000.00 TIMES .75 DIVIDED BY 365 TIMES 67,
+      *  OR 20000 X .75 = 15000/365=41.09589 X 67 = $2,753.42 EARLY PAYOFF
+      *  PENALTY. THE EARLY PAYOFF AMOUNT IS SUBTRACTED FROM THE NORMAL
+      *  REFUND AMOUNT, THUS INCREASING THE PAYOFF BY THE AMOUNT OF THE
+      *  EARLY PENALTY.
+      *
+      *  CUSTOMER PAYS OFF ON 11/24/14 NO PENALTY SINCE IT IS MORE THAN 12
+      *  MONTHS FROM DATE OF LOAN.
+      *
+      ******************************************************************

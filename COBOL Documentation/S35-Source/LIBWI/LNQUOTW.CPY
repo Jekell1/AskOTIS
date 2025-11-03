@@ -1,0 +1,10 @@
+      * COPYMEMBER: LIBWI/LNQUOTW
+      * REV:
+      *  20240416 BAH REMOVED LNQUOT-GIFTNET-FG AND FILLER
+      *  2024.0503 BAH MADE LEVEL 01, CALL NOT WINDOW
+       01  LNQUOT-BUF.
+           03  LNQUOT-MAINT-FG       PIC X.
+           03  LNQUOT-PD1-KEY.
+               05  LNQUOT-PD-ID      PIC X.
+               05  LNQUOT-PD-BRANCH  PIC 9(4).
+               05  LNQUOT-PD-SOC-SEC PIC 9(10).

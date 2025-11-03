@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-TIM-RESULTS Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-TIM-RESULTS Documentation</span>
+        </nav>
+        <main class="content">
+<h1>C-TIM-RESULTS Documentation</h1>
+<p><strong>Location:</strong> <code>.\C-TIM-RESULTS.cpy</code><br />
+<strong>Program ID:</strong> C-TIM-RESULTS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Generated on:</strong> July 22, 2025  </p>
+<h2>Program Overview</h2>
+<p><strong>Program Name:</strong> C-TIM-RESULTS<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Primary Function:</strong> Date Comparison Result Processing<br />
+<strong>Source File:</strong> <code>C-TIM-RESULTS.cpy</code><br />
+<strong>Usage:</strong> Determine relative position of two dates (less than, equal, greater than)  </p>
+<h2>Purpose and Description</h2>
+<p>C-TIM-RESULTS is a date comparison utility that analyzes two Julian dates and returns a single-character result indicating their relative relationship. This utility is essential for date validation, sorting, and conditional processing throughout the payment processing system.</p>
+<h3>Key Responsibilities</h3>
+<ol>
+<li><strong>Date Comparison</strong> - Compare two Julian dates for relative positioning</li>
+<li><strong>Result Classification</strong> - Return standardized comparison results (L, E, G)</li>
+<li><strong>Julian Date Processing</strong> - Work with Julian date format for accurate comparisons</li>
+<li><strong>Standardized Output</strong> - Provide consistent comparison results across the system</li>
+</ol>
+<h2>Technical Implementation</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>WS-JUL-1</strong> - First Julian date for comparison</li>
+<li><strong>WS-JUL-2</strong> - Second Julian date for comparison</li>
+</ul>
+<h3>Output Results</h3>
+<ul>
+<li><strong>WS-TIM-RESULTS</strong> - Single character result:</li>
+<li><strong>"L"</strong> - WS-JUL-2 is Less than WS-JUL-1 (DATE2 &lt; DATE1)</li>
+<li><strong>"E"</strong> - WS-JUL-2 is Equal to WS-JUL-1 (DATE2 = DATE1)</li>
+<li><strong>"G"</strong> - WS-JUL-2 is Greater than WS-JUL-1 (DATE2 &gt; DATE1)</li>
+</ul>
+<h3>Processing Logic</h3>
+<p><img alt="C-TIM-RESULTS Main Flow" src="Diagrams/C-TIM-RESULTS_Main_Flow.mmd" /></p>
+<h4>Comparison Algorithm</h4>
+<ol>
+<li>
+<p><strong>Default Assignment</strong>
+   <code>cobol
+   MOVE "L" TO WS-TIM-RESULTS</code></p>
+</li>
+<li>
+<p><strong>Greater Than Check</strong>
+   <code>cobol
+   IF WS-JUL-2 &gt; WS-JUL-1
+      MOVE "G" TO WS-TIM-RESULTS</code></p>
+</li>
+<li>
+<p><strong>Equal Check</strong>
+   <code>cobol
+   ELSE
+   IF WS-JUL-2 = WS-JUL-1
+      MOVE "E" TO WS-TIM-RESULTS</code></p>
+</li>
+</ol>
+<h3>Result Interpretation</h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>WS-TIM-RESULTS</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-JUL-2 &lt; WS-JUL-1</td>
+<td>"L"</td>
+<td>Second date is earlier</td>
+</tr>
+<tr>
+<td>WS-JUL-2 = WS-JUL-1</td>
+<td>"E"</td>
+<td>Dates are identical</td>
+</tr>
+<tr>
+<td>WS-JUL-2 &gt; WS-JUL-1</td>
+<td>"G"</td>
+<td>Second date is later</td>
+</tr>
+</tbody>
+</table>
+<h2>Integration Points</h2>
+<h3>Called By</h3>
+<ul>
+<li><strong>C-DATE-COMPARE</strong> - Primary date comparison utility</li>
+<li><strong>ELAPSED-RESULTS processing</strong> - Date validation routines</li>
+<li><strong>Payment date validation</strong> - Transaction processing</li>
+<li><strong>Date sorting routines</strong> - Various system functions</li>
+</ul>
+<h3>Calls To</h3>
+<ul>
+<li>No external routines (self-contained processing)</li>
+</ul>
+<p><img alt="C-TIM-RESULTS Call Graph" src="Diagrams/C-TIM-RESULTS_Call_Graph.mmd" /></p>
+<h2>Data Structures</h2>
+<h3>Working Storage Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Type</th>
+<th>Length</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-JUL-1</td>
+<td>NUMERIC</td>
+<td>7</td>
+<td>First Julian date</td>
+</tr>
+<tr>
+<td>WS-JUL-2</td>
+<td>NUMERIC</td>
+<td>7</td>
+<td>Second Julian date</td>
+</tr>
+<tr>
+<td>WS-TIM-RESULTS</td>
+<td>CHAR</td>
+<td>1</td>
+<td>Comparison result</td>
+</tr>
+</tbody>
+</table>
+<h3>Result Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+<th>Usage Context</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"L"</td>
+<td>Less Than</td>
+<td>Earlier date, past transactions</td>
+</tr>
+<tr>
+<td>"E"</td>
+<td>Equal</td>
+<td>Same day, current transactions</td>
+</tr>
+<tr>
+<td>"G"</td>
+<td>Greater Than</td>
+<td>Future date, scheduled transactions</td>
+</tr>
+</tbody>
+</table>
+<h2>Usage Patterns</h2>
+<h3>Date Validation Example</h3>
+<pre><code class="language-cobol">* Compare payment date with system date
+MOVE PAYMENT-JULIAN TO WS-JUL-1
+MOVE SYSTEM-JULIAN TO WS-JUL-2
+PERFORM C-TIM-RESULTS
+IF WS-TIM-RESULTS = &quot;G&quot;
+   DISPLAY &quot;Future payment date&quot;
+END-IF
+</code></pre>
+<h3>Chronological Sorting</h3>
+<pre><code class="language-cobol">* Sort dates in ascending order
+MOVE DATE-A-JULIAN TO WS-JUL-1
+MOVE DATE-B-JULIAN TO WS-JUL-2
+PERFORM C-TIM-RESULTS
+IF WS-TIM-RESULTS = &quot;G&quot;
+   * DATE-B comes after DATE-A
+   PERFORM SWAP-DATES
+END-IF
+</code></pre>
+<h3>Transaction Age Classification</h3>
+<pre><code class="language-cobol">* Classify transaction as current, past, or future
+MOVE TRANSACTION-DATE-JULIAN TO WS-JUL-1
+MOVE CURRENT-DATE-JULIAN TO WS-JUL-2
+PERFORM C-TIM-RESULTS
+EVALUATE WS-TIM-RESULTS
+   WHEN &quot;L&quot;
+      MOVE &quot;FUTURE&quot; TO TRANSACTION-CLASS
+   WHEN &quot;E&quot;
+      MOVE &quot;CURRENT&quot; TO TRANSACTION-CLASS
+   WHEN &quot;G&quot;
+      MOVE &quot;PAST&quot; TO TRANSACTION-CLASS
+END-EVALUATE
+</code></pre>
+<h2>Performance Considerations</h2>
+<h3>Optimization Features</h3>
+<ul>
+<li><strong>Single Comparison Logic</strong> - Minimal branching for optimal performance</li>
+<li><strong>Default Assignment</strong> - Reduces conditional statements</li>
+<li><strong>Julian Date Efficiency</strong> - Works with numeric Julian dates for fast comparison</li>
+</ul>
+<h3>Computational Complexity</h3>
+<ul>
+<li><strong>Time Complexity:</strong> O(1) - Constant time comparison operations</li>
+<li><strong>Space Complexity:</strong> O(1) - Minimal working storage usage</li>
+</ul>
+<h2>Error Handling</h2>
+<h3>Input Validation</h3>
+<p>C-TIM-RESULTS assumes valid Julian dates are provided. Invalid Julian dates may produce unpredictable results.</p>
+<h3>Common Issues</h3>
+<ul>
+<li><strong>Uninitialized Julian Dates</strong> - May contain garbage values</li>
+<li><strong>Zero Julian Dates</strong> - Special handling may be required by calling routines</li>
+<li><strong>Invalid Date Ranges</strong> - Outside Julian date calculation limits</li>
+</ul>
+<h3>Error Prevention</h3>
+<pre><code class="language-cobol">* Validate Julian dates before comparison
+IF WS-JUL-1 = 0 OR WS-JUL-2 = 0
+   MOVE &quot;E&quot; TO WS-TIM-RESULTS
+   PERFORM ERROR-HANDLING
+ELSE
+   PERFORM C-TIM-RESULTS
+END-IF
+</code></pre>
+<h2>Related Utilities</h2>
+<h3>Companion Programs</h3>
+<ul>
+<li><strong><a href="C-DATE-COMPARE_Documentation.html">C-DATE-COMPARE</a></strong> - Higher-level date comparison with MMDDYY format support</li>
+<li><strong><a href="C-TIMBEG_Documentation.html">C-TIMBEG</a></strong> - Date setup and Julian conversion</li>
+<li><strong><a href="C-CALL-JUL_Documentation.html">C-CALL-JUL</a></strong> - Julian date conversion utility</li>
+</ul>
+<h3>Integration Chain</h3>
+<pre><code>Input Dates → C-CALL-JUL → Julian Dates → C-TIM-RESULTS → Comparison Result
+</code></pre>
+<h2>Historical Context</h2>
+<p>The utility includes commented-out legacy logic that handled special cases for zero dates and specific date values (123199). This suggests evolution from earlier date processing requirements.</p>
+<h3>Legacy Considerations</h3>
+<ul>
+<li><strong>Zero Date Handling</strong> - Previously treated as special error conditions</li>
+<li><strong>Y2K Compatibility</strong> - Includes logic for year boundary processing</li>
+<li><strong>Date Range Validation</strong> - Historical support for date boundary checking</li>
+</ul>
+<h2>Maintenance Notes</h2>
+<h3>Design Patterns</h3>
+<ul>
+<li><strong>Comparison Pattern</strong> - Standard three-way comparison implementation</li>
+<li><strong>Default-First Pattern</strong> - Assigns default result before conditional checks</li>
+<li><strong>Single-Character Result Pattern</strong> - Consistent with system-wide result coding</li>
+</ul>
+<h3>Modification Guidelines</h3>
+<ul>
+<li>Maintain result code consistency ("L", "E", "G")</li>
+<li>Preserve default assignment logic for performance</li>
+<li>Consider impact on calling routines when modifying result interpretation</li>
+</ul>
+<h3>Testing Requirements</h3>
+<ul>
+<li>Test boundary conditions (equal dates)</li>
+<li>Verify all three result conditions</li>
+<li>Test with edge-case Julian dates</li>
+<li>Validate performance with large date ranges</li>
+</ul>
+<h2>Related Documentation</h2>
+<ul>
+<li><strong><a href="C-DATE-COMPARE_Documentation.html">C-DATE-COMPARE</a></strong> - Primary date comparison utility</li>
+<li><strong><a href="C-ELAPSED-TIME_Documentation.html">C-ELAPSED-TIME</a></strong> - Elapsed time calculations using comparison results</li>
+<li><strong><a href="C-TIMALL_Documentation.html">C-TIMALL</a></strong> - Comprehensive timing calculations</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

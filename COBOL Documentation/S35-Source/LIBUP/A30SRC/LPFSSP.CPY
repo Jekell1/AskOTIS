@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSSP
+           SELECT OSP-FILE ASSIGN TO OSP-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY OSP1-KEY
+                  FILE STATUS FILE-STAT.

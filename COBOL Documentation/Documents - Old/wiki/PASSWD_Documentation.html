@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PASSWD Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PASSWD Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> PASSWD<br>
+            <strong>Location:</strong> CL/PASSWD.CBL<br>
+            <strong>Purpose:</strong> Password Entry Call Program<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Called By:</strong> LONPF7 and other programs requiring password validation
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#transaction-types">Transaction Types</a></li>
+                <li><a href="#input-output">Input/Output Parameters</a></li>
+                <li><a href="#purpose">Purpose and Functionality</a></li>
+                <li><a href="#features">Key Features</a></li>
+                <li><a href="#modes">Password Validation Modes</a></li>
+                <li><a href="#program-flow">Program Flow</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+                <li><a href="#security">Security Features</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>PASSWD</strong> is a security-focused program that provides password validation services for various system functions. It serves as a centralized password verification utility that can be called by other programs to enforce security policies and user authentication.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Password Verification</strong>: Validates user-entered passwords against stored values</li>
+            <li><strong>Security Enforcement</strong>: Implements password-based access control</li>
+            <li><strong>Encryption Support</strong>: Handles password encryption and decryption</li>
+            <li><strong>User Profile Management</strong>: Manages user login profiles and permissions</li>
+            <li><strong>Common Password Support</strong>: Supports up to 10 common passwords</li>
+        </ul>
+
+        <h2 id="transaction-types">Transaction Types</h2>
+        <p>PASSWD supports several transaction types for different authentication scenarios:</p>
+        
+        <h3>Standard Authentication</h3>
+        <ul>
+            <li><strong>User Login:</strong> Standard password validation for system access</li>
+            <li><strong>Program Access:</strong> Password verification for specific program execution</li>
+            <li><strong>Function Access:</strong> Authentication for restricted functions</li>
+        </ul>
+        
+        <h3>Administrative Access</h3>
+        <ul>
+            <li><strong>Supervisor Override:</strong> Administrative password bypass</li>
+            <li><strong>Emergency Access:</strong> Emergency authentication procedures</li>
+            <li><strong>Maintenance Mode:</strong> Special access for system maintenance</li>
+        </ul>
+
+        <h2 id="input-output">Input/Output Parameters</h2>
+        
+        <h3>Input Parameters</h3>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>USER-ID</td>
+                <td>PIC X</td>
+                <td>8</td>
+                <td>User identification for password validation</td>
+            </tr>
+            <tr>
+                <td>PASSWORD-MODE</td>
+                <td>PIC X</td>
+                <td>1</td>
+                <td>Password validation mode (S=Standard, F=Forced, K=Skip)</td>
+            </tr>
+            <tr>
+                <td>TIMEOUT-VALUE</td>
+                <td>PIC 9(3)</td>
+                <td>3</td>
+                <td>Timeout in seconds for password entry</td>
+            </tr>
+            <tr>
+                <td>MAX-ATTEMPTS</td>
+                <td>PIC 9(2)</td>
+                <td>2</td>
+                <td>Maximum number of password attempts allowed</td>
+            </tr>
+        </table>
+        
+        <h3>Output Parameters</h3>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Length</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>RETURN-CODE</td>
+                <td>PIC 9(2)</td>
+                <td>2</td>
+                <td>Status code (00=Success, 01=Invalid, 02=Timeout, etc.)</td>
+            </tr>
+            <tr>
+                <td>ATTEMPT-COUNT</td>
+                <td>PIC 9(2)</td>
+                <td>2</td>
+                <td>Number of attempts made</td>
+            </tr>
+            <tr>
+                <td>ERROR-MESSAGE</td>
+                <td>PIC X</td>
+                <td>80</td>
+                <td>Descriptive error message if validation fails</td>
+            </tr>
+            <tr>
+                <td>ACCESS-LEVEL</td>
+                <td>PIC X</td>
+                <td>1</td>
+                <td>Granted access level (U=User, S=Supervisor, A=Admin)</td>
+            </tr>
+        </table>
+
+        <h2 id="purpose">Purpose and Functionality</h2>
+
+        <p>PASSWD serves as the primary password validation service, providing:</p>
+
+        <ul>
+            <li>Centralized password verification for system-wide use</li>
+            <li>Support for both individual and common passwords</li>
+            <li>User profile-based authentication</li>
+            <li>Password existence verification for security features</li>
+            <li>Case-insensitive password processing</li>
+            <li>Encryption and decryption services</li>
+        </ul>
+
+        <h2 id="features">Key Features</h2>
+
+        <h3>Password Types</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Individual Passwords</strong></td>
+                    <td>User-specific passwords</td>
+                    <td>Personal authentication for specific functions</td>
+                </tr>
+                <tr>
+                    <td><strong>Common Passwords</strong></td>
+                    <td>Shared system passwords</td>
+                    <td>Function-specific passwords (up to 10)</td>
+                </tr>
+                <tr>
+                    <td><strong>Profile Passwords</strong></td>
+                    <td>Login profile-based passwords</td>
+                    <td>User role-based authentication</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Validation Options</h3>
+        <ul>
+            <li><strong>Standard Validation</strong>: Normal password checking</li>
+            <li><strong>Forced Existence</strong>: Requires password to exist in file</li>
+            <li><strong>Skip Validation</strong>: Option to bypass password requirement</li>
+            <li><strong>Profile-based</strong>: Uses user login profile for validation</li>
+        </ul>
+
+        <h2 id="modes">Password Validation Modes</h2>
+
+        <h3>Standard Mode</h3>
+        <p>Default password validation mode that:</p>
+        <ul>
+            <li>Prompts user for password entry</li>
+            <li>Validates against stored passwords</li>
+            <li>Returns success/failure status</li>
+            <li>Supports case-insensitive comparison</li>
+        </ul>
+
+        <h3>Forced Existence Mode</h3>
+        <div class="warning">
+            <p><strong>Special Mode:</strong> When <code>PASSWDW-STAT</code> is set to "EX", the program enforces that a password must exist in the file for the function to be accessible. This provides an additional security layer for sensitive features.</p>
+        </div>
+
+        <h3>Skip Mode</h3>
+        <p>When <code>PW-ASK-FG</code> is set to "N":</p>
+        <ul>
+            <li>Bypasses password prompt for authorized users</li>
+            <li>Returns appropriate status without user interaction</li>
+            <li>Based on user login profile and permissions</li>
+        </ul>
+
+        <h2 id="program-flow">Program Flow</h2>
+        <div class="mermaid">
+        flowchart TD
+            A[Start PASSWD] --> B[Initialize Parameters]
+            B --> C{Check Password Mode}
+            C -->|Standard| D[Prompt for Password]
+            C -->|Forced| E[Force Password Entry]
+            C -->|Skip| F[Bypass Password Check]
+            
+            D --> G[Validate Input]
+            E --> G
+            F --> M[Return Success]
+            
+            G --> H{Password Valid?}
+            H -->|Yes| I[Check Access Level]
+            H -->|No| J{Max Attempts?}
+            
+            J -->|No| K[Increment Counter]
+            K --> D
+            J -->|Yes| L[Return Error]
+            
+            I --> M[Return Success]
+            L --> N[Log Security Event]
+            M --> O[End Program]
+            N --> O
+        </div>
+
+        <h3>Key Program Steps</h3>
+        <ol>
+            <li><strong>Initialization:</strong> Set up working variables and validate input parameters</li>
+            <li><strong>Mode Selection:</strong> Determine password validation mode based on input flags</li>
+            <li><strong>Password Entry:</strong> Prompt user for password with appropriate masking</li>
+            <li><strong>Validation:</strong> Compare entered password against stored credentials</li>
+            <li><strong>Access Control:</strong> Determine user access level based on validation result</li>
+            <li><strong>Logging:</strong> Record authentication attempt for audit purposes</li>
+            <li><strong>Return Status:</strong> Set appropriate return code and exit</li>
+        </ol>
+
+        <h2 id="error-handling">Error Handling</h2>
+        
+        <h3>Error Categories</h3>
+        <table>
+            <tr>
+                <th>Error Code</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Recovery Action</th>
+            </tr>
+            <tr>
+                <td>01</td>
+                <td>Invalid Password</td>
+                <td>Password does not match stored value</td>
+                <td>Allow retry up to maximum attempts</td>
+            </tr>
+            <tr>
+                <td>02</td>
+                <td>Timeout</td>
+                <td>User did not enter password within timeout period</td>
+                <td>Return timeout status, log event</td>
+            </tr>
+            <tr>
+                <td>03</td>
+                <td>Maximum Attempts</td>
+                <td>User exceeded maximum password attempts</td>
+                <td>Lock access, notify security</td>
+            </tr>
+            <tr>
+                <td>04</td>
+                <td>System Error</td>
+                <td>File access or system-level error</td>
+                <td>Log error, return system error status</td>
+            </tr>
+            <tr>
+                <td>05</td>
+                <td>User Not Found</td>
+                <td>User ID not found in password file</td>
+                <td>Return user not found status</td>
+            </tr>
+        </table>
+        
+        <h3>Error Recovery Procedures</h3>
+        <ul>
+            <li><strong>Automatic Retry:</strong> System automatically retries on transient errors</li>
+            <li><strong>User Notification:</strong> Clear error messages provided to user</li>
+            <li><strong>Security Logging:</strong> All authentication failures logged for security monitoring</li>
+            <li><strong>Graceful Degradation:</strong> System continues operation even with authentication errors</li>
+        </ul>
+
+        <h2 id="security">Security Features</h2>
+
+        <h3>Encryption</h3>
+        <ul>
+            <li><strong>Password Encryption</strong>: Converts passwords to uppercase before encryption</li>
+            <li><strong>Case Insensitive</strong>: All passwords converted to uppercase for consistency</li>
+            <li><strong>Secure Storage</strong>: Encrypted passwords stored in password file</li>
+        </ul>
+
+        <h3>Access Control</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                    <th>Implementation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>User Profiles</strong></td>
+                    <td>Login-based permissions</td>
+                    <td>Checks user profile letters for authorization</td>
+                </tr>
+                <tr>
+                    <td><strong>Function Passwords</strong></td>
+                    <td>Feature-specific passwords</td>
+                    <td>Individual passwords for different system functions</td>
+                </tr>
+                <tr>
+                    <td><strong>Global Passwords</strong></td>
+                    <td>System-wide common passwords</td>
+                    <td>Up to 10 common passwords for shared access</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Audit and Logging</h3>
+        <ul>
+            <li><strong>Access Tracking</strong>: Records password validation attempts</li>
+            <li><strong>User Identification</strong>: Tracks which user attempted access</li>
+            <li><strong>Function Tracking</strong>: Records which function required password</li>
+        </ul>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Program Structure</h3>
+        <ul>
+            <li><strong>Modular Design</strong>: Separate routines for standard and forced validation</li>
+            <li><strong>Reusable Code</strong>: Common validation logic shared between routines</li>
+            <li><strong>Error Handling</strong>: Comprehensive error checking and status reporting</li>
+        </ul>
+
+        <h3>Key Variables</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Purpose</th>
+                    <th>Values</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>PASSWDW-STAT</strong></td>
+                    <td>Password mode control</td>
+                    <td>" " = Standard, "EX" = Forced existence</td>
+                </tr>
+                <tr>
+                    <td><strong>PW-ASK-FG</strong></td>
+                    <td>Skip password flag</td>
+                    <td>"Y" = Ask, "N" = Skip based on profile</td>
+                </tr>
+                <tr>
+                    <td><strong>USER-PROFILE</strong></td>
+                    <td>User login profile</td>
+                    <td>User's login letter/profile identifier</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Status Returns</h3>
+        <ul>
+            <li><strong>"00"</strong> - Password validated successfully</li>
+            <li><strong>"01"</strong> - Invalid password entered</li>
+            <li><strong>"99"</strong> - User cancelled or system error</li>
+            <li><strong>"N"</strong> - Access denied (when skipping password)</li>
+        </ul>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>Primary Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>GB01PW</strong></td>
+                    <td>Password master file</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>GB01PE</strong></td>
+                    <td>Password encryption file</td>
+                    <td>Read</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Copy Libraries</h3>
+        <ul>
+            <li><strong>LIBGB/GB01PW.CPY</strong> - Password record layout</li>
+            <li><strong>LIBGB/GB01PE.CPY</strong> - Password encryption layout</li>
+            <li><strong>LIBGB/GBWSPW.CPY</strong> - Password working storage</li>
+            <li><strong>LIBGB/GBWSPE.CPY</strong> - Encryption working storage</li>
+            <li><strong>LIBWI/PASSWD_DEF.CPY</strong> - Password window definitions</li>
+            <li><strong>LIBWI/PASSWD_WKS.CPY</strong> - Password window working storage</li>
+        </ul>
+
+        <h2 id="integration-points">Integration Points</h2>
+        
+        <h3>Calling Programs</h3>
+        <ul>
+            <li><strong>LONPF7:</strong> Main loan processing program calls PASSWD for operator authentication</li>
+            <li><strong>ALLENT:</strong> Uses PASSWD for secure data entry operations</li>
+            <li><strong>System Programs:</strong> Various system utilities call PASSWD for access control</li>
+            <li><strong>Batch Processing:</strong> Automated jobs may use PASSWD for security validation</li>
+        </ul>
+        
+        <h3>External Dependencies</h3>
+        <ul>
+            <li><strong>Password File System:</strong> Relies on password file for credential storage</li>
+            <li><strong>User Profile System:</strong> Integrates with user management system</li>
+            <li><strong>Audit System:</strong> Logs authentication events to security audit trail</li>
+            <li><strong>Encryption Services:</strong> Uses system encryption for password security</li>
+        </ul>
+
+        <h2 id="performance">Performance Considerations</h2>
+        
+        <h3>Response Time</h3>
+        <ul>
+            <li><strong>Password Validation:</strong> Typically completes within 0.1-0.3 seconds</li>
+            <li><strong>File Access:</strong> Password file lookups optimized for quick retrieval</li>
+            <li><strong>Encryption Processing:</strong> Minimal impact on overall response time</li>
+            <li><strong>Network Access:</strong> Local file access ensures consistent performance</li>
+        </ul>
+        
+        <h3>Resource Usage</h3>
+        <ul>
+            <li><strong>Memory:</strong> Minimal memory footprint (< 64KB working storage)</li>
+            <li><strong>CPU:</strong> Low CPU usage except during encryption operations</li>
+            <li><strong>Disk I/O:</strong> Single file read per authentication attempt</li>
+            <li><strong>Network:</strong> No network resources required for standard operation</li>
+        </ul>
+        
+        <h3>Scalability</h3>
+        <ul>
+            <li><strong>Concurrent Users:</strong> Supports multiple simultaneous authentication requests</li>
+            <li><strong>High Volume:</strong> Designed to handle thousands of authentication requests per hour</li>
+            <li><strong>Load Balancing:</strong> Can be deployed across multiple system instances</li>
+        </ul>
+
+        <h2 id="maintenance">Maintenance Notes</h2>
+        
+        <h3>Regular Maintenance Tasks</h3>
+        <ul>
+            <li><strong>Password File Backup:</strong> Daily backup of password files recommended</li>
+            <li><strong>Access Log Review:</strong> Weekly review of authentication failure logs</li>
+            <li><strong>Performance Monitoring:</strong> Monitor response times and error rates</li>
+            <li><strong>Security Updates:</strong> Regular review and update of security policies</li>
+        </ul>
+        
+        <h3>Troubleshooting Guide</h3>
+        <table>
+            <tr>
+                <th>Issue</th>
+                <th>Symptoms</th>
+                <th>Resolution</th>
+            </tr>
+            <tr>
+                <td>Authentication Failures</td>
+                <td>Valid passwords being rejected</td>
+                <td>Check password file integrity, verify encryption settings</td>
+            </tr>
+            <tr>
+                <td>Slow Response</td>
+                <td>Long delays during password entry</td>
+                <td>Check file system performance, review system load</td>
+            </tr>
+            <tr>
+                <td>File Access Errors</td>
+                <td>Cannot read password file</td>
+                <td>Verify file permissions, check disk space and file location</td>
+            </tr>
+            <tr>
+                <td>Timeout Issues</td>
+                <td>Frequent timeout errors</td>
+                <td>Adjust timeout values, check network connectivity</td>
+            </tr>
+        </table>
+        
+        <h3>Change Management</h3>
+        <ul>
+            <li><strong>Code Changes:</strong> All modifications require security review and testing</li>
+            <li><strong>Configuration Updates:</strong> Document all parameter changes</li>
+            <li><strong>Deployment:</strong> Use controlled deployment process for production changes</li>
+            <li><strong>Rollback Plan:</strong> Maintain rollback procedures for emergency situations</li>
+        </ul>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>01/24/94</strong></td>
+                    <td>Allow 10 common passwords</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>07/19/00</strong></td>
+                    <td>Password protect deleting system generated memos</td>
+                    <td>BAH - TFC PR# 83</td>
+                </tr>
+                <tr>
+                    <td><strong>01/06/14</strong></td>
+                    <td>Added forced password existence logic</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>03/11/12</strong></td>
+                    <td>Activated forced password existence feature</td>
+                    <td>BLV</td>
+                </tr>
+                <tr>
+                    <td><strong>07/10/22</strong></td>
+                    <td>Added PW-ASK-FG to skip password window</td>
+                    <td>BLF</td>
+                </tr>
+                <tr>
+                    <td><strong>05/28/13</strong></td>
+                    <td>Convert password to uppercase before encryption</td>
+                    <td>BLM - Case-insensitive passwords</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <p><strong>Important Note:</strong> The program contains duplicate routines for standard and forced password validation. When making changes, both routines may need to be updated to maintain consistency.</p>
+        </div>
+
+        <div class="note">
+            <p><strong>Note:</strong> PASSWD is a critical security component that provides centralized password validation services. It supports multiple authentication modes and enforces security policies across the entire system. The program's modular design allows for flexible implementation of password requirements for different system functions.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

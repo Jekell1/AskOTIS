@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGB/GBFDPRL
+      * GBFDPRL  -  LONGER PRINT LINE
+
+       FD  PR-FILE
+           LABEL RECORDS ARE STANDARD.
+       01  PR-REC.
+           03  PR-REC-CUTSHEET  PIC X(144).
+

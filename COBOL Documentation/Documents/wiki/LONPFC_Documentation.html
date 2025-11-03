@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFC Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .critical {
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LONPFC Program Documentation</h1>
+        </header>
+
+        <div class="metadata">
+            <strong>Program ID:</strong> LONPFC<br>
+            <strong>Location:</strong> LP/LONPFC.CBL<br>
+            <strong>Purpose:</strong> Loan Processing Transaction Posting<br>
+            <strong>Program Type:</strong> Transaction Processing System<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Date Written:</strong> March 24, 1986<br>
+            <strong>Called By:</strong> APIPAY and other loan processing programs
+        </div>
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#transaction-types">Transaction Types Supported</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#program-flow">Program Flow Diagrams</a></li>
+                <li><a href="#referenced-programs">Referenced Programs</a></li>
+                <li><a href="#error-handling-flow">Error Handling Flow</a></li>
+                <li><a href="#technical-implementation">Technical Implementation</a></li>
+                <li><a href="#error-handling">Error Handling and Validation</a></li>
+                <li><a href="#common-errors">Common Error Conditions</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#file-dependencies">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#maintenance">Maintenance Notes</a></li>
+                <li><a href="#security">Security Features</a></li>
+                <li><a href="#revision-history">Revision History</a></li>
+            </ul>
+        </section>
+
+        <section id="overview">
+            <h2>Program Overview</h2>
+            <p><strong>LONPFC</strong> is a comprehensive loan processing transaction posting program that handles various types of loan payment transactions. This program is responsible for processing payments, deferments, payoffs, charge-offs, and other loan-related transactions within the loan management system.</p>
+            
+            <h3>Key Responsibilities</h3>
+            <ul>
+                <li><strong>Transaction Processing:</strong> Handles multiple transaction types including payments, deferments, and charge-offs</li>
+                <li><strong>Payment Distribution:</strong> Distributes payments across principal, interest, late charges, and other balances</li>
+                <li><strong>Interest Calculation:</strong> Computes interest based on various rate types and formulas</li>
+                <li><strong>Deferment Processing:</strong> Handles loan deferments with multiple calculation formulas</li>
+                <li><strong>Balance Management:</strong> Updates loan balances and maintains payment history</li>
+                <li><strong>GL Integration:</strong> Creates general ledger entries for financial reporting</li>
+                <li><strong>Validation and Security:</strong> Implements business rules and security checks</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Important:</strong> LONPFC is Program 12 in the loan processing suite and is called by APIPAY for automated payment processing.</p>
+            </div>
+        </section>
+
+        <section id="transaction-types">
+            <h2>Transaction Types Supported</h2>
+            <p>LONPFC supports a comprehensive set of transaction codes for different loan operations:</p>
+
+            <h3>Payment Transactions</h3>
+            <table>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>PY</strong></td>
+                    <td>Regular Payment</td>
+                    <td>Standard loan payment processing</td>
+                </tr>
+                <tr>
+                    <td><strong>PA</strong></td>
+                    <td>Allotment Payment</td>
+                    <td>Automatic payroll deduction payments</td>
+                </tr>
+                <tr>
+                    <td><strong>PE</strong></td>
+                    <td>Payment Exception</td>
+                    <td>Special handling for exception payments</td>
+                </tr>
+                <tr>
+                    <td><strong>PN</strong></td>
+                    <td>Non-Cash Payment (GL Entry)</td>
+                    <td>Non-cash payment with general ledger entry</td>
+                </tr>
+                <tr>
+                    <td><strong>PZ</strong></td>
+                    <td>Non-Cash Payment (No RECDEL)</td>
+                    <td>Non-cash payment without receipt deletion, with GL entry</td>
+                </tr>
+            </table>
+
+            <h3>Deferment Transactions</h3>
+            <table>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>DF</strong></td>
+                    <td>Deferment</td>
+                    <td>Standard loan deferment</td>
+                </tr>
+                <tr>
+                    <td><strong>D2-D9</strong></td>
+                    <td>Deferment Variations</td>
+                    <td>Different deferment types with specific handling</td>
+                </tr>
+            </table>
+
+            <h3>Specialized Transactions</h3>
+            <table>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><strong>PR</strong></td>
+                    <td>Principal Reduction</td>
+                    <td>Apply payment directly to principal</td>
+                </tr>
+                <tr>
+                    <td><strong>PC</strong></td>
+                    <td>Principal Credit</td>
+                    <td>Credit principal balance</td>
+                </tr>
+                <tr>
+                    <td><strong>PP</strong></td>
+                    <td>Principal Payment</td>
+                    <td>Principal-only payment</td>
+                </tr>
+                <tr>
+                    <td><strong>Z2</strong></td>
+                    <td>Pay Down OT2BAL</td>
+                    <td>Apply payment to other balance 2</td>
+                </tr>
+                <tr>
+                    <td><strong>SS</strong></td>
+                    <td>Repossession/Settlement</td>
+                    <td>Repossession or settlement processing</td>
+                </tr>
+                <tr>
+                    <td><strong>AH</strong></td>
+                    <td>Account Hold</td>
+                    <td>Place account on hold status</td>
+                </tr>
+                <tr>
+                    <td><strong>PX</strong></td>
+                    <td>Partial Charge-Off</td>
+                    <td>Partial charge-off processing</td>
+                </tr>
+                <tr>
+                    <td><strong>IN</strong></td>
+                    <td>Insurance Loss</td>
+                    <td>Insurance claim processing (similar to PE)</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="input-parameters">
+            <h2>Input Parameters</h2>
+            <p>LONPFC receives input through various program buffers and form data:</p>
+
+            <h3>Primary Input Buffer (LP-REC)</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>LP-TRCD</td>
+                    <td>PIC X(2)</td>
+                    <td>Transaction code (PY, PA, PE, DF, etc.)</td>
+                </tr>
+                <tr>
+                    <td>LP-TRAMT</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Transaction amount</td>
+                </tr>
+                <tr>
+                    <td>LP-PAYDATE</td>
+                    <td>PIC X(8)</td>
+                    <td>Payment date (MMDDYYYY)</td>
+                </tr>
+                <tr>
+                    <td>LP-TRDATE</td>
+                    <td>PIC X(8)</td>
+                    <td>Transaction date (MMDDYYYY)</td>
+                </tr>
+                <tr>
+                    <td>LP-REFNO</td>
+                    <td>PIC X(10)</td>
+                    <td>Reference number for transaction</td>
+                </tr>
+                <tr>
+                    <td>LP-APCUR</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Amount applied to current principal</td>
+                </tr>
+                <tr>
+                    <td>LP-APINT</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Amount applied to interest</td>
+                </tr>
+                <tr>
+                    <td>LP-APLC</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Amount applied to late charges</td>
+                </tr>
+                <tr>
+                    <td>LP-APOTH</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Amount applied to other charges</td>
+                </tr>
+                <tr>
+                    <td>LP-APOT2</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Amount applied to other charges 2</td>
+                </tr>
+            </table>
+
+            <h3>Loan Record Fields (LN-REC)</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>LN-ACCTNO</td>
+                    <td>PIC X(10)</td>
+                    <td>Account number</td>
+                </tr>
+                <tr>
+                    <td>LN-OWNBR</td>
+                    <td>PIC 9(3)</td>
+                    <td>Owning branch number</td>
+                </tr>
+                <tr>
+                    <td>LN-CURBAL</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Current balance</td>
+                </tr>
+                <tr>
+                    <td>LN-INTBAL</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Interest balance</td>
+                </tr>
+                <tr>
+                    <td>LN-LCBAL</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Late charge balance</td>
+                </tr>
+                <tr>
+                    <td>LN-OTHBAL</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Other charges balance</td>
+                </tr>
+                <tr>
+                    <td>LN-OT2BAL</td>
+                    <td>PIC S9(7)V99</td>
+                    <td>Other charges 2 balance</td>
+                </tr>
+            </table>
+
+            <h3>Control Parameters</h3>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>ENTER-AMT-FG</td>
+                    <td>PIC X</td>
+                    <td>Amount entry flag (A=Auto, O=Override, Y=Yes)</td>
+                </tr>
+                <tr>
+                    <td>DF-POSTING</td>
+                    <td>PIC X</td>
+                    <td>Deferment posting indicator</td>
+                </tr>
+                <tr>
+                    <td>ROUTE-CD</td>
+                    <td>PIC X</td>
+                    <td>Processing route code</td>
+                </tr>
+                <tr>
+                    <td>F4-FLAG</td>
+                    <td>PIC X</td>
+                    <td>Function key 4 processing flag</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="output-fields">
+            <h2>Output Fields</h2>
+            <p>LONPFC updates multiple records and produces various outputs:</p>
+
+            <h3>Updated Loan Record Fields</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Description</th>
+                    <th>Update Logic</th>
+                </tr>
+                <tr>
+                    <td>LN-CURBAL</td>
+                    <td>Current principal balance</td>
+                    <td>Reduced by LP-APCUR amount</td>
+                </tr>
+                <tr>
+                    <td>LN-INTBAL</td>
+                    <td>Interest balance</td>
+                    <td>Reduced by LP-APINT amount</td>
+                </tr>
+                <tr>
+                    <td>LN-LCBAL</td>
+                    <td>Late charge balance</td>
+                    <td>Reduced by LP-APLC amount</td>
+                </tr>
+                <tr>
+                    <td>LN-OTHBAL</td>
+                    <td>Other charges balance</td>
+                    <td>Reduced by LP-APOTH amount</td>
+                </tr>
+                <tr>
+                    <td>LN-TOTPAYMNTD</td>
+                    <td>Total payments made</td>
+                    <td>Increased by transaction amount</td>
+                </tr>
+                <tr>
+                    <td>LN-LASTPYDATE</td>
+                    <td>Last payment date</td>
+                    <td>Updated to current payment date</td>
+                </tr>
+                <tr>
+                    <td>LN-LCPDTH-DATE</td>
+                    <td>Late charge paid through date</td>
+                    <td>Updated based on payment application</td>
+                </tr>
+            </table>
+
+            <h3>Transaction History Record (LP-REC)</h3>
+            <table>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Description</th>
+                    <th>Content</th>
+                </tr>
+                <tr>
+                    <td>LP-TRCD</td>
+                    <td>Transaction code</td>
+                    <td>Type of transaction posted</td>
+                </tr>
+                <tr>
+                    <td>LP-TRAMT</td>
+                    <td>Transaction amount</td>
+                    <td>Total amount of transaction</td>
+                </tr>
+                <tr>
+                    <td>LP-BALAFT</td>
+                    <td>Balance after transaction</td>
+                    <td>Remaining balance after posting</td>
+                </tr>
+                <tr>
+                    <td>LP-USERID</td>
+                    <td>User ID</td>
+                    <td>ID of user posting transaction</td>
+                </tr>
+                <tr>
+                    <td>LP-TILLNO</td>
+                    <td>Till number</td>
+                    <td>Cash drawer/till number (alphanumeric)</td>
+                </tr>
+            </table>
+
+            <h3>Return Codes and Status</h3>
+            <table>
+                <tr>
+                    <th>Return Code</th>
+                    <th>Meaning</th>
+                    <th>Action Required</th>
+                </tr>
+                <tr>
+                    <td>P</td>
+                    <td>Processing completed successfully</td>
+                    <td>Continue to next transaction</td>
+                </tr>
+                <tr>
+                    <td>X</td>
+                    <td>Error occurred</td>
+                    <td>Check error message and resolve</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Return to entry routine</td>
+                    <td>Allow user to re-enter data</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Exit processing</td>
+                    <td>Return to calling program</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="program-flow">
+            <h2>Program Flow Diagrams</h2>
+            
+            <h3>Main Program Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Start LONPFC] --> B[Initialize Program]
+                B --> C[Connect to SQL]
+                C --> D[Restore Screen]
+                D --> E[Read Configuration Files]
+                E --> F{Batch Payment?}
+                
+                F -->|Yes| G[Batch Payment Routine]
+                F -->|No| H[Selection Module]
+                
+                G --> I[End Routine]
+                H --> I
+                
+                subgraph "Selection Module"
+                H --> J[Initialize Routine]
+                J --> K{Route Code?}
+                K -->|1| L[Initial Transaction]
+                K -->|3| M[Entry Line Calculations]
+                K -->|4| N[Amount Entry]
+                K -->|7| O[Return to Entry]
+                K -->|8| P[Return to Reference Entry]
+                
+                L --> M
+                M --> Q[Display Entry]
+                N --> Q
+                Q --> R[Accept Entry Routine]
+                R --> S[Setup Interest/LC Records]
+                S --> T[Save Screen]
+                end
+                
+                T --> I
+                O --> I
+                P --> I
+                I --> U[End Program]
+            </div>
+
+            <h3>Transaction Processing Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Transaction Input] --> B{Transaction Type}
+                
+                B -->|PY, PA, PE| C[Payment Processing]
+                B -->|DF, D2-D9| D[Deferment Processing]
+                B -->|PR, PC, PP| E[Principal Processing]
+                B -->|SS| F[Repossession Processing]
+                B -->|PX| G[Partial Charge-off]
+                B -->|Z2| H[Other Balance Processing]
+                
+                C --> I[Calculate Interest]
+                D --> J[Calculate Deferment]
+                E --> K[Apply to Principal]
+                F --> L[Handle Repo Logic]
+                G --> M[Charge-off Logic]
+                H --> N[Apply to OT2BAL]
+                
+                I --> O[Distribute Payment]
+                J --> P[Update Deferment]
+                K --> O
+                L --> O
+                M --> O
+                N --> O
+                
+                O --> Q[Update Balances]
+                Q --> R[Create History Record]
+                R --> S[Generate GL Entries]
+                S --> T[Save Transaction]
+                T --> U[Complete Processing]
+            </div>
+
+            <h3>Payment Distribution Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Payment Amount] --> B[Check Other Balances]
+                B --> C{Other Balance > 0?}
+                
+                C -->|Yes| D[Apply to Other Balance]
+                C -->|No| E[Check Late Charges]
+                
+                D --> F[Remaining Amount]
+                F --> E
+                
+                E --> G{Late Charges > 0?}
+                G -->|Yes| H[Apply to Late Charges]
+                G -->|No| I[Check Interest]
+                
+                H --> J[Remaining Amount]
+                J --> I
+                
+                I --> K{Interest Due > 0?}
+                K -->|Yes| L[Apply to Interest]
+                K -->|No| M[Apply to Principal]
+                
+                L --> N[Remaining Amount]
+                N --> M
+                
+                M --> O[Update Paid Through Date]
+                O --> P[Complete Distribution]
+            </div>
+
+            <h3>Deferment Processing Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Deferment Request] --> B[Validate Deferment Policy]
+                B --> C{Valid Deferment?}
+                
+                C -->|No| D[Display Error Message]
+                C -->|Yes| E[Check Deferment Formula]
+                
+                E --> F{Formula Type}
+                F -->|Standard| G[Calculate Standard Deferment]
+                F -->|Interest Bearing| H[Calculate IB Deferment]
+                F -->|Percentage| I[Calculate Percentage Deferment]
+                F -->|Fixed Amount| J[Calculate Fixed Deferment]
+                
+                G --> K[Apply Deferment Amount]
+                H --> L[Add Interest to Deferment]
+                I --> M[Calculate % of Balance]
+                J --> N[Use Fixed Amount]
+                
+                L --> K
+                M --> K
+                N --> K
+                
+                K --> O[Update Paid Through Date]
+                O --> P[Create Deferment Record]
+                P --> Q[Update Account Status]
+                Q --> R[Complete Deferment]
+                
+                D --> S[Return to Entry]
+                R --> T[End Processing]
+                S --> T
+            </div>
+
+            <h3>Error Handling Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Processing Step] --> B{Error Occurred?}
+                B -->|No| C[Continue Processing]
+                B -->|Yes| D[Identify Error Type]
+                
+                D --> E{Error Category}
+                E -->|File Error| F[Handle File Error]
+                E -->|Validation Error| G[Handle Validation Error]
+                E -->|Business Rule Error| H[Handle Business Rule Error]
+                E -->|System Error| I[Handle System Error]
+                
+                F --> J[Log Error Message]
+                G --> K[Display User Message]
+                H --> L[Apply Business Logic]
+                I --> M[System Error Handling]
+                
+                J --> N{Recoverable?}
+                K --> O[Allow User Correction]
+                L --> P{Override Available?}
+                M --> Q[Terminate Processing]
+                
+                N -->|Yes| R[Retry Operation]
+                N -->|No| Q
+                
+                O --> S[Return to Entry]
+                P -->|Yes| T[Request Password]
+                P -->|No| S
+                
+                T --> U{Valid Password?}
+                U -->|Yes| V[Apply Override]
+                U -->|No| S
+                
+                R --> A
+                V --> C
+                S --> W[End Error Handling]
+                Q --> W
+                C --> X[Continue Normal Flow]
+            </div>
+        </section>
+
+        <section id="referenced-programs">
+            <h2>Referenced Programs</h2>
+            <p>LONPFC integrates with numerous other programs and copy members. Here are the key referenced programs with links to their documentation:</p>
+
+            <h3>Core Processing Programs</h3>
+            <ul>
+                <li><a href="LPREGZ_Documentation.html"><strong>LPREGZ/LPREGZW:</strong></a> Interest calculation and earnings processing</li>
+                <li><a href="LPLCAP_Documentation.html"><strong>LPLCAP:</strong></a> Late charge application processing</li>
+                <li><a href="PAYOFX_Documentation.html"><strong>PAYOFX:</strong></a> Payoff calculation routines</li>
+                <li><a href="CRNOR2_Documentation.html"><strong>CRNOR2:</strong></a> Customer record processing</li>
+            </ul>
+
+            <h3>Window and Form Programs</h3>
+            <ul>
+                <li><a href="CHREPO_Documentation.html"><strong>CHREPO:</strong></a> Repossession window processing</li>
+                <li><a href="Window_Programs_Documentation.html"><strong>MEMOSC:</strong></a> Memo entry for backdated payments</li>
+                <li><a href="Window_Programs_Documentation.html"><strong>TITLEW:</strong></a> Title window for payoffs</li>
+                <li><a href="Window_Programs_Documentation.html"><strong>ESAPPL:</strong></a> Escrow application window</li>
+                <li><a href="Window_Programs_Documentation.html"><strong>MAKERS:</strong></a> Maker information window</li>
+            </ul>
+
+            <h3>Utility Programs</h3>
+            <ul>
+                <li><a href="Date_Calculation_Utilities_Documentation.html"><strong>Date Calculation Utilities:</strong></a> C-CALL-NEWDATE, C-INCREMENT-PERIODS date routines</li>
+                <li><a href="Date_Calculation_Utilities_Documentation.html"><strong>GETENV:</strong></a> Environment variable retrieval</li>
+                <li><strong>SQL connection routines:</strong> Database connectivity</li>
+            </ul>
+        </section>
+
+        <section id="error-handling-flow">
+            <h2>Error Handling Flow</h2>
+            <p>LONPFC implements comprehensive error handling for various scenarios:</p>
+
+            <h3>File Access Errors</h3>
+            <ul>
+                <li><strong>Missing Records:</strong> Invalid state parameter, branch, or global records</li>
+                <li><strong>File Unavailable:</strong> Database connection or file access issues</li>
+                <li><strong>Data Corruption:</strong> Invalid data format or corrupted records</li>
+            </ul>
+
+            <h3>Business Rule Violations</h3>
+            <ul>
+                <li><strong>Insufficient Balance:</strong> Payment exceeds available balance</li>
+                <li><strong>Invalid Transaction:</strong> Transaction type not allowed for account status</li>
+                <li><strong>Policy Violations:</strong> Deferment limits, payment restrictions</li>
+                <li><strong>Security Violations:</strong> Unauthorized access or override attempts</li>
+            </ul>
+
+            <h3>Validation Errors</h3>
+            <ul>
+                <li><strong>Data Format:</strong> Invalid dates, amounts, or codes</li>
+                <li><strong>Range Checking:</strong> Values outside acceptable ranges</li>
+                <li><strong>Required Fields:</strong> Missing mandatory information</li>
+                <li><strong>Cross-Field Validation:</strong> Inconsistent data relationships</li>
+            </ul>
+        </section>
+
+        <section id="technical-implementation">
+            <h2>Technical Implementation</h2>
+            
+            <h3>Program Structure</h3>
+            <ul>
+                <li><strong>IDENTIFICATION DIVISION:</strong> Program metadata and documentation</li>
+                <li><strong>ENVIRONMENT DIVISION:</strong> File assignments and configurations</li>
+                <li><strong>DATA DIVISION:</strong> Working storage, file records, and copy members</li>
+                <li><strong>PROCEDURE DIVISION:</strong> Main processing logic and subroutines</li>
+            </ul>
+
+            <h3>Key Processing Sections</h3>
+            <ul>
+                <li><strong>MAIN-PROGRAM:</strong> Primary control and initialization</li>
+                <li><strong>SELECTION-MODULE:</strong> Transaction routing and processing</li>
+                <li><strong>INITIALIZE-ROUTINE:</strong> Setup and preparation logic</li>
+                <li><strong>ENTRY-LINE-CALCULATIONS:</strong> Transaction calculations</li>
+                <li><strong>AMOUNT-ENTRY-ROUTINES:</strong> Amount validation and entry</li>
+                <li><strong>DISPLAY-ENTRY-LINE:</strong> Screen display and user interaction</li>
+            </ul>
+
+            <h3>Database Integration</h3>
+            <ul>
+                <li><strong>SQL Connectivity:</strong> Embedded SQL for database operations</li>
+                <li><strong>Transaction Management:</strong> Commit/rollback capabilities</li>
+                <li><strong>Record Locking:</strong> Concurrency control for updates</li>
+                <li><strong>Data Consistency:</strong> Referential integrity maintenance</li>
+            </ul>
+
+            <h3>Memory Management</h3>
+            <ul>
+                <li><strong>Working Storage:</strong> Efficient use of memory for calculations</li>
+                <li><strong>Buffer Management:</strong> Input/output buffer handling</li>
+                <li><strong>Copy Member Usage:</strong> Shared data structures and routines</li>
+                <li><strong>Screen Buffers:</strong> Form and display data management</li>
+            </ul>
+        </section>
+
+        <section id="error-handling">
+            <h2>Error Handling and Validation</h2>
+            
+            <h3>Input Validation</h3>
+            <table>
+                <tr>
+                    <th>Validation Type</th>
+                    <th>Check Performed</th>
+                    <th>Error Response</th>
+                </tr>
+                <tr>
+                    <td>Transaction Code</td>
+                    <td>Valid transaction type for account status</td>
+                    <td>Display invalid transaction message</td>
+                </tr>
+                <tr>
+                    <td>Amount Range</td>
+                    <td>Amount within acceptable limits</td>
+                    <td>Request amount correction</td>
+                </tr>
+                <tr>
+                    <td>Date Validation</td>
+                    <td>Valid date format and business date</td>
+                    <td>Display date error message</td>
+                </tr>
+                <tr>
+                    <td>Account Status</td>
+                    <td>Account allows requested transaction</td>
+                    <td>Show account status restriction</td>
+                </tr>
+            </table>
+
+            <h3>Business Rule Validation</h3>
+            <table>
+                <tr>
+                    <th>Rule Category</th>
+                    <th>Validation Logic</th>
+                    <th>Override Available</th>
+                </tr>
+                <tr>
+                    <td>Payment Distribution</td>
+                    <td>Sufficient balance for application</td>
+                    <td>Supervisor password</td>
+                </tr>
+                <tr>
+                    <td>Deferment Limits</td>
+                    <td>Maximum deferments not exceeded</td>
+                    <td>Manager override</td>
+                </tr>
+                <tr>
+                    <td>Payoff Calculation</td>
+                    <td>Payoff amount covers all balances</td>
+                    <td>Administrative approval</td>
+                </tr>
+                <tr>
+                    <td>Interest Accrual</td>
+                    <td>Proper interest calculation method</td>
+                    <td>System administrator</td>
+                </tr>
+            </table>
+
+            <h3>System Error Recovery</h3>
+            <ul>
+                <li><strong>Database Rollback:</strong> Automatic transaction rollback on errors</li>
+                <li><strong>Session Recovery:</strong> Restore user session after system errors</li>
+                <li><strong>File Recovery:</strong> Handle file access and locking issues</li>
+                <li><strong>Error Logging:</strong> Comprehensive error logging for debugging</li>
+            </ul>
+        </section>
+
+        <section id="common-errors">
+            <h2>Common Error Conditions</h2>
+            
+            <h3>Processing Errors</h3>
+            <table>
+                <tr>
+                    <th>Error Message</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+                <tr>
+                    <td>"INVALID STATE PARAMETER RECORD"</td>
+                    <td>Cannot read SP1 configuration file</td>
+                    <td>Check system configuration and file access</td>
+                </tr>
+                <tr>
+                    <td>"INVALID BRANCH RECORD"</td>
+                    <td>Branch record not found or corrupted</td>
+                    <td>Verify branch number and record integrity</td>
+                </tr>
+                <tr>
+                    <td>"INVALID GLOBAL RECORD"</td>
+                    <td>Global configuration record missing</td>
+                    <td>Restore global configuration records</td>
+                </tr>
+                <tr>
+                    <td>"PROBLEM GETTING DEALER RESERVE BALANCES"</td>
+                    <td>Dealer reserve record not found</td>
+                    <td>Create dealer reserve record or check file access</td>
+                </tr>
+            </table>
+
+            <h3>Business Rule Errors</h3>
+            <table>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Business Rule</th>
+                    <th>User Action</th>
+                </tr>
+                <tr>
+                    <td>Payment below net payoff</td>
+                    <td>Payment cannot reduce balance below net payoff amount</td>
+                    <td>Adjust payment amount or process payoff</td>
+                </tr>
+                <tr>
+                    <td>Exceeds maximum deferments</td>
+                    <td>Account has reached deferment limit</td>
+                    <td>Obtain management override or process payment</td>
+                </tr>
+                <tr>
+                    <td>Late charge reapplication</td>
+                    <td>Late charges incorrectly reapplied</td>
+                    <td>Check late charge formula settings</td>
+                </tr>
+                <tr>
+                    <td>Interest calculation error</td>
+                    <td>Interest formula or rate type mismatch</td>
+                    <td>Verify account setup and calculation method</td>
+                </tr>
+            </table>
+
+            <h3>User Interface Errors</h3>
+            <ul>
+                <li><strong>Invalid Function Key:</strong> Unsupported function key pressed</li>
+                <li><strong>Field Format Error:</strong> Data entered in incorrect format</li>
+                <li><strong>Required Field Missing:</strong> Mandatory field left blank</li>
+                <li><strong>Screen Timeout:</strong> User session timed out during entry</li>
+            </ul>
+        </section>
+
+        <section id="integration-points">
+            <h2>Integration Points</h2>
+            
+            <h3>External System Interfaces</h3>
+            <ul>
+                <li><strong>APIPAY Integration:</strong> Called by APIPAY for automated payment processing</li>
+                <li><strong>General Ledger System:</strong> Creates GL entries through ALLENT program</li>
+                <li><strong>Core Banking System:</strong> Updates loan records and transaction history</li>
+                <li><strong>Reporting System:</strong> Provides data for financial and regulatory reports</li>
+                <li><strong>Audit System:</strong> Logs all transactions for audit trail</li>
+            </ul>
+
+            <h3>Internal Program Calls</h3>
+            <ul>
+                <li><strong>Interest Calculation:</strong> LPREGZ/LPREGZW for earnings processing</li>
+                <li><strong>Late Charge Processing:</strong> LPLCAP for late charge application</li>
+                <li><strong>Payment Distribution:</strong> Internal routines for balance allocation</li>
+                <li><strong>Date Calculations:</strong> C-CALL-NEWDATE and related utilities</li>
+                <li><strong>Validation Services:</strong> CDSCAN for code validation</li>
+            </ul>
+
+            <h3>Data Flow Integration</h3>
+            <ul>
+                <li><strong>Account Data:</strong> Reads and updates loan account records</li>
+                <li><strong>Transaction History:</strong> Creates payment and transaction records</li>
+                <li><strong>Configuration Data:</strong> Accesses state, branch, and global parameters</li>
+                <li><strong>User Session Data:</strong> Maintains user context and preferences</li>
+            </ul>
+        </section>
+
+        <section id="file-dependencies">
+            <h2>File Dependencies</h2>
+            
+            <h3>Primary Data Files</h3>
+            <table>
+                <tr>
+                    <th>File Name</th>
+                    <th>Purpose</th>
+                    <th>Access Mode</th>
+                </tr>
+                <tr>
+                    <td>LN1-FILE</td>
+                    <td>Loan account records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td>LP1-FILE</td>
+                    <td>Loan payment history</td>
+                    <td>Write</td>
+                </tr>
+                <tr>
+                    <td>LTI1-FILE</td>
+                    <td>Loan transaction inquiry</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td>LTP1-FILE</td>
+                    <td>Loan transaction posting</td>
+                    <td>Write</td>
+                </tr>
+                <tr>
+                    <td>LXE1-FILE</td>
+                    <td>Loan earnings records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td>LXG1-FILE</td>
+                    <td>Loan GL distribution</td>
+                    <td>Read/Write</td>
+                </tr>
+            </table>
+
+            <h3>Configuration Files</h3>
+            <table>
+                <tr>
+                    <th>File Name</th>
+                    <th>Purpose</th>
+                    <th>Access Mode</th>
+                </tr>
+                <tr>
+                    <td>SP1-FILE</td>
+                    <td>State parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>BR-FILE</td>
+                    <td>Branch parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>GB-FILE</td>
+                    <td>Global parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>CD1-FILE</td>
+                    <td>Code tables</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>CA1-FILE</td>
+                    <td>Calendar information</td>
+                    <td>Read</td>
+                </tr>
+            </table>
+
+            <h3>Working Files</h3>
+            <table>
+                <tr>
+                    <th>File Name</th>
+                    <th>Purpose</th>
+                    <th>Access Mode</th>
+                </tr>
+                <tr>
+                    <td>WK-FILE</td>
+                    <td>Working storage file</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td>DS1-FILE</td>
+                    <td>Dealer statement file</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>DL1-FILE</td>
+                    <td>Dealer information</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td>ES1-FILE</td>
+                    <td>Escrow records</td>
+                    <td>Read/Write</td>
+                </tr>
+            </table>
+
+            <h3>Copy Members Used</h3>
+            <ul>
+                <li><strong>LIBLP/LPFSWK.CPY:</strong> Payment forms working storage</li>
+                <li><strong>LIBLP/LPFDWK.CPY:</strong> Payment forms display working storage</li>
+                <li><strong>LIBLP/LP01LN.CPY:</strong> Loan record layout</li>
+                <li><strong>LIBGB/GB01BR.CPY:</strong> Branch record layout</li>
+                <li><strong>LIBGB/GB01GB.CPY:</strong> Global parameters layout</li>
+                <li><strong>LIBLP/LP01DS.CPY:</strong> Dealer statement layout</li>
+                <li><strong>LIBLP/LP01DL.CPY:</strong> Dealer information layout</li>
+                <li><strong>LIBLP/LP01LP.CPY:</strong> Loan payment layout</li>
+                <li><strong>LIBLP/LP01LX.CPY:</strong> Loan extension layout</li>
+                <li><strong>LIBLP/LP01LXE.CPY:</strong> Loan earnings layout</li>
+                <li><strong>LIBLP/LP01LXG.CPY:</strong> Loan GL layout</li>
+                <li><strong>LIBLP/LP01LTI.CPY:</strong> Loan transaction inquiry layout</li>
+                <li><strong>LIBLP/LP01LTP.CPY:</strong> Loan transaction posting layout</li>
+                <li><strong>LIBLP/LP01SP.CPY:</strong> State parameters layout</li>
+                <li><strong>LIBLP/LP01CD.CPY:</strong> Code table layout</li>
+                <li><strong>LIBLP/LP01CA.CPY:</strong> Calendar layout</li>
+                <li><strong>LIBLP/LP01ES.CPY:</strong> Escrow layout</li>
+                <li><strong>LIBWI/ESAPPL_SCN.CPY:</strong> Escrow application screen</li>
+                <li><strong>Date calculation copy members</strong></li>
+                <li><strong>SQL interface copy members</strong></li>
+            </ul>
+        </section>
+
+        <section id="performance">
+            <h2>Performance Considerations</h2>
+            
+            <h3>Response Time Factors</h3>
+            <ul>
+                <li><strong>Database Access:</strong> Multiple file reads/writes impact response time</li>
+                <li><strong>Interest Calculations:</strong> Complex formulas require processing time</li>
+                <li><strong>Screen Display:</strong> Form rendering and user interaction delays</li>
+                <li><strong>GL Processing:</strong> General ledger entry creation adds overhead</li>
+                <li><strong>Validation Logic:</strong> Business rule checking requires computation</li>
+            </ul>
+
+            <h3>Optimization Strategies</h3>
+            <ul>
+                <li><strong>Efficient SQL:</strong> Optimized database queries and indexing</li>
+                <li><strong>Buffer Management:</strong> Minimize file I/O through buffering</li>
+                <li><strong>Calculation Caching:</strong> Cache computed values where appropriate</li>
+                <li><strong>Streamlined Logic:</strong> Optimize critical processing paths</li>
+                <li><strong>Error Prevention:</strong> Validate early to avoid reprocessing</li>
+            </ul>
+
+            <h3>Scalability Considerations</h3>
+            <ul>
+                <li><strong>Concurrent Users:</strong> Support multiple simultaneous transactions</li>
+                <li><strong>Transaction Volume:</strong> Handle high-volume payment processing</li>
+                <li><strong>Database Growth:</strong> Maintain performance as data grows</li>
+                <li><strong>System Resources:</strong> Efficient memory and CPU utilization</li>
+            </ul>
+
+            <h3>Performance Monitoring</h3>
+            <ul>
+                <li><strong>Response Time Tracking:</strong> Monitor transaction processing times</li>
+                <li><strong>Resource Utilization:</strong> Track CPU, memory, and I/O usage</li>
+                <li><strong>Error Rate Monitoring:</strong> Track error frequencies and types</li>
+                <li><strong>Throughput Analysis:</strong> Measure transactions per hour/minute</li>
+            </ul>
+        </section>
+
+        <section id="maintenance">
+            <h2>Maintenance Notes</h2>
+            
+            <h3>Regular Maintenance Tasks</h3>
+            <ul>
+                <li><strong>Database Maintenance:</strong> Regular index rebuilding and statistics updates</li>
+                <li><strong>File Cleanup:</strong> Archive old transaction records periodically</li>
+                <li><strong>Parameter Review:</strong> Verify state and branch parameters quarterly</li>
+                <li><strong>Performance Monitoring:</strong> Track response times and error rates</li>
+                <li><strong>Security Audit:</strong> Review access logs and password usage</li>
+                <li><strong>Code Review:</strong> Periodic review of business rule changes</li>
+            </ul>
+
+            <h3>Troubleshooting Guide</h3>
+            <table>
+                <tr>
+                    <th>Issue</th>
+                    <th>Symptoms</th>
+                    <th>Investigation Steps</th>
+                </tr>
+                <tr>
+                    <td>Slow Performance</td>
+                    <td>Long response times, user complaints</td>
+                    <td>Check database performance, file locks, system load, network connectivity</td>
+                </tr>
+                <tr>
+                    <td>Calculation Errors</td>
+                    <td>Incorrect interest or payment applications</td>
+                    <td>Verify rate tables, formulas, date calculations, and account setup</td>
+                </tr>
+                <tr>
+                    <td>Balance Discrepancies</td>
+                    <td>Balances don't match expected values</td>
+                    <td>Review transaction history, GL entries, and payment distribution logic</td>
+                </tr>
+                <tr>
+                    <td>File Access Errors</td>
+                    <td>Cannot read/write files, IO errors</td>
+                    <td>Check file permissions, disk space, network connectivity, file locks</td>
+                </tr>
+                <tr>
+                    <td>GL Out of Balance</td>
+                    <td>General ledger entries don't balance</td>
+                    <td>Review ALLENT processing, check GL account mappings</td>
+                </tr>
+            </table>
+
+            <h3>Change Management</h3>
+            <ul>
+                <li><strong>Code Changes:</strong> All modifications require thorough testing in development environment</li>
+                <li><strong>Configuration Updates:</strong> Document all parameter changes with business justification</li>
+                <li><strong>Deployment Process:</strong> Use controlled deployment procedures with rollback capability</li>
+                <li><strong>Testing Requirements:</strong> Test all transaction types and edge cases</li>
+                <li><strong>Impact Analysis:</strong> Assess impact of changes on related systems and GL processing</li>
+                <li><strong>User Training:</strong> Update user documentation and provide training for significant changes</li>
+            </ul>
+
+            <h3>Special Considerations</h3>
+            <ul>
+                <li><strong>End-of-Month Processing:</strong> Special handling for month-end transactions</li>
+                <li><strong>Year-End Processing:</strong> Annual maintenance and escrow setup</li>
+                <li><strong>Rate Changes:</strong> Handle interest rate changes and effective dates</li>
+                <li><strong>Regulatory Changes:</strong> Adapt to new regulatory requirements</li>
+                <li><strong>Version Control:</strong> Maintain detailed revision history for compliance</li>
+            </ul>
+        </section>
+
+        <section id="security">
+            <h2>Security Features</h2>
+            
+            <h3>Access Control</h3>
+            <ul>
+                <li><strong>User Authentication:</strong> Verify user credentials before processing</li>
+                <li><strong>Transaction Authorization:</strong> Check user permissions for transaction types</li>
+                <li><strong>Override Controls:</strong> Password protection for supervisor overrides</li>
+                <li><strong>Branch Security:</strong> Restrict access based on branch assignments</li>
+                <li><strong>Cash Drawer Security:</strong> Password protection for cash drawer operations</li>
+            </ul>
+
+            <h3>Data Protection</h3>
+            <ul>
+                <li><strong>Audit Trail:</strong> Complete logging of all transactions and changes</li>
+                <li><strong>Data Validation:</strong> Extensive input validation and business rule checking</li>
+                <li><strong>Encryption:</strong> Sensitive data protection during transmission</li>
+                <li><strong>Backup Integration:</strong> Support for comprehensive backup strategies</li>
+                <li><strong>Data Integrity:</strong> Checksums and validation to prevent corruption</li>
+            </ul>
+
+            <h3>Compliance Features</h3>
+            <ul>
+                <li><strong>Regulatory Reporting:</strong> Support for required financial reports</li>
+                <li><strong>Documentation:</strong> Maintain detailed transaction documentation</li>
+                <li><strong>Change Tracking:</strong> Log all configuration and code changes</li>
+                <li><strong>Access Monitoring:</strong> Monitor and report on user access patterns</li>
+                <li><strong>Segregation of Duties:</strong> Enforce separation between entry and approval</li>
+            </ul>
+
+            <h3>Special Security Considerations</h3>
+            <ul>
+                <li><strong>Deferment Overrides:</strong> Special password controls for deferment limit overrides</li>
+                <li><strong>Backdated Transactions:</strong> Memo requirements for backdated payments</li>
+                <li><strong>Zero Amount Transactions:</strong> Password protection for zero-amount special transactions</li>
+                <li><strong>Inter-branch Transactions:</strong> Enhanced security for cross-branch processing</li>
+            </ul>
+        </section>
+
+        <section id="revision-history">
+            <h2>Revision History</h2>
+            
+            <h3>Major Revisions</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+                <tr>
+                    <td>032486</td>
+                    <td>Initial program creation for loan payment processing</td>
+                    <td>Original development</td>
+                </tr>
+                <tr>
+                    <td>060295</td>
+                    <td>Added Z2 transaction code for OT2BAL paydown</td>
+                    <td>SLC</td>
+                </tr>
+                <tr>
+                    <td>060695</td>
+                    <td>Added new GL entry routines for improved financial reporting</td>
+                    <td>BLL</td>
+                </tr>
+                <tr>
+                    <td>081895</td>
+                    <td>Added test for balance going below net payoff for PY transactions</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>092595</td>
+                    <td>Added logic for inter-branch payments</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>990324</td>
+                    <td>Added PN and PZ non-cash payment transaction codes</td>
+                    <td>JTG - TFC #013, #012</td>
+                </tr>
+                <tr>
+                    <td>990809</td>
+                    <td>Added logic for revolving account PE payment exceptions</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td>021011</td>
+                    <td>Added IN insurance loss transaction code (similar to PE)</td>
+                    <td>BAH - REGACC PR# 0007</td>
+                </tr>
+                <tr>
+                    <td>100305</td>
+                    <td>Added escrow window for payment application to escrow accounts</td>
+                    <td>BLM - REGWAN PR# 3506</td>
+                </tr>
+                <tr>
+                    <td>081024</td>
+                    <td>Allowed DF transactions through batch processing with restrictions</td>
+                    <td>CS - REGACC PR#219</td>
+                </tr>
+                <tr>
+                    <td>160222</td>
+                    <td>Removed LPWKLXE copy member for earnings processing cleanup</td>
+                    <td>CS - Earnings processing modernization</td>
+                </tr>
+            </table>
+
+            <h3>Recent Enhancements</h3>
+            <ul>
+                <li><strong>Escrow Processing:</strong> Enhanced escrow application logic for mortgage loans</li>
+                <li><strong>MIP Insurance:</strong> Monthly Insurance Premium processing integration</li>
+                <li><strong>Batch Payment Support:</strong> Improved batch payment processing capabilities</li>
+                <li><strong>TDR Processing:</strong> Troubled Debt Restructuring compliance features</li>
+                <li><strong>Rate Type Enhancements:</strong> Support for new interest calculation methods</li>
+                <li><strong>Security Improvements:</strong> Enhanced password controls and audit trails</li>
+            </ul>
+
+            <div class="note">
+                <p><strong>Note:</strong> This program has extensive revision history spanning over 30 years of continuous development and enhancement. The program supports numerous financial institutions with varying business requirements and regulatory compliance needs. Each revision is carefully documented and tested to ensure backward compatibility and regulatory compliance.</p>
+            </div>
+        </section>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
+    </ul>
+
+    <h3>Error Recovery</h3>
+    <ul>
+        <li><strong>Validation Failures</strong>: Return specific error codes</li>
+        <li><strong>Calculation Errors</strong>: Log and abort transaction</li>
+        <li><strong>File Errors</strong>: Handle through established error procedures</li>
+        <li><strong>Balance Discrepancies</strong>: Flag for manual review</li>
+    </ul>
+
+    <h2>Integration with APIPAY</h2>
+
+    <h3>Input Parameters</h3>
+    <p>Receives data through LONPF buffer structure:</p>
+    <ul>
+        <li><strong>Account Information</strong>: Branch and account number</li>
+        <li><strong>Payment Details</strong>: Amount, date, reference code</li>
+        <li><strong>Transaction Context</strong>: Source system and transaction ID</li>
+        <li><strong>Processing Options</strong>: Special handling flags</li>
+    </ul>
+
+    <h3>Return Information</h3>
+    <p>Returns updated loan information and processing results:</p>
+    <ul>
+        <li><strong>Updated Balances</strong>: New principal, interest, and fee balances</li>
+        <li><strong>Payment Details</strong>: How payment was allocated</li>
+        <li><strong>Status Information</strong>: Success/failure indicators</li>
+        <li><strong>Error Details</strong>: Specific error information if applicable</li>
+    </ul>
+
+    <h2>File Dependencies</h2>
+
+    <h3>Files Read/Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master records</td><td>Read/Write</td></tr>
+            <tr><td><strong>LTP1-FILE</strong></td><td>Payment history</td><td>Write</td></tr>
+            <tr><td><strong>LXE1-FILE</strong></td><td>Extended loan data</td><td>Read/Write</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work/calculation file</td><td>Read/Write</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Performance Considerations</h2>
+
+    <h3>Optimization Features</h3>
+    <ul>
+        <li><strong>Efficient Calculations</strong>: Optimized interest and fee calculations</li>
+        <li><strong>Minimal File I/O</strong>: Reduced file access through buffering</li>
+        <li><strong>Memory Management</strong>: Efficient use of working storage</li>
+        <li><strong>Transaction Integrity</strong>: Atomic transaction processing</li>
+    </ul>
+
+    <h3>Scalability</h3>
+    <ul>
+        <li><strong>Batch Processing</strong>: Designed for high-volume batch operations</li>
+        <li><strong>Resource Efficiency</strong>: Minimal system resource usage</li>
+        <li><strong>Concurrent Access</strong>: Handles multiple simultaneous payments</li>
+    </ul>
+
+    <h2>Audit and Compliance</h2>
+
+    <h3>Audit Trail Features</h3>
+    <ul>
+        <li><strong>Payment History</strong>: Complete payment transaction log</li>
+        <li><strong>Balance Changes</strong>: Before/after balance tracking</li>
+        <li><strong>Calculation Details</strong>: Interest and fee calculation records</li>
+        <li><strong>Exception Handling</strong>: Special case processing documentation</li>
+    </ul>
+
+    <h3>Regulatory Compliance</h3>
+    <ul>
+        <li><strong>Interest Calculations</strong>: Accurate per regulatory requirements</li>
+        <li><strong>Payment Application</strong>: Complies with industry standards</li>
+        <li><strong>Record Keeping</strong>: Maintains required documentation</li>
+        <li><strong>Error Handling</strong>: Meets audit trail requirements</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Note:</strong> LONPFC is the most frequently used payment processor in the APIPAY system, handling the majority of standard loan payment transactions. Its robust design ensures accurate payment processing while maintaining strict audit controls and regulatory compliance.</p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3678 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.      LONPFA.
+       DATE-WRITTEN.    031786.
+      ***************************************************************
+      *  DESC:  LOAN PROCESSING
+      *         TRANSACTION POSTING
+      *         PROGRAM 10 -     TRCD'S  RN, SC, PB, PO, RB, RO
+      *  REV:
+      *  021888 BAW
+      *  -FOR IB ACCOUNTS, NOT SERVICED;
+      *   THE 'PO' AND 'SC' WILL CAUSE AN ADJUSTMENT TO
+      *   DLR PARTC RESERVE. THE LP-DLPARVHELD-ADJ WILL BE IN
+      *   THE 'PO' OR 'SC' RECORD.
+      *  -FOR PC ACCOUNTS, NOT SERVICED:
+      *   THE 'RI' AND 'CI' WILL CAUSE THE ADJUSTMENT
+      *   SO IN THE CASE OF A 'PO' WITH AN AUTO 'RI' THE LP-DLPARVHELD-ADJ
+      *   WILL BE IN THE 'RI' RECORD AND ALSO PASSED TO PF2 IN
+      *   THE HOLD-DLPARVHELD-ADJ FIELD OF LPPFBUF
+      *   053095 SLC COMBINED OTHBAL AND OT2BAL IN L-090
+      *   060695 BLL CHANGED TO USE NEW GL ENTRY ROUTINES
+      *   071995 JTG ADDED SET OF HOLD-PRPDUE-DAYS
+      *   072095 JTG ADDED SP-RBFRMLA 'V' & 'W' TO TEST FOR REBATE GIVEN?
+      *   MJD 081795 ADDED PAYOFF CODE SCAN.
+      *   JTG 101695 ADDED SP-RBFRMLA = 'X', MERCURY 'WI' DEFERMENT REFUND
+      *   BAH 111695 ADDED SP-RBFRMLA = 'Y', MERCURY 'SC' DEFERMENT REFUND
+      *   BAH 111695 ADDED SP-RBFRMLA = 'Z', MERCURY 'AZ' DEFERMENT REFUND
+      *   JTG 043096 ADDED LOGIC TO UPDATE HOLD-AFPDLLP
+      *   MJD 071196 ADDED TEST OF LN-UNITPER-CD FOR WEEKLY PDTH
+      *   BLL 082096 WAS ALLOWING UPDATE WITHOUT GL DISTRIBUTION!
+      *   BAH 082396 ADDED MS-PENALTY COMING FROM REB-MS-PENALTY AND GETTING
+      *              PASSED VIA "XFER" TO LONPF2, WDT RBREDUC(7) = 9999.01
+      *  JTG 101196 ADDED 'LXE-WORKER' & 'LXE-WORKER2' FOR LPCERN-- A50 VERSION
+      *                   SP-ERNFRMLA 15 & 16, REAL INTEREST BEARINGING METHOD
+      *   BAH 121996 ADDED L2-BUF WITH A LINE DISPLAY THAT CAN HANDLE
+      *              APCUR OF > 99999.99 FOR ADVANCED CREDIT, #421
+      *  JTG 010397 CHANGED TEST FOR LCPDTH & LCHG DISPLAY TO NEVER DISPLAY
+      *             IF SP-LCFRMLA = " " AND REMOVED TEST ON JUDGEMENT
+      *             SINCE ACCOUNTS IN JUDGEMENT CAN CONTINUE AS PRECOMP
+      *  JTG 040797 CLEARED EARN-BUF TO SPACES IN DISPLAY-EARNINGS ROUTINE
+      *             WAS LEAVING GARBAGE D-LCPDTH FROM ENTRY-LINE-DISPLAY
+      *  GLF 050797 ADDED COPY MEMBERS: SETCTBLW AND SETCTBL
+      *  JTG 052097 ADDED 'LIBLP/ADDONSPR' TO GET CORRECT SPR RE: INS RB
+      *  JTG 060397 ADDED TEST OF 'O3' RE: BR-OTH-INS-LEVELS
+      *  JTG 061097 CHANGED COMPUTATION OF EADJ-REBATE, TO CORRECT
+      *             A DOUBLE DIP OF ADDON-INT-REBATE SINCE COMPUTATION
+      *             OF LN-ACCERN(1) USES ADDON-INT-REBATE
+      *  JTG 071497 ADDED LOGIC FOR DL-PARVPAID-CODE = "A" RE: ADJUSTMENT
+      *  GLF 101497 ALLOWED CTRL 'N'
+      *  MJD 101797 MOVED WK-UPDATE-BUF TO LP01WK
+      *  BLV 110397 MOVE IN BR-GL-TYPE-ALLOWED, BR-GL-ENTRY-DEFAULT TO
+      *             ALLENT-BUF BEFORE GL DISTRIBUTION WINDOW
+      *   CS 042898 ADDED NEW RENEWAL CODES "RB" AND "RO"
+      *  BAH 062698 TILLNO IS NOW ALPHANUMERIC
+      *  JTG 072898 ADDED SET OF LP-APOT2 RE: RENEWAL O2 MONIES MERCURY #192
+      *  BAH 073098 DISPLAY BALANCES EVEN ON REVERSALS, #487
+      *  MJD 081398 ADDED ENV VARIABLE TO DETERMINE WHETHER OR NOT
+      *             TO DISPLAY BALANCES ON REVERSALS. FIXED DISPLAY TO INDICATE
+      *             INCLUDED O2 BAL WITH "SC" "RN" "PB" "RB" "RO" TRANSACTIONS
+      *  JTG 101298 ALLOWED DISPLAY OF NEGATIVE CURBAL REVOL REGENCY
+      *  GLB 990720 ADD CASH DRAWER PASSWORD OPTION TO ENTER DRAWER NO.
+      *             BR-PASSWORD-DRAWER(Y/N) & CA-PASSWORD (4 CHAR PASSWORD)
+      *             REGMGM PR# 901
+      *  MJD 990803 ADDED GP-INCL-OTH-IN-EARNED FLAG. IF "Y" THEN INCLUDE
+      *             EARNINGS BUCKET 6 (OTHER) IN ACCUMULATED TOTALS
+      *             OTHERWISE EXCLUDE BUCKET 6.
+      *  JTG 991119 ADDED BR-ONESTEP-RN-FG, TO ALLOW ONE STEP RENEWALS, WORLD
+      *  MJD 000119 ADDED POFF-TOTNOLCHG (WORLD PR#218)
+      *             NOT YET USED. MUST BE ENABLED BEFORE WORLD GOES TO A15
+      *  BAH 000208 AUTO-RENEW FOR RESCISSION ACCOUNT, IF PRLNNO HAD AN OTHBAL
+      *             THE ALLOCATION WAS ALLOWING YOU OUT WITHOUT DISBURSING THE
+      *             FULL AMOUNT, CAUSING A TOTALLY OUT OF WACK PB'D ACCOUNT !!
+      *             MUST FORCE THE FULL GL DISBURSEMENT ! AMTHRIFT PL# 273
+      *  JTG 000222 ADDED TEST ON GP-I-AM-MERC SO CALL TO INS-TERM-CALCULATION
+      *             FOR O3 WARRANTY, WHICH WAS ENTERED WITH ZERO COVERAGE,
+      *             WOULD RETURN ITRM-INEFFECT-FG = "Y" ALLOWING REBATE
+      *             TO TAKE PLACE
+      *  MJD 000225 ADDED TEST FOR NEW SOUTH PREPAY PENALTY AND OPEN
+      *             WINDOW (CL/PENALT.C) FOR DISPLAY/EDIT. (NEWS PR#1101)
+      *  JTG 000229 CORRECTED LOGIC FOR PENALTY. ROUTINE AFTER CALL TO
+      *             CL/PENALT.C WAS CAUSING LOSS OF LN-INTBAL IN POFF-INTDUE
+      *             RE: BUG WISC # 001053 BRANCH 2981
+      *  GLB 000406 ADDED TEST FOR CAROLINA FIN PREPAY PENALTY AND OPEN
+      *             WINDOW (CL/PENALT.C) FOR DISPLAY/EDIT. (NEWS PR#1149)
+      *  BAH 000605 ADDED TEST FOR PREPAYMENT PENALTY WINDOW TO DISPLAY
+      *             FOR RBREDUC(7) = 9999.03, FAX FROM KEVIN
+      *  MJD 001114 ADDED UPDATE OF LP-PREPAY-PENALTY WITH THE AMOUNT
+      *             OF PREPAYMENT PANALTY. (NEWS PR#1264)
+      *  JTG 001117 ADDED LOGIC FOR 'OV' OVERPAYMENT TRANSACTION PR#J015
+      *  JTG 001218 ADDED THE FOLLOWING FIELDS, RE: GP-ALLOW-SET-FOR-NONCASH
+      *             MERCURY PR#239
+      *             03  BR-BP-PAYOFF-NONCASH      PIC X.
+      *             03  BR-BP-PAYOFF-OV           PIC X.
+      *             03  BR-LBOX-PAYOFF-NONCASH    PIC X.
+      *             03  BR-LBOX-PAYOFF-OV         PIC X.
+      *  MG  010201 REMOVED "01 WK-LXE" AND ADDED LIBLP/LPWKLXE.
+      *  BAH 010305 AFTER CALLING CL/PENALT, THE NEWLY ENTERED "PENALTY"
+      *             NEVER GOT MOVED INTO INDU-PENALTY !! THEREFORE, IF
+      *             THE PENALTY GOT CHANGED OR ZEROED, THE ORIGINAL AMT
+      *             STILL WENT TO GL FOR LENDMARK (GP-PENALTY-INT)
+      *   CS 010517 ADDED CA-PATH LOGIC, NEED TO POST PO INTERBRANCH TO UPDATE
+      *             CASH DRAWER.   MERC #250
+      *  BAH 010612 REGACC, IF ACCOUNT IN "REPO ON HAND" OR "REPO SOLD" STATUS,
+      *             FORCE THE USER TO USE THE REPO DATE AS THE EFFECTIVE
+      *             DATE FOR ANY REBATES, OR ENTER PASSWORD, PR# 1478
+      *             78  REPO-EFF-SEQ        VALUE 1.
+      *  GLB 010627 ADDED TEST OF LN-REVOLVING TO SKIP TESTING 0 BALS.
+      *             PROBLEM IF REVOLVING AND CURBAL = 0 AND PARTIAL
+      *             PAYMENT OF REMAINING INTEREST, LC, OTHER, ETC.
+      *             SEE PARA "ACCEPT-CHECK-VDUSTATUS"
+      *  JTG 010807 ADDED SET OF INS-RB-TBL() WHEN PAYOFF AND INSURANCE IS
+      *             NOT IN EFFECTIVE. THIS WILL MAKE LONPF2.C SET LN-..-REBATE
+      *             TO A 'Y', SO THE INSURANCE WILL NOT APPEAR ON THE
+      *             UNEARNED INSURANCE REPORT WITH UNEARNED       REGENCY PR#329
+      *  JTG 010814 CREATED NOW OPTION 'M' FOR BR-BP-PAYOFF-OV
+      *             AND BR-LBOX-PAYOFF-OV WHICH WILL CREATE 'OV' TRANSACTION
+      *             BUT WILL NOT CREATE A CHECK REQUEST           MERCURY PR#256
+      *  JTG 010904 ALLOWED IB TYPE LOANS TO ACCELERATE     JIM R. (ALL) PR#1582
+      *  JTG 011003 OV TRANSACTION REFINEMENTS                       MFC PR#261
+      *             SET LP-REFNO & TR-REFNO ON 'OV' SAME AS PAYOFF
+      *  JTG 011015 OV TRANSACTION REFINEMENTS  ADDED PASSWD #2      MFC PR#261
+      *  BAH 011205 DISPLAY MESSAGE IF "RI" FROM A RENEWAL IS > 99,999.99
+      *             IT WILL GET TRUNCATED IN PD-PRFINCHGRB S9(5)V99, CAUSING
+      *             THE RENEWAL AMOUNT TO BE WRONG !! REGWAN PR# 339
+      * JTG 020117 CHANGED FIELDS FROM S9(6)V99 TO S9(7)V99     LENDMARK PR#J021
+      *            03  L2-040          PIC Z(7).99- BLANK ZERO.
+      * JTG 020123 EXPANDED PAYMNTD FIELDS TO 1,000,000        LENDMARK PR#J021
+      * JTG 020308 ADDED "CT" COUNTY TAX CODE KENTUCKY AND PERCENTS
+      *            ADDED "CY" CITY   TAX CODE KENTUCKY AND PERCENTS
+      *            ADDED HOLD-INS-TAX-RB()  OCCURS 8 S9(7)V99 REFUNDS WORLD #288
+      * JTG 020402 CHANGED POFF-INS-TAX TO POFF-INS-TAX-RB       WORLD #288
+      * JTG 020801 CHANGED FOR (MIP) MONTHLY INSURANCE PREMIUMS   REGENCY #1801
+      * BLV 020913 FIXED HOLD-LXM-MIP-AHPDTH NOT GETTING SET, REGWAN PR# 1801
+      * JTG 021008 MADE CALL TO REGGAP WINDOW TO DETERMINE IF ACCOUNT IS TOTAL
+      *            LOSS AND IF 'Y' THEN ZERO OUT 'PP' REFUND        REGACC #0003
+      * JTG 021112 ADDED NEW CODE FILE TYPE 'BR' -BATCH PAYMENT REFERENCE CODES
+      *            BATCH PAYMENT REVISIONS                         REGACC #0006
+      * JTG 021203 REMOVED GP-BATCH-PAY-REVISIONS
+      *            BATCH PAYMENT REVISIONS                         REGACC #0006
+      * JTG 021220 ADDED POFF-LCAP-BATCH-REFCD POFF-LCAP-BATCH-REFCD-LC-FG
+      *            BATCH PAYMENT REVISIONS                        REGACC #0006
+      * BLV 030325 FIXED READ OF BRANCH TO USE OWNING BRANCH, NOT BRANCH (WHICH
+      *            IS POSTING BRANCH IF INTERBRANCH.  ALSO, FIXED TO CHECK
+      *            CASH DRAWER PASSWORD FLAG OF POSTING BRANCH, NOT OWNING BR
+      * BLV 030325 CHANGED TO PASS LN-OWNBR TO GL/ALLENT.C FOR INTERBRANCH
+      *            PAYMENTS
+      * BAH 030507 DONT ALLOW OVPAID WINDOW IF CASH TRANSACTION VIA
+      *            CASH BR-TENDER-CD'S...CASHCO PR# 2080
+      * JTG 031103 NEW ENTRY FOR 'BR-INC-INS = L' WHICH WILL MEAN
+      *            TO PROMPT TO KEEP INSURANCE IN FORCE FOR
+      *            CREDIT LIFE ONLY. ALSO ASK QUESTION NOT ONLY
+      *            IN PAYOFF POSTING BUT ALSO IN INQUIRY     FIN.MANMENT #2136
+      * BAH 040311 ADDED GP-BACKDATE-MEMO TO POP UP MEMO WINDOW WHEN
+      *            BACKDATING PAYOFFS. THEY WILL BE FORCED TO ENTER SOMETHING.
+      *            WORLD #344
+      * JTG 040403 ADDED LOGIC FOR POSTING BATCH PAYMENTS TO ACCOUNT'S
+      *            WITH 'LN-OTBAL'                                 CENTRIX #2253
+      * CS  040616 CHANGE SV-RATE FROM PIC V99999 TO 9V99999. IF DL-SVACCT-RATE
+      *            WAS 100%(WE KEEP ALL), THEN COMPUTATION OF SV-RATE WAS 0
+      *            CAUSING THE ENTIRE PRINCIPAL TO GO TO DEALER
+      * BAH 040803 CHANGED CALLING PARAMETERS FOR WI/TITLE, REGACC PR# 58
+      * BAH 040909 COMMENT OUT CALLING WI/TITLE FOR REGACC, AS PER KEVIN
+      * BAH 060309 WORLD MUST WAIVE LATE CHARGES ON A CCCS (CONSUMER CREDIT
+      *            COUNSELING SERVICE) PAYMENT, WORLD PR# 458
+      * BAH 060315 IF GP-I-AM-LENDMARK AND A PB,RB OR RN, YOU CAN NOT COLLECT
+      *            ANY LATE CHARGES OR OTHER CHARGES, PR# 2743 NEWS LENDMARK
+      * BAH 060407 ADDED DL-SVACCT-LCHGPER-DEC, INTPER-DEC AS REDEFINES
+      *            FOR UNION, PR# 2756
+      * BAH 060601 UNCOMMENT OUT CALLING WI/TITLE FOR REGACC, AS PER KEVIN
+      * BAH 060720 ADDED BR-POFF-TITLE-WINDOW SO REGACC CAN TURN A FEW BRANCHES
+      *            AT A TIME, REGACC PR# 137
+      * BLF 070129  ORIGINALLY WHEN JOHN DID PR 2253 THERE WAS LOGIC IN
+      *             LPEOD5 TO GET THE GL# FOR APPLIED TO OTHER FROM
+      *             THE CD-BR-OT-GL & UPDATE THERE.  BUT LOGIC GOT
+      *             MOVED FROM EOD TO LONPFC WHICH NOW PUTS THE APPLIED
+      *             TO OTHER AMOUNT & ACCT IN THE TP GL TABLE.
+      *             HOWEVER, NOTHING GOT CHANGED HERE SO IF YOU
+      *             PAID OFF ACCT WITH OTHER, IT PAID OFF OK & REDUCED
+      *             LN-OTHBAL BUT NOTHING WENT TO GL FOR THE APPLIED
+      *             TO OTHER SO GL WAS OUT OF BALANCE.  PUT MOST OF THE
+      *             LOGIC FROM LONPFC HERE TO UPDATE OTHER ON A PAYOFF.
+      *             (BARB & CINDY)  REGIONAL PL# 572
+      * BAH 070319 UNDID THE CHANGE FOR LENDMARK FROM PR# 2743, NEW PR# 2946
+      *  CS 081113 ADD GP-INCL-OTH-IN-EARNED = 'R'. IF 'R' EXCLUDE OTHER(ANTIC6
+      *            AND MAINTFEE(ANTIC 4) FROM EARNED/UNEARNED REGACC PR#210
+      *  BAH 130111 ADDED LC-DISPLAY-ERN OPTION OF "I" FOR POFF-INTDUE
+      *                                              AMERICAN ACC PR# 4190
+      * MJD 130604 ADDED LOGIC FOR SP-SCFRMLA = 54.  FUNCTIONS THE SAME AS 12
+      *            BUT INCLUDES AN EXTRA 4% ADDED IN AT THE END BASED
+      *            ON TOTAL NOTE                                     WORLD #874
+      * BAH 140505 RENAMED WI/TITLE TO WI/TITLEW, RESERVED WORD VERYANT
+      * BAH 140814 ADDED TEST FOR LPSMNU IN HELP
+      * BLM 141029 FIX ENTRY OF PO CODE, USE C$JUSTIFY INSTEAD OF MESSING WITH
+      *            VDUPROCESS.  
+      *  BAH 160125 SPLIT OUT LTFILE, PD0003
+      *   CS 160222 REMOVE COPY LPWKLXE, ITS AN EARNINGS COPY MEMBER THAT IS
+      *             PASSED IN LOAN PROCESSING VIA LP01WK USING WK-LX2-REC. 
+      *             REPLACED WK-LX2-REC WITH WK-LXE-REC IN LP01WK 
+      *             MOVED LPWKLXE TO LPWKLXE.NO
+      *             SAVED VERSION LONPFA.160222
+      *  BAH 160304 CHANGED TILLNO TO NUMERIC BUT NO ROOM ON SCREEN FOR 2 DIGITS
+      *
+      * KEC 2016.0325 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED CDSCAN-WINDOW-BUF TO HAVE MATCHING CD1-KEY
+      *         LAYOUTS (FOR EACH CODE TYPE; CD-TYPE).
+      *         CDSCAN-CD1-KEY IS THE NEW (PRIMARY) WITH REDEFINES OF
+      *         CDSCAN-??-KEY (NEW).
+      *
+      * KEC 2016.0509 {PD#00003} PARADATA <A30> [JAY CISZEWSKI]
+      *         CHANGED LN-APPNO TO USE LN-APP-NUMBER FOR MA1-KEY.
+      * MJD 160613 ADDED LOGIC TO UPDATE HOLD-LXR-REB-AMT FOR GA EARLY PROVISION
+      *                                                           REGMGT PR#4915
+      * BAH 161117 ADDED 2 DIGIT FIELD "DRAWER" ABOVE PAYMENT LINE FOR 
+      *            NEW CASH DRAWER ENTRY
+      * BAH 170615 ACTIVATE 8 DIGIT DATES, PD0006
+      * BAH 170609 PERFORM CONDITIONAL-SEND-MESS, ONLY DO SEND-MESS IF
+      *            ROUTE-BUF = "00", WORLD PR# 1246
+      * BAH 171129 FIXED WK-LXE-REC
+      * BAH 2018.07.02 ADDED ADDONSPRW
+      * KEC 2018-0824 LOAN APP MODULE REMOVAL FROM A30 [LARM30];
+      *         LEAVING LN-APP-NUMBER & EXT-WI-CL-APP-NUMBER
+      *         HERE IN CASE NEEDED IN THE FUTURE.
+      * BAH 181231 GLOBAL LPFILE
+      * BAH 190116 GLOBAL LXFILE
+      * BAH 20190627 REMOVED LN-REVOLVING, PT0153
+      * BAH 20210202 DO NOT ALLOW CD-BR-FILE-TYPE "C", UMC DEBIT CARD PR#1490
+      * BAH 2022.0314 REMOVED EXT-SPANISH-FORMS AND ALL MX FORMS
+      * BAH 20220818 REMOVED GLOBRD, READ GB-FILE INSTEAD
+      * BAH 20220823 HARD CODED START
+      *
+      * JKC 2022-0930 CHANGED TO USE START-LP1-FILE-SCAN INSTEAD OF
+      *          START-LP1-FILE; NEED TO USE START-LP1-FILE-SCAN WHEN
+      *          START-LP1-FILE-NOT-GREATER IS USED FIRST; NEEDED FOR
+      *          FOR DISPLAYING MULTIPLE PAGES IN AN UP & DOWN FUNCTION;
+      *          NEED TO ADD ONE TO LP-SEQNO (IN WBEG) IN ORDER TO GET 
+      *          THE DISPLAY TO WORK LIKE WITH VISION FILES.
+      * SMR 2023-0418 MODIFIED FOR CHANGES TO LX FILES
+      * BAH 2024.0311 REMOVED EXT-WI-CL-APP-NUMBER
+      ******************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER. 3B.
+       OBJECT-COMPUTER. 3B.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       COPY "LIBLP/LPFSWK.CPY".
+       I-O-CONTROL.
+       DATA DIVISION.
+       FILE SECTION.
+       COPY "LIBLP/LPFDWK.CPY".
+
+
+       WORKING-STORAGE SECTION.
+       77  SCCS-IDENTIFIER PIC X(41) VALUE
+           "@(#)LP/LONPFA.CBL S35 04/17/24-09:33:51 >".
+      **************************************************
+      *     P R O G R A M   W O R K E R S              *
+      **************************************************
+       COPY "LIBLP/LP01DL.CPY".
+       COPY "LIBLP/LP01DL_SQL.CPY".
+       COPY "LIBLP/LPWSDL.CPY".
+       COPY "LIBLP/LP01LP.CPY".
+       COPY "LIBLP/LP01LP_SQL.CPY".
+       COPY "LIBLP/LPWSLP.CPY".
+       COPY "LIBLP/LP01LX.CPY".
+       COPY "LIBLP/LPWSLX.CPY".
+       COPY "LIBLP/LP01LXG.CPY".
+       COPY "LIBLP/LPWSLXG.CPY".
+       COPY "LIBLP/LP01LXE.CPY".
+       COPY "LIBLP/LPWSLXE.CPY".
+       COPY "LIBLP/LP01SP.CPY".
+       COPY "LIBLP/LP01SPA.CPY".
+       COPY "LIBLP/LP01SPB.CPY".
+       COPY "LIBLP/LP01SPC.CPY".
+       COPY "LIBLP/LP01SP_SQL.CPY".
+       COPY "LIBLP/LPWSSP.CPY".
+       COPY "LIBLP/LP01CA.CPY".
+       COPY "LIBLP/LP01CA_SQL.CPY".
+       COPY "LIBLP/LPWSCA.CPY".
+       COPY "LIBLP/LP01CD.CPY".
+       COPY "LIBLP/LP01CD_SQL.CPY".
+       COPY "LIBLP/LPWSCD.CPY".
+       COPY "LIBGB/GB01BR.CPY".
+       COPY "LIBGB/GB01BR_SQL.CPY".
+       COPY "LIBGB/GBWSBR.CPY".
+       COPY "LIBGB/GB01GB.CPY".
+       COPY "LIBGB/GB01GB_SQL.CPY".
+       COPY "LIBGB/GBWSGB.CPY".
+       COPY "LIBLP/LP01LN.CPY".
+       COPY "LIBLP/LP01LTP.CPY".
+       COPY "LIBLP/LP01LTP_SQL.CPY".
+       COPY "LIBLP/LPWSLTP.CPY".
+       COPY "LIBLP/LP01LTI.CPY".
+       COPY "LIBLP/LP01LTI_SQL.CPY".
+       COPY "LIBLP/LPWSLTI.CPY".
+
+       01  WK-IFN                PIC XX       VALUE "WK".
+
+       01  WK-KEY                PIC 9(2)     VALUE 0.
+
+       01  DISP-REV-BAL          PIC X                  VALUE "Y".
+       01  ELE                   PIC 99       COMP      VALUE 0.
+       01  TOTEARN               PIC S9(6)V99 COMP.
+       01  UNEARNED              PIC S9(6)V99 COMP.
+       01  LN-WK                 PIC 9(6)     COMP      VALUE 0.
+
+       01  HOLD-LP-TRCD          PIC XX.
+           88  HOLD-LP-TRCD-ONESTEP-RN                VALUE
+      *        "PB" "RN" "SC" "RB" "RO".
+               "PB" "RN" "SC".
+
+      *----------------------------------------------------------------
+      * SAVE-LP-REFER: USED WITH HOLD-BR-TENDER-CD
+      *                TO COMPARE FIRST TWO CHARACTERS OF REFERENCE SO THAT
+      *          CASH BACK WINDOW WILL OPEN IF OPERATORS INITIALS ARE ENTERED
+      *          WITH CA AND PR.
+      * HOLD-BR-TENDER-CD: USED TO BREAK DOWN BR-TENDER-CD SO THAT THE
+      *        FIRST TWO CHARACTERS ONLY CAN BE COMPARED.
+      *----------------------------------------------------------------
+       01  HOLD-BR-TENDER-CDX   OCCURS 3.
+           03  HOLD-BR-TENDER-CD    PIC X(2).
+           03  FILLER               PIC X(3).
+
+      *01  TEST-ALPHA-TILLNO      PIC X.
+      *01  NUMERIC-TILLNO         PIC 99.
+      *01  NUMERIC-TILLNOX REDEFINES NUMERIC-TILLNO.
+      *    03  FILLER             PIC X.
+      *    03  NUMERIC-TILLNO1    PIC 9.
+
+       01  MSUB                     PIC S9(5)   COMP VALUE +0.
+       01  SAVE-LP-REFNO            PIC X(5).
+       01  SAVE-LP-REFNOX  REDEFINES SAVE-LP-REFNO.
+           03  SAVE-LP-REFER        PIC X(2).
+           03  FILLER               PIC X(3).
+
+       01  DLRECAP-PERCENT       PIC S9(6)V999999999  COMP.
+       01  DLRECAP-WORK          PIC S9(7)V99         COMP.
+       01  GL-WORK               PIC S9(7)V99         COMP.
+       01  HOLD-LN-PURBAL        PIC 9(6)V99          COMP.
+
+       01  MIP-CL-MESS.
+           03  FILLER           PIC X(4)  VALUE " (CL".
+           03  MIP-CL           PIC ZZZZZZ9.99.
+           03  FILLER           PIC X     VALUE ")".
+       01  MIP-AH-MESS.
+           03  FILLER           PIC X(4)  VALUE " (AH".
+           03  MIP-AH           PIC ZZZZZZ9.99.
+           03  FILLER           PIC X     VALUE ")".
+       01  MIP-COLLECTED        PIC X(29) VALUE
+           " MIP INSURANCE WAS COLLECTED!".
+
+      * -----------------------------------------------------
+      * THESE FIELDS ARE PART OF CALL TO CL/PENALT:
+       01  SV-INDU-INTEREST      PIC S9(5)V99 COMP.
+       01  SV-INDU-PENALTY       PIC S9(5)V99 COMP.
+      * -----------------------------------------------------
+
+       01  SV-LCAP-OWE           PIC S9(5)V99 COMP.
+       01  ORIG-PAYMNTD          PIC S9(7)V99 COMP.
+       01  SV-WORKER             PIC S9(7)V99 COMP.
+       01  SV-RATE               PIC 9V999999  COMP.
+       01  ADJSUB                PIC 9(6) COMP       VALUE 0.
+       01  SUB                   PIC 9(6) COMP       VALUE 0.
+       01  SUB1                  PIC 9(6) COMP       VALUE 0.
+
+       01  PUR-BAL-EXCEEDED.
+           03  FILLER            PIC X(20)           VALUE
+           "THE PURCHASE BAL IS".
+           03  PURBAL-EXCEEDED   PIC ZZZZ9.99-.
+
+       01  REBATE-DISP-TAB       PIC X(22)           VALUE
+           "RCRARPRIRSRMRDRER1R2R3".
+       01  REBATE-DISP-RED      REDEFINES REBATE-DISP-TAB.
+           03  REB-TYPE          PIC XX  OCCURS 11.
+
+       01  EXPIRED-RB-TAB        PIC X(8).
+       01  FILLER               REDEFINES EXPIRED-RB-TAB.
+           03  EXPIRED-RB-FG     PIC X   OCCURS 8.
+
+       01  TEST-USER-PROFILE           PIC X.
+
+       01  SV-PASSWORD-DRAWER  PIC X                VALUE "N".
+
+       01  GLNO                PIC 9(11)            VALUE 0.
+       01  FILLER              REDEFINES GLNO.
+           03  GLNO-BR         PIC 9(4).
+           03  GLNO-NUMBER     PIC 9(7).
+
+      **************************************************
+      *         ORDER LINE BUFFER                      *
+      **************************************************
+       01  LN-BUF              VALUE " ".
+           03  L-010           PIC 9(6).
+           03  FILLER          PIC X.
+           03  L-020           PIC XX.
+           03  FILLER          PIC X.
+           03  L-030           PIC X(5).
+           03  L-040           PIC Z(5).99- BLANK ZERO.
+           03  L-040RATE       REDEFINES L-040
+                               PIC ZZZZ.999-.
+           03  L-050           PIC Z(4).99- BLANK ZERO.
+           03  L-060           PIC Z(4).99- BLANK ZERO.
+           03  L-070           PIC Z(5).99- BLANK ZERO.
+           03  L-080           PIC 9(4)     BLANK ZERO.
+           03  L-090           PIC Z(5).99- BLANK ZERO.
+           03  L-100           PIC Z(4).99- BLANK ZERO.
+           03  L-110           PIC Z(5)9.99-.
+           03  FILLER         REDEFINES L-110.
+               05  FILLER      PIC X(9).
+               05  L-120       PIC X.
+      * DISPLAY BUFFER USED IS PRINCIPAL IS OVER 99,999.99
+      * LEFT OUT PAID THRU, DOESNT MATTER ON A PAYOFF
+       01  LN2-BUF             REDEFINES LN-BUF.
+           03  L2-010          PIC 9(6).
+           03  FILLER          PIC X.
+           03  L2-020          PIC XX.
+           03  FILLER          PIC X.
+           03  L2-030          PIC X(5).
+           03  L2-040          PIC Z(7).99- BLANK ZERO.
+           03  L2-050          PIC Z(4).99- BLANK ZERO.
+           03  L2-060          PIC Z(5).99- BLANK ZERO.
+           03  L2-070          PIC Z(6).99- BLANK ZERO.
+           03  FILLER          PIC X.
+           03  L2-090          PIC Z(5).99- BLANK ZERO.
+           03  L2-100          PIC Z(4).99- BLANK ZERO.
+           03  L2-110          PIC Z(5)9.99-.
+           03  FILLER         REDEFINES L2-110.
+               05  FILLER      PIC X(9).
+               05  L2-120      PIC X.
+
+       01  EARN-BUF            REDEFINES LN-BUF.
+           03  D-INTYTD        PIC ZZZZ9.99-.
+           03  D-TOTEARN       PIC ZZZZ9.99-.
+           03  D-LCPDTH        PIC 9999.
+           03  FILLER         REDEFINES D-LCPDTH.
+               05 D-LCPDTH-MO   PIC 99.
+               05 D-LCPDTH-DAYR PIC 99.
+           03  D-EARNED        PIC ZZZZ9.99-.
+           03  D-DLPROC        PIC ZZZZ9.99-.
+      *    CANNOT REDEFINE - SEE SETUP-LINE ROUTINE
+       01  ENTRY-BUF           VALUE " ".
+           03  EB-010          PIC 9(6).
+           03  EB-020          PIC XX.
+           03  EB-030          PIC X(5).
+           03  EB-040          PIC Z(5).99- BLANK ZERO.
+           03  EB-040RATE      REDEFINES EB-040
+                               PIC ZZZZ.999-.
+           03  EB-050          PIC Z(4).99- BLANK ZERO.
+           03  EB-060          PIC Z(4).99- BLANK ZERO.
+           03  EB-070          PIC Z(5).99- BLANK ZERO.
+           03  EB-080          PIC 9(4)     BLANK ZERO.
+           03  FILLER  REDEFINES EB-080.
+               05 EB-080-MO    PIC 99.
+               05 EB-080-DAYR  PIC 99.
+           03  EB-090          PIC Z(5).99- BLANK ZERO.
+           03  EB-100          PIC Z(4).99- BLANK ZERO.
+           03  FILLER      PIC X(9).
+           03  EB-120      PIC X.
+
+       01  PAYOFF-LINES-01.
+           03  PAYOFF-LINES-03.
+               05  PAYOFF-LINES OCCURS 15 TIMES PIC X(80).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  PHASE-1         PIC X(640).
+               05  FILLER          PIC X(560).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(80).
+               05  PHASE-2         PIC X(640).
+               05  FILLER          PIC X(480).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(160).
+               05  PHASE-3         PIC X(640).
+               05  FILLER          PIC X(400).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(240).
+               05  PHASE-4         PIC X(640).
+               05  FILLER          PIC X(320).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(320).
+               05  PHASE-5         PIC X(640).
+               05  FILLER          PIC X(240).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(400).
+               05  PHASE-6         PIC X(640).
+               05  FILLER          PIC X(160).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(480).
+               05  PHASE-7         PIC X(640).
+               05  FILLER          PIC X(080).
+           03  FILLER REDEFINES PAYOFF-LINES-03.
+               05  FILLER          PIC X(560).
+               05  PHASE-8         PIC X(640).
+
+       01  LINE-BUF            VALUE " ".
+           03  D-LINE          OCCURS 8 TIMES
+                               PIC X(80).
+
+       01  LINE-LIST.
+           03  FILLER          PIC X(4) VALUE
+           "LN1 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL8 F21 GD8 F22 GA8 F23 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL9 F31 GD9 F32 GA9 F33 ".
+           03  FILLER          PIC X(24) VALUE
+           "GL0 F41 GD0 F42 GA0 F43 ".
+           03  FILLER          PIC X(32)    VALUE
+           "GL1 F51 GD1 F52 GA1 F53 GL2 F61 ".
+           03  FILLER          PIC X(40)    VALUE
+           "GD2 F62 GA2 F63 GL3 F71 GD3 F72 GA3 F73 ".
+           03  FILLER          PIC X(24)    VALUE
+           "GL4 F81 GD4 F82 GA4 F83.".
+
+       01  ENTRY-LINE          PIC X(48)    VALUE
+           "010 020 030 040 050 060 070 080 090 100 110 120.".
+
+
+       01  EARN-LIST.
+           03  FILLER          PIC X(25) VALUE
+           "H09 H10 H17 H21 PROCEEDS.".
+
+       01  POFF-QUESTION1      PIC X(31)
+           VALUE "ADD IN WAIVED LATE CHG (Y/N) : ".
+       01  POFF-QUESTION2      PIC X(31)
+           VALUE "KEEP CL  INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION3      PIC X(31)
+           VALUE "KEEP A&H INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION4      PIC X(31)
+           VALUE "KEEP PP  INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION5      PIC X(31)
+           VALUE "KEEP OT1 INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION6      PIC X(31)
+           VALUE "KEEP OT2 INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION7      PIC X(31)
+           VALUE "KEEP OT3 INS. IN FORCE (Y/N) : ".
+       01  POFF-QUESTION8      PIC X(31)
+           VALUE "ADD IN WAIVED INTEREST (Y/N) : ".
+
+       01  ANSWERS.
+           03  POFF-ANSWER-03.
+               05  POFF-ANSWER         PIC X OCCURS 8.
+           03  FILLER                 REDEFINES POFF-ANSWER-03.
+               05  POFF-ANSWER1        PIC X.
+                   88  VALID-POFF-ANSWER1   VALUES 'Y' 'N'.
+               05  POFF-ANSWER2        PIC X.
+                   88  VALID-POFF-ANSWER2   VALUES 'Y' 'N'.
+               05  POFF-ANSWER3        PIC X.
+                   88  VALID-POFF-ANSWER3   VALUES 'Y' 'N'.
+               05  POFF-ANSWER4        PIC X.
+                   88  VALID-POFF-ANSWER4   VALUES 'Y' 'N'.
+               05  POFF-ANSWER5        PIC X.
+                   88  VALID-POFF-ANSWER5   VALUES 'Y' 'N'.
+               05  POFF-ANSWER6        PIC X.
+                   88  VALID-POFF-ANSWER6   VALUES 'Y' 'N'.
+               05  POFF-ANSWER7        PIC X.
+                   88  VALID-POFF-ANSWER7   VALUES 'Y' 'N'.
+               05  POFF-ANSWER8        PIC X.
+                   88  VALID-POFF-ANSWER8   VALUES 'Y' 'N'.
+
+       01  WORK-EFFECT.
+           03  WK-EFF              PIC X OCCURS 8.
+       01  POFF-WAIVE-MSG.
+           03  FILLER              PIC X(20) VALUE
+           "<-- TOTAL AMOUNT IS ".
+           03  POFF-WAIVE-LIMIT    PIC ZZ,ZZ9.99.
+       01  WORK-LCWAIVERS          PIC S9(5)V99  COMP VALUE 0.
+       01  WORK-INTWAIVERS         PIC S9(5)V99  COMP VALUE 0.
+       01  WORK-XXWAIVERS          PIC S9(5)V99  COMP VALUE 0.
+       01  WORK-REBATE-TAB.
+           03  WORK-RB-TAB         PIC X OCCURS 13.
+
+       01  SCR-ALL.
+           03  SCR-1               PIC X(8).
+           03  SCR-2               PIC S9.
+           03  SCR-3               PIC XX.
+       01  SCRX-ALL                REDEFINES SCR-ALL.
+           03  SCRX-1              PIC X(9).
+           03  SCRX-2              PIC S9.
+           03  SCRX-3              PIC X.
+       01  GA0-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA0-LIST      PIC X(4) VALUE "GA0.".
+       01  GA1-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA1-LIST      PIC X(4) VALUE "GA1.".
+       01  GA2-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA2-LIST      PIC X(4) VALUE "GA2.".
+       01  GA3-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA3-LIST      PIC X(4) VALUE "GA3.".
+       01  GA4-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA4-LIST      PIC X(4) VALUE "GA4.".
+       01  GA8-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA8-LIST      PIC X(4) VALUE "GA8.".
+       01  GA9-BUF       PIC ZZZ,ZZZ.99-.
+       01  GA9-LIST      PIC X(4) VALUE "GA9.".
+
+       01  OVERRIDE-LIST.
+           03  FILLER                PIC X(32)   VALUE
+           "01A 01B 02A 02B 03A 03B 04A 04B ".
+           03  FILLER                PIC X(32)   VALUE
+           "05A 05B 06A 06B 07A 07B 08A 08B ".
+           03  FILLER                PIC X(8)    VALUE
+           "09A 09B.".
+       01  OVERRIDE-BUF.
+           03  FILLER                OCCURS 3.
+               05  ORIG-DLRVCHGS     PIC Z(5)9.99-.
+               05  CALC-DLRVCHGS     PIC Z(5)9.99-.
+
+           03  ORIG-DLPARVHELD       PIC Z(5)9.99-.
+           03  CALC-DLPARVHELD       PIC Z(5)9.99-.
+
+           03  ORIG-DLPARVPAID       PIC Z(5)9.99-.
+           03  CALC-DLPARVPAID       PIC Z(5)9.99-.
+
+           03  ORIG-UNEARN           PIC Z(5)9.99-.
+           03  CALC-UNEARN           PIC Z(5)9.99-.
+
+           03  ORIG-ADDON            PIC Z(5)9.99-.
+           03  CALC-ADDON            PIC Z(5)9.99-.
+
+           03  ORIG-TOTAL            PIC Z(5)9.99-.
+           03  CALC-TOTAL            PIC Z(5)9.99-.
+
+      * USED IN CALL TO CL/OVPAID.C
+      *01  OVPAID-BUF.
+      *    03  OVPAID-CKAMT          PIC 9(6)V99.
+      *    03  OVPAID-TRAMT          PIC 9(6)V99.
+      *    03  OVPAID-CHECK          PIC 9(6)V99.
+       COPY "LIBCL/OVPAIDW.CPY".
+
+       COPY "LIBWI/MEMOSCW.CPY".
+       COPY "LIBGB/CAPASSWDW.CPY".
+       COPY "LIBGB/PASSWDW.CPY".
+       78  ONESTEP-RN-SEQ            VALUE 0.
+       78  REPO-EFF-SEQ              VALUE 1.
+       78  ALLOW-OV-SEQ              VALUE 2.
+
+       COPY "LIBWI/PFSWINDOWSW.CPY".
+       COPY "LIBCL/CLMENUW_EXT.CPY".
+
+       COPY "LIBLP/LPWKPATH.CPY".
+       COPY "LIBLP/LPPOFFW.CPY".
+       COPY "LIBLP/ADDONSPRW.CPY".
+       COPY "LIBWI/CDSCANW.CPY".
+       COPY "LIBLP/LPIBPCW.CPY".
+       COPY "LIBLP/LPRATEW.CPY".
+       COPY "LIBLP/LPXDTEW.CPY".
+       COPY "LIBLP/LPEADJW.CPY".
+       COPY "LIBWI/LNRNEWW.CPY".
+       COPY "LIBWI/LNPBRNW.CPY".
+       COPY "LIBLP/LPITRMW.CPY".
+       COPY "LIBLP/LPLCASW.CPY".
+       COPY "LIBGB/SPPDTHW.CPY".
+       COPY "LIBLP/LPSCHDW.CPY".
+       COPY "LIBLP/LPLCHGW.CPY".
+       COPY "LIBLP/LPLCAPW.CPY".
+       COPY "LIBLP/LPMDTEW.CPY".
+       COPY "LIBLP/LPBWINW.CPY".
+       COPY "LIBGB/DATERW.CPY".
+       COPY "LIBLP/SETCTBLW.CPY".
+       COPY "LIBGB/TIMEWK.CPY".
+       COPY "LIBGB/REBATEW.CPY".
+       COPY "LIBLP/LPAPRZW.CPY".
+       COPY "LIBLP/LPUPERW.CPY".
+       COPY "LIBLP/LPUPWKW.CPY".
+       COPY "LIBLP/LPAPRSW.CPY".
+       COPY "LIBLP/LPAMTSW.CPY".
+       COPY "LIBLP/LPMENUW.CPY".
+       COPY "LIBLP/LPCEPPW.CPY".
+       COPY "LIBLP/LPCDELW.CPY".
+       COPY "LIBLP/LPPDUEW.CPY".
+       COPY "LIBGB/GPENVW.CPY".
+
+       COPY "LIBGB/CONNECTW_SQL.CPY".
+       COPY "LIBGB/FILEWK.CPY".
+       COPY "LIBGB/MESSWK.CPY".
+       COPY "LIBGL/ALLENTW.CPY".
+
+       COPY "LIBGB/SYSTEMW.CPY".
+       COPY "LIBGB/GETENVW.CPY".
+       COPY "LIBLP/AFPDLLPW.CPY".
+       COPY "LIBGB/RBACTW.CPY".
+
+       COPY "LIBGB/CONAME_EXT.CPY".
+       COPY "LIBGB/SCREENW.CPY".
+       COPY "LIBLP/LONPF_DEF.CPY".
+       COPY "LIBLP/LPSMNU_DEF.CPY".
+       COPY "LIBLP/LPLNMU_DEF.CPY".
+       COPY "LIBLP/LPCAMU_DEF.CPY".
+       COPY "LIBLP/LPVDMU_DEF.CPY".
+       COPY "LIBWI/DLPAR1_DEF.CPY".
+       COPY "LIBLP/LONPF_WKS.CPY".
+       COPY "LIBLP/LPSMNU_WKS.CPY".
+       COPY "LIBLP/LPLNMU_WKS.CPY".
+       COPY "LIBLP/LPCAMU_WKS.CPY".
+       COPY "LIBLP/LPVDMU_WKS.CPY".
+       COPY "LIBWI/DLPAR1_WKS.CPY".
+       COPY "LIBGB/HELPLINK.CPY".
+
+      /*************************************************
+      *   C O N T R O L   M O D U L E                  *
+      **************************************************
+       COPY "LIBGB/GETFMW.CPY".
+       COPY "LIBLP/LPPFBUF.CPY".
+       COPY "LIBLP/LPLOANW.CPY".
+
+       SCREEN SECTION.
+       COPY "LIBLP/LONPF_SCN.CPY".
+       COPY "LIBLP/LPSMNU_SCN.CPY".
+       COPY "LIBLP/LPLNMU_SCN.CPY".
+       COPY "LIBLP/LPCAMU_SCN.CPY".
+       COPY "LIBLP/LPVDMU_SCN.CPY".
+       COPY "LIBWI/DLPAR1_SCN.CPY".
+
+       PROCEDURE DIVISION
+             USING FORM-PATHNAME EXIT-PATHNAME PROG-BUF UPDATE-BUF.
+       DECLARATIVES.
+       DECLARE-ERROR SECTION.
+           USE AFTER ERROR PROCEDURE ON
+              WK-FILE.
+       COPY "LIBGB/DECLARE.CPY".
+           PERFORM CLOSE-SP1-FILE.
+           PERFORM CLOSE-LTP1-FILE.
+           PERFORM CLOSE-LTI1-FILE.
+           PERFORM CLOSE-LP1-FILE.
+           PERFORM CLOSE-DL1-FILE.
+           PERFORM CLOSE-CD1-FILE.
+           PERFORM CLOSE-CA1-FILE.
+           PERFORM CLOSE-BR-FILE.
+           PERFORM CLOSE-GB-FILE.
+           CLOSE WK-FILE.
+       COPY "LIBGB/DECLAR2.CPY".
+
+      **************************************************
+      *      P R O G R A M   C O N T R O L             *
+      **************************************************
+       MAIN-PROGRAM SECTION.
+
+           PERFORM SQL-CONNECT.
+
+      D    STOP MESS.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "LONPF" TO VDU-FORM-NAME.
+
+           MOVE USER-PID TO TEMP-PID.
+
+           IF INTERRUPT-FG = "Y"
+              MOVE " " TO VDU-WIMENU-SELECTION
+           ELSE
+              MOVE "C" TO VDU-WIMENU-SELECTION.
+           MOVE "F" TO VDU-CLMENU-SELECTION.
+
+
+           MOVE BATCH-REFCD       TO POFF-LCAP-BATCH-REFCD.
+           MOVE BATCH-REFCD-LC-FG TO POFF-LCAP-BATCH-REFCD-LC-FG.
+
+           MOVE 0 TO IO-FG.
+           MOVE SPACES TO ERRCD ROUTE-CD.
+
+           PERFORM RESTORE-SCREEN.
+
+           PERFORM GET-GPENV.
+
+           MOVE LN-TOTPAYMNTD TO ORIG-PAYMNTD.
+
+           PERFORM OPEN-SP1-FILE.
+      * MUST LEAVE SP1-FILE OPEN BECAUSE ADDONSPR READS IT
+           MOVE HOLD-SP1-KEY TO SP1-KEY.
+           PERFORM READ-SP1-FILE.
+           IF IO-FG NOT = 0
+              MOVE "INVALID STATE PARAMETER RECORD" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+
+      * ALLOW CNTRL 'N' INTERRUPT:
+           MOVE "WI/MAKERS" TO VDU-CTRL-N-PROG.
+
+           MOVE LN-OWNBR TO BR-NO.
+           PERFORM OPEN-BR-FILE.
+           PERFORM READ-BR-FILE.
+           PERFORM CLOSE-BR-FILE.
+           IF IO-FG NOT = 0
+              MOVE "INVALID BRANCH RECORD" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+
+      * NEED FOR LCAS ROUTINES (REPLACES GLOBRD)
+           PERFORM OPEN-GB-FILE.
+           MOVE GB-PATH-OWNBR TO GB-BRNO.
+           MOVE 1             TO GB-NO.
+           PERFORM READ-GB-FILE.
+           PERFORM CLOSE-GB-FILE.
+           IF IO-BAD
+              MOVE "INVALID GLOBAL RECORD" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              MOVE "X" TO ERRCD
+              GO TO END-ROUTINE.
+              
+      * MOVED READ OF DL1 HERE FOR PARTICIPATION ADJUSTMENTS:
+           IF LN-SALEFIN = "Y"
+              MOVE LN-DLNO TO DL-DLNO
+              PERFORM GET-DL
+              IF IO-FG NOT = 0
+                 MOVE "INVALID DEALER RECORD" TO MESS
+                 PERFORM CONDITIONAL-SEND-MESS
+                 MOVE "X" TO ROUTE-CD
+                 GO TO END-ROUTINE.
+
+           MOVE 0 TO INDU-INTEREST INDU-PENALTY
+                     LCAP-APP      LCAP-OWE.
+           MOVE LN-LCPDTH-DATE TO LCAP-LCPDTH-DATE.
+
+      * THESE FIELDS MUST BE CLEARED AT PROGRAM INCEPTION
+      * FOR POSSIBLE CALL TO CL/OVPAID.C
+      
+           MOVE 0 TO OVPAID-CKAMT
+                     OVPAID-TRAMT
+                     OVPAID-CHECK.
+      * WHEN = '9A' OR '9X' OR '95' OR '96' OR '97' OR '99' HOLD-OVPAID-CHECK
+      *        WAS SET IN LONPW5, LONPW6, LONPW7, LONPW8 OR LONPW9
+           IF NOT (HOLD-BP-TRCD = "9A" OR "9X" OR "95"
+                                       OR "96" OR "97" OR "99"
+                  )
+              MOVE 0 TO HOLD-OVPAID-CHECK.
+
+      * TEST ENVIRONMENT VARIABLE "RVLINES" TO DETERMINE WHETHER
+      * OR NOT TO DISPLAY BALANCES ON REVERSALS.
+      
+           MOVE "RVLINES" TO GETENV-BUF.
+           PERFORM GETENV-CALL.
+           IF STAT = "00"
+              MOVE "N" TO DISP-REV-BAL
+           ELSE
+              MOVE "Y" TO DISP-REV-BAL.
+
+      *--------------------------------------------------------------
+      * USE SAME FLAG THAT BATCH PAYMENT USES TO CALL LONPFC.
+      * THIS PROGRAM, LONPFA,
+      *        IS CALLED FROM LONPQ1 - RESCISSION RENEWAL
+      *
+      *    AND WHEN HOLD-OVPAID-CHECK = '9A' OR '9X' OR '95'
+      *                                      OR '96' OR '97' OR '99'
+      *        WAS CALLED FROM LONPW5 - BATCH PAYMENT UPDATE
+      *        WAS CALLED FROM LONPW6 - BATCH LOCKBOX PAYMENT UPDATE
+      *        WAS CALLED FROM LONPW7 - BATCH TRUEPAY PAYMENT UPDATE
+      *        WAS CALLED FROM LONPW8 - BATCH MGRAM   PAYMENT UPDATE
+      *        WAS CALLED FROM LONPW9 - BATCH REFCD   PAYMENT UPDATE
+      *--------------------------------------------------------------
+           IF HOLD-BP-TRCD = "9A" OR "9X" OR "95"
+                                  OR "96" OR "97" OR "99"
+              PERFORM AUTO-NONCASH
+           ELSE
+           IF HOLD-BP-TRCD NOT = " "
+              PERFORM AUTO-RENEWAL
+           ELSE
+              PERFORM SELECTION-MODULE.
+
+           GO TO END-ROUTINE.
+
+      **********************************************************************
+      *    AUTOMATIC NONCASH PAYOFF
+      *    WHEN HOLD-BP-TRCD = "9A" OR "9X" OR "95" OR "96" OR "97" OR "99"
+      *       CALLED FROM LONPW5 - BATCH PAYMENT UPDATE
+      *       CALLED FROM LONPW6 - BATCH LOCKBOX PAYMENT UPDATE
+      *       CALLED FROM LONPW7 - BATCH TRUEPAY PAYMENT UPDATE
+      *       CALLED FROM LONPW8 - BATCH MGRAM   PAYMENT UPDATE
+      *       CALLED FROM LONPW9 - BATCH REFCD   PAYMENT UPDATE
+      **********************************************************************
+       AUTO-NONCASH SECTION.
+           MOVE "PO" TO LP-TRCD.
+           PERFORM PAYOFF-ROUTINE.
+
+           IF LP-IBPC =  "P"
+              MOVE POFF-PARTIALS TO HOLD-PARTIALS
+              MOVE POFF-LCPAID   TO HOLD-LCPAID.
+
+           PERFORM DISPLAY-ENTRY-LINE.
+           IF ROUTE-CD = "7"
+              GO TO EXIT-AUTO-NONCASH.
+
+           IF LP-APCUR < 0
+              MOVE "ACCOUNT IS OVER PAID, PLEASE ADJUST!" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO EXIT-AUTO-NONCASH.
+
+           IF LP-CURBAL = 0
+              IF LP-INTBAL NOT = 0 OR LP-OTHBAL NOT = 0 OR
+                  LP-LCBAL NOT = 0 OR LP-OT2BAL NOT = 0
+                 PERFORM MUST-BE-ALL-ZERO
+                 GO TO EXIT-AUTO-NONCASH.
+
+           MOVE 0 TO CA-TILLNO LP-TILLNO.
+
+      *    1/29/07  BATCH PAYOFF OF LOAN OTHER OTHER BALANCE PUT GL
+      *             OUT OF BALANCE....TOOK LOGIC FROM LONPFC TO
+      *             GET THE APPLIED TO OTHER & GL ACCT IN TP GL
+      *             TABLE HERE.  BARB & CINDY, REGIONAL PL# 572
+
+           IF LP-APOTH NOT = 0
+              PERFORM OPEN-CD1-FILE
+              MOVE "BR"        TO CD-TYPE
+              MOVE LP-REFNO    TO CD-CODE
+              PERFORM READ-CD1-FILE
+              PERFORM CLOSE-CD1-FILE
+              IF IO-GOOD
+                 IF (CD-BR-FILE-TYPE NOT = "LC" AND NOT = "C")
+                    IF CD-BR-OT-GL-BRANCH = 0
+                       MOVE LN-OWNBR           TO GLNO-BR
+                    ELSE
+                       MOVE CD-BR-OT-GL-BRANCH TO GLNO-BR
+                    END-IF
+                    MOVE CD-BR-OT-GL-ACCT   TO GLNO-NUMBER
+                    MOVE GLNO               TO LXG-GLNO(1)
+                    MOVE LP-APOTH           TO LXG-GLAMT(1).
+
+       AUTO-NONCASH-APPLY-OTHER-SKIP.
+           MOVE INDU-INTEREST TO LP-INTDUE.
+           MOVE INDU-PENALTY  TO LP-PREPAY-PENALTY.
+           ADD LCAP-APP TO LP-APINTOWE.
+           ADD LCAP-OWE TO LP-APINTOWE.
+
+           PERFORM SAVE-SCREEN.
+
+       EXIT-AUTO-NONCASH.
+           EXIT.
+
+      *****************************************
+       AUTO-RENEWAL SECTION.
+      *****************************************
+
+      * AUTOMATIC RENEWAL PAYOFF
+
+           PERFORM PAYOFF-ROUTINE.
+
+           IF LP-IBPC =  "P"
+              MOVE POFF-PARTIALS TO HOLD-PARTIALS
+              MOVE POFF-LCPAID TO HOLD-LCPAID.
+
+           PERFORM DISPLAY-ENTRY-LINE.
+           IF ROUTE-CD = "7"
+              GO TO EXIT-AUTO-RENEWAL.
+
+           IF LP-APCUR < 0
+              MOVE "ACCOUNT IS OVER PAID, PLEASE ADJUST!" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO EXIT-AUTO-RENEWAL.
+
+           IF LP-CURBAL = 0
+              IF LP-INTBAL NOT = 0 OR LP-OTHBAL NOT = 0 OR
+                  LP-LCBAL NOT = 0 OR LP-OT2BAL NOT = 0
+                 PERFORM MUST-BE-ALL-ZERO
+                 GO TO EXIT-AUTO-RENEWAL.
+
+           MOVE 0 TO CA-TILLNO LP-TILLNO.
+
+       AUTO-RENEWAL-APPLY-OTHER.
+           MOVE LP-APOTH TO GL-WORK.
+
+           IF GL-WORK NOT = 0
+              IF LXG-GLNO(1) = 0
+                 MOVE "Y" TO ALLENT-STATUS
+                 PERFORM DISBURSE-OTHER-APPLIED
+                 IF ALLENT-STATUS = "N"
+                    PERFORM DISBURSE-OTHER-INIT
+      * CAN NOT GET PAST HERE WITHOUT DISBURSING.....OR OUT OF BALANCE !!
+                    GO TO AUTO-RENEWAL-APPLY-OTHER.
+      *             GO TO EXIT-AUTO-RENEWAL.
+
+           MOVE INDU-INTEREST TO LP-INTDUE.
+           MOVE INDU-PENALTY  TO LP-PREPAY-PENALTY.
+           ADD LCAP-APP TO LP-APINTOWE.
+           ADD LCAP-OWE TO LP-APINTOWE.
+
+           PERFORM SAVE-SCREEN.
+
+       EXIT-AUTO-RENEWAL.
+           EXIT.
+
+      *****************************************
+       SELECTION-MODULE SECTION.
+      *****************************************
+           MOVE 0 TO HOLD-DLRVCHGS-ADJ(1)
+                     HOLD-DLRVCHGS-ADJ(2)
+                     HOLD-DLRVCHGS-ADJ(3)
+                     HOLD-DLPARVHELD-ADJ
+                     HOLD-DLPARVPAID-ADJ.
+
+           PERFORM PAYOFF-ROUTINE.
+           IF ROUTE-CD = "7"
+              PERFORM ACCEPT-SCREEN-RESET
+              PERFORM DISPLAY-ENTRY-UP
+              IF ROUTE-CD NOT = " "
+                 PERFORM CLEAR-LEGEND
+              END-IF
+              GO TO RET-TO-ENTRY-ROUTINE.
+
+           IF LP-IBPC =  "P"
+              MOVE POFF-PARTIALS TO HOLD-PARTIALS
+              MOVE POFF-LCPAID TO HOLD-LCPAID.
+
+           PERFORM DISPLAY-ENTRY-LINE.
+           IF ROUTE-CD = "7"
+              PERFORM ACCEPT-SCREEN-RESET
+              PERFORM DISPLAY-ENTRY-UP
+              IF ROUTE-CD NOT = " "
+                 PERFORM CLEAR-LEGEND
+              END-IF
+              GO TO RET-TO-ENTRY-ROUTINE.
+
+           PERFORM ACCEPT-ENTRY-ROUTINE.
+           IF ROUTE-CD = "7"
+              GO TO RET-TO-ENTRY-ROUTINE.
+
+           MOVE INDU-INTEREST TO LP-INTDUE.
+           MOVE INDU-PENALTY  TO LP-PREPAY-PENALTY.
+           ADD LCAP-APP TO LP-APINTOWE.
+           ADD LCAP-OWE TO LP-APINTOWE.
+
+           MOVE LPLOAN-USERID TO TEST-USER-PROFILE.
+
+      * MEMO ENTRY FOR BACKDATED POFFS
+           IF (GP-BACKDATE-MEMO = "N" OR " ") OR
+                  LP-PAYDATE = LP-TRDATE
+               GO TO SKIP-BACKDATE-MEMO.
+
+           IF GP-BACKDATE-MEMO = "Y" OR
+              TEST-USER-PROFILE > GP-BACKDATE-MEMO
+                MOVE LN-OWNBR         TO EXT-WI-CL-OWNBR
+                MOVE LN-ACCTNO        TO EXT-WI-CL-ACCTNO
+      *         MOVE LN-APP-NUMBER    TO EXT-WI-CL-APP-NUMBER
+                MOVE 1                TO EXT-WI-CL-SSNO-NO
+                MOVE LN-SSNO(1)       TO EXT-WI-CL-SSNO(1)
+                MOVE "L"              TO MEMOSC-ONLY
+      * WANT IT TO WORK EXACTLY LIKE REVERSAL MEMO, FORCES IT !
+                MOVE "P"              TO MEMOSC-MEMO-TYPE
+                MOVE "WI/MEMOSC" TO FORM-NAM
+                CALL FORM-PROGX USING FORM-PATH MEMOSC-BUF EXIT-PATHNAME
+                CANCEL FORM-PROGX.
+
+       SKIP-BACKDATE-MEMO.
+           MOVE "3" TO ROUTE-CD.
+           MOVE 2 TO NEW-PROG-SUB.
+
+           GO TO SELECTION-EXIT-PROG.
+
+       RET-TO-ENTRY-ROUTINE.
+           MOVE "1" TO NEW-PROG-SUB.
+
+       SELECTION-EXIT-PROG.
+           MOVE "P" TO ERRCD.
+           PERFORM SAVE-SCREEN.
+
+       SELECTION-MODULE-EXIT.
+           EXIT.
+
+      *************************************************
+       PAYOFF-ROUTINE SECTION.
+      *************************************************
+           MOVE " " TO ANSWERS.
+           PERFORM ASK-PAYOFF-QUESTIONS.
+           IF ROUTE-CD = "7"
+              GO TO PAYOFF-EXIT.
+
+           IF POFF-ANSWER1 = "Y"
+              ADD WORK-LCWAIVERS TO LN-LCBAL.
+
+           IF POFF-ANSWER8 = "Y"
+              ADD WORK-INTWAIVERS TO LN-INTBAL.
+
+           PERFORM SET-BAL-IBPC-LPREC.
+
+      * SET REB-LPTRCD FOR LPPOFF WHICH CALLS REBATE
+      * NEED TO KNOW 'PB', 'RN', AND 'SC' FOR SUN FINANCE SPOPT1 = 2
+           MOVE "Y"        TO REB-RECAST.
+           MOVE LP-TRCD    TO HOLD-LP-TRCD
+                              REB-LPTRCD
+                              POFF-LPTRCD.
+           MOVE LP-PAYDATE TO POFF-PAYDATE.
+           MOVE MAKER-CD   TO POFF-MAKERCD.
+           MOVE "Y"        TO POFF-LONPFA-UPD-FG
+                              POFF-DEF-STOP.
+           PERFORM PAYOFF-LOAN-ROUTINE.
+
+           IF LN-MIP-FG = "Y"
+              MOVE POFF-LXM-MIP-CLPAID      TO HOLD-LXM-MIP-CLPAID
+              MOVE POFF-LXM-MIP-CLPDTH-DATE TO HOLD-LXM-MIP-CLPDTH
+              MOVE POFF-LXM-MIP-AHPAID      TO HOLD-LXM-MIP-AHPAID
+              MOVE POFF-LXM-MIP-AHPDTH-DATE TO HOLD-LXM-MIP-AHPDTH.
+
+           MOVE POFF-ADDON-INT-EARNED TO ADDON-INT-EARNED.
+           MOVE POFF-ADDON-INT-REBATE TO ADDON-INT-REBATE.
+
+      *    IF PAYOFF OR REBATE OF SVC CHG
+      *    THEN CHECK TO SEE IF THERE WAS A GEORGIA 4% CLOSING
+      *    FEE EARLY PROVISION, IF THERE IS THEN WRITE A TRAILER RECORD. 
+      *    CHECK FOR SPACES AND FOR DEF VALUE OF 5389762.88 IN CASE 
+           MOVE POFF-REBATE(4) TO EADJ-REBATE.
+           IF POFF-REBATE(5) NOT = 0
+              IF ( POFF-LXR-REB-AMT NOT = 0
+                   AND NOT = 2020202.02
+                   AND NOT = 0202020.20
+                   AND NOT = 5389762.88 )
+                   MOVE POFF-LXR-REB-AMT TO HOLD-LXR-REB-AMT.
+
+      *    -------------------------------------------------------------
+      *    SEE IF WISCONSIN, NEW SOUTH OR CAROLINA FINANCE EARLY PAYOFF
+      *    PENALTY, IF SO OPEN WINDOW FOR DISPLAY AND EDIT:
+      *    -------------------------------------------------------------
+           IF SP-RBREDUC(7) = 9999.03 OR 9999.04 OR 9999.05 OR 9999.06
+              MOVE INDU-INTEREST TO SV-INDU-INTEREST
+              MOVE INDU-PENALTY  TO SV-INDU-PENALTY
+              MOVE "CL/PENALT" TO FORM-NAM
+              CALL FORM-PROGX USING FORM-PATH SV-INDU-INTEREST
+                                             SV-INDU-PENALTY
+              CANCEL FORM-PROGX
+              COMPUTE INDU-INTEREST =
+                  INDU-INTEREST - INDU-PENALTY + SV-INDU-PENALTY
+              COMPUTE POFF-INTDUE  =
+                  POFF-INTDUE   - INDU-PENALTY + SV-INDU-PENALTY
+              COMPUTE POFF-NETDUE =
+                  POFF-NETDUE   - INDU-PENALTY + SV-INDU-PENALTY
+              MOVE SV-INDU-PENALTY TO INDU-PENALTY.
+
+      * DETERMINE DELINQUENCY FOR RENEWALS:
+           MOVE 0 TO HOLD-PRDELINQAMT
+                     HOLD-PRPDUE-DAYS.
+           IF (LP-TRCD = "PB" OR "RN" OR "SC" OR "RB" OR "RO")
+                        OR (SP-SCFRMLA = 12 OR 13 OR 54)
+              MOVE LN-1STPYDATE TO CEPP1-DATE
+              MOVE LP-PAYDATE TO CEPP2-DATE
+              MOVE 1 TO CEPP-MAKERCD
+      * LPTDEL CLEARS INDU-INTEREST LCAP-OWE !!!!!!!!!!!!!
+              MOVE INDU-INTEREST TO SV-INDU-INTEREST
+              MOVE INDU-PENALTY  TO SV-INDU-PENALTY
+              MOVE LCAP-OWE TO SV-LCAP-OWE
+              PERFORM TOTAL-DELINQUENCY
+              MOVE SV-INDU-INTEREST TO INDU-INTEREST
+              MOVE SV-INDU-PENALTY  TO INDU-PENALTY
+              MOVE SV-LCAP-OWE TO LCAP-OWE
+              MOVE CDEL-ARREARAGE TO HOLD-PRDELINQAMT
+
+              MOVE LP-PAYDATE TO PDUE-TODAY-DATE
+              MOVE LN-1STPYDATE TO PDUE-1STPYDATE
+              PERFORM PAST-DUE-DAYS-CALCULATION
+              MOVE PDUE-DAYS TO HOLD-PRPDUE-DAYS.
+
+      *----------------------------------------------------------------
+      * ADJUSTMENT TO DEALER PARTICIPATING RESERVE FOR PC ACCOUNT
+      * NOT SERVICED AND ONLY ON 'RI'
+      * MUST BE PASSED IN HOLD-DL(FIELDS)-ADJ TO PF2 FOR LN-DL(FIELDS)
+      *----------------------------------------------------------------
+           MOVE 0 TO HOLD-DLRVCHGS-ADJ(1)
+                     HOLD-DLRVCHGS-ADJ(2)
+                     HOLD-DLRVCHGS-ADJ(3)
+                     HOLD-DLPARVHELD-ADJ
+                     HOLD-DLPARVPAID-ADJ.
+           MOVE " " TO HOLD-DL-RVCHGS-CODE(1)
+                       HOLD-DL-RVCHGS-CODE(2)
+                       HOLD-DL-RVCHGS-CODE(3)
+                       HOLD-DL-PARVHELD-CODE
+                       HOLD-DL-PARVPAID-CODE.
+
+           IF LN-LOANTYPE = "I"
+                   OR LN-SALEFIN NOT = "Y"
+                    OR LN-SERVACCT = "Y"
+                     OR LN-PLCD NOT = " "
+                      OR LN-INTCHG = 0
+              GO TO PAYOFF-EADJ.
+
+      * COMPUTE RESERVE FROM CHARGES ADJUSTMENT:
+           MOVE 0 TO ADJSUB.
+           PERFORM COMPUTE-RVCHGS-ADJUSTMENT 3 TIMES.
+
+      * COMPUTE DEALER PARTICIPATION RESERVE HELD ADJUSTMENT:
+           IF DL-PARVHELD-CODE = "A" OR "B"
+              MOVE DL-PARVHELD-CODE TO HOLD-DL-PARVHELD-CODE
+              IF SP-PARVHELD-RB-CD = "Z"
+                 MOVE 0 TO HOLD-DLPARVHELD-ADJ
+              ELSE
+              IF SP-PARVHELD-RB-CD = " "
+                 COMPUTE HOLD-DLPARVHELD-ADJ ROUNDED =
+                    (POFF-REBATE(4) - ADDON-INT-REBATE)
+                              / LN-INTCHG * LN-DLPARVHELD
+              ELSE
+              IF SP-PARVHELD-RB-CD = "A"
+                 PERFORM COMPUTE-RECAPTURE-PRORATA
+                 COMPUTE HOLD-DLPARVHELD-ADJ ROUNDED =
+                           LN-DLPARVHELD * DLRECAP-PERCENT.
+
+      * COMPUTE DEALER PARTICIPATION RESERVE PAID ADJUSTMENT:
+           IF DL-PARVPAID-CODE = " " OR "A"
+              MOVE DL-PARVPAID-CODE TO HOLD-DL-PARVPAID-CODE
+              IF SP-PARVPAID-RB-CD = "Z"
+                 MOVE 0 TO HOLD-DLPARVPAID-ADJ
+              ELSE
+              IF SP-PARVPAID-RB-CD = " "
+                 COMPUTE HOLD-DLPARVPAID-ADJ ROUNDED =
+                    (POFF-REBATE(4) - ADDON-INT-REBATE)
+                              / LN-INTCHG * LN-DLPARVPAID
+              ELSE
+              IF SP-PARVPAID-RB-CD = "A"
+                 PERFORM COMPUTE-RECAPTURE-PRORATA
+                 COMPUTE HOLD-DLPARVPAID-ADJ ROUNDED =
+                           LN-DLPARVPAID * DLRECAP-PERCENT.
+
+      *--------------------------------------------------------------
+      * DETERMINE IF DEALER RECAPTURE CAUSES A NEGATIVE
+      * EARNINGS RECAPTURE FOR THE FINANCE COMPANY:
+      *--------------------------------------------------------------
+           COMPUTE DLRECAP-WORK =
+                HOLD-DLRVCHGS-ADJ(1) + HOLD-DLRVCHGS-ADJ(2)
+                 + HOLD-DLRVCHGS-ADJ(3) + HOLD-DLPARVHELD-ADJ
+                  + HOLD-DLPARVPAID-ADJ - POFF-REBATE(4).
+           PERFORM DLRECAP-REDISBURSE.
+
+      *--------------------------------------------------------------
+           IF (LN-SERVACCT NOT = "Y")
+                     AND (LN-PLCD = " ")
+                      AND (LN-INTCHG NOT = 0)
+              IF (LN-LOANTYPE = "P"
+                    AND ( (LN-DLPARVHELD NOT = 0)
+                             OR (LN-DLPARVPAID NOT = 0)
+                              OR (LN-DLRVCHGS(1) NOT = 0)
+                               OR (LN-DLRVCHGS(2) NOT = 0)
+                                OR (LN-DLRVCHGS(3) NOT = 0)
+                        )
+                 ) OR (LN-ANTICERN(2) NOT = 0)
+              PERFORM RECAPTURE-DISTRIBUTION.
+
+       PAYOFF-EADJ.
+      *---------------------------------------------------------
+      * JTG 061097 CHANGED THIS TO CORRECT A DOUBLE DIP OF
+      *            ADDON-INT-REBATE SINCE COMPUTATION OF
+      *            LN-ACCERN(1) USES ADDON-INT-REBATE
+      *
+      *    SUBTRACT ADDON-INT-REBATE FROM POFF-REBATE(4)
+      *                               GIVING EADJ-REBATE.
+           MOVE POFF-REBATE(4) TO EADJ-REBATE.
+      *---------------------------------------------------------
+           IF HOLD-DL-PARVHELD-CODE = "B"
+              SUBTRACT HOLD-DLPARVHELD-ADJ FROM EADJ-REBATE.
+           IF HOLD-DL-PARVPAID-CODE = " "
+              SUBTRACT HOLD-DLPARVPAID-ADJ FROM EADJ-REBATE.
+           IF HOLD-DL-RVCHGS-CODE(1) = " "
+              SUBTRACT HOLD-DLRVCHGS-ADJ(1) FROM EADJ-REBATE.
+           IF HOLD-DL-RVCHGS-CODE(2) = " "
+              SUBTRACT HOLD-DLRVCHGS-ADJ(2) FROM EADJ-REBATE.
+           IF HOLD-DL-RVCHGS-CODE(3) = " "
+              SUBTRACT HOLD-DLRVCHGS-ADJ(3) FROM EADJ-REBATE.
+
+           PERFORM EADJ-EARN-ADJUSTMENT.
+           MOVE HOLD-LP-TRCD TO LP-TRCD.
+           MOVE WORK-REBATE-TAB TO LN-REBATE-TAB.
+
+           IF HOLD-BP-TRCD = " "
+              MOVE "S  A060PMPT2." TO VDU
+              PERFORM SEND-INT-OR-LC
+              MOVE "S  A060PMPT4." TO VDU
+              PERFORM SEND-INT-OR-LC.
+
+           MOVE 0 TO SUB.
+           PERFORM LOAD-REBATE-TABLE.
+
+      * NOTE: REMEMBER LONPF1 INSURES THAT ON A STANDARD
+      *       PAYOFF THAT OTHER 2 MONIES = 0
+           MOVE IBPC-FG TO LP-IBPC.
+           MOVE POFF-NETDUE TO LP-TRAMT.
+           MOVE POFF-OTDUE TO LP-APOTH.
+           MOVE POFF-O2DUE TO LP-APOT2.
+
+      *    -------------------------------------------------------------
+      *    TO ACTIVATE THE POFF-NOLCHG FIELD, UN-COMMENT THE FOLLOWING
+      *    LINE AND REMOVE THE LINE MOVING 0 TO LP-NOLCHG
+      *    -------------------------------------------------------------
+      *--->MOVE POFF-NOLCHG TO LP-NOLCHG.
+           MOVE 0           TO LP-NOLCHG.
+
+           ADD POFF-INTDUE TO LP-APINT.
+           ADD POFF-LCDUE TO LP-APLC.
+           COMPUTE LP-APCUR =
+               LP-TRAMT - LP-APINT - LP-APOTH - LP-APLC.
+
+           IF LN-MIP-FG = "Y"
+              SUBTRACT POFF-LXM-MIP-CLPAID
+                       POFF-LXM-MIP-AHPAID FROM LP-APCUR.
+
+           MOVE 0 TO LP-OTHBAL LP-OT2BAL LP-INTBAL LP-LCBAL.
+
+      * ADJUSTMENT TO DEALER PARTICIPATING RESERVE FOR IB ACCOUNT
+      * NOT SERVICED AND ONLY ON 'PO' AND 'SC':
+           MOVE 0 TO LP-DLPARVHELD-ADJ.
+           IF LN-LOANTYPE = "I"
+            IF LN-SALEFIN = "Y"
+             IF LN-SERVACCT NOT = "Y" AND LN-PLCD = " "
+              IF DL-PARVHELD-CODE = "A" OR "B"
+               IF LP-TRCD = "PO" OR "SC"
+                IF (LN-INTCHG + LN-EXTCHG) NOT = 0
+                     COMPUTE LP-DLPARVHELD-ADJ ROUNDED =
+                        (LN-INTCHG + LN-EXTCHG
+                              - LN-TOTINT - LP-APINT)
+                                  / (LN-INTCHG + LN-EXTCHG)
+                                      * LN-DLPARVHELD
+                   IF LP-DLPARVHELD-ADJ < 0
+                      MOVE 0 TO LP-DLPARVHELD-ADJ.
+
+       PAYOFF-EXIT.
+           EXIT.
+
+      **********************************
+       SET-BAL-IBPC-LPREC SECTION.
+      **********************************
+           MOVE LN-INTBAL TO LP-INTBAL.
+           MOVE LN-LCBAL TO LP-LCBAL.
+           MOVE LN-OTHBAL TO LP-OTHBAL.
+           MOVE LN-OT2BAL TO LP-OT2BAL.
+           MOVE LN-CURBAL TO LP-CURBAL.
+
+      *************************************************
+       COMPUTE-RVCHGS-ADJUSTMENT SECTION.
+      *************************************************
+
+           ADD 1 TO ADJSUB.
+           IF HOLD-DL-RVCHGS-CODE(ADJSUB) = " "
+              IF SP-DLRVCHGS-RB-CD(ADJSUB) = "Z"
+                 MOVE 0 TO HOLD-DLRVCHGS-ADJ(ADJSUB)
+              ELSE
+              IF SP-DLRVCHGS-RB-CD(ADJSUB) = " "
+                 COMPUTE HOLD-DLRVCHGS-ADJ(ADJSUB) ROUNDED =
+                    (POFF-REBATE(4) - ADDON-INT-REBATE)
+                              / LN-INTCHG * LN-DLRVCHGS(ADJSUB)
+              ELSE
+              IF SP-DLRVCHGS-RB-CD(ADJSUB) = "A"
+                 PERFORM COMPUTE-RECAPTURE-PRORATA
+                 COMPUTE HOLD-DLRVCHGS-ADJ(ADJSUB) ROUNDED =
+                           LN-DLRVCHGS(ADJSUB) * DLRECAP-PERCENT.
+
+      *************************************************
+       ASK-PAYOFF-QUESTIONS SECTION.
+      *************************************************
+           MOVE " " TO WORK-EFFECT.
+           MOVE " " TO LINE-BUF.
+           MOVE " " TO EXPIRED-RB-TAB.
+
+           MOVE 8 TO SUB.
+           IF LN-INSPREM(6) NOT = 0
+                      AND LN-O3-REBATE = " "
+              MOVE 6 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(6)
+                 IF BR-INC-INS = "Y"
+                    MOVE POFF-QUESTION7 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(6).
+           IF LN-INSPREM(5) NOT = 0
+                      AND LN-O2-REBATE = " "
+              MOVE 5 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(5)
+                 IF BR-INC-INS = "Y"
+                    MOVE POFF-QUESTION6 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(5).
+           IF LN-INSPREM(4) NOT = 0
+                      AND LN-O1-REBATE = " "
+              MOVE 4 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(4)
+                 IF BR-INC-INS = "Y"
+                    MOVE POFF-QUESTION5 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(4).
+           IF LN-INSURED = "N"
+                    AND LN-INSTYPES = "N"
+              GO TO ASK-BYPASS-INS.
+           IF LN-INSPREM(3) NOT = 0
+                      AND LN-PP-REBATE = " "
+              MOVE 3 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(3)
+                 IF BR-INC-INS = "Y"
+                    MOVE POFF-QUESTION4 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(3).
+           IF LN-INSPREM(2) NOT = 0
+                      AND LN-AH-REBATE = " "
+              MOVE 2 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(2)
+                 IF BR-INC-INS = "Y"
+                    MOVE POFF-QUESTION3 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(2).
+           IF LN-INSPREM(1) NOT = 0
+                      AND LN-CL-REBATE = " "
+              MOVE 1 TO ITRM-SUB
+              MOVE LP-PAYDATE TO ITRM-TODAY
+              PERFORM INS-TERM-CALCULATION
+              IF ITRM-INEFFECT-FG = "Y"
+                 MOVE "Y" TO WK-EFF(1)
+                 IF BR-INC-INS = "Y" OR "L"
+                    MOVE POFF-QUESTION2 TO D-LINE(SUB)
+                    SUBTRACT 1 FROM SUB
+                 END-IF
+              ELSE
+                 MOVE "Y" TO EXPIRED-RB-FG(1).
+
+       ASK-BYPASS-INS.
+           IF BR-INC-WAIVERS NOT = "Y"
+              GO TO ASK-BYPASS-WAIVERS.
+
+           IF LN-INTWAIVERS NOT = 0
+              MOVE POFF-QUESTION8 TO D-LINE(SUB)
+              SUBTRACT 1 FROM SUB.
+           IF LN-LCWAIVERS NOT = 0
+              MOVE POFF-QUESTION1 TO D-LINE(SUB)
+              SUBTRACT 1 FROM SUB.
+
+       ASK-BYPASS-WAIVERS.
+           IF HOLD-BP-TRCD NOT = " "
+               MOVE "N" TO POFF-ANSWER1 POFF-ANSWER2 POFF-ANSWER3
+                           POFF-ANSWER4 POFF-ANSWER5 POFF-ANSWER6
+                           POFF-ANSWER7 POFF-ANSWER8
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+
+           MOVE LINE-BUF TO WR-BUF.
+           MOVE LINE-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+           IF SUB > 8
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+
+           IF NOT (BR-INC-INS = "Y" OR "L")
+              IF BR-INC-WAIVERS NOT = "Y"
+                 GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+
+           MOVE LN-REBATE-TAB TO WORK-REBATE-TAB.
+           MOVE "00" TO VDUSTATUS.
+
+       ASK-PAYOFF-Q1.
+           IF LN-LCWAIVERS = 0 OR BR-INC-WAIVERS NOT = "Y"
+              IF VDUSTATUS = "1U"
+                 ADD 1 TO SUB
+                 GO TO ASK-PAYOFF-Q8
+              ELSE
+                 GO TO ASK-PAYOFF-Q8.
+           IF BR-INC-WAIVERS NOT = "Y"
+              GO TO ASK-PAYOFF-Q2.
+           MOVE LN-LCWAIVERS TO POFF-WAIVE-LIMIT.
+           PERFORM ASK-PAYOFF-READ-WAIVERS.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              GO TO ASK-PAYOFF-Q1.
+           MOVE VDUBUF TO POFF-ANSWER1.
+           IF POFF-ANSWER1 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER1
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER1
+              PERFORM ASK-PAYOFF-INVALID
+              GO TO ASK-PAYOFF-Q1.
+           IF POFF-ANSWER1 = "N"
+              PERFORM ASK-PAYOFF-CLEAR-WAIVERS
+              GO TO ASK-PAYOFF-Q8.
+       ASK-PAYOFF-Q1-PART2.
+           MOVE "RN N072GA" TO SCRX-1.
+           COMPUTE SCRX-2 = SUB - 4.
+           IF SCRX-2 < 0
+              ADD 10 TO SCRX-2.
+           MOVE "." TO SCRX-3.
+           MOVE SCRX-ALL TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 1 FROM SUB
+              GO TO ASK-PAYOFF-Q1.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              GO TO ASK-PAYOFF-Q1-PART2.
+           PERFORM FIND-GA.
+           MOVE WORK-XXWAIVERS TO WORK-LCWAIVERS.
+           IF WORK-LCWAIVERS = 0
+              SUBTRACT 1 FROM SUB
+              MOVE "AMOUNT MUST BE GREATER THAN 0 IF ANSWERING 'Y'"
+                  TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ASK-PAYOFF-Q1.
+           IF WORK-LCWAIVERS > LN-LCWAIVERS
+              MOVE "EXCEEDS WAIVED CHARGES" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ASK-PAYOFF-Q1-PART2.
+
+       ASK-PAYOFF-Q8.
+           IF LN-INTWAIVERS = 0 OR BR-INC-WAIVERS NOT = "Y"
+              IF VDUSTATUS = "1U"
+                 IF LN-LCWAIVERS NOT = 0 AND POFF-ANSWER1 = "Y"
+                    GO TO ASK-PAYOFF-Q1-PART2
+                 ELSE
+                 IF LN-LCWAIVERS NOT = 0
+                    SUBTRACT 1 FROM SUB
+                    GO TO ASK-PAYOFF-Q1
+                 ELSE
+                    ADD 1 TO SUB
+                    GO TO ASK-PAYOFF-Q2
+              ELSE
+                 GO TO ASK-PAYOFF-Q2.
+           IF BR-INC-WAIVERS NOT = "Y"
+              GO TO ASK-PAYOFF-Q2.
+           MOVE LN-INTWAIVERS TO POFF-WAIVE-LIMIT.
+           PERFORM ASK-PAYOFF-READ-WAIVERS.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              IF LN-LCWAIVERS NOT = 0
+                         AND POFF-ANSWER1 = "Y"
+                 SUBTRACT 1 FROM SUB
+                 GO TO ASK-PAYOFF-Q1-PART2
+              ELSE
+                 SUBTRACT 2 FROM SUB
+                 GO TO ASK-PAYOFF-Q1.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              GO TO ASK-PAYOFF-Q8.
+           MOVE VDUBUF TO POFF-ANSWER8.
+           IF POFF-ANSWER8 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER8
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER8
+              PERFORM ASK-PAYOFF-INVALID
+              GO TO ASK-PAYOFF-Q8.
+           IF POFF-ANSWER8 = "N"
+              PERFORM ASK-PAYOFF-CLEAR-WAIVERS
+              GO TO ASK-PAYOFF-Q2.
+       ASK-PAYOFF-Q8-PART2.
+           MOVE "RN N072GA" TO SCRX-1.
+           COMPUTE SCRX-2 = SUB - 4.
+           IF SCRX-2 < 0
+              ADD 10 TO SCRX-2.
+           MOVE "." TO SCRX-3.
+           MOVE SCRX-ALL TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 1 FROM SUB
+              GO TO ASK-PAYOFF-Q8.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              GO TO ASK-PAYOFF-Q8-PART2.
+           PERFORM FIND-GA.
+           MOVE WORK-XXWAIVERS TO WORK-INTWAIVERS.
+           IF WORK-INTWAIVERS = 0
+               SUBTRACT 1 FROM SUB
+               MOVE "AMOUNT MUST BE GREATER THAN 0 IF ANSWERING 'Y'"
+                  TO MESS
+               PERFORM CONDITIONAL-SEND-MESS
+               GO TO ASK-PAYOFF-Q8.
+           IF WORK-INTWAIVERS > LN-INTWAIVERS
+              MOVE "EXCEEDS WAIVED INTEREST" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ASK-PAYOFF-Q8-PART2.
+
+        ASK-PAYOFF-Q2.
+           IF NOT (BR-INC-INS = "Y" OR "L")
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF LN-INSPREM(1) = 0
+                    OR LN-CL-REBATE NOT = " "
+                     OR WK-EFF(1) = " "
+              IF VDUSTATUS = "1U"
+                 IF LN-INTWAIVERS NOT = 0
+                        AND POFF-ANSWER8 = "Y"
+                          AND BR-INC-WAIVERS = "Y"
+                    GO TO ASK-PAYOFF-Q8-PART2
+                 ELSE
+                    IF BR-INC-WAIVERS = "Y"
+                       GO TO ASK-PAYOFF-Q8
+                    ELSE
+                       NEXT SENTENCE
+              ELSE
+                 GO TO ASK-PAYOFF-Q3.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              IF LN-INTWAIVERS NOT = 0
+                      AND POFF-ANSWER8 = "Y"
+                       AND BR-INC-WAIVERS = "Y"
+                 SUBTRACT 1 FROM SUB
+                 GO TO ASK-PAYOFF-Q8-PART2
+              ELSE
+                 IF BR-INC-WAIVERS = "N"
+                    SUBTRACT 1 FROM SUB
+                    GO TO ASK-PAYOFF-Q2
+                 ELSE
+                    SUBTRACT 2 FROM SUB
+                    GO TO ASK-PAYOFF-Q8.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(1) TO LN-REBATE(1)
+              GO TO ASK-PAYOFF-Q2.
+           MOVE VDUBUF TO POFF-ANSWER2.
+           IF POFF-ANSWER2 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER2
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER2
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(1) TO LN-REBATE(1)
+              GO TO ASK-PAYOFF-Q2.
+           IF POFF-ANSWER2 = "Y"
+              MOVE "Y" TO LN-REBATE(1).
+
+        ASK-PAYOFF-Q3.
+           IF LN-INSPREM(2) = 0
+                   OR LN-AH-REBATE NOT = " "
+                    OR WK-EFF(2) = " "
+                     OR BR-INC-INS = "L"
+              IF VDUSTATUS = "1U"
+                 MOVE WORK-RB-TAB(1) TO LN-REBATE(1)
+                 GO TO ASK-PAYOFF-Q2
+              ELSE
+                 GO TO ASK-PAYOFF-Q4.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 2 FROM SUB
+              MOVE WORK-RB-TAB(1) TO LN-REBATE(1)
+              GO TO ASK-PAYOFF-Q2.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(2) TO LN-REBATE(2)
+              GO TO ASK-PAYOFF-Q3.
+           MOVE VDUBUF TO POFF-ANSWER3.
+           IF POFF-ANSWER3 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER3
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER3
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(2) TO LN-REBATE(2)
+              GO TO ASK-PAYOFF-Q3.
+           IF POFF-ANSWER3 = "Y"
+              MOVE "Y" TO LN-REBATE(2).
+
+        ASK-PAYOFF-Q4.
+           IF LN-INSPREM(3) = 0
+                    OR LN-PP-REBATE NOT = " "
+                     OR WK-EFF(3) = " "
+                      OR BR-INC-INS = "L"
+              IF VDUSTATUS = "1U"
+                 MOVE WORK-RB-TAB(2) TO LN-REBATE(2)
+                 GO TO ASK-PAYOFF-Q3
+              ELSE
+                 GO TO ASK-PAYOFF-Q5.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 2 FROM SUB
+              MOVE WORK-RB-TAB(2) TO LN-REBATE(2)
+              GO TO ASK-PAYOFF-Q3.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(3) TO LN-REBATE(3)
+              GO TO ASK-PAYOFF-Q4.
+           MOVE VDUBUF TO POFF-ANSWER4.
+           IF POFF-ANSWER4 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER4
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER4
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(3) TO LN-REBATE(3)
+              GO TO ASK-PAYOFF-Q4.
+           IF POFF-ANSWER4 = "Y"
+              MOVE "Y" TO LN-REBATE(3).
+
+        ASK-PAYOFF-Q5.
+           IF LN-INSPREM(4) = 0
+                   OR LN-O1-REBATE NOT = " "
+                    OR WK-EFF(4) = " "
+                     OR BR-INC-INS = "L"
+              IF VDUSTATUS = "1U"
+                 MOVE WORK-RB-TAB(3) TO LN-REBATE(3)
+                 GO TO ASK-PAYOFF-Q4
+              ELSE
+                 GO TO ASK-PAYOFF-Q6.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 2 FROM SUB
+              MOVE WORK-RB-TAB(3) TO LN-REBATE(3)
+              GO TO ASK-PAYOFF-Q4.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(9) TO LN-REBATE(9)
+              GO TO ASK-PAYOFF-Q5.
+           MOVE VDUBUF TO POFF-ANSWER5.
+           IF POFF-ANSWER5 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER5
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER5
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(9) TO LN-REBATE(9)
+              GO TO ASK-PAYOFF-Q5.
+           IF POFF-ANSWER5 = "Y"
+              MOVE "Y" TO LN-REBATE(9).
+
+        ASK-PAYOFF-Q6.
+           IF LN-INSPREM(5) = 0
+                    OR LN-O2-REBATE NOT = " "
+                     OR WK-EFF(5) = " "
+                      OR BR-INC-INS = "L"
+              IF VDUSTATUS = "1U"
+              MOVE WORK-RB-TAB(9) TO LN-REBATE(9)
+                 GO TO ASK-PAYOFF-Q5
+              ELSE
+                 GO TO ASK-PAYOFF-Q7.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 2 FROM SUB
+              MOVE WORK-RB-TAB(9) TO LN-REBATE(9)
+              GO TO ASK-PAYOFF-Q5.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(10) TO LN-REBATE(10)
+              GO TO ASK-PAYOFF-Q6.
+           MOVE VDUBUF TO POFF-ANSWER6.
+           IF POFF-ANSWER6 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER6
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER6
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(10) TO LN-REBATE(10)
+              GO TO ASK-PAYOFF-Q6.
+           IF POFF-ANSWER6 = "Y"
+              MOVE "Y" TO LN-REBATE(10).
+
+        ASK-PAYOFF-Q7.
+           IF LN-INSPREM(6) = 0
+                    OR LN-O3-REBATE NOT = " "
+                     OR WK-EFF(6) = " "
+                      OR BR-INC-INS = "L"
+              IF VDUSTATUS = "1U"
+              MOVE WORK-RB-TAB(10) TO LN-REBATE(10)
+                 GO TO ASK-PAYOFF-Q5
+              ELSE
+                 GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           ADD 1 TO SUB.
+           PERFORM ASK-PAYOFF-READ-YN.
+           IF VDUSTATUS = "10"
+              MOVE "7" TO ROUTE-CD
+              GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+           IF VDUSTATUS = "1U"
+              SUBTRACT 2 FROM SUB
+              MOVE WORK-RB-TAB(10) TO LN-REBATE(10)
+              GO TO ASK-PAYOFF-Q6.
+           IF NOT (VDUSTATUS = "00" OR "1D")
+              SUBTRACT 1 FROM SUB
+              MOVE WORK-RB-TAB(11) TO LN-REBATE(11)
+              GO TO ASK-PAYOFF-Q7.
+           MOVE VDUBUF TO POFF-ANSWER7.
+           IF POFF-ANSWER7 = " "
+              MOVE "S  A010F" TO SCR-1
+              MOVE SCR-ALL TO VDU
+              MOVE "N" TO VDUBUF POFF-ANSWER7
+              PERFORM SCREENIO.
+           IF NOT VALID-POFF-ANSWER7
+              PERFORM ASK-PAYOFF-INVALID
+              MOVE WORK-RB-TAB(11) TO LN-REBATE(11)
+              GO TO ASK-PAYOFF-Q7.
+           IF POFF-ANSWER7 = "Y"
+              MOVE "Y" TO LN-REBATE(11).
+           GO TO ASK-PAYOFF-QUESTIONS-EXIT.
+
+       ASK-PAYOFF-READ-WAIVERS.
+           ADD 1 TO SUB.
+           MOVE "S  A320F" TO SCR-1.
+           MOVE SUB TO SCR-2.
+           MOVE "3." TO SCR-3.
+           MOVE SCR-ALL TO VDU.
+           MOVE POFF-WAIVE-MSG TO VDUBUF.
+           PERFORM SCREENIO.
+           PERFORM ASK-PAYOFF-READ-YN.
+       ASK-PAYOFF-CLEAR-WAIVERS.
+           MOVE "S  A320F" TO SCR-1.
+           MOVE SUB TO SCR-2.
+           MOVE "3." TO SCR-3.
+           MOVE SCR-ALL TO VDU.
+           MOVE " " TO VDUBUF.
+           PERFORM SCREENIO.
+           MOVE "S  A110GA" TO SCRX-1.
+           COMPUTE SCRX-2 = SUB - 4.
+           IF SCRX-2 < 0
+              ADD 10 TO SCRX-2.
+           MOVE "." TO SCRX-3.
+           MOVE SCRX-ALL TO VDU.
+           MOVE " " TO VDUBUF.
+           PERFORM SCREENIO.
+       ASK-PAYOFF-READ-YN.
+           MOVE "E RA010F" TO SCR-1.
+           MOVE SUB TO SCR-2.
+           MOVE "2." TO SCR-3.
+           MOVE SCR-ALL TO VDU.
+           PERFORM SCREENIO.
+       ASK-PAYOFF-INVALID.
+           MOVE "ENTER 'Y' OR 'N'" TO MESS.
+           PERFORM CONDITIONAL-SEND-MESS.
+           SUBTRACT 1 FROM SUB.
+
+       ASK-PAYOFF-QUESTIONS-EXIT.
+           EXIT.
+
+      *************************************************
+       DISPLAY-ENTRY-LINE SECTION.
+      *************************************************
+           SUBTRACT LP-APCUR FROM LP-CURBAL.
+
+           IF LP-TRCD = "PO"
+              ADD LP-APCUR LP-APINT TO LN-TOTPAYMNTD
+              IF SP-CONTRFRMLA = "A"
+                 ADD LP-APLC TO LN-TOTPAYMNTD.
+
+           IF LP-CURBAL < 0
+              PERFORM EXCEEDS-PRIN-BAL
+              MOVE "7" TO ROUTE-CD
+              GO TO DISPLAY-ENTRY-LN-EXIT.
+
+           IF GP-REPO-CODE = "A"
+              IF LP-TRCD = "PO"
+                 IF LN-REPOCD = "X" OR "S"
+                    IF LP-PAYDATE NOT = LN-REPODATE
+                       PERFORM VERIFY-REFUNDS VARYING SUB FROM 1 BY 1
+                         UNTIL SUB > 13
+                       IF SUB = 98 OR 99
+                          MOVE REPO-EFF-SEQ TO PASSWDW-SEQ
+                          MOVE "TO ACCEPT REPO REBATE DATE" TO
+                                            PASSWDW-PROMPT2
+                          PERFORM VERIFY-PASSWORD
+                          IF PASSWDW-STAT NOT = "OK"
+                             MOVE "MUST USE REPO DATE FOR REFUNDS"
+                                          TO MESS
+                             PERFORM CONDITIONAL-SEND-MESS
+                             MOVE "7" TO ROUTE-CD
+                             GO TO DISPLAY-ENTRY-LN-EXIT.
+
+           IF LN-SERVACCT = "N"
+              IF LP-APCUR > 0
+                 IF LP-APCUR > LN-PURBAL
+                    PERFORM EXCEEDS-PUR-BAL
+                    MOVE "7" TO ROUTE-CD
+                    GO TO DISPLAY-ENTRY-LN-EXIT.
+
+      * COMPUTE PAID THRU DATE
+           MOVE LN-1STPYDATE TO PDTH-DATE-WORK.
+           PERFORM PAID-THRU-CALCULATION.
+           MOVE PDTH-DATE-FULL TO LP-PDTH-DATE.
+
+      * COMPUTE EARNINGS FOR PAYOFF
+           MOVE LN-ACCERN(1) TO HOLD-LN-ACCERN(1).
+           MOVE LN-ACCERN(2) TO HOLD-LN-ACCERN(2).
+           MOVE LN-ACCERN(3) TO HOLD-LN-ACCERN(3).
+           MOVE LN-ACCERN(4) TO HOLD-LN-ACCERN(4).
+           MOVE LN-ACCERN(5) TO HOLD-LN-ACCERN(5).
+           MOVE LN-ACCERN(6) TO HOLD-LN-ACCERN(6).
+           MOVE LN-TOTSERACCT TO HOLD-LN-TOTSERACCT.
+           MOVE LN-TOTERN TO HOLD-LN-TOTERN.
+           MOVE LN-PURBAL TO HOLD-LN-PURBAL.
+
+           SUBTRACT REB-AMOUNT(7) FROM HOLD-LN-TOTERN
+                                       HOLD-LN-TOTDFMNTS.
+
+           IF LN-SERVACCT NOT = "Y" AND LN-PLCD = " "
+              PERFORM SET-LP-EARNED.
+
+           IF LN-SERVACCT NOT = "Y"
+              ADD LP-APINT LP-APLC TO HOLD-LN-TOTERN.
+           ADD LP-APLC TO HOLD-LN-TOTLCHG.
+           ADD LP-APINT TO HOLD-LN-TOTINT.
+
+      * COMPUTE INTEREST PAID BY BORROWER
+           PERFORM COMPUTE-BW-INTPAID.
+           MOVE BWIN-INTPAID TO LP-INTPAID.
+           ADD LP-INTPAID TO LN-YTDINTPD.
+
+           MOVE 0 TO LP-DLPROC.
+
+           IF LN-SERVACCT NOT = "Y"
+              GO TO DISPLAY-BYPASS-PROCEEDS.
+
+      *
+      *  DL-SVACCT-LCHGPER AND DL-SVACCT-INTPER ARE % FINANCE CO. KEEPS
+      *  DL-SVACCT-RATE IS % OF APCUR FINANCE CO. GETS FOR SERVICING
+      *
+      * # 2756 UNION FINANCE NEEDED DECIMAL PERCENTS
+      *
+      * EARNED PRINCIPAL
+           IF LN-SERVPER = 999.99
+              COMPUTE SV-RATE ROUNDED = DL-SVACCT-RATE / 100
+           ELSE
+              COMPUTE SV-RATE ROUNDED = LN-SERVPER / 100.
+
+           PERFORM SV-EARNED-PRINCIPAL.
+
+      * WILL THIS WORK FOR PROSOURCE ???????????????????
+           IF LN-SERVACCT = "Y" AND
+              DL-SVACCT-FRMLA = 1
+              NEXT SENTENCE
+           ELSE
+              IF LP-EARNED(1) > LP-APCUR
+                 MOVE LP-APCUR TO LP-EARNED(1).
+
+           ADD LP-EARNED(1) TO HOLD-LN-TOTERN HOLD-LN-TOTSERACCT.
+
+      * EARNED INTEREST
+           COMPUTE LP-EARNED(2) ROUNDED =
+                         LP-APINT * DL-SVACCT-INTPER / 100.
+           ADD LP-EARNED(2) TO HOLD-LN-TOTERN HOLD-LN-TOTSERACCT.
+      * EARNED LCHG
+           COMPUTE LP-EARNED(3) ROUNDED =
+                         LP-APLC * DL-SVACCT-LCHGPER / 100.
+           ADD LP-EARNED(3) TO HOLD-LN-TOTERN HOLD-LN-TOTSERACCT.
+
+      * DEALERS PROCEEDS
+           COMPUTE LP-DLPROC ROUNDED =
+                (LP-APCUR + LP-APINT + LP-APLC)
+                     - LP-EARNED(1) - LP-EARNED(2)
+                      - LP-EARNED(3).
+
+       DISPLAY-BYPASS-PROCEEDS.
+      * DONT DO FOR AUTO RENEWALS
+           IF HOLD-BP-TRCD = " "
+              PERFORM DISPLAY-EARNINGS.
+
+           PERFORM SEND-PAYOFF-LINES.
+
+           IF LN-MIP-FG = "Y"
+              IF (HOLD-LXM-MIP-CLPAID NOT = 0) AND
+                 (HOLD-LXM-MIP-AHPAID NOT = 0)
+      *          "CL & AH MIP INSURANCE WAS COLLECTED"
+                 MOVE HOLD-LXM-MIP-CLPAID TO MIP-CL
+                 MOVE HOLD-LXM-MIP-AHPAID TO MIP-AH
+                 STRING MIP-CL-MESS MIP-AH-MESS MIP-COLLECTED
+                   DELIMITED BY SIZE INTO MESS
+                 PERFORM CONDITIONAL-SEND-MESS
+              ELSE
+              IF (HOLD-LXM-MIP-CLPAID NOT = 0)
+      *          "CL MIP INSURANCE WAS COLLECTED"
+                 MOVE HOLD-LXM-MIP-CLPAID TO MIP-CL
+                 STRING MIP-CL-MESS MIP-COLLECTED
+                   DELIMITED BY SIZE INTO MESS
+                 PERFORM CONDITIONAL-SEND-MESS
+              ELSE
+              IF (HOLD-LXM-MIP-AHPAID NOT = 0)
+      *          "AH MIP INSURANCE WAS COLLECTED"
+                 MOVE HOLD-LXM-MIP-AHPAID TO MIP-AH
+                 STRING MIP-AH-MESS MIP-COLLECTED
+                   DELIMITED BY SIZE INTO MESS
+                 PERFORM CONDITIONAL-SEND-MESS.
+
+           IF LP-CURBAL = 0
+              IF LN-TOTDEF NOT = 0
+                 IF LN-DF-REBATE = " "
+                    IF NOT (SP-RBFRMLA(10) = " " OR "9" OR "E"
+                                           OR "K" OR "M"
+                                            OR "O" OR "V" OR "W"
+                                             OR "X" OR "Y" OR "Z")
+                       MOVE "DEFERMENTS GIVEN, REBATE ?..." TO MESS
+                       PERFORM CONDITIONAL-SEND-MESS.
+
+           IF HOLD-BP-TRCD = " "
+              IF BR-IB-LCHG-MESS = "Y"
+                 IF LP-IBPC = "I"
+                    IF LP-APLC NOT = 0
+                       MOVE "LATE CHARGES HAVE BEEN APPLIED" TO MESS
+                       PERFORM CONDITIONAL-SEND-MESS.
+
+           IF (LN-INSCOMP(4) = 53 AND LN-INSPREM(4) NOT = 0)
+                 OR (LN-INSCOMP(5) = 53 AND LN-INSPREM(5) NOT = 0)
+              MOVE "INSURANCE COMPANY 53???? REBATE" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS.
+
+      * TEST FOR CALCULATION OF AFPDLLP AMOUNT: (RAC)
+           IF LN-PLCD = " "
+              IF LP-TRCD = "PO"
+                 MOVE LN-DLNO TO DL-DLNO
+                 PERFORM GET-DL
+                 IF IO-FG = 0 AND DL-AFP-DEALER = "Y"
+                    MOVE LP-TRDATE TO AFPDLLP-TODAY
+                    PERFORM VARYING SUB FROM 1 BY 1 UNTIL SUB > 13
+                       ADD POFF-REBATE(SUB) TO LP-CURBAL
+                    END-PERFORM
+                    PERFORM AFPDLLP
+                    MOVE 0 TO LP-CURBAL
+                    MOVE AFPDLLP-DUE-DEALER TO HOLD-AFPDLLP.
+
+      * IF REBATE OF INTEREST IS > 99,999.99, IT WILL GET TRUNCATED
+      * IN THE PD-PRFINCHGRB FIELD, CAUSING THE RENEWAL AMOUNT TO BE WRONG.
+           IF (LP-TRCD = "PB" OR "RN" OR "SC" OR "RB" OR "RO")
+              IF REB-AMOUNT(4) > 99999.99
+                 MOVE "MUST DO MANUAL 'RI' OR RENEWAL WONT WORK !"
+                     TO MESS PERFORM CONDITIONAL-SEND-MESS
+                 MOVE "7" TO ROUTE-CD
+                 GO TO DISPLAY-ENTRY-LN-EXIT.
+
+      * WORLD PR# 458
+      * THEY MUST WAIVE LATE CHARGES ON A CCCS ( CONSUMER CREDIT COUNSELING
+      *   SERVICE) PAYMENT
+           IF LP-REFNO = "CCCS " AND LP-APLC NOT = 0
+              MOVE "MUST WAIVE LATE CHARGE FIRST" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              MOVE "7" TO ROUTE-CD
+              GO TO DISPLAY-ENTRY-LN-EXIT.
+
+
+       DISPLAY-ENTRY-LN-EXIT.
+           EXIT.
+
+      *************************************************
+       ACCEPT-ENTRY-ROUTINE SECTION.
+      *************************************************
+
+      * WE REALLY NEED TO TEST THE PASSWORD
+      * DRAWER FLAG OF THE POSTING BRANCH IF DOING INTERBRANCH,
+      * SO READ POSTING BRANCH THEN RESTORE OWNING BRANCH:
+
+           IF PATH-MACHINE NOT = " "
+              MOVE BRANCH TO BR-NO
+              PERFORM OPEN-BR-FILE
+              PERFORM READ-BR-FILE
+              MOVE BR-PASSWORD-DRAWER TO SV-PASSWORD-DRAWER
+              MOVE LN-OWNBR TO BR-NO
+              PERFORM READ-BR-FILE
+              PERFORM CLOSE-BR-FILE
+           ELSE
+              MOVE BR-PASSWORD-DRAWER TO SV-PASSWORD-DRAWER.
+
+           IF BR-ALLOW-OV-TRCD = "Y" AND
+              LP-TRCD = "PO"
+              IF SV-PASSWORD-DRAWER = "Y"
+                 MOVE "F1, F4-OVERPAID, F7-GL ENTRY, DRAWER PASSWORD:"
+                                                              TO MESS
+              ELSE
+                 MOVE "F1, F4-OVERPAID, F7-GL ENTRY, DRAWER NO:"
+                                                              TO MESS
+              END-IF
+           ELSE
+              IF SV-PASSWORD-DRAWER = "Y"
+                 MOVE "F1, F7-GL ENTRY, DRAWER PASSWORD:" TO MESS
+              ELSE
+                 MOVE "F1, F7-GL ENTRY, DRAWER NO:" TO MESS.
+           PERFORM SEND-LEGEND.
+
+           MOVE 0 TO CA-TILLNO.
+           MOVE " " TO ROUTE-CD.
+
+           MOVE "S  A010120." TO VDU.
+           PERFORM SCREENIO.
+
+       ACCEPT-ENTER-TILLNO.
+
+           MOVE LP-TRDATE TO CA-DATE.
+           MOVE BRANCH    TO CA-BRNO.
+           MOVE 0         TO CA-TILLNO.
+           MOVE CA1-KEY TO HOLD-CA1-KEY.
+           IF SV-PASSWORD-DRAWER = "Y"
+      *CS MERCURY WANTS INTERBRANCH PAYOFF'S, 05/24/01
+              IF PATH-MACHINE NOT = " "
+                 MOVE EXT-FILPATH-BASE TO CA-ALL-BASE
+                 MOVE PATH-MACHINE TO CA-ALL-MACHINE
+                 MOVE PATH-DATA TO CA-ALL-DATA
+                 MOVE CA-ALL-PATH TO CA-PATH
+                 MOVE "Y" TO CA-PATH-OVERRIDE
+              END-IF
+
+              PERFORM ENTER-CASH-DRAWER-PASSWORD
+              IF CAPASSWD-OKAY = "N"
+                 GO TO ACCEPT-ENTER-TILLNO
+              END-IF
+              IF CAPASSWD-OKAY = "V"
+                 GO TO ACCEPT-CHECK-VDUSTATUS
+              END-IF
+              IF CAPASSWD-OKAY = "Y"
+      *          MOVE "S  A010120." TO VDU
+      *          MOVE CA-TILLNO TO NUMERIC-TILLNO
+      *          PERFORM CONVERT-TILLNO-TO-ALPHA
+      *          MOVE TEST-ALPHA-TILLNO TO VDUBUF
+      * ADDED NEW FIELD "DRAWER" FOR 2 DIGIT DRAWER ENTRY
+                 MOVE "SN N020DRAWER." TO VDU
+                 MOVE CA-TILLNO TO VDUNUM0
+                 PERFORM SCREENIO
+              END-IF
+           ELSE
+      * ADDED NEW FIELD "DRAWER" SO WE CAN ENTER A 2 DIGIT DRAWER
+              MOVE "EN N020DRAWER." TO VDU
+              PERFORM SCREENIO.
+
+       ACCEPT-CHECK-VDUSTATUS.
+           IF ( BR-ALLOW-OV-TRCD = "Y" ) AND
+              ( LP-TRCD = "PO"         ) AND
+              ( F4-KEY                 )
+              PERFORM ENTER-OVPAID-AMOUNT
+              GO TO ACCEPT-ENTRY-ROUTINE.
+           IF F1-KEY
+              PERFORM ACCEPT-SCREEN-RESET
+              PERFORM DISPLAY-ENTRY-UP
+              GO TO ACCEPT-ENTRY-EXIT.
+
+      *    IF F3-KEY
+      *       IF LN-SERVACCT = "Y"
+      *          PERFORM MODIFY-PROCEEDS-ROUTINE
+      *          GO TO ACCEPT-ENTRY-ROUTINE.
+
+           IF LP-APCUR < 0
+              MOVE "ACCOUNT IS OVER PAID, PLEASE ADJUST!" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ACCEPT-ENTRY-ROUTINE.
+
+           IF LP-CURBAL = 0
+              IF (LP-INTBAL NOT = 0) OR
+                 (LP-OTHBAL NOT = 0) OR
+                 (LP-LCBAL  NOT = 0) OR
+                 (LP-OT2BAL NOT = 0)
+                 PERFORM MUST-BE-ALL-ZERO
+                 GO TO ACCEPT-ENTRY-ROUTINE.
+
+
+           MOVE LP-APOTH TO GL-WORK.
+
+           IF F7-KEY
+              GO TO ACCEPT-GL-DISBURSE.
+
+           IF NOT ENTER-KEY
+              GO TO ACCEPT-ENTRY-ROUTINE.
+
+      *    MOVE VDUBUF TO TEST-ALPHA-TILLNO.
+      *    PERFORM CONVERT-TILLNO-TO-NUMERIC.
+      *    MOVE NUMERIC-TILLNO TO CA-TILLNO LP-TILLNO.
+           MOVE VDUNUM0 TO CA-TILLNO LP-TILLNO.
+
+           IF GL-WORK = 0
+              GO TO ACCEPT-ENTRY-CONT.
+           IF LXG-GLNO(1) NOT = 0
+              GO TO ACCEPT-ENTRY-CONT.
+           IF CA-TILLNO NOT = 0
+              PERFORM ALARM.
+
+       ACCEPT-GL-DISBURSE.
+           MOVE "Y" TO ALLENT-STATUS.
+           PERFORM DISBURSE-OTHER-APPLIED.
+           IF ALLENT-STATUS = "N"
+              PERFORM DISBURSE-OTHER-INIT.
+           GO TO ACCEPT-ENTRY-ROUTINE.
+
+       ACCEPT-ENTRY-CONT.
+      *CS
+           IF PATH-MACHINE NOT = " "
+              MOVE EXT-FILPATH-BASE TO CA-ALL-BASE
+              MOVE PATH-MACHINE TO CA-ALL-MACHINE
+              MOVE PATH-DATA TO CA-ALL-DATA
+              MOVE CA-ALL-PATH TO CA-PATH
+              MOVE "Y" TO CA-PATH-OVERRIDE.
+
+           MOVE LP-TRDATE TO CA-DATE.
+           MOVE BRANCH TO CA-BRNO.
+           PERFORM OPEN-CA1-FILE.
+           PERFORM READ-CA1-FILE.
+           PERFORM CLOSE-CA1-FILE.
+           IF IO-BAD
+              MOVE "INVALID CASH DRAWER #" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ACCEPT-ENTRY-ROUTINE.
+           IF CA-CLOSED-HHMM NOT = 0
+              MOVE "CASH DRAWER CLOSED" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ACCEPT-ENTRY-ROUTINE.
+           IF LP-CURBAL = 0 AND
+              LP-OTHBAL = 0 AND
+              LP-OT2BAL = 0 AND
+              LP-INTBAL = 0 AND
+              LP-LCBAL  = 0
+              GO TO ACCEPT-ENTRY-PO-CODE.
+           GO TO ACCEPT-ENTRY-EXIT.
+
+       ACCEPT-ENTRY-PO-CODE.
+           IF ( HOLD-LP-TRCD-ONESTEP-RN ) AND
+              ( BR-ONESTEP-RN-FG = "Y"  )
+              MOVE "^-BACK, F6 SCAN, ENTER PAYOFF CODE(F4/F5):" TO MESS
+           ELSE
+              MOVE "^-BACK, F6 SCAN, ENTER PAYOFF CODE:" TO MESS.
+           PERFORM SEND-LEGEND.
+
+      * DO NOT USE "RESET ON" IT WILL CLEAR CODE FROM SCAN.
+           MOVE "ENNA060SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF F1-KEY OR UP-KEY
+              MOVE "SNNA060SEL." TO VDU
+              PERFORM SCREENIO
+              GO TO ACCEPT-ENTRY-ROUTINE.
+           IF F6-KEY
+              PERFORM CODE-SCAN
+              MOVE CD-CODE TO HOLD-POCD
+              GO TO ACCEPT-ENTRY-PO-CODE.
+
+      * TEST F4 OR F5 SELECTED FOR A ONE STEP RENEWAL AND
+      *      LP-TRCD = "PB" OR "RN" OR "SC" OR "RB" OR "RO"
+
+      *    -------------------------------------------------------
+      *    HOLD-ONESTEP-RN-FG VALUES:
+      *       ' ' -  NORMAL PAYOFF/RENEWAL (NORMAL 2 STEP)
+      *       'A' -  F4 DEPRESSED, AUTO RENEWAL NO WINDOW STOP
+      *       'W' -  F5 DEPRESSED, AUTO RENEWAL WITH WINDOW STOP
+      *    -------------------------------------------------------
+           MOVE " " TO HOLD-ONESTEP-RN-FG.
+           IF F4-KEY OR F5-KEY
+              IF ( HOLD-LP-TRCD-ONESTEP-RN ) AND
+                 ( BR-ONESTEP-RN-FG = "Y"  )
+                 MOVE ONESTEP-RN-SEQ TO PASSWDW-SEQ
+                 PERFORM VERIFY-PASSWORD
+                 IF PASSWDW-STAT = "OK"
+                    MOVE "00" TO VDUSTATUS
+                    IF F4-KEY
+                       MOVE "A" TO HOLD-ONESTEP-RN-FG
+                    ELSE
+                       MOVE "W" TO HOLD-ONESTEP-RN-FG
+                    END-IF
+                 ELSE
+                    GO TO ACCEPT-ENTRY-PO-CODE.
+
+           IF NOT ENTER-KEY
+              GO TO ACCEPT-ENTRY-PO-CODE.
+
+           MOVE "PO"   TO CD-TYPE.
+      * NEED TO LEFT JUSTIFY THE "SEL" FIELD 
+           CALL "C$JUSTIFY" USING VDUBUF, "L".
+           MOVE VDUBUF TO CD-CODE.
+           IF CD-CODE = "**"
+              GO TO ACCEPT-ENTRY-PO-CODE.
+
+      * CLEAR SEL FIELD AFTER ENTRY:
+           MOVE "SNNA060SEL." TO VDU.
+           PERFORM SCREENIO.
+
+           PERFORM OPEN-CD1-FILE.
+           PERFORM READ-CD1-FILE.
+           PERFORM CLOSE-CD1-FILE.
+           IF IO-BAD
+              MOVE "INVALID CODE" TO MESS
+              PERFORM CONDITIONAL-SEND-MESS
+              GO TO ACCEPT-ENTRY-PO-CODE.
+           MOVE CD-CODE TO HOLD-POCD.
+
+           MOVE "SNNA060SEL." TO VDU.
+           PERFORM SCREENIO.
+
+           IF HOLD-ONESTEP-RN-FG NOT = " "
+              IF LP-TRCD = "PB" OR "SC"
+                 MOVE TRANS-DATE           TO EXT-WI-CL-TRANS-DATE
+                 MOVE HOLD-ONESTEP-RN-FG   TO LNPBRN-ONESTEP-RN-FG
+                 MOVE "WI/LNPBRN"          TO FORM-NAM
+                 CALL FORM-PROGX USING FORM-PATH LNPBRN-BUF
+                                       EXIT-PATHNAME
+                 CANCEL FORM-PROGX
+                 IF LNPBRN-ONESTEP-RN-FG NOT = "U"
+                    GO TO ACCEPT-ENTRY-ROUTINE
+                 ELSE
+                    GO TO ACCEPT-ENTRY-EXIT
+              ELSE
+                 MOVE TRANS-DATE           TO EXT-WI-CL-TRANS-DATE
+                 MOVE HOLD-ONESTEP-RN-FG   TO LNRNEW-ONESTEP-RN-FG
+                 MOVE "WI/LNRNEW"          TO FORM-NAM
+                 CALL FORM-PROGX USING FORM-PATH LNRNEW-BUF
+                                       EXIT-PATHNAME
+                 CANCEL FORM-PROGX
+                 IF LNRNEW-ONESTEP-RN-FG NOT = "U"
+                    GO TO ACCEPT-ENTRY-ROUTINE
+                 ELSE
+                    GO TO ACCEPT-ENTRY-EXIT.
+
+       ACCEPT-ENTRY-EXIT.
+           IF ROUTE-CD NOT = " "
+              PERFORM CLEAR-LEGEND.
+
+      ******************************************************
+       ENTER-OVPAID-AMOUNT SECTION.
+      ******************************************************
+
+      * CALL CL/OVPAID.C TO DETERMINE OVERPAYMENT
+
+      * DONT ALLOW OVPAID WINDOW IF A CASH TRANSACTION (CASHCO)
+
+      * CHECK ONLY FIRST TWO CHARACTERS OF BR-TENDER-CD
+
+           PERFORM VARYING MSUB FROM 1 BY 1 UNTIL MSUB > 3
+              MOVE BR-TENDER-CD(MSUB) TO HOLD-BR-TENDER-CDX(MSUB)
+           END-PERFORM.
+
+           IF BR-TENDER-CD(1) NOT = " " AND
+               BR-TENDER-CD(2) NOT = " " AND
+                BR-TENDER-CD(3) NOT = " "
+              MOVE LP-REFNO TO SAVE-LP-REFNO
+              IF SAVE-LP-REFER = HOLD-BR-TENDER-CD(1)
+                              OR HOLD-BR-TENDER-CD(2)
+                              OR HOLD-BR-TENDER-CD(3)
+                 MOVE "INVALID PER CASH TRANSACTION" TO MESS
+                 PERFORM CONDITIONAL-SEND-MESS
+                 GO TO ENTER-OVPAID-AMOUNT-EXIT.
+
+           MOVE ALLOW-OV-SEQ TO PASSWDW-SEQ.
+           PERFORM VERIFY-PASSWORD.
+           IF PASSWDW-STAT NOT = "OK"
+              GO TO ENTER-OVPAID-AMOUNT-EXIT.
+
+           MOVE LP-TRAMT     TO OVPAID-TRAMT.
+           MOVE "CL/OVPAID"  TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH OVPAID-BUF.
+           CANCEL FORM-PROGX.
+
+           MOVE OVPAID-CHECK TO HOLD-OVPAID-CHECK.
+           IF OVPAID-CHECK = 0
+              MOVE 0 TO OVPAID-CKAMT.
+           MOVE WK-LP-REC TO LP-REC.
+           MOVE " "       TO PAYOFF-LINES-01.
+           PERFORM SEND-PAYOFF-LINES.
+
+       ENTER-OVPAID-AMOUNT-EXIT.
+           EXIT.
+
+      ***************************************
+       LOAD-REBATE-TABLE SECTION.
+      ***************************************
+       LOAD-REBATE.
+           ADD 1 TO SUB.
+           MOVE POFF-REBATE(SUB)        TO REB-AMOUNT(SUB).
+           IF SUB < 9
+              MOVE POFF-INS-TAX-RB(SUB) TO HOLD-INS-TAX-RB(SUB).
+           IF SUB < 13
+              GO TO LOAD-REBATE.
+
+      ********************************************
+       DISBURSE-OTHER-APPLIED SECTION.
+      ********************************************
+       DISBURSE-OTHER-INIT.
+           MOVE 0 TO LXG-GLNO(1) LXG-GLNO(2) LXG-GLNO(3)
+                     LXG-GLAMT(1) LXG-GLAMT(2) LXG-GLAMT(3).
+       DISBURSE-GLNO-ENTRY.
+           MOVE GL-WORK TO ALLENT-DISBURSE.
+           MOVE LN-OWNBR TO ALLENT-BRNO.
+           MOVE BR-OTHER-BRANCH-GL TO ALLENT-OTHER-BR-FG.
+           MOVE BR-GL-TYPE-ALLOWED TO ALLENT-GL-TYPE-ALLOWED.
+           MOVE BR-GL-ENTRY-DEFAULT TO ALLENT-GL-ENTRY-DEFAULT.
+           MOVE 3 TO ALLENT-NO-OF-ACCTS.
+           MOVE "GL/ALLENT" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH ALLENT-BUF.
+           CANCEL FORM-PROGX.
+           IF ALLENT-STATUS = "N"
+              GO TO DISBURSE-OTHER-EXIT.
+           MOVE 1 TO SUB.
+       MOVE-GL-LOOP.
+           MOVE ALLENT-BR-ACCOUNT(SUB) TO LXG-GLNO(SUB).
+           IF LP-TRCD = "W2"
+              COMPUTE LXG-GLAMT(SUB) = ALLENT-AMT(SUB) * (-1)
+           ELSE
+              MOVE ALLENT-AMT(SUB) TO LXG-GLAMT(SUB).
+           IF SUB NOT = 3
+              ADD 1 TO SUB
+              GO TO MOVE-GL-LOOP.
+       DISBURSE-TOTAL-VERIFY.
+           COMPUTE VDUNUM2 = LXG-GLAMT(1) + LXG-GLAMT(2) + LXG-GLAMT(3).
+           IF GL-WORK = VDUNUM2
+              GO TO DISBURSE-OTHER-EXIT.
+           MOVE "OUT-OF-BALANCE ENTRY" TO MESS.
+           PERFORM CONDITIONAL-SEND-MESS.
+       DISBURSE-OTHER-EXIT.
+           EXIT.
+
+
+      **************************************************
+       DISPLAY-ENTRY-DOWN SECTION.
+      **************************************************
+
+           MOVE " " TO LINE-BUF LN-BUF.
+           MOVE 0 TO LN-WK.
+           MOVE HOLD1-KEY-DOWN TO LP1-KEY.
+           IF LP-SEQNO = 99999
+              MOVE 9 TO IO-FG
+              GO TO DISPLAY-DOWN-EXIT.
+
+      * ***NOTE*** 'START-LP1-FILE-SCAN' MUST BE USED WHEN FIRST USING
+      * 'START-LP1-FILE-NOT-GREATER'; USED WHEN DISPLAYING MULTIPLE
+      * PAGES IN AN UP & DOWN FUNCTION; YOU NEED TO ADD ONE TO 
+      * LP-SEQNO (IN WBEG) IN ORDER TO GET THE DISPLAY TO WORK
+      * LIKE VISION FILES.
+      
+           MOVE LP1-KEY TO HOLD2-KEY-UP.
+           PERFORM OPEN-LP1-FILE.
+           PERFORM READ-LP1-FILE.
+           IF IO-FG NOT = 0
+              MOVE LP-PATH-OWNBR TO QLP1-WBEG-BRNO
+                                    QLP1-WEND-BRNO
+              MOVE LP-ACCTNO     TO QLP1-WBEG-ACCTNO
+                                    QLP1-WEND-ACCTNO
+              COMPUTE QLP1-WBEG-SEQNO = LP-SEQNO + 1
+              MOVE ALL "9"       TO QLP1-WEND-SEQNO
+      *-   -   -{ ADD ONE TO WHERE SCAN BEG FIELDS }
+              IF ( LP-BRNO = 9999 )
+                 MOVE LP-BRNO    TO QLP1-WSBEG-BRNO
+              ELSE
+                 COMPUTE QLP1-WSBEG-BRNO = LP-BRNO + 1
+              END-IF
+   
+              IF ( LP-ACCTNO = 99999999 )
+                 MOVE LP-ACCTNO  TO QLP1-WSBEG-ACCTNO
+              ELSE
+                 COMPUTE QLP1-WSBEG-ACCTNO = LP-ACCTNO + 1
+              END-IF
+   
+              PERFORM START-LP1-FILE-SCAN.
+
+           MOVE 0 TO ENTRY-FLAG.
+
+       DISPLAY-NEXT-DOWN.
+           IF ENTRY-FLAG = 2
+              MOVE 9 TO IO-FG
+              GO TO DISPLAY-BYPASS-DOWN.
+           PERFORM READ-LP1-FILE-NEXT.
+           IF IO-FG = 0
+              IF (LP-ACCTNO NOT = LN-ACCTNO) OR
+                  (LP-BRNO NOT = LP-PATH-OWNBR)
+                 ADD 1 TO ENTRY-FLAG
+                 GO TO DISPLAY-NEXT-DOWN.
+       DISPLAY-BYPASS-DOWN.
+           ADD 1 TO LN-WK.
+           IF IO-FG = 0
+              PERFORM SETUP-LINE.
+           MOVE LN-BUF TO D-LINE(LN-WK).
+           MOVE " " TO LN-BUF.
+           IF LN-WK = 8
+              GO TO DISPLAY-XFER-DOWN.
+           IF IO-FG = 0
+              GO TO DISPLAY-NEXT-DOWN.
+           IF FULL-PAGE-FG = "Y"
+              MOVE "N" TO FULL-PAGE-FG
+              MOVE LN-OWNBR  TO LP-BRNO
+              MOVE LN-ACCTNO TO LP-ACCTNO
+              MOVE 99999     TO LP-SEQNO
+              MOVE LP1-KEY TO HOLD2-KEY-UP
+              PERFORM DISPLAY-ENTRY-UP
+              GO TO DISPLAY-DOWN-EXIT.
+       DISPLAY-XFER-DOWN.
+           PERFORM DISPLAY-ALL-LINES.
+       DISPLAY-DOWN-EXIT.
+           IF IO-FG = 0
+              MOVE "Y" TO FULL-PAGE-FG
+              MOVE LP1-KEY TO HOLD1-KEY-DOWN
+           ELSE
+              MOVE LN-OWNBR  TO LP-BRNO
+              MOVE LN-ACCTNO TO LP-ACCTNO
+              MOVE 99999     TO LP-SEQNO
+              MOVE LP1-KEY   TO HOLD1-KEY-DOWN.
+           PERFORM CLOSE-LP1-FILE.
+
+      *******************************************
+       DISPLAY-ENTRY-UP SECTION.
+      *******************************************
+
+           MOVE " " TO LINE-BUF LN-BUF.
+           MOVE 9 TO LN-WK.
+           MOVE HOLD2-KEY-UP TO LP1-KEY.
+           IF LP-SEQNO = 0
+              MOVE 9 TO IO-FG
+              GO TO DISPLAY-UP-EXIT.
+           MOVE LP1-KEY TO HOLD1-KEY-DOWN.
+           PERFORM OPEN-LP1-FILE.
+
+           MOVE LP-PATH-OWNBR TO QLP1-WBEG-BRNO
+                                 QLP1-WEND-BRNO.
+           MOVE LP-ACCTNO     TO QLP1-WBEG-ACCTNO
+                                 QLP1-WEND-ACCTNO.
+           MOVE ALL "0"       TO QLP1-WBEG-SEQNO.
+           MOVE LP-SEQNO      TO QLP1-WEND-SEQNO.
+
+           PERFORM START-LP1-FILE-NOT-GREATER.
+           MOVE 0 TO ENTRY-FLAG.
+
+       DISPLAY-NEXT-UP.
+           IF ENTRY-FLAG = 2
+              MOVE 9 TO IO-FG
+              GO TO DISPLAY-BYPASS-UP.
+           PERFORM READ-LP1-FILE-PREVIOUS.
+           IF IO-FG = 0
+              IF LP-ACCTNO NOT = LN-ACCTNO OR
+                  (LP-BRNO NOT = LP-PATH-OWNBR)
+                 ADD 1 TO ENTRY-FLAG
+                 GO TO DISPLAY-NEXT-UP.
+       DISPLAY-BYPASS-UP.
+           SUBTRACT 1 FROM LN-WK.
+           IF LN-WK < 1
+              MOVE "Y" TO FULL-PAGE-FG
+              GO TO DISPLAY-XFER-UP.
+           IF IO-FG = 0
+              PERFORM SETUP-LINE.
+           MOVE LN-BUF TO D-LINE(LN-WK).
+           MOVE " " TO LN-BUF.
+           IF IO-FG = 0
+              GO TO DISPLAY-NEXT-UP.
+           IF FULL-PAGE-FG = "Y"
+              MOVE "N" TO FULL-PAGE-FG
+              MOVE LN-OWNBR  TO LP-BRNO
+              MOVE LN-ACCTNO TO LP-ACCTNO
+              MOVE 0         TO LP-SEQNO
+              MOVE LP1-KEY TO HOLD1-KEY-DOWN
+              PERFORM DISPLAY-ENTRY-DOWN
+              GO TO DISPLAY-UP-EXIT.
+       DISPLAY-XFER-UP.
+           PERFORM DISPLAY-ALL-LINES.
+       DISPLAY-UP-EXIT.
+           IF IO-FG = 0
+              MOVE "Y" TO FULL-PAGE-FG
+              MOVE LP1-KEY TO HOLD2-KEY-UP
+           ELSE
+              MOVE LN-OWNBR  TO LP-BRNO
+              MOVE LN-ACCTNO TO LP-ACCTNO
+              MOVE 0         TO LP-SEQNO
+              MOVE LP1-KEY TO HOLD2-KEY-UP.
+           PERFORM CLOSE-LP1-FILE.
+
+      *********************************
+       SEND-PAYOFF-LINES SECTION.
+      *********************************
+           MOVE LP-REC    TO WK-LP-REC.
+           MOVE LX-REC    TO WK-LX-REC.
+           MOVE LXE-REC   TO WK-LXE-REC.
+           MOVE LXG-REC   TO WK-LXG-REC.
+
+           MOVE LN-CURBAL TO LP-CURBAL.
+           MOVE 0         TO SUB SUB1.
+           MOVE " " TO LINE-BUF.
+
+       SEND-PAYOFF-LINES-CONT.
+           ADD 1 TO SUB.
+           IF SUB > 13
+              MOVE WK-LP-REC  TO LP-REC
+              MOVE WK-LX-REC  TO LX-REC
+              MOVE WK-LXE-REC TO LXE-REC
+              MOVE WK-LXG-REC TO LXG-REC
+              COMPUTE LP-CURBAL = LP-CURBAL
+                 - REB-AMOUNT(1) - REB-AMOUNT(2)
+                  - REB-AMOUNT(3) - REB-AMOUNT(4)
+                   - REB-AMOUNT(5) - REB-AMOUNT(6)
+                    - REB-AMOUNT(7) - REB-AMOUNT(8)
+                     - REB-AMOUNT(9) - REB-AMOUNT(10)
+                      - REB-AMOUNT(11) - REB-AMOUNT(12)
+                       - REB-AMOUNT(13)
+              GO TO SEND-PAYOFF-LINES-SETUP.
+
+           IF SUB > 3 AND < 9
+              IF REB-AMOUNT(SUB) = 0
+                 GO TO SEND-PAYOFF-LINES-CONT
+              ELSE
+                 PERFORM SEND-PAYOFF-LINES-REC
+                 GO TO SEND-PAYOFF-LINES-SETUP.
+
+           IF SUB = 9
+              MOVE " " TO INS-RB-TBL(4)
+           ELSE
+           IF SUB = 10
+              MOVE " " TO INS-RB-TBL(5)
+           ELSE
+           IF SUB = 11
+              MOVE " " TO INS-RB-TBL(6)
+           ELSE
+           IF SUB = 12
+              MOVE " " TO INS-RB-TBL(7)
+           ELSE
+           IF SUB = 13
+              MOVE " " TO INS-RB-TBL(8)
+           ELSE
+              MOVE " " TO INS-RB-TBL(SUB).
+
+           MOVE SUB TO ITRM-SUB.
+           IF SUB = 9
+              MOVE 4 TO ITRM-SUB
+           ELSE
+           IF SUB = 10
+              MOVE 5 TO ITRM-SUB
+           ELSE
+           IF SUB = 11
+              MOVE 6 TO ITRM-SUB
+           ELSE
+           IF SUB = 12
+              MOVE 7 TO ITRM-SUB
+           ELSE
+           IF SUB = 13
+              MOVE 8 TO ITRM-SUB.
+
+           IF ( WK-EFF(ITRM-SUB) = "Y"              ) AND
+              ( POFF-ANSWER(ITRM-SUB + 1) NOT = "Y" )
+              MOVE "Y" TO INS-RB-TBL(ITRM-SUB)
+              PERFORM SEND-PAYOFF-LINES-REC
+              GO TO SEND-PAYOFF-LINES-SETUP
+           ELSE
+           IF EXPIRED-RB-FG(ITRM-SUB) = "Y"
+              MOVE "Y" TO INS-RB-TBL(ITRM-SUB).
+
+           GO TO SEND-PAYOFF-LINES-CONT.
+
+       SEND-PAYOFF-LINES-SETUP.
+           PERFORM SETUP-LINE.
+           ADD 1 TO SUB1.
+           MOVE LN-BUF TO PAYOFF-LINES(SUB1).
+           IF SUB > 13
+              IF HOLD-OVPAID-CHECK NOT = 0
+                 ADD 1 TO SUB1
+                 MOVE " "               TO LN-BUF ENTRY-BUF
+                 MOVE LP-PAYDATE        TO DATE-YYYYMMDD
+                 PERFORM CONVERT-YYYYMMDD-TO-MMDDYY
+                 MOVE DATE-MMDDYY       TO L-010 EB-010
+                 MOVE "OV"              TO L-020 EB-020
+                 IF ( LP-REFNO = "ALLOT" OR "LBOX"  OR "TPAY"
+                                        OR "TCOLL" OR "MGRAM"
+                    )
+                   OR
+                    ( ( ( BATCH-REFCD NOT = " "        ) AND
+                        ( LP-REFNO = BATCH-REFCD       )
+                      )
+                    )
+                    MOVE LP-REFNO       TO L-030 EB-030
+                 ELSE
+                    MOVE "CHECK"        TO L-030 EB-030
+                 END-IF
+                 MOVE HOLD-OVPAID-CHECK TO L-040 EB-040
+                 MOVE LP-PDTH-DATE TO NUM-DATE
+                 MOVE NUM-MO            TO EB-080-MO
+                 IF LN-UNITPER-CD-DAYS
+                    MOVE NUM-DA         TO EB-080-DAYR
+                 ELSE
+                    MOVE NUM-YR         TO EB-080-DAYR
+                 END-IF
+                 MOVE EB-080            TO L-080
+                 MOVE 0                 TO L-110
+                 MOVE LN-BUF TO PAYOFF-LINES(SUB1)
+              END-IF
+              GO TO SEND-PAYOFF-LINES-DONE
+           ELSE
+              GO TO SEND-PAYOFF-LINES-CONT.
+       SEND-PAYOFF-LINES-REC.
+           MOVE REB-TYPE(SUB) TO LP-TRCD.
+           MOVE REB-AMOUNT(SUB) TO LP-TRAMT LP-APCUR.
+           MOVE 0 TO LP-APOTH LP-APOT2 LP-APINT LP-APLC
+                     LP-OTHBAL LP-OT2BAL LP-INTBAL LP-LCBAL.
+           SUBTRACT LP-APCUR FROM LP-CURBAL.
+           MOVE " " TO LP-REV.
+
+           IF LP-TRCD = "RI"
+              MOVE HOLD-DLPARVHELD-ADJ TO LP-DLPARVHELD-ADJ
+              IF SP-RBREDUC(7) = 9999.01
+                 MOVE REB-MS-PENALTY TO LP-LCPAID MS-PENALTY.
+
+       SEND-PAYOFF-LINES-DONE.
+      * DONT DISPLAY THE LINES IF AUTOMATIC RENEWAL
+           IF HOLD-BP-TRCD NOT = " "
+              GO TO SEND-PAYOFF-LINES-EXIT.
+
+           MOVE 1 TO SUB.
+           MOVE PHASE-1 TO LINE-BUF.
+           PERFORM DISPLAY-ALL-LINES.
+           IF SUB1 < 9
+              GO TO SEND-PAYOFF-LINES-EXIT.
+
+           MOVE "PRESS <ENTER> FOR NEXT PAGE" TO MESS.
+           PERFORM SEND-LEGEND.
+           MOVE "E  A010ACCEPT." TO VDU.
+           PERFORM SCREENIO.
+
+           MOVE "MEMODATE MEMODESC ACCEPT." TO MESS.
+           PERFORM RESET-MESS.
+           IF SUB1 = 9
+              MOVE PHASE-2 TO LINE-BUF
+           ELSE
+           IF SUB1 = 10
+              MOVE PHASE-3 TO LINE-BUF
+           ELSE
+           IF SUB1 = 11
+              MOVE PHASE-4 TO LINE-BUF
+           ELSE
+           IF SUB1 = 12
+              MOVE PHASE-5 TO LINE-BUF
+           ELSE
+           IF SUB1 = 13
+              MOVE PHASE-6 TO LINE-BUF
+           ELSE
+           IF SUB1 = 14
+              MOVE PHASE-7 TO LINE-BUF
+           ELSE
+           IF SUB1 = 15
+              MOVE PHASE-8 TO LINE-BUF.
+
+           PERFORM DISPLAY-ALL-LINES.
+
+       SEND-PAYOFF-LINES-EXIT.
+           EXIT.
+
+      *********************************
+       SETUP-LINE SECTION.
+      *********************************
+           MOVE " " TO LN-BUF ENTRY-BUF.
+           IF LP-APCUR > 99999.99 OR LP-APCUR < -99999.99
+              PERFORM SETUP-LINE2
+              GO TO EXIT-SETUP-LINE.
+           MOVE LP-PAYDATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.
+           MOVE DATE-MMDDYY TO L-010 EB-010.
+           MOVE LP-TRCD TO L-020 EB-020.
+           MOVE LP-REFNO TO L-030 EB-030.
+           MOVE LP-TRAMT TO L-040 EB-040.
+           ADD LP-APOTH LP-APOT2 GIVING L-050 EB-050.
+           IF (LP-TRCD = "PB" OR "RN" OR "SC" OR "RB" OR "RO")
+                  AND (LP-APOT2 NOT = 0)
+              INSPECT L-050 REPLACING TRAILING " " BY "*"
+              INSPECT EB-050 REPLACING TRAILING " " BY "*".
+           ADD LP-APINT LP-APLC GIVING L-060 EB-060.
+           MOVE LP-APCUR TO L-070 EB-070.
+
+      * 7/30/98 BAH ALWAYS DISPLAY REVERSAL BALANCES, #487
+      * 8/11/98 SUPPRESS BALANCE IF ENV 'RVLINES' IS SET (MJD AS PER JTG)
+      
+           IF (LP-TRCD = "RV" OR LP-REV NOT = " ") AND
+               NOT (LP-TRCD = "RV" AND LP-REVSEQNO = 0) AND
+                   DISP-REV-BAL = "N"
+              MOVE "*" TO L-120 EB-120
+           ELSE
+              MOVE LP-PDTH-DATE TO NUM-DATE
+              MOVE NUM-MO TO EB-080-MO
+              IF LN-UNITPER-CD-DAYS
+                 MOVE NUM-DA TO EB-080-DAYR
+              ELSE
+                 MOVE NUM-YR TO EB-080-DAYR
+              END-IF
+              ADD LP-OTHBAL LP-OT2BAL GIVING EB-090
+              ADD LP-INTBAL LP-LCBAL GIVING EB-100
+              MOVE EB-080 TO L-080
+              ADD LP-OTHBAL LP-OT2BAL GIVING L-090
+              ADD LP-INTBAL LP-LCBAL GIVING L-100
+              MOVE LP-CURBAL TO L-110
+              IF (LP-TRCD = "RV" OR LP-REV NOT = " ") AND
+                  NOT (LP-TRCD = "RV" AND LP-REVSEQNO = 0)
+                 MOVE "*" TO L-120 EB-120.
+
+       EXIT-SETUP-LINE.
+           EXIT.
+
+      ***************************************
+       SETUP-LINE2 SECTION.
+      ***************************************
+           MOVE LP-PAYDATE TO DATE-YYYYMMDD.
+           PERFORM CONVERT-YYYYMMDD-TO-MMDDYY.
+           MOVE DATE-MMDDYY TO L2-010.
+           MOVE LP-TRCD TO L2-020.
+           MOVE LP-REFNO TO L2-030.
+           MOVE LP-TRAMT TO L2-040.
+           ADD LP-APOTH LP-APOT2 GIVING L2-050.
+           IF (LP-TRCD = "PB" OR "RN" OR "SC" OR "RB" OR "RO")
+                  AND (LP-APOT2 NOT = 0)
+              INSPECT L2-050 REPLACING TRAILING " " BY "*".
+           ADD LP-APINT LP-APLC GIVING L2-060.
+           MOVE LP-APCUR TO L2-070.
+
+
+           IF (LP-TRCD = "RV" OR LP-REV NOT = " ") AND
+                 NOT (LP-TRCD = "RV" AND LP-REVSEQNO = 0) AND
+                    DISP-REV-BAL = "N"
+              MOVE "*" TO L2-120
+           ELSE
+              ADD LP-OTHBAL LP-OT2BAL GIVING L2-090
+              ADD LP-INTBAL LP-LCBAL GIVING L2-100
+              MOVE LP-CURBAL TO L2-110
+              IF (LP-TRCD = "RV" OR LP-REV NOT = " ") AND
+                    NOT (LP-TRCD = "RV" AND LP-REVSEQNO = 0)
+                 MOVE "*" TO L2-120.
+
+      *************************************
+       SAVE-SCREEN SECTION.
+      *************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+           IF VDUSTATUS = "16"
+              IF WK-OLD-PROG-FORM = " "
+                 MOVE 99 TO MENU-FG
+                 GO TO EXIT-SAVE-SCREEN
+              ELSE
+                 MOVE WK-OLD-PROG-FORM TO NEW-PROG-FORM OLD-PROG-FORM
+                 MOVE " " TO WK-OLD-PROG-FORM.
+           MOVE ELE     TO WK-ELE.
+           MOVE LP-REC  TO WK-LP-REC.
+           MOVE LX-REC  TO WK-LX-REC.
+           MOVE LXE-REC TO WK-LXE-REC.
+           MOVE LXG-REC TO WK-LXG-REC.
+           PERFORM REWRITE-WK-FILE.
+
+       EXIT-SAVE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+      *********************************************
+       RESTORE-SCREEN SECTION.
+      *********************************************
+           MOVE 3 TO WK-KEY.
+           PERFORM OPEN-WK-FILE.
+           PERFORM READ-WK-FILE.
+           IF NEW-FORM NOT = OLD-FORM
+              MOVE OLD-PROG-FORM TO WK-OLD-PROG-FORM
+              MOVE NEW-PROG-FORM TO OLD-PROG-FORM.
+           IF IO-FG = 0
+              GO TO RESTORE-CLEAR.
+
+           MOVE SPACES TO WK-SAVE-RECORD.
+           MOVE 0      TO WK-ELE.
+           PERFORM WRITE-WK-FILE.
+           IF IO-FG = 9
+              GO TO IO-ERROR.
+
+           GO TO EXIT-RESTORE-SCREEN.
+       RESTORE-CLEAR.
+           MOVE WK-SAVE-RECORD TO LN-REC.
+           MOVE WK-LP-REC      TO LP-REC.
+           MOVE WK-LX-REC      TO LX-REC.
+           MOVE WK-LXE-REC     TO LXE-REC.
+           MOVE WK-LXG-REC     TO LXG-REC.
+           MOVE 0 TO WK-ELE.
+           PERFORM REWRITE-WK-FILE.
+
+       EXIT-RESTORE-SCREEN.
+           PERFORM CLOSE-WK-FILE.
+
+
+      ******************************************
+       SV-EARNED-PRINCIPAL SECTION.
+      ******************************************
+
+      * DETERMINE SERVICE ACCOUNT PRINCIPAL
+
+           IF DL-SVACCT-FRMLA = 0
+              COMPUTE LP-EARNED(1) ROUNDED = LP-APCUR *
+                           SV-RATE + DL-SVACCT-AMT
+              GO TO EXIT-SV-EARNED-PRINCIPAL.
+
+           IF DL-SVACCT-FRMLA NOT = 1
+              GO TO EXIT-SV-EARNED-PRINCIPAL.
+
+      * SERVICE FORMULA #1:
+      * IF WHAT PAID IS OVER THE $20
+           IF ORIG-PAYMNTD > DL-SVACCT-AMT
+              COMPUTE LP-EARNED(1) ROUNDED =
+                                   LP-TRAMT * SV-RATE
+              GO TO EXIT-SV-EARNED-PRINCIPAL.
+
+           COMPUTE SV-WORKER = DL-SVACCT-AMT - ORIG-PAYMNTD.
+           IF LP-TRAMT NOT > SV-WORKER
+              MOVE LP-TRAMT TO LP-EARNED(1)
+           ELSE
+              COMPUTE LP-EARNED(1) ROUNDED = SV-WORKER +
+                       (LP-TRAMT - SV-WORKER) * SV-RATE.
+
+       EXIT-SV-EARNED-PRINCIPAL.
+           EXIT.
+
+      ***********************************
+       RECAPTURE-DISTRIBUTION SECTION.
+      ***********************************
+           IF BR-DLPARV-ADJ-FG = "N" OR
+              HOLD-BP-TRCD NOT = " "
+              GO TO RECAPTURE-DISTRIBUTION-EXIT
+           ELSE
+              IF LN-ANTICERN(2) = 0
+                      AND LN-DLRVCHGS(1) = 0
+                       AND LN-DLRVCHGS(2) = 0
+                        AND LN-DLRVCHGS(3) = 0
+                         AND LN-DLPARVHELD = 0
+                          AND LN-DLPARVPAID = 0
+                 GO TO RECAPTURE-DISTRIBUTION-EXIT.
+
+           MOVE 15 TO WINDOW-LINES.
+           MOVE 48 TO WINDOW-COLUMNS.
+           MOVE  9 TO WINDOW-BEGIN-Y.
+           MOVE 18 TO WINDOW-BEGIN-X.
+           MOVE "DLPAR1" TO VDU-FORM-NAME.
+           MOVE "WI/DLPAR1" TO WINDOW-FORM-NAM.
+
+           PERFORM OPEN-WINDOW.
+           DISPLAY DLPAR1-SCREEN.
+
+           MOVE DLPAR1-FORM-FIELDS TO WR-BUF.
+           MOVE DLPAR1-FORM-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+
+       RECAPTURE-DISTRIBUTION-DISPLAY.
+           MOVE " " TO OVERRIDE-BUF.
+           MOVE LN-DLRVCHGS(1) TO ORIG-DLRVCHGS(1).
+           MOVE LN-DLRVCHGS(2) TO ORIG-DLRVCHGS(2).
+           MOVE LN-DLRVCHGS(3) TO ORIG-DLRVCHGS(3).
+           MOVE LN-DLPARVHELD TO ORIG-DLPARVHELD.
+           MOVE LN-DLPARVPAID TO ORIG-DLPARVPAID.
+           MOVE LN-ANTICERN(1) TO ORIG-UNEARN.
+           MOVE LN-ANTICERN(2) TO ORIG-ADDON.
+           ADD LN-DLRVCHGS(1) LN-DLRVCHGS(2)
+                LN-DLRVCHGS(3) LN-DLPARVHELD
+                 LN-DLPARVPAID LN-ANTICERN(1)
+                  LN-ANTICERN(2) GIVING ORIG-TOTAL.
+
+           MOVE HOLD-DLRVCHGS-ADJ(1) TO CALC-DLRVCHGS(1).
+           MOVE HOLD-DLRVCHGS-ADJ(2) TO CALC-DLRVCHGS(2).
+           MOVE HOLD-DLRVCHGS-ADJ(3) TO CALC-DLRVCHGS(3).
+           MOVE HOLD-DLPARVHELD-ADJ TO CALC-DLPARVHELD.
+           MOVE HOLD-DLPARVPAID-ADJ TO CALC-DLPARVPAID.
+           SUBTRACT ADDON-INT-REBATE HOLD-DLRVCHGS-ADJ(1)
+                    HOLD-DLRVCHGS-ADJ(2) HOLD-DLRVCHGS-ADJ(3)
+                    HOLD-DLPARVHELD-ADJ HOLD-DLPARVPAID-ADJ
+                              FROM POFF-REBATE(4) GIVING CALC-UNEARN.
+           MOVE ADDON-INT-REBATE TO CALC-ADDON.
+           MOVE POFF-REBATE(4) TO CALC-TOTAL.
+      *    ADD HOLD-DLRVCHGS-ADJ(1) HOLD-DLRVCHGS-ADJ(2)
+      *         HOLD-DLRVCHGS-ADJ(3) HOLD-DLPARVHELD-ADJ
+      *           HOLD-DLPARVPAID-ADJ POFF-REBATE(4)
+      *             ADDON-INT-REBATE GIVING CALC-TOTAL.
+
+           MOVE OVERRIDE-BUF TO WR-BUF.
+           MOVE OVERRIDE-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+       RECAPTURE-DISTRIBUTION-ACCEPT.
+           MOVE " F7-CONTINUE:" TO MESS.
+           PERFORM SEND-WSEL.
+           MOVE "E  A010SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS NOT = "1>"
+              GO TO RECAPTURE-DISTRIBUTION-ACCEPT.
+
+       RECAPTURE-DISTRIBUTION-EXIT.
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY DLPAR1-SCREEN.
+           PERFORM CLOSE-WINDOW.
+           MOVE "LONPF" TO VDU-FORM-NAME.
+
+      ***************************************************
+       COMPUTE-RECAPTURE-PRORATA SECTION.
+      ***************************************************
+
+           IF POFF-REBATE(4) = LN-INTCHG
+              MOVE 1 TO DLRECAP-PERCENT
+              GO TO COMPUTE-RECAPTURE-PRORATA-EXIT
+           ELSE
+              MOVE 0 TO DLRECAP-PERCENT.
+
+           MOVE LN-LOANDATE TO NUM-DATE.
+           MOVE LP-PAYDATE TO SYS-DATE.
+           PERFORM TIM360.
+           IF ELAPSED-REM > 0
+              ADD 1 TO ELAPSED-MONTHS.
+           COMPUTE DLRECAP-PERCENT ROUNDED =
+                       1 - ELAPSED-MONTHS / LN-ORGTERM.
+           IF DLRECAP-PERCENT < 0
+              MOVE 0 TO DLRECAP-PERCENT.
+
+       COMPUTE-RECAPTURE-PRORATA-EXIT.
+           EXIT.
+
+      ******************************************************************
+       DLRECAP-REDISBURSE SECTION.
+      ******************************************************************
+
+      * ROUTINE ADJUSTS DEALER RECAPTURE TO STOP
+      * A NEGATIVE ADJUSTMENT TO THE FINANCE COMPANIES
+      * EARNINGS ADJUSTMENT.  RE: 'RI'
+
+           IF DLRECAP-WORK NOT > 0
+              GO TO DLRECAP-REDISBURSE-EXIT.
+
+           IF DLRECAP-WORK > HOLD-DLRVCHGS-ADJ(1)
+              SUBTRACT HOLD-DLRVCHGS-ADJ(1) FROM DLRECAP-WORK
+              MOVE 0 TO HOLD-DLRVCHGS-ADJ(1)
+           ELSE
+              SUBTRACT DLRECAP-WORK FROM HOLD-DLRVCHGS-ADJ(1)
+              GO TO DLRECAP-REDISBURSE-EXIT.
+           IF DLRECAP-WORK > HOLD-DLRVCHGS-ADJ(2)
+              SUBTRACT HOLD-DLRVCHGS-ADJ(2) FROM DLRECAP-WORK
+              MOVE 0 TO HOLD-DLRVCHGS-ADJ(2)
+           ELSE
+              SUBTRACT DLRECAP-WORK FROM HOLD-DLRVCHGS-ADJ(2)
+              GO TO DLRECAP-REDISBURSE-EXIT.
+           IF DLRECAP-WORK > HOLD-DLRVCHGS-ADJ(3)
+              SUBTRACT HOLD-DLRVCHGS-ADJ(3) FROM DLRECAP-WORK
+              MOVE 0 TO HOLD-DLRVCHGS-ADJ(3)
+           ELSE
+              SUBTRACT DLRECAP-WORK FROM HOLD-DLRVCHGS-ADJ(3)
+              GO TO DLRECAP-REDISBURSE-EXIT.
+
+           IF DLRECAP-WORK > HOLD-DLPARVHELD-ADJ
+              SUBTRACT HOLD-DLPARVHELD-ADJ FROM DLRECAP-WORK
+              MOVE 0 TO HOLD-DLPARVHELD-ADJ
+           ELSE
+              SUBTRACT DLRECAP-WORK FROM HOLD-DLPARVHELD-ADJ
+              GO TO DLRECAP-REDISBURSE-EXIT.
+           IF DLRECAP-WORK > HOLD-DLPARVPAID-ADJ
+              SUBTRACT HOLD-DLPARVPAID-ADJ FROM DLRECAP-WORK
+              MOVE 0 TO HOLD-DLPARVPAID-ADJ
+           ELSE
+              SUBTRACT DLRECAP-WORK FROM HOLD-DLPARVPAID-ADJ
+              GO TO DLRECAP-REDISBURSE-EXIT.
+
+       DLRECAP-REDISBURSE-EXIT.
+           EXIT.
+
+      ***************************************************
+       CODE-SCAN SECTION.
+      ***************************************************
+
+           MOVE "PO"   TO CDSCAN-TYPE.
+           MOVE SPACES TO CDSCAN-CODE.
+
+           MOVE "WI/CDSCAN" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH CDSCAN-BUF EXIT-PATHNAME.
+           CANCEL FORM-PROGX.
+           IF CDSCAN-STATUS NOT = "00" OR CDSCAN-CODE = SPACES
+               MOVE 9 TO IO-FG
+               GO TO EXIT-CODE-SCAN.
+
+           MOVE "SNNA060SEL."  TO VDU.
+           MOVE CDSCAN-CODE TO VDUBUF.
+           PERFORM SCREENIO.
+
+           MOVE CDSCAN-CODE TO VDUBUF  CD-CODE.
+           MOVE 0 TO IO-FG.
+
+       EXIT-CODE-SCAN.
+           EXIT.
+
+      *******************************************************
+       VERIFY-PASSWORD SECTION.
+      *******************************************************
+           MOVE " "      TO PASSWDW-STAT.
+           MOVE "LONPFA" TO PASSWDW-PGM.
+           MOVE "PLEASE ENTER THE PASSWORD," TO PASSWDW-PROMPT1.
+           IF PASSWDW-SEQ = ONESTEP-RN-SEQ
+              MOVE "TO PERFORM A ONE STEP RENEWAL" TO PASSWDW-PROMPT2.
+           IF PASSWDW-SEQ = ALLOW-OV-SEQ
+              MOVE "TO ENTER AN OVER PAYMENT AMT " TO PASSWDW-PROMPT2.
+           MOVE "CL/PASSWD" TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH PASSWDW-BUF.
+           CANCEL FORM-PROGX.
+
+       COPY "LIBGB/CAPASSWD.CPY".
+
+      ***************************************************************
+       SETUP-LINK-INFO SECTION.
+      ***************************************************************
+           IF VDU-FORM-NAME = "LPSMNU"
+              MOVE LPSMNU-HELP--FILE TO HELP-LINK-FILE
+              MOVE LPSMNU-HELP--DIR  TO HELP-LINK-DIR
+           ELSE
+           IF VDU-FORM-NAME = "DLPAR1"
+              MOVE DLPAR1-HELP--FILE TO HELP-LINK-FILE
+              MOVE DLPAR1-HELP--DIR TO HELP-LINK-DIR
+           ELSE
+              MOVE LONPF-HELP--FILE TO HELP-LINK-FILE
+              MOVE LONPF-HELP--DIR TO HELP-LINK-DIR.
+
+      *************************************************
+       VDU-CONVERT-FIELD SECTION.
+      *************************************************
+           MOVE "00" TO STAT.
+           MOVE VDU-FIELD-TO-CONVERT TO VDU-ALP-FIELD.
+           EVALUATE TRUE
+              COPY "LIBLP/LONPF_EVA.CPY".
+              COPY "LIBLP/LPSMNU_EVA.CPY".
+              COPY "LIBLP/LPLNMU_EVA.CPY".
+              COPY "LIBLP/LPCAMU_EVA.CPY".
+              COPY "LIBLP/LPVDMU_EVA.CPY".
+              COPY "LIBWI/DLPAR1_EVA.CPY".
+              WHEN OTHER       MOVE   "2A" TO STAT
+           END-EVALUATE.
+
+      *************************************
+       MISC-ROUTINES SECTION.
+      *************************************
+       COPY "LIBGB/SYSTEM.CPY".
+       COPY "LIBGB/GETENV.CPY".
+       FORM-RESET.
+       CONDITIONAL-SEND-MESS.
+           IF EXT-ROUTE-BUF = "00"
+              PERFORM SEND-MESS.
+       VERIFY-REFUNDS.
+           IF REB-AMOUNT(SUB) NOT = 0
+              MOVE 98 TO SUB.
+       GET-DL.
+           PERFORM OPEN-DL1-FILE.
+           PERFORM READ-DL1-FILE.
+           PERFORM CLOSE-DL1-FILE.
+       SET-LP-EARNED.
+           MOVE LN-EARN-ORDER(1) TO SUB.
+           IF EADJ-ADJUST-FG(1) NOT = "Y"
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(1) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(1) -
+                    LN-ACCERN(1) - (REB-AMOUNT(4) - ADDON-INT-REBATE)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                              HOLD-LN-TOTERN HOLD-LN-ACCERN(1)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(1) -
+                    LN-ACCERN(1) - (REB-AMOUNT(4) - ADDON-INT-REBATE)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(1)
+           ELSE
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(1) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(1) -
+                    LN-ACCERN(1) - (EADJ-ADJUST(1) - ADDON-INT-REBATE)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                              HOLD-LN-TOTERN HOLD-LN-ACCERN(1)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(1) -
+                    LN-ACCERN(1) - (EADJ-ADJUST(1) - ADDON-INT-REBATE)
+               ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(1).
+
+           MOVE LN-EARN-ORDER(2) TO SUB.
+           IF EADJ-ADJUST-FG(2) NOT = "Y"
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(2) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(2) -
+                            LN-ACCERN(2) - ADDON-INT-REBATE
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                            HOLD-LN-TOTERN HOLD-LN-ACCERN(2)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(2) -
+                                    LN-ACCERN(2) - ADDON-INT-REBATE
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(2)
+           ELSE
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(2) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(2) -
+                                       LN-ACCERN(2) - EADJ-ADJUST(2)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                             HOLD-LN-TOTERN HOLD-LN-ACCERN(2)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(2) -
+                                    LN-ACCERN(2) - EADJ-ADJUST(2)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(2).
+
+           MOVE LN-EARN-ORDER(3) TO SUB.
+           IF EADJ-ADJUST-FG(3) NOT = "Y"
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(3) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(3) -
+                                         LN-ACCERN(3) - REB-AMOUNT(5)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                              HOLD-LN-TOTERN HOLD-LN-ACCERN(3)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(3) -
+                                    LN-ACCERN(3) - REB-AMOUNT(5)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(3)
+           ELSE
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(3) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(3) -
+                                         LN-ACCERN(3) - EADJ-ADJUST(3)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                     HOLD-LN-TOTERN HOLD-LN-ACCERN(3)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(3) -
+                                    LN-ACCERN(3) - EADJ-ADJUST(3)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(3).
+
+           MOVE LN-EARN-ORDER(4) TO SUB.
+           IF EADJ-ADJUST-FG(4) NOT = "Y"
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(4) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(4) -
+                                         LN-ACCERN(4) - REB-AMOUNT(6)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                     HOLD-LN-TOTERN HOLD-LN-ACCERN(4)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(4) -
+                                    LN-ACCERN(4) - REB-AMOUNT(6)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(4)
+           ELSE
+              IF SUB > 3
+      *          COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(4) -
+                 COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(4) -
+                                         LN-ACCERN(4) - EADJ-ADJUST(4)
+      *          ADD WK-LXE-EARN(SUB - 3) TO
+                 ADD LXE-EARN(SUB - 3) TO
+                     HOLD-LN-TOTERN HOLD-LN-ACCERN(4)
+              ELSE
+                 COMPUTE LP-EARNED(SUB) = LN-ANTICERN(4) -
+                                    LN-ACCERN(4) - EADJ-ADJUST(4)
+                 ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(4).
+
+           MOVE LN-EARN-ORDER(5) TO SUB.
+           IF SUB > 3
+      *        COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(5) -
+               COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(5) -
+                                              LN-ACCERN(5)
+      *        ADD WK-LXE-EARN(SUB - 3) TO HOLD-LN-TOTERN
+               ADD LXE-EARN(SUB - 3) TO HOLD-LN-TOTERN
+                                        HOLD-LN-ACCERN(5)
+           ELSE
+               COMPUTE LP-EARNED(SUB) = LN-ANTICERN(5) - LN-ACCERN(5)
+               ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(5).
+
+           MOVE LN-EARN-ORDER(6) TO SUB.
+           IF SUB > 3
+      *        COMPUTE WK-LXE-EARN(SUB - 3) = LN-ANTICERN(6) -
+               COMPUTE LXE-EARN(SUB - 3) = LN-ANTICERN(6) -
+                                              LN-ACCERN(6)
+      *        ADD WK-LXE-EARN(SUB - 3) TO HOLD-LN-TOTERN
+               ADD LXE-EARN(SUB - 3) TO HOLD-LN-TOTERN
+                                           HOLD-LN-ACCERN(6)
+           ELSE
+               COMPUTE LP-EARNED(SUB) = LN-ANTICERN(6) - LN-ACCERN(6)
+               ADD LP-EARNED(SUB) TO HOLD-LN-TOTERN HOLD-LN-ACCERN(6).
+
+       FIND-GA.
+           IF SUB = 8
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA4-BUF
+              MOVE GA4-BUF TO WR-BUF
+              MOVE GA4-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 7
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA3-BUF
+              MOVE GA3-BUF TO WR-BUF
+              MOVE GA3-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 6
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA2-BUF
+              MOVE GA2-BUF TO WR-BUF
+              MOVE GA2-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 5
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA1-BUF
+              MOVE GA1-BUF TO WR-BUF
+              MOVE GA1-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 4
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA0-BUF
+              MOVE GA0-BUF TO WR-BUF
+              MOVE GA0-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 3
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA9-BUF
+              MOVE GA9-BUF TO WR-BUF
+              MOVE GA9-LIST TO WR-LIST
+              PERFORM CALL-WRFORM
+           ELSE
+           IF SUB = 2
+              MOVE VDUNUM2 TO WORK-XXWAIVERS GA8-BUF
+              MOVE GA8-BUF TO WR-BUF
+              MOVE GA8-LIST TO WR-LIST
+              PERFORM CALL-WRFORM.
+       DISPLAY-EARNINGS.
+           MOVE " " TO EARN-BUF.
+           IF HOLD-DISPLAY-ERN = "A"
+              ADD HOLD-LN-ACCERN(1) HOLD-LN-ACCERN(2)
+                  HOLD-LN-ACCERN(3)
+                  HOLD-LN-ACCERN(5) GIVING TOTEARN
+              IF NOT( GP-INCL-OTH-IN-EARNED-N  OR
+                                       GP-INCL-OTH-IN-EARNED-R)
+                 ADD HOLD-LN-ACCERN(6) TO TOTEARN
+              END-IF
+              IF NOT(GP-INCL-OTH-IN-EARNED-R)
+                 ADD HOLD-LN-ACCERN(4) TO TOTEARN
+              END-IF
+
+              MOVE TOTEARN TO D-TOTEARN
+           ELSE
+           IF HOLD-DISPLAY-ERN = "U" AND
+              LN-SERVACCT NOT = "Y" AND
+              LN-PLCD = " "
+              MOVE 0 TO UNEARNED
+              MOVE UNEARNED TO D-TOTEARN
+           ELSE
+           IF HOLD-DISPLAY-ERN = "T"
+              MOVE HOLD-LN-TOTERN TO D-TOTEARN
+           ELSE
+           IF HOLD-DISPLAY-ERN = "P"
+              MOVE LN-TOTPAYMNTD TO D-TOTEARN
+           ELSE
+      * "I" IS TODAY DUE INTEREST BUT CALCULATING IT IN THE POSTING PROGRAMS
+      *     WAS TOO MESSY SO LEAVE IT BLANK, NOT ZERO, BUT BLANK, LONPF1 WILL
+      *     REDISPLAY IT
+           IF HOLD-DISPLAY-ERN = "I"
+              NEXT SENTENCE
+           ELSE
+              MOVE 0 TO D-TOTEARN.
+
+           MOVE LN-YTDINTPD TO D-INTYTD.
+
+           IF (IBPC-FG = "P" OR LN-LOANTYPE = "I")
+                                      AND (SP-LCFRMLA NOT = " ")
+                                       AND (LN-ACCELDATE = 0)
+              MOVE LCAP-LCPDTH-DATE TO NUM-DATE
+              MOVE NUM-MO TO D-LCPDTH-MO
+              IF LN-UNITPER-CD-DAYS
+                 MOVE NUM-DA TO D-LCPDTH-DAYR
+              ELSE
+                 MOVE NUM-YR TO D-LCPDTH-DAYR.
+
+           COMPUTE D-EARNED ROUNDED = LP-EARNED(1) + LP-EARNED(2)
+                                    + LP-EARNED(3) + LXE-EARN(1)
+                                    + LXE-EARN(2)  + LXE-EARN(3).
+      *                             + LP-EARNED(3) + WK-LXE-EARN(1)
+      *                             + WK-LXE-EARN(2) + WK-LXE-EARN(3).
+
+           MOVE LP-DLPROC TO D-DLPROC.
+           MOVE EARN-BUF TO WR-BUF.
+           MOVE EARN-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+
+       ACCEPT-SCREEN-RESET.
+           MOVE "Y" TO FULL-PAGE-FG.
+           MOVE LN-OWNBR  TO LP-BRNO.
+           MOVE LN-ACCTNO TO LP-ACCTNO.
+           MOVE 99999     TO LP-SEQNO.
+           MOVE LP1-KEY TO HOLD2-KEY-UP.
+           MOVE "7" TO ROUTE-CD.
+
+       TEST-STAT.
+           IF STAT NOT = "00"
+              PERFORM FORM-IT
+              GO TO IO-ERROR.
+       SEND-INT-OR-LC.
+           IF IBPC-FG = "I"
+              MOVE "   INT" TO VDUBUF
+           ELSE
+              MOVE "LT-CHG" TO VDUBUF.
+           PERFORM SCREENIO.
+       CLEAR-LEGEND.
+           MOVE " " TO MESS.
+           PERFORM SEND-LEGEND.
+       DISPLAY-ALL-LINES.
+           MOVE LINE-BUF TO WR-BUF.
+           MOVE LINE-LIST TO WR-LIST.
+           PERFORM CALL-WRFORM.
+       SEND-LEGEND.
+           MOVE "S  A000MSEL." TO VDU.
+           MOVE MESS TO VDUBUF.
+           PERFORM SCREENIO.
+       SEND-WSEL.
+           MOVE "S  A000WSEL." TO VDU.
+           MOVE MESS TO VDUBUF.
+           PERFORM SCREENIO.
+       MUST-BE-ALL-ZERO.
+           MOVE "BRING OTHBAL, INTBAL & LCBAL TO 0 FIRST!" TO MESS.
+           PERFORM CONDITIONAL-SEND-MESS.
+       EXCEEDS-PRIN-BAL.
+           MOVE "EXCEEDS PRINCIPAL BAL" TO MESS.
+           PERFORM CONDITIONAL-SEND-MESS.
+       EXCEEDS-PUR-BAL.
+           MOVE LN-PURBAL TO PURBAL-EXCEEDED.
+           MOVE PUR-BAL-EXCEEDED TO MESS.
+           PERFORM CONDITIONAL-SEND-MESS.
+       SEND-ENTRY-LINE.
+           MOVE ENTRY-BUF TO WR-BUF.
+           MOVE ENTRY-LINE TO WR-LIST.
+           PERFORM CALL-WRFORM.
+      *CONVERT-TILLNO-TO-NUMERIC.
+      *    MOVE 0 TO NUMERIC-TILLNO.
+      *    IF TEST-ALPHA-TILLNO = "1"
+      *       MOVE 1 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "2"
+      *       MOVE 2 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "3"
+      *       MOVE 3 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "4"
+      *       MOVE 4 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "5"
+      *       MOVE 5 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "6"
+      *       MOVE 6 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "7"
+      *       MOVE 7 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "8"
+      *       MOVE 8 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "9"
+      *       MOVE 9 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "A"
+      *       MOVE 10 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "B"
+      *       MOVE 11 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "C"
+      *       MOVE 12 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "D"
+      *       MOVE 13 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "E"
+      *       MOVE 14 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "F"
+      *       MOVE 15 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "G"
+      *       MOVE 16 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "H"
+      *       MOVE 17 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "I"
+      *       MOVE 18 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "J"
+      *       MOVE 19 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "K"
+      *       MOVE 20 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "L"
+      *       MOVE 21 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "M"
+      *       MOVE 22 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "N"
+      *       MOVE 23 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "O"
+      *       MOVE 24 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "P"
+      *       MOVE 25 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "Q"
+      *       MOVE 26 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "R"
+      *       MOVE 27 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "S"
+      *       MOVE 28 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "T"
+      *       MOVE 29 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "U"
+      *       MOVE 30 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "V"
+      *       MOVE 31 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "W"
+      *       MOVE 32 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "X"
+      *       MOVE 33 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "Y"
+      *       MOVE 34 TO NUMERIC-TILLNO
+      *    ELSE
+      *    IF TEST-ALPHA-TILLNO = "Z"
+      *       MOVE 35 TO NUMERIC-TILLNO.
+      *CONVERT-TILLNO-TO-ALPHA.
+      *    MOVE SPACES TO TEST-ALPHA-TILLNO.
+      *    IF NUMERIC-TILLNO < 10
+      *       MOVE NUMERIC-TILLNO1 TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 10
+      *       MOVE "A" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 11
+      *       MOVE "B" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 12
+      *       MOVE "C" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 13
+      *       MOVE "D" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 14
+      *       MOVE "E" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 15
+      *       MOVE "F" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 16
+      *       MOVE "G" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 17
+      *       MOVE "H" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 18
+      *       MOVE "I" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 19
+      *       MOVE "J" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 20
+      *       MOVE "K" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 21
+      *       MOVE "L" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 22
+      *       MOVE "M" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 23
+      *       MOVE "N" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 24
+      *       MOVE "O" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 25
+      *       MOVE "P" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 26
+      *       MOVE "Q" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 27
+      *       MOVE "R" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 28
+      *       MOVE "S" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 29
+      *       MOVE "T" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 30
+      *       MOVE "U" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 31
+      *       MOVE "V" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 32
+      *       MOVE "W" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 33
+      *       MOVE "X" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 34
+      *       MOVE "Y" TO TEST-ALPHA-TILLNO
+      *    ELSE
+      *    IF NUMERIC-TILLNO = 35
+      *       MOVE "Z" TO TEST-ALPHA-TILLNO.
+
+       COPY "LIBGB/DATER.CPY".
+       COPY "LIBLP/SETCTBL.CPY".
+       COPY "LIBWI/PFSWINDOWS.CPY".
+       COPY "LIBGB/SCREEN.CPY".
+       COPY "LIBGB/GPENV.CPY".
+       COPY "LIBLP/LPEADJ.CPY".
+       COPY "LIBLP/FAPOFF.CPY".
+       COPY "LIBLP/LPIBPC.CPY".
+       COPY "LIBLP/LPRATE.CPY".
+       COPY "LIBLP/LPXDTE.CPY".
+       COPY "LIBLP/LPITRM.CPY".
+       COPY "LIBLP/LPLCAS.CPY".
+       COPY "LIBGB/SPPDTH.CPY".
+       COPY "LIBLP/LPSCHD.CPY".
+       COPY "LIBLP/LPLCHG.CPY".
+       COPY "LIBLP/LPLCAP.CPY".
+       COPY "LIBLP/LPMDTE.CPY".
+       COPY "LIBLP/LPBWIN.CPY".
+       COPY "LIBLP/LPAMTS.CPY".
+       COPY "LIBGB/REBATE.CPY".
+       COPY "LIBLP/LPAPRZ.CPY".
+       COPY "LIBLP/LPUPER.CPY".
+       COPY "LIBLP/LPUPWK.CPY".
+       COPY "LIBLP/LPAPRS.CPY".
+       COPY "LIBLP/LPCEPP.CPY".
+       COPY "LIBLP/LPCDEL.CPY".
+       COPY "LIBLP/LPTDEL.CPY".
+       COPY "LIBLP/LPPDUE.CPY".
+       COPY "LIBLP/AFPDLLP.CPY".
+       COPY "LIBGB/RBACT.CPY".
+       COPY "LIBLP/ADDONSPR.CPY".
+
+      ********************************************
+       IO-ROUTINES SECTION.
+      ********************************************
+       COPY "LIBGB/CONNECT_SQL.CPY".
+       COPY "LIBLP/LPSPGS_SQL.CPY".
+       COPY "LIBLP/LPLTPGS_SQL.CPY".
+       COPY "LIBLP/LPLTIGS_SQL.CPY".
+       COPY "LIBLP/LPLPGS_SQL.CPY".
+       COPY "LIBLP/LPDLGS_SQL.CPY".
+       COPY "LIBLP/LPCDGS_SQL.CPY".
+       COPY "LIBLP/LPCAGS_SQL.CPY".
+       COPY "LIBGB/GBBRGS_SQL.CPY".
+       COPY "LIBGB/GBGBGS_SQL.CPY".
+       COPY "LIBGB/GBBRRN.CPY".
+       COPY "LIBGB/GBGBRN.CPY".
+       COPY "LIBLP/LPDL1RN.CPY".
+       COPY "LIBLP/LPLP1RN.CPY".
+       COPY "LIBLP/LPSP1RN.CPY".
+       COPY "LIBLP/LPCA1RN.CPY".
+       COPY "LIBLP/LPCD1RN.CPY".
+       COPY "LIBLP/LPWKI.CPY".
+       COPY "LIBLP/LPLTP1RN.CPY".
+       COPY "LIBLP/LPLTI1IN.CPY".
+
+       COPY "LIBGB/FERRORS.CPY".
+           MOVE "E" TO ERRCD.
+       END-ROUTINE.
+           PERFORM CLOSE-FILES.
+      D    STOP-RUN.
+       EXIT-PROG.
+       STOP-RUN.
+           EXIT PROGRAM.

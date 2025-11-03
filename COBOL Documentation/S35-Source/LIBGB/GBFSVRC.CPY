@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBGB/GBFSVRC
+           SELECT VRC-FILE ASSIGN TO VRC-PATH  
+                  ORGANIZATION INDEXED 
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VRC1-KEY
+                  ALTERNATE RECORD KEY VRC2-KEY
+                  FILE STATUS FILE-STAT.

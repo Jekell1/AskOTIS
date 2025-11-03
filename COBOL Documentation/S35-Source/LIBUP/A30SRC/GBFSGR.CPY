@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBGB/GBFSGR
+           SELECT GR-FILE ASSIGN TO GR-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY GR1-KEY
+                  FILE STATUS FILE-STAT.

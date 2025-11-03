@@ -1,0 +1,57 @@
+graph TD
+    A[Unit Period Processing] --> B{EVALUATE WS-XUNITPER-CODE}
+    
+    B -->|"M"| C[Monthly Processing]
+    B -->|"Y"| D[Yearly Processing]
+    B -->|"S"| E[Semi-monthly Processing]
+    B -->|"D"| F[Daily Processing]
+    B -->|"W"| G[Weekly Processing]
+    B -->|"B"| H[Bi-weekly Processing]
+    
+    C --> C1[Use 998 Year Type]
+    C1 --> C2{Check Frequency}
+    C2 -->|FREQ = 1| C3[Standard Monthly Calculation]
+    C2 -->|FREQ > 1| C4[Multi-month Period Calculation]
+    
+    D --> D1[Use 998 Year Type]
+    D1 --> D2[Yearly Period Calculation]
+    D2 --> D3[Apply Frequency Multiplier]
+    
+    E --> E1[Use 360 Year Type]
+    E1 --> E2[Semi-monthly Calculation]
+    E2 --> E3[15-day period processing]
+    
+    F --> F1[Use 365 Year Type]
+    F1 --> F2[Daily Calculation]
+    F2 --> F3[Apply Frequency for Multi-day Periods]
+    
+    G --> G1[Use 365 Year Type]
+    G1 --> G2[Weekly Calculation]
+    G2 --> G3[7-day period processing]
+    
+    H --> H1[Use 365 Year Type]
+    H1 --> H2[Bi-weekly Calculation]
+    H2 --> H3[14-day period processing]
+    
+    C3 --> I[Calculate Unit Periods]
+    C4 --> I
+    D3 --> I
+    E3 --> I
+    F3 --> I
+    G3 --> I
+    H3 --> I
+    
+    I --> I1[ELAPSED-UNITPER = Total Periods]
+    I1 --> I2[ELAPSED-UNITPER-REM = Remainder]
+    I2 --> J[Unit Processing Complete]
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#f3e5f5
+    style E fill:#f3e5f5
+    style F fill:#f3e5f5
+    style G fill:#f3e5f5
+    style H fill:#f3e5f5
+    style I fill:#fff9c4
+    style J fill:#c8e6c9

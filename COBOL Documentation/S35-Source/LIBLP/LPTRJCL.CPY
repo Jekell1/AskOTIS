@@ -1,0 +1,46 @@
+      * COPYMEMBER: LIBLP/LPTRJCL
+
+      ***********************************************************************
+      *    LPTRJCL    POSTING TRANSACTION FILE CLEAR ROUTINE
+      *                   CLASS TRANSFER RECORDS
+      *
+      *                NEEDS TJSUB FOR THE PERFORM STATEMENT.
+      * REV:
+      *  JTG 000425 CORRECTED FALL THRU OF PERFORM CLEAR-TJ-TABLES AND
+      *             CHANGED TO PERFORM VARYING
+      *   CS 161004 REMOVED TJ-SEQNO, CHANGED PERFORM VARYING JSUB FROM 6
+      *             TO 10, REMOVED TJ-INSCOMP,TJ-INSEFF,TJ-INSEXP,TJ-INSPREM
+      *             TJ-INSCOMM, TJ-FEEAMT
+      *   CS 161028 ADD TJ-FRLC, TJ-TOLC
+      *   CS 161117 ADD TJ-SUBCLASS 
+      * KEC 180501 CHANGED TJ-NUMBER TO BE TJ-ACCTNO.
+      * BAH 20210426 REMOVED FUTURE FIELDS
+      ***********************************************************************
+       CLEAR-TRJ-FILE SECTION.
+           MOVE SPACES TO TRJ-REC.
+
+           MOVE 0 TO TJ-DATE TJ-BRNO TJ-CLASS TJ-ACCTNO 
+                     TJ-LAWCODE TJ-LINE TJ-LTOUCH-DATE TJ-LOANDATE
+                     TJ-PROCEEDS TJ-LNAMT TJ-FINCHG TJ-INTCHG
+                     TJ-SERCHG TJ-EXTCHG TJ-MAINTFEE TJ-ORGTERM
+                     TJ-DLNO TJ-DLRV TJ-DLSPRV TJ-DLDISC
+                     TJ-DLPARV TJ-DLPARTRCAMT TJ-PURBAL
+                     TJ-PRLNNO TJ-DLPARVPAID TJ-DLPARVHELD
+                     TJ-POSTDATE TJ-POSTTIME TJ-SUBCLASS.
+           MOVE 0   TO TJ-FRLC TJ-TOLC.
+
+           PERFORM CLEAR-TRJ-FILE-TABLES
+                   VARYING TRJSUB FROM 1 BY 1 UNTIL TRJSUB > 10.
+
+           GO TO CLEAR-TRJ-FILE-EXIT.
+
+       CLEAR-TRJ-FILE-TABLES.
+              IF TRJSUB < 4
+                 MOVE 0 TO TJ-DLRVPRIN(TRJSUB) TJ-DLRVCHGS(TRJSUB).
+              IF TRJSUB < 5
+                 MOVE 0 TO TJ-SSNO(TRJSUB).
+
+              MOVE 0 TO TJ-UNEARN(TRJSUB) TJ-INSUNEARN(TRJSUB).
+
+       CLEAR-TRJ-FILE-EXIT.
+           EXIT..

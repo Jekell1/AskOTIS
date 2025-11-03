@@ -1,0 +1,40 @@
+graph TD
+    A[External Calling Program] --> B[WEEKDAY SECTION]
+    B --> C[DATER-ROUTINE]
+    C --> D[Julian Date Conversion]
+    C --> E[Reference Date Logic]
+    C --> F[Modular Arithmetic]
+    C --> G[Day Mapping]
+    D --> H[Weekday Computation]
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Flag Setting Logic]
+    I --> C
+    C --> B
+    B --> A
+    
+    J[Business Day Processing] --> B
+    K[Report Scheduling] --> B
+    L[Batch Job Control] --> B
+    M[Holiday Calculations] --> B
+    N[Payment Processing] --> B
+    
+    B --> O[DAY-IS-SUN Flag]
+    B --> P[DAY-IS-MON Flag]
+    B --> Q[DAY-IS-TUE Flag]
+    B --> R[DAY-IS-WED Flag]
+    B --> S[DAY-IS-THU Flag]
+    B --> T[DAY-IS-FRI Flag]
+    B --> U[DAY-IS-SAT Flag]
+    
+    style B fill:#e1f5fe
+    style C fill:#f3e5f5
+    style A fill:#e8f5e8
+    style O fill:#fff3e0
+    style P fill:#fff3e0
+    style Q fill:#fff3e0
+    style R fill:#fff3e0
+    style S fill:#fff3e0
+    style T fill:#fff3e0
+    style U fill:#fff3e0

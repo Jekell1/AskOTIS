@@ -1,0 +1,75 @@
+flowchart TD
+    A[Input String Analysis] --> B[Length Check]
+    B --> C{Length = 0?}
+    C -->|Yes| D[Return Empty Error]
+    C -->|No| E[Scan Characters]
+    
+    E --> F[Character Classification]
+    F --> G[Identify Patterns]
+    G --> H{Pattern Type?}
+    
+    H -->|MM/DD/YY| I[Slash Separated]
+    H -->|MM-DD-YY| J[Dash Separated]
+    H -->|MM DD YY| K[Space Separated]
+    H -->|MMDDYY| L[Numeric Only 6-digit]
+    H -->|MMDDYYYY| M[Numeric Only 8-digit]
+    H -->|Other| N[Unknown Format]
+    
+    I --> O[Split by Slash]
+    J --> P[Split by Dash]
+    K --> Q[Split by Space]
+    L --> R[Extract Positions 1-2, 3-4, 5-6]
+    M --> S[Extract Positions 1-2, 3-4, 5-8]
+    
+    O --> T[Parse MM Component]
+    P --> T
+    Q --> T
+    R --> T
+    S --> T
+    
+    T --> U[Parse DD Component]
+    U --> V[Parse YY/YYYY Component]
+    V --> W[Component Validation]
+    
+    W --> X[Numeric Check MM]
+    X --> Y{MM is Numeric?}
+    Y -->|No| Z[MM Parse Error]
+    Y -->|Yes| AA[Range Check MM]
+    
+    AA --> BB{01 ≤ MM ≤ 12?}
+    BB -->|No| CC[MM Range Error]
+    BB -->|Yes| DD[Numeric Check DD]
+    
+    DD --> EE{DD is Numeric?}
+    EE -->|No| FF[DD Parse Error]
+    EE -->|Yes| GG[Range Check DD]
+    
+    GG --> HH{01 ≤ DD ≤ Days_in_Month?}
+    HH -->|No| II[DD Range Error]
+    HH -->|Yes| JJ[Numeric Check YY]
+    
+    JJ --> KK{YY is Numeric?}
+    KK -->|No| LL[YY Parse Error]
+    KK -->|Yes| MM[Year Processing]
+    
+    N --> NN[Format Error]
+    Z --> OO[Return Parse Error]
+    CC --> OO
+    FF --> OO
+    II --> OO
+    LL --> OO
+    NN --> OO
+    
+    MM --> PP[Success - Components Ready]
+    
+    style A fill:#e3f2fd
+    style PP fill:#e8f5e8
+    style C fill:#fff8e1
+    style H fill:#fff8e1
+    style Y fill:#fff8e1
+    style BB fill:#fff8e1
+    style EE fill:#fff8e1
+    style HH fill:#fff8e1
+    style KK fill:#fff8e1
+    style D fill:#ffebee
+    style OO fill:#ffebee

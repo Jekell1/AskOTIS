@@ -1,0 +1,221 @@
+      * COPYMEMBER: LIBLP/LPNOGS_SQL
+      ******************************************************************
+      *
+      * DESCRIPTION: SQL GET & SET - NOTICE FILE
+      *
+      *=================================================================
+      * REV:
+      * AMM 2021-0510 ***NEW***
+      * BAH 2024.0201 REMOVED NO-FMNO, NO-PRINTED AND NO-WAGE-ASSIGN-DELINQ
+      *               ADDED NO-AVCR-RESTRICT-FG, NO-INDU-PENALTY
+      *               NO-CPOT30, NO-RDPOT30, NO-CPOTCHGOFF, NO-RDPOTCHGOFF,
+      *               NO-CSUB, AND NO-RSUB.
+      ******************************************************************
+      *-----------------------------------------------------------------
+      *    LOAD NO-REC FROM QNO-REC; FOR READ & READ-NEXT
+      *-----------------------------------------------------------------
+       GET-NO-FIELDS.
+           MOVE QNO-BRNO TO NO-BRNO.
+           MOVE QNO-ACCTNO TO NO-ACCTNO.
+
+           IF ( QNO-LTOUCH-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-LTOUCH-DATE
+           ELSE
+              MOVE QNO-LTOUCH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-LTOUCH-DATE.
+
+
+           IF ( QNO-TDUE-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-TDUE-DATE
+           ELSE
+              MOVE QNO-TDUE-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-TDUE-DATE.
+
+           MOVE QNO-TDUELC TO NO-TDUELC.
+           MOVE QNO-TDUEAMT TO NO-TDUEAMT.
+           MOVE QNO-TDUEPRIN TO NO-TDUEPRIN.
+           MOVE QNO-TDUETBAL TO NO-TDUETBAL.
+           MOVE QNO-TDUEPOFF TO NO-TDUEPOFF.
+
+           IF ( QNO-LDUE-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-LDUE-DATE
+           ELSE
+              MOVE QNO-LDUE-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-LDUE-DATE.
+
+           MOVE QNO-LDUELC TO NO-LDUELC.
+           MOVE QNO-LDUEAMT TO NO-LDUEAMT.
+
+           IF ( QNO-DATE-PAID-LAST = "1900-01-01" )
+              MOVE ZEROES TO NO-DATE-PAID-LAST
+           ELSE
+              MOVE QNO-DATE-PAID-LAST TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-DATE-PAID-LAST.
+
+           MOVE QNO-AMT-PAID-LAST TO NO-AMT-PAID-LAST.
+           MOVE QNO-LSTLPKEY TO NO-LSTLPKEY.
+
+           IF ( QNO-NXDUE-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-NXDUE-DATE
+           ELSE
+              MOVE QNO-NXDUE-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-NXDUE-DATE.
+
+           MOVE QNO-NXDUEAMT TO NO-NXDUEAMT.
+           MOVE QNO-NXDUELC TO NO-NXDUELC.
+           MOVE QNO-TRUCONTR TO NO-TRUCONTR.
+           MOVE QNO-RECENCY TO NO-RECENCY.
+
+           IF ( QNO-PDTH-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-PDTH-DATE
+           ELSE
+              MOVE QNO-PDTH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-PDTH-DATE.
+
+
+           IF ( QNO-LCPDTH-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-LCPDTH-DATE
+           ELSE
+              MOVE QNO-LCPDTH-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-LCPDTH-DATE.
+
+           MOVE QNO-LCHG-INTDUE TO NO-LCHG-INTDUE.
+           MOVE QNO-AVAILCREDIT TO NO-AVAILCREDIT.
+           MOVE QNO-TDUEDELINQ TO NO-TDUEDELINQ.
+           MOVE QNO-DEFERMENT TO NO-DEFERMENT.
+
+           IF ( QNO-TRUE-DUE-DATE = "1900-01-01" )
+              MOVE ZEROES TO NO-TRUE-DUE-DATE
+           ELSE
+              MOVE QNO-TRUE-DUE-DATE TO SQL-DATE-YYYY-MM-DD
+              PERFORM SQL-GET-DATE
+              MOVE SQL-DATE-YYYYMMDD TO NO-TRUE-DUE-DATE.
+
+           MOVE QNO-SCHED-PAYMENT TO NO-SCHED-PAYMENT.
+           MOVE QNO-TDUECONTR TO NO-TDUECONTR.
+           MOVE QNO-LDUECONTR TO NO-LDUECONTR.
+           MOVE QNO-NXDUECONTR TO NO-NXDUECONTR.
+           MOVE QNO-CURRENT-AVAIL TO NO-CURRENT-AVAIL.
+           MOVE QNO-LATE-CHG      TO NO-LATE-CHG.
+           MOVE QNO-PAST-DUE-DAYS TO NO-PAST-DUE-DAYS.
+           MOVE QNO-RECDEL           TO NO-RECDEL.
+           MOVE QNO-AVCR-RESTRICT-FG TO NO-AVCR-RESTRICT-FG.
+           MOVE QNO-INDU-PENALTY     TO NO-INDU-PENALTY.
+           MOVE QNO-CPOT30           TO NO-CPOT30.
+           MOVE QNO-RDPOT30          TO NO-RDPOT30.
+           MOVE QNO-CPOTCHGOFF       TO NO-CPOTCHGOFF.
+           MOVE QNO-RDPOTCHGOFF      TO NO-RDPOTCHGOFF.
+           MOVE QNO-CSUB             TO NO-CSUB.
+           MOVE QNO-RSUB             TO NO-RSUB.
+ 
+      *-----------------------------------------------------------------
+      *    LOAD QNO-REC FROM NO-REC; FOR WRITE & REWRITE
+      *-----------------------------------------------------------------
+       SET-NO-FIELDS.
+           MOVE NO-BRNO TO QNO-BRNO.
+           MOVE NO-ACCTNO TO QNO-ACCTNO.
+
+           IF ( NO-LTOUCH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-LTOUCH-DATE
+           ELSE
+              MOVE NO-LTOUCH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-LTOUCH-DATE.
+
+
+           IF ( NO-TDUE-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-TDUE-DATE
+           ELSE
+              MOVE NO-TDUE-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-TDUE-DATE.
+
+           MOVE NO-TDUELC TO QNO-TDUELC.
+           MOVE NO-TDUEAMT TO QNO-TDUEAMT.
+           MOVE NO-TDUEPRIN TO QNO-TDUEPRIN.
+           MOVE NO-TDUETBAL TO QNO-TDUETBAL.
+           MOVE NO-TDUEPOFF TO QNO-TDUEPOFF.
+
+           IF ( NO-LDUE-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-LDUE-DATE
+           ELSE
+              MOVE NO-LDUE-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-LDUE-DATE.
+
+           MOVE NO-LDUELC TO QNO-LDUELC.
+           MOVE NO-LDUEAMT TO QNO-LDUEAMT.
+
+           IF ( NO-DATE-PAID-LAST = ZEROES )
+              MOVE "1900-01-01" TO QNO-DATE-PAID-LAST
+           ELSE
+              MOVE NO-DATE-PAID-LAST TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-DATE-PAID-LAST.
+
+           MOVE NO-AMT-PAID-LAST TO QNO-AMT-PAID-LAST.
+           MOVE NO-LSTLPKEY TO QNO-LSTLPKEY.
+
+           IF ( NO-NXDUE-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-NXDUE-DATE
+           ELSE
+              MOVE NO-NXDUE-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-NXDUE-DATE.
+
+           MOVE NO-NXDUEAMT TO QNO-NXDUEAMT.
+           MOVE NO-NXDUELC TO QNO-NXDUELC.
+           MOVE NO-TRUCONTR TO QNO-TRUCONTR.
+           MOVE NO-RECENCY TO QNO-RECENCY.
+
+           IF ( NO-PDTH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-PDTH-DATE
+           ELSE
+              MOVE NO-PDTH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-PDTH-DATE.
+
+
+           IF ( NO-LCPDTH-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-LCPDTH-DATE
+           ELSE
+              MOVE NO-LCPDTH-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-LCPDTH-DATE.
+
+           MOVE NO-LCHG-INTDUE TO QNO-LCHG-INTDUE.
+           MOVE NO-AVAILCREDIT TO QNO-AVAILCREDIT.
+           MOVE NO-TDUEDELINQ TO QNO-TDUEDELINQ.
+           MOVE NO-DEFERMENT TO QNO-DEFERMENT.
+
+           IF ( NO-TRUE-DUE-DATE = ZEROES )
+              MOVE "1900-01-01" TO QNO-TRUE-DUE-DATE
+           ELSE
+              MOVE NO-TRUE-DUE-DATE TO SQL-DATE-YYYYMMDD
+              PERFORM SQL-SET-DATE
+              MOVE SQL-DATE-YYYY-MM-DD TO QNO-TRUE-DUE-DATE.
+
+           MOVE NO-SCHED-PAYMENT TO QNO-SCHED-PAYMENT.
+           MOVE NO-TDUECONTR TO QNO-TDUECONTR.
+           MOVE NO-LDUECONTR TO QNO-LDUECONTR.
+           MOVE NO-NXDUECONTR TO QNO-NXDUECONTR.
+           MOVE NO-CURRENT-AVAIL TO QNO-CURRENT-AVAIL.
+           MOVE NO-LATE-CHG TO QNO-LATE-CHG.
+           MOVE NO-PAST-DUE-DAYS TO QNO-PAST-DUE-DAYS.
+           MOVE NO-RECDEL TO QNO-RECDEL.
+ 
+           MOVE NO-AVCR-RESTRICT-FG TO QNO-AVCR-RESTRICT-FG.
+           MOVE NO-INDU-PENALTY     TO QNO-INDU-PENALTY.
+           MOVE NO-CPOT30           TO QNO-CPOT30.
+           MOVE NO-RDPOT30          TO QNO-RDPOT30.
+           MOVE NO-CPOTCHGOFF       TO QNO-CPOTCHGOFF.
+           MOVE NO-RDPOTCHGOFF      TO QNO-RDPOTCHGOFF.
+           MOVE NO-CSUB             TO QNO-CSUB.
+           MOVE NO-RSUB             TO QNO-RSUB.

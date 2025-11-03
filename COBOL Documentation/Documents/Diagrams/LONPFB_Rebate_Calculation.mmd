@@ -1,0 +1,80 @@
+graph TD
+    A[Rebate Request] --> B[Load Account Data]
+    B --> C[Determine Rebate Type]
+    C --> D{Insurance Rebate?}
+    D -->|Yes| E[REBATE-GET-INS-AMT]
+    D -->|No| F{Interest Rebate?}
+    
+    E --> G[Load Insurance Data]
+    G --> H{Addon Insurance?}
+    H -->|Yes| I[Process Addon Records]
+    H -->|No| J[Process Main Insurance]
+    
+    I --> K[Calculate Addon Rebate]
+    J --> L[Calculate Main Rebate]
+    K --> M[Apply Rebate Formula]
+    L --> M
+    
+    M --> N{Formula Type}
+    N -->|Rule of 78| O[Apply Rule 78 Formula]
+    N -->|Actuarial| P[Apply Actuarial Formula]
+    N -->|Pro-Rata| Q[Apply Pro-Rata Formula]
+    N -->|Mexican Formula| R[Apply Mexican Formula]
+    
+    F -->|Yes| S[REBATE-INTEREST-ADJ]
+    F -->|No| T{Service Charge?}
+    
+    S --> U[Load Interest History]
+    U --> V[Calculate Interest Earned]
+    V --> W[Apply Interest Rebate Formula]
+    W --> X[Update Interest Rebate Amount]
+    
+    T -->|Yes| Y[REBATE-SERCHG-ADJ]
+    T -->|No| Z{Maintenance Fee?}
+    
+    Y --> AA[Load Service Charge Data]
+    AA --> BB[Calculate Service Charge Rebate]
+    BB --> CC[Update Service Charge Rebate]
+    
+    Z -->|Yes| DD[REBATE-MAINTFEE-ADJ]
+    Z -->|No| EE{Deferment?}
+    
+    DD --> FF[Load Maintenance Fee Data]
+    FF --> GG[Calculate Maintenance Fee Rebate]
+    GG --> HH[Update Maintenance Fee Rebate]
+    
+    EE -->|Yes| II[REBATE-DEFERMENT]
+    EE -->|No| JJ[No Rebate Applicable]
+    
+    II --> KK[Load Deferment Data]
+    KK --> LL[Calculate Deferment Rebate]
+    LL --> MM[Update Deferment Rebate]
+    
+    O --> NN[Store Rebate Amount]
+    P --> NN
+    Q --> NN
+    R --> NN
+    X --> NN
+    CC --> NN
+    HH --> NN
+    MM --> NN
+    
+    NN --> OO[Validate Rebate Amount]
+    OO --> PP{Amount Valid?}
+    PP -->|Yes| QQ[Apply Rebate to Account]
+    PP -->|No| RR[Rebate Error]
+    
+    QQ --> SS[Update Account Balance]
+    SS --> TT[Create Rebate Transaction]
+    TT --> UU[Update Transaction History]
+    UU --> VV[Rebate Complete]
+    
+    JJ --> WW[Exit - No Processing]
+    RR --> XX[Error Exit]
+    
+    style E fill:#e8f5e8
+    style S fill:#fff3e0
+    style Y fill:#e3f2fd
+    style DD fill:#fce4ec
+    style II fill:#f1f8e9
+    style RR fill:#ffcdd2

@@ -1,0 +1,258 @@
+      *************************************************************************
+      *   NAME:  LPINDU - INTEREST DUE CALCULATION
+      *   DESC:  COMPUTE INTEREST DUE AT GIVEN PAY DATE
+      *   IN  :  INDU-DATE-1  (LN-INTDATE OR LAST INTEREST ACCESS)
+      *          INDU-DATE-2  (LP-PAYDATE)
+      *          INDU-CURBAL (LN-CURBAL - LN-OT2BAL)
+      *          INDU-RATE   (LN-EXPRRATE, LN-ENDORATE, ETC)
+      *          INDU-LPTRCD (PAYMENT TRANSACTION CODE)
+      *          INDU-YEARTYPE (YEAR TYPE BASED ON RATE BEING USED)
+      *          INDU-INTMETHOD (INTEREST METHOD BASED ON RATE USED)
+      *   OUT :  INDU-INTEREST
+      *          INDU-DAYS
+      *          INDU-PENALTY
+      *   USED:
+      * REV :
+      *  092287 JTG REMOVED COMMA'S  ALSO CHANGED
+      *             LOGIC FOR SELECTING RATE TABLE
+      *             TO MAKE IT BETTER READ.
+      *  092287 JTG MODIFIED TO ALLOW A SPACE IN
+      *             BREAKTYPE IF SINGLE RATE TABLES.
+      *  033188 JTG ADDED LOGIC FOR SPECIAL REFUND
+      *             CONDITIONS
+      *  041888 SLC CHANGED 99.9999 TO 999.999 TO MAKE
+      *             COMPATABLE WITH NEW RATE DEFINITION.
+      *             ADDED THE FOLLOWING OPTIONS:
+      *             IF INDU-RATE = 999.998 USE LN-SMPRATE
+      *             IF INDU-RATE = 999.997 USE ACCELERATION
+      *             TABLE FROM SPR.
+      *  050288 SLC YEARTYPE AND INT METH NOW PASSED TO INDU.
+      *  032789 JTG CHANGED HOLLLYWODD FINANCE PO MAX
+      *             60 INT. CALC ON RENEWAL TO TEST
+      *             SPECIAL OPT 1 AND NOT RECAST CODE.
+      *  080189 JTG ADDED LOGIC FOR SP-RBSPOPT1 = 5 SPRING (NJ)
+      *  081089 JTG ADDED LOGIC FOR SP-RBSPOPT2 = 2 SPRING (NJ)
+      *  100589 SLC ADDED SPECIAL OPTION TO CALC INTEREST BASE ON
+      *             MAX NUMBER OF DAYS TO ACCRUE FOR IB ACCRUE REPORT
+      *  012690 JTG ADDED OUTPUT OF INDU-DAYS
+      *  053190 JTG ADDED SP-RBSPOPT1 = 8, PACESETTER
+      *  083190 BAH ADDED REDUCTION OF SERVICE CHARGE FOR
+      *             CHARGEABLE CODES 'I' AND 'P'
+      *  031491 JTG ADDED REDUCTION OF INSURANCE PREMIUMS FOR
+      *             CHARGEABLE CODES 'S' AND 'P'
+      *  JTG 062995 ADDED SP-OPT-CAL-CHGABLE, MERCURY MI SERCHG
+      *  JTG 092095 STOPPED REDUCTION OF CURRENT BALANCE ON 'PC' TYPE
+      *             ACCOUNTS, WHEN THE SPR INTEREST CHARGABLE CODE
+      *             EXCLUDED 'SERCHG AND /OR INSURANCE PREMIUMS'
+      *  JTG 112795 ADDED SP-RBREDUC = 9999.02, 'NV' MERCURY ACTION SPRDER = 09
+      *  JTG 120297 CHANGED TO ESTABLISH NO LIMIT ON SP-MAX-IB-ACR-DAYS
+      *             CBC CAPITAL SINGLE PAY LOAN 12 MONTHS
+      *  JTG 011698 PUT THE CODE IN FOR LOGIC THAT SHOULD HAVE BEEN ADDED
+      *             BACK ON 092095, FOR STOPPING REDUCTION OF CURRENT BALANCE
+      *             ON 'PC' TYPE ACCOUNTS, WHEN THE SPR INTEREST CHARGABLE CODE
+      *             EXCLUDED 'SERCHG AND /OR INSURANCE PREMIUMS'
+      *  JTG 990216 ADDED INTEREST-DUE-PENALTY-OH, SPECIAL OPTION #1 (16).
+      *  JTG 991202 ADDED SP-RBREDUC = 9999.03, 'GA' NEW SOUTH PREPAY PENALTY
+      *  JTG 000104 ADDED SP-RBREDUC = 9999.04 WISCONSIN IB REAL ESTATE
+      *             PREPAY PENALTY, WISCONSIN #1031
+      *             PLUS XFER OF PENALTY TO MSPENALTY IN LONPF SCREEN
+      *  JTG 000124 ADDED SP-CAL-MAX-AT-ESTIMATE INSTANT AUTO #1047
+      *  000225 MJD ADDED SP-RBREDUC = 9999.05 NEW SOUTH FLAT $75.00
+      *             PREPAY PENALTY, (NEWS PR#1101)
+      *  000804 BAH NEW SOUTH, RBREDUC = 9999.03, WAS NOT STORING THE
+      *             PENALTY IN INDU-PENALTY, IT WAS ADDING IT DIRECTLY
+      *             INTO INDU-INTEREST,,,FAX FROM KEVIN
+      *  JTG 000822 ADDED LOGIC FOR KENTUCKY 60 DAY NO CHARGE LAW, ADDED
+      *             SP-RBSPOPT1() = 19, WORLD #233
+      *  JTG 000914 CORRECTED BUG IN PASS TO SETCTBL, ROUTINE WAS PASSING
+      *             LN-LNAMT INSTEAD OF INTEREST CHARGEABLE  WORLD #J011
+      *  BAH 010108 ADDED CLEAR OF INDU-PENALTY, NEEDED TO BE SURE IT WAS
+      *             0 CAUSE IT WILL SUBTRACT THIS FROM NO-DEFERMENT IN
+      *             SPINQ0 CAUSE IT CALLS CRNORC WITH "PO" WITH CREATES
+      *             AN INTEREST PENALTY INCLUDED IN THE NO-DEFERMENT
+      *             LENDMARK (KEVIN)
+      * JTG 020722 CHANGED FOR (MIP) MONTHLY INSURANCE PREMIUMS   REGENCY #1801
+      *  BAH 020828 ALLOWED RBREDUC(7) = 9999.01 TO WORK FOR IB'S, ADD PENALTY
+      *             TO INDU-INTEREST, PIKCO PR# 1900
+      *  BAH 021216 CHANGE ABOVE CALCULATED A PENALTY ON EVERY PAYMENT !!
+      *             NEEDS TO CHECK FOR "PO" AND "PA" ONLY
+      *  BAH 040623 ADDED RBSPOPT1 = 21, THRIFT INVESTMENT PR# 2334
+      *  BAH 160921 ADDED LT-REC ON THE CALL OF REBA01, LINKAGE ERROR AT
+      *             CUSTOMER REBA01 WAS CHANGED 6 YEARS AGO! FIRST METRO #949
+      *  BAH 180702 CHANGED A01 PASSING FIELDS TO BE IN LPRATEW SO REBATE 
+      *             COPY MEMBERS DO NOT NEED TO BE IN HERE!
+      *   CS 211105 CHANGED INTEREST-DUE CALCULATION IF ELAPSED-YRTYPE IS 0
+      **************************************************************************
+       INTEREST-DUE-CALCULATION SECTION.
+           MOVE 0 TO INDU-INTEREST INDU-WORKER 
+                     INDU-AMOUNT   INDU-DAYS   INDU-PENALTY
+                     INDU-ALL-INSPREM.
+           MOVE INDU-DATE-1 TO NUM-DATE.
+           MOVE INDU-DATE-2 TO SYS-DATE.
+           MOVE INDU-YEARTYPE TO ELAPSED-YRTYPE.
+           IF ELAPSED-YRTYPE = 0
+              MOVE 0 TO ELAPSED-DAYS
+           ELSE
+              PERFORM TIMALL.
+           PERFORM INTEREST-DUE-SPECIAL-OPTIONS.
+           IF ELAPSED-DAYS NOT > 0
+              GO TO INTEREST-DUE-EXIT.
+
+           PERFORM SELECT-SPR-TABLE.
+           IF LN-LOANTYPE = "I"
+              IF SP-OPT-CAL-CHGABLE NOT = " "
+                 IF SP-OPT-CAL-PROCEEDS OR SP-OPT-CAL-PRO-INS
+                    SUBTRACT LN-SERCHG FROM INDU-CURBAL
+                 END-IF
+              ELSE
+              IF SP-CAL-PROCEEDS(CTBL) OR SP-CAL-PRO-INS(CTBL)
+                 SUBTRACT LN-SERCHG FROM INDU-CURBAL.
+
+           IF LN-LOANTYPE = "I"
+              IF SP-OPT-CAL-CHGABLE NOT = " "
+                 IF SP-OPT-CAL-PROCEEDS OR SP-OPT-CAL-PRO-SC
+                    PERFORM INDU-GET-ALL-INSPREM
+                    SUBTRACT INDU-ALL-INSPREM FROM INDU-CURBAL
+                 END-IF
+              ELSE
+              IF SP-CAL-PROCEEDS(CTBL) OR SP-CAL-PRO-SC(CTBL)
+                 PERFORM INDU-GET-ALL-INSPREM
+                 SUBTRACT INDU-ALL-INSPREM FROM INDU-CURBAL.
+
+      * IF CHGABLE CODE 3 THEN INCLUDE PROCEEDS, SVC CHG, AND ALL INSURANCES
+      *    EXCEPT FOR OTHER 3
+
+           IF LN-LOANTYPE = "I"
+              IF SP-OPT-CAL-CHGABLE NOT = " "
+                 IF SP-OPT-CAL-PRO-INS-SC-NO-O3
+                     IF LN-INSOURS(6) NOT = "M"
+                        SUBTRACT LN-INSPREM(6) FROM INDU-CURBAL.
+
+
+      ******************************************************
+      *  NEEDED NOW THAT WE ARE GOING TO ALLOW MAINT FEE'S
+      *    ON IB LOANS.
+      *       VALID CODES FOR LN-MF-REBATE:
+      *             SP - NO REBATE OR CANCEL
+      *             C - CANCEL
+      *             Y - REBATE NO CANCEL
+      *             R - REBATE AFTER CANCEL
+      ******************************************************
+           IF LN-LOANTYPE = "I"
+              IF NOT (LN-MF-REBATE = "Y" OR "R")
+                 COMPUTE INDU-CURBAL = INDU-CURBAL -
+                                          (LN-MAINTFEE * LN-ORGTERM).
+
+           IF INDU-CURBAL < 0
+              MOVE 0 TO INDU-CURBAL.
+
+           IF INDU-RATE = 999.999
+              GO TO VALIDATE-SPR-TABLE
+           ELSE
+           IF INDU-RATE = 999.998
+              MOVE LN-SMPRATE TO INDU-RATE
+           ELSE
+           IF INDU-RATE = 999.996
+              MOVE LN-APRATE TO INDU-RATE
+           ELSE
+           IF INDU-RATE = 999.997
+              SET ASTP TO 0
+              GO TO ACCEL-INT-LOOP.
+
+           COMPUTE INDU-WORKER ROUNDED =
+                   (INDU-RATE / 100) * INDU-CURBAL.
+
+           GO TO INTEREST-DUE-FINAL.
+
+      ********************************
+      *    VALIDATE SELECTED TABLE
+      ********************************
+       VALIDATE-SPR-TABLE.
+           IF NOT (SP-CAL-SIMPLE(CTBL))
+              GO TO INTEREST-DUE-EXIT.
+           IF NOT (SP-CAL-TBFRMLA-VALID(CTBL))
+              GO TO INTEREST-DUE-EXIT.
+           IF SP-CAL-BREAK-ON-TERM(CTBL)
+              GO TO INTEREST-DUE-EXIT.
+
+      ********************************
+      *    INTEREST DUE LOOPS
+      *    USING SP-CAL TABLES
+      ********************************
+           SET CSTP TO 0.
+       INTEREST-DUE-LOOP.
+           IF INDU-CURBAL = 0
+              GO TO INTEREST-DUE-FINAL.
+           SET CSTP UP BY 1.
+           IF CSTP > SP-CAL-NORATES(CTBL)
+              GO TO INTEREST-DUE-FINAL.
+           IF SP-CAL-BREAK(CTBL CSTP) = 0
+              MOVE INDU-CURBAL TO INDU-AMOUNT
+           ELSE
+              IF CSTP = 1
+                 MOVE SP-CAL-BREAK(CTBL CSTP) TO INDU-AMOUNT
+              ELSE
+                 SUBTRACT SP-CAL-BREAK(CTBL CSTP - 1) FROM
+                             SP-CAL-BREAK(CTBL CSTP)
+                                GIVING INDU-AMOUNT.
+           IF INDU-CURBAL > INDU-AMOUNT
+              SUBTRACT INDU-AMOUNT FROM INDU-CURBAL
+           ELSE
+              MOVE INDU-CURBAL TO INDU-AMOUNT
+              MOVE 0 TO INDU-CURBAL.
+           COMPUTE INDU-WORKER ROUNDED = INDU-WORKER +
+              (SP-CAL-RATE(CTBL CSTP) / 100) * INDU-AMOUNT.
+           GO TO INTEREST-DUE-LOOP.
+
+      ********************************
+      *    INTEREST DUE LOOPS
+      *    USING SP-ACC TABLE
+      ********************************
+       ACCEL-INT-LOOP.
+           IF INDU-CURBAL = 0
+              GO TO INTEREST-DUE-FINAL.
+           SET ASTP UP BY 1.
+           IF ASTP > 5
+              GO TO INTEREST-DUE-FINAL.
+           IF SP-ACC-RATE(ASTP) = 0 AND SP-ACC-BREAK(ASTP) = 0
+              GO TO INTEREST-DUE-FINAL.
+           IF SP-ACC-BREAK(ASTP) = 0
+              MOVE INDU-CURBAL TO INDU-AMOUNT
+           ELSE
+              IF ASTP = 1
+                 MOVE SP-ACC-BREAK(ASTP) TO INDU-AMOUNT
+              ELSE
+                 SUBTRACT SP-ACC-BREAK(ASTP - 1) FROM
+                           SP-ACC-BREAK(ASTP) GIVING INDU-AMOUNT.
+           IF INDU-CURBAL > INDU-AMOUNT
+              SUBTRACT INDU-AMOUNT FROM INDU-CURBAL
+           ELSE
+              MOVE INDU-CURBAL TO INDU-AMOUNT
+              MOVE 0 TO INDU-CURBAL.
+           COMPUTE INDU-WORKER ROUNDED =
+             INDU-WORKER + (SP-ACC-RATE(ASTP) / 100) * INDU-AMOUNT.
+           GO TO ACCEL-INT-LOOP.
+
+      ******************************************
+      * AT THIS POINT INDU-WORKER HOLDS THE
+      * CALCULATED ANNUAL CHARGE, WHICH MUST BE
+      * CONVERTED TO A DAILY CHARGE.
+      * THE DAILY CHARGE IS COMPUTED BASED ON
+      * THE VALUE OF INDU-INTMETHOD:
+      *           "O" - ORDINARY INTEREST (360)
+      *           "E" - EXACT    INTEREST (365)
+      ******************************************
+       INTEREST-DUE-FINAL.
+           MOVE 360          TO INDU-WK.
+           IF INDU-INTMETHOD = "E"
+              MOVE 365       TO INDU-WK.
+           MOVE ELAPSED-DAYS TO INDU-DAYS.
+           COMPUTE INDU-INTEREST ROUNDED =
+              (INDU-WORKER / INDU-WK) * ELAPSED-DAYS.
+       INTEREST-DUE-EXIT.
+           PERFORM INTEREST-DUE-PENALTY.
+           PERFORM INTEREST-DUE-MINIMUM.
+           PERFORM INTEREST-DUE-MAXIMUM.
+           MOVE SPACES TO INDU-LPTRCD.
+
+      **************************************************

@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFC - Loan Processing Payment Transaction System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">LONPFC - Loan Processing Payment Transaction System</span>
+        </nav>
+        <main class="content">
+<h1>LONPFC - Loan Processing Payment Transaction System</h1>
+<p><strong>Location:</strong> .\S35-Source\LP\LONPFC.CBL<br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program ID:</strong> LONPFC<br />
+<strong>Date Written:</strong> March 24, 1986</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#batch-processing-timeline">Batch Processing Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>LONPFC</strong> is a comprehensive COBOL loan processing program specifically designed for <strong>Payment Transaction Processing</strong> in a loan servicing system. It serves as <strong>Program 12</strong> in the loan processing suite and handles the core payment processing functions including regular payments, deferments, partial charge-offs, and various specialized payment types.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Execution Mode:</strong> Interactive screen-based processing with real-time validation</li>
+<li><strong>Primary Function:</strong> Core payment transaction processing and balance management</li>
+<li><strong>Transaction Focus:</strong> Handles "PY", "PA", "PE", "DF", "D2-D9", "PR", "PC", "PP", "Z2", "SS", "AH", "PX", "PN", "PZ", "IN" transaction codes</li>
+<li><strong>Integration:</strong> Central payment processor in the LONPF family with extensive external integrations</li>
+<li><strong>Screen Interface:</strong> Advanced VDU (Video Display Unit) forms with comprehensive validation and user guidance</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>LONPFC serves as the primary payment processing engine by:</p>
+<ol>
+<li><strong>Regular Payment Processing:</strong> Handles standard customer payments with automatic distribution</li>
+<li><strong>Deferment Management:</strong> Processes all types of payment deferments (DF, D2-D9)</li>
+<li><strong>Payment Exceptions:</strong> Manages payment exception scenarios and adjustments</li>
+<li><strong>Escrow Processing:</strong> Handles escrow account management and distributions</li>
+<li><strong>Charge-off Processing:</strong> Processes partial and full charge-off transactions</li>
+<li><strong>Non-cash Payments:</strong> Manages non-cash payment types with GL integration</li>
+<li><strong>Revolving Account Support:</strong> Specialized processing for revolving credit accounts</li>
+<li><strong>Late Charge Management:</strong> Automatic late charge application and management</li>
+<li><strong>Inter-branch Payments:</strong> Handles cross-branch payment processing with proper authorization</li>
+</ol>
+<h3>Historical Context</h3>
+<p>Originally created in March 1986, LONPFC has undergone extensive evolution:</p>
+<ul>
+<li><strong>Major Revisions:</strong> Over 200+ documented changes since inception</li>
+<li><strong>Core Enhancements:</strong> Revolving account support (1998), real-time earnings integration (1996)</li>
+<li><strong>Compliance Updates:</strong> 8-digit date support (2017), enhanced escrow processing</li>
+<li><strong>Security Enhancements:</strong> Password protection for sensitive operations, audit trail improvements</li>
+<li><strong>Integration Improvements:</strong> Enhanced GL integration, real-time balance management</li>
+</ul>
+<hr />
+<h2>Transaction Types Supported</h2>
+<p>LONPFC supports the following comprehensive set of transaction codes:</p>
+<h3>Primary Payment Transaction Types</h3>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Business Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PY</strong></td>
+<td>Regular Payment</td>
+<td>Standard customer payment processing</td>
+</tr>
+<tr>
+<td><strong>PA</strong></td>
+<td>Payment Allocation</td>
+<td>Manual payment allocation and distribution</td>
+</tr>
+<tr>
+<td><strong>PE</strong></td>
+<td>Payment Exception</td>
+<td>Payment exception handling and adjustments</td>
+</tr>
+</tbody>
+</table>
+<h3>Deferment Transaction Types</h3>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Business Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DF</strong></td>
+<td>Deferment</td>
+<td>Primary deferment transaction</td>
+</tr>
+<tr>
+<td><strong>D2</strong></td>
+<td>Deferment Type 2</td>
+<td>Secondary deferment processing</td>
+</tr>
+<tr>
+<td><strong>D3</strong></td>
+<td>Deferment Type 3</td>
+<td>Tertiary deferment processing</td>
+</tr>
+<tr>
+<td><strong>D4</strong></td>
+<td>Deferment Type 4</td>
+<td>Quaternary deferment processing</td>
+</tr>
+<tr>
+<td><strong>D5</strong></td>
+<td>Deferment Type 5</td>
+<td>Quinary deferment processing</td>
+</tr>
+<tr>
+<td><strong>D6</strong></td>
+<td>Deferment Type 6</td>
+<td>Specialized deferment type 6</td>
+</tr>
+<tr>
+<td><strong>D7</strong></td>
+<td>Deferment Type 7</td>
+<td>Specialized deferment type 7</td>
+</tr>
+<tr>
+<td><strong>D8</strong></td>
+<td>Deferment Type 8</td>
+<td>Specialized deferment type 8</td>
+</tr>
+<tr>
+<td><strong>D9</strong></td>
+<td>Deferment Type 9</td>
+<td>Specialized deferment type 9</td>
+</tr>
+</tbody>
+</table>
+<h3>Specialized Transaction Types</h3>
+<table>
+<thead>
+<tr>
+<th>Transaction Code</th>
+<th>Description</th>
+<th>Business Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PR</strong></td>
+<td>Principal Reduction</td>
+<td>Direct principal balance reduction</td>
+</tr>
+<tr>
+<td><strong>PC</strong></td>
+<td>Principal Credit</td>
+<td>Principal credit adjustment</td>
+</tr>
+<tr>
+<td><strong>PP</strong></td>
+<td>Principal Payment</td>
+<td>Specialized principal payment</td>
+</tr>
+<tr>
+<td><strong>Z2</strong></td>
+<td>Pay Down OT2</td>
+<td>Other 2 balance paydown processing</td>
+</tr>
+<tr>
+<td><strong>SS</strong></td>
+<td>Sale/Settlement</td>
+<td>Asset sale and settlement processing</td>
+</tr>
+<tr>
+<td><strong>AH</strong></td>
+<td>Account Hold</td>
+<td>Account hold status management</td>
+</tr>
+<tr>
+<td><strong>PX</strong></td>
+<td>Partial Charge-off</td>
+<td>Partial charge-off processing</td>
+</tr>
+<tr>
+<td><strong>PN</strong></td>
+<td>Non-cash Payment (GL)</td>
+<td>Non-cash payment with GL entry</td>
+</tr>
+<tr>
+<td><strong>PZ</strong></td>
+<td>Non-cash Payment (No Recdel)</td>
+<td>Non-cash payment without record deletion</td>
+</tr>
+<tr>
+<td><strong>IN</strong></td>
+<td>Insurance Loss</td>
+<td>Insurance loss payment processing</td>
+</tr>
+</tbody>
+</table>
+<h3>Advanced Processing Features</h3>
+<ul>
+<li><strong>Automatic Late Charge Application:</strong> Real-time late charge calculation and application</li>
+<li><strong>Escrow Management:</strong> Automated escrow collection and distribution</li>
+<li><strong>Balance Protection:</strong> Prevents negative balance scenarios with validation</li>
+<li><strong>Payment Distribution:</strong> Intelligent payment distribution across loan components</li>
+<li><strong>Revolving Account Support:</strong> Specialized processing for revolving credit products</li>
+</ul>
+<hr />
+<h2>Input Parameters</h2>
+<h3>Primary Input Structure (PROG-BUF)</h3>
+<h4>Loan Processing Buffer (LP-REC)</h4>
+<pre><code class="language-cobol">LP-BRNO              PIC 9(03)      - Branch Number
+LP-ACCTNO            PIC 9(06)      - Account Number  
+LP-TRCD              PIC X(02)      - Transaction Code
+LP-TRAMT             PIC 9(07)V99   - Transaction Amount
+LP-PAYDATE           PIC 9(08)      - Payment Date (CCYYMMDD)
+LP-REFNO             PIC X(10)      - Reference Number
+LP-TILLNO            PIC 9(02)      - Till Number
+LP-IBPC              PIC X(01)      - Inter-branch/Principal Code
+LP-POCD              PIC X(02)      - Payoff Code
+LP-EFFDATE           PIC 9(08)      - Effective Date
+</code></pre>
+<h4>Payment Distribution Fields</h4>
+<pre><code class="language-cobol">LP-APRIN             PIC 9(07)V99   - Applied to Principal
+LP-APINT             PIC 9(07)V99   - Applied to Interest  
+LP-APLC              PIC 9(07)V99   - Applied to Late Charges
+LP-APOTH             PIC 9(07)V99   - Applied to Other
+LP-APOT2             PIC 9(07)V99   - Applied to Other 2
+LP-APESC             PIC 9(07)V99   - Applied to Escrow
+LP-CURBAL            PIC S9(07)V99  - Current Balance
+LP-INTDUE            PIC 9(07)V99   - Interest Due
+LP-LCDUE             PIC 9(07)V99   - Late Charges Due
+</code></pre>
+<h4>Deferment-Specific Fields</h4>
+<pre><code class="language-cobol">LP-DEFPERIODS        PIC 9(02)      - Number of Periods to Defer
+LP-DEFAMT            PIC 9(07)V99   - Deferment Amount
+LP-LCPDTH-DATE       PIC 9(08)      - Late Charge Paid Through Date
+</code></pre>
+<h3>Branch Configuration Parameters</h3>
+<pre><code class="language-cobol">BR-NODEF-IF-ZERO-AMT PIC X(01)      - No Deferment if Zero Amount
+BR-PASSWORD-DRAWER   PIC X(01)      - Password Required for Drawer
+BR-GL-TYPE-ALLOWED   PIC X(20)      - Allowed GL Types
+BR-GL-ENTRY-DEFAULT  PIC X(01)      - Default GL Entry Method
+BR-AUTO-REPO-WINDOW  PIC X(01)      - Auto Repo Window Display
+</code></pre>
+<h3>State Processing Parameters</h3>
+<pre><code class="language-cobol">SP-ERNFRMLA          PIC X(02)      - Earnings Formula Code
+SP-LCFRMLA           PIC X(02)      - Late Charge Formula
+SP-LCTYPE            PIC X(01)      - Late Charge Type
+SP-ALT-PREPAY-MONTHS PIC 9(02)      - Alternative Prepay Months
+</code></pre>
+<h3>Global Configuration Parameters</h3>
+<pre><code class="language-cobol">GP-AUTO-REPO-WINDOW  PIC X(01)      - Auto Repo Window Flag
+GP-ALLOW-SET-FOR-NONCASH PIC X(01)  - Allow Set for Non-cash
+GP-INCL-OTH-IN-EARNED PIC X(01)     - Include Other in Earned
+GP-DONT-COLL-INT-ON-SS PIC X(01)    - Don't Collect Interest on SS
+GP-PDTH-GT-SCHED-PAY PIC X(01)      - Paid Through Greater Than Schedule Pay
+</code></pre>
+<hr />
+<h2>Output Fields</h2>
+<h3>Transaction Results (UPDATE-BUF)</h3>
+<h4>Updated Loan Record Fields</h4>
+<pre><code class="language-cobol">LN-CURBAL            PIC S9(07)V99  - Updated Current Balance
+LN-PRINBAL           PIC 9(07)V99   - Updated Principal Balance
+LN-INTDUE            PIC 9(07)V99   - Updated Interest Due
+LN-LCDUE             PIC 9(07)V99   - Updated Late Charges Due
+LN-OTHDUE            PIC 9(07)V99   - Updated Other Due
+LN-OT2DUE            PIC 9(07)V99   - Updated Other 2 Due
+LN-ESCDUE            PIC 9(07)V99   - Updated Escrow Due
+LN-TOTPAYMNTD        PIC 9(08)V99   - Total Payments Made
+LN-TOTEXCPAYMNTD     PIC 9(08)V99   - Total Exception Payments
+LN-TOTINT            PIC 9(08)V99   - Total Interest Collected
+LN-TOTLCHG           PIC 9(08)V99   - Total Late Charges
+LN-TOTNODEFACT       PIC 9(08)V99   - Total No-def Activity
+LN-YTDNODEFACT       PIC 9(08)V99   - YTD No-def Activity
+</code></pre>
+<h4>Processing Status Fields</h4>
+<pre><code class="language-cobol">ERRCD                PIC X(01)      - Error Code (Space=Success)
+ROUTE-CD             PIC X(02)      - Routing Code
+POSTING-ERRCD        PIC X(01)      - Posting Error Code
+RETURN-STATUS        PIC 9(02)      - Return Status Code
+</code></pre>
+<h4>Payment Distribution Results</h4>
+<pre><code class="language-cobol">LP-APRIN-FINAL       PIC 9(07)V99   - Final Applied to Principal
+LP-APINT-FINAL       PIC 9(07)V99   - Final Applied to Interest
+LP-APLC-FINAL        PIC 9(07)V99   - Final Applied to Late Charges
+LP-APOTH-FINAL       PIC 9(07)V99   - Final Applied to Other
+LP-APOT2-FINAL       PIC 9(07)V99   - Final Applied to Other 2
+LP-APESC-FINAL       PIC 9(07)V99   - Final Applied to Escrow
+</code></pre>
+<h4>Deferment Results</h4>
+<pre><code class="language-cobol">LP-PERIODS-DEFERRED  PIC 9(02)      - Actual Periods Deferred
+LP-DEFERRED-AMOUNT   PIC 9(07)V99   - Actual Deferred Amount
+LP-NEW-LCPDTH-DATE   PIC 9(08)      - New Late Charge Paid Through Date
+</code></pre>
+<hr />
+<h2>Program Flow Diagrams</h2>
+<h3>Main Program Flow</h3>
+<p><a href="Diagrams/LONPFC_Main_Flow.mmd">LONPFC Main Flow</a></p>
+<h3>Payment Processing Flow</h3>
+<p><a href="Diagrams/LONPFC_Payment_Processing.mmd">LONPFC Payment Processing</a></p>
+<h3>Deferment Processing Flow</h3>
+<p><a href="Diagrams/LONPFC_Deferment_Processing.mmd">LONPFC Deferment Processing</a></p>
+<h3>Late Charge Processing Flow</h3>
+<p><a href="Diagrams/LONPFC_Late_Charge_Processing.mmd">LONPFC Late Charge Processing</a></p>
+<h3>Error Handling Flow</h3>
+<p><a href="Diagrams/LONPFC_Error_Handling.mmd">LONPFC Error Handling</a></p>
+<hr />
+<h2>Batch Processing Timeline</h2>
+<p><a href="Diagrams/LONPFC_Batch_Timeline.mmd">LONPFC Batch Timeline</a></p>
+<hr />
+<h2>Paragraph-Level Flow Explanation</h2>
+<h3>1. MAIN-PROGRAM Section</h3>
+<p><strong>Purpose:</strong> Program initialization and environment setup</p>
+<p><strong>Key Operations:</strong>
+- Establishes SQL database connection
+- Validates state parameters and branch configuration
+- Sets up control variables and processing flags
+- Initializes working storage areas and counters
+- Configures environment variables and system parameters</p>
+<p><strong>Initialization Sequence:</strong></p>
+<pre><code class="language-cobol">MAIN-PROGRAM → 
+  SQL-CONNECT → 
+  GET-GPENV → 
+  VALIDATE-BRANCH → 
+  SETUP-PROCESSING-FLAGS → 
+  SELECTION-MODULE
+</code></pre>
+<h3>2. SELECTION-MODULE Section</h3>
+<p><strong>Purpose:</strong> Main transaction processing control and user interface management</p>
+<p><strong>Key Operations:</strong>
+- Determines transaction type and routing
+- Manages screen display and user interaction
+- Validates transaction codes and parameters
+- Routes to appropriate processing routines
+- Handles user input and function key processing</p>
+<p><strong>Processing Flow:</strong></p>
+<pre><code class="language-cobol">SELECTION-MODULE → 
+  VALIDATE-TRANSACTION-TYPE → 
+  DISPLAY-ACCOUNT-INFO → 
+  ACCEPT-TRANSACTION-DATA → 
+  PROCESS-PAYMENT → 
+  UPDATE-LOAN-RECORDS
+</code></pre>
+<h3>3. Payment Processing Routines</h3>
+<h4>PROCESS-REGULAR-PAYMENT</h4>
+<p><strong>Purpose:</strong> Handles standard payment processing (PY, PA)</p>
+<p><strong>Key Operations:</strong>
+- Validates payment amount against account balances
+- Calculates payment distribution across loan components
+- Applies late charges if applicable
+- Updates payment history and accumulation fields
+- Manages escrow collection and distribution</p>
+<h4>PROCESS-DEFERMENT (DF, D2-D9)</h4>
+<p><strong>Purpose:</strong> Handles deferment transaction processing</p>
+<p><strong>Key Operations:</strong>
+- Validates deferment eligibility and amount
+- Calculates interest-bearing vs. non-interest bearing deferments
+- Updates paid-through dates and payment schedules
+- Handles special deferment formulas (97, 98, 99)
+- Manages deferment charge application</p>
+<h4>PROCESS-PAYMENT-EXCEPTION (PE)</h4>
+<p><strong>Purpose:</strong> Handles payment exception scenarios</p>
+<p><strong>Key Operations:</strong>
+- Processes overpayment scenarios
+- Handles payment reversal situations
+- Manages payment reallocation requests
+- Validates exception processing rules
+- Updates exception payment accumulations</p>
+<h3>4. Balance Management Routines</h3>
+<h4>CALCULATE-PAYMENT-DISTRIBUTION</h4>
+<p><strong>Purpose:</strong> Intelligently distributes payment amounts across loan components</p>
+<p><strong>Key Operations:</strong>
+- Applies FIFO (First In, First Out) payment distribution rules
+- Handles interest, late charges, other charges, and principal
+- Manages OT2 balance paydown scenarios
+- Ensures proper balance consistency
+- Handles revolving account special processing</p>
+<h4>VALIDATE-BALANCE-CONSISTENCY</h4>
+<p><strong>Purpose:</strong> Ensures all balance calculations are mathematically correct</p>
+<p><strong>Key Operations:</strong>
+- Validates that applied amounts equal transaction amount
+- Prevents negative balance scenarios (with exceptions for revolving)
+- Ensures principal doesn't exceed net payoff amount
+- Validates escrow calculations and limits
+- Maintains audit trail consistency</p>
+<h3>5. Late Charge Processing</h3>
+<h4>APPLY-LATE-CHARGES</h4>
+<p><strong>Purpose:</strong> Handles automatic late charge calculation and application</p>
+<p><strong>Key Operations:</strong>
+- Calculates late charges based on SP-LCFRMLA settings
+- Applies late charges using LPLCAP routine
+- Handles various late charge formulas (B, G, J, K, etc.)
+- Manages late charge paid-through date updates
+- Processes late charge reversals and adjustments</p>
+<h3>6. Escrow Management</h3>
+<h4>PROCESS-ESCROW-COLLECTION</h4>
+<p><strong>Purpose:</strong> Manages escrow account collection and validation</p>
+<p><strong>Key Operations:</strong>
+- Calculates escrow amount based on payment and configuration
+- Validates escrow amount against payment limits
+- Handles escrow shortage and overage scenarios
+- Manages escrow distribution to appropriate accounts
+- Provides escrow calculation overrides with proper authorization</p>
+<h3>7. Specialized Transaction Processing</h3>
+<h4>PROCESS-CHARGE-OFF (PX)</h4>
+<p><strong>Purpose:</strong> Handles partial charge-off transactions</p>
+<p><strong>Key Operations:</strong>
+- Validates charge-off eligibility and amounts
+- Updates loan status and balance information
+- Manages GL distribution for charge-off amounts
+- Handles recovery scenarios and adjustments
+- Maintains proper audit trail and documentation</p>
+<h4>PROCESS-NON-CASH-PAYMENTS (PN, PZ)</h4>
+<p><strong>Purpose:</strong> Handles non-cash payment processing</p>
+<p><strong>Key Operations:</strong>
+- Processes insurance payments and settlements
+- Handles third-party payments and allotments
+- Manages GL entry creation and distribution
+- Validates non-cash payment sources
+- Handles special processing for LBOX, TCOLL, ALLOT, etc.</p>
+<hr />
+<h2>Data Flow Mapping</h2>
+<h3>Input Data Flow</h3>
+<pre><code>APIPAY (Calling Program)
+    ↓
+PROG-BUF (Input Buffer)
+    ↓
+LP-REC (Transaction Data) → LONPFC Processing
+    ↓
+LN-REC (Account Data) ← File System
+    ↓
+SP-REC (State Parameters) ← Configuration
+    ↓
+BR-REC (Branch Parameters) ← Configuration
+</code></pre>
+<h3>Core Processing Data Flow</h3>
+<pre><code>LP-REC → Validation → Payment Distribution → Balance Updates
+    ↓           ↓              ↓                   ↓
+Error Codes  Late Charges  Escrow Calc    Principal/Interest
+    ↓           ↓              ↓                   ↓
+Route Codes  GL Entries    Accumulations    Balance Consistency
+    ↓           ↓              ↓                   ↓
+UPDATE-BUF ← Results ← Audit Trail ← Status Updates
+</code></pre>
+<h3>Output Data Flow</h3>
+<pre><code>LONPFC Processing Results
+    ↓
+UPDATE-BUF (Output Buffer)
+    ↓
+Updated Loan Balances → File System
+    ↓
+Payment History Records → LP1-FILE
+    ↓
+GL Distribution Entries → LXG1-FILE
+    ↓
+APIPAY (Calling Program) → Transaction Completion
+</code></pre>
+<h3>Real-time Integration Flow</h3>
+<pre><code>LONPFC ↔ LPEARN (Earnings Calculations)
+LONPFC ↔ LPLCAP (Late Charge Application)  
+LONPFC ↔ ALLENT (GL Distribution)
+LONPFC ↔ PAYOFX (Payoff Calculations)
+LONPFC → CA1-FILE (Cash Drawer Updates)
+</code></pre>
+<hr />
+<h2>Referenced Programs</h2>
+<h3>External Program Calls</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>Purpose</th>
+<th>Called From</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LPEARN</strong></td>
+<td>Earnings calculations</td>
+<td>Payment processing</td>
+<td>Every transaction</td>
+</tr>
+<tr>
+<td><strong>LPCERN</strong></td>
+<td>Earnings processing</td>
+<td>Revolving accounts</td>
+<td>As needed</td>
+</tr>
+<tr>
+<td><strong>LPLCAP</strong></td>
+<td>Late charge application</td>
+<td>Late charge processing</td>
+<td>When applicable</td>
+</tr>
+<tr>
+<td><strong>ALLENT</strong></td>
+<td>GL distribution entry</td>
+<td>GL processing</td>
+<td>When GL required</td>
+</tr>
+<tr>
+<td><strong>PAYOFX</strong></td>
+<td>Payoff calculations</td>
+<td>Payoff scenarios</td>
+<td>When requested</td>
+</tr>
+<tr>
+<td><strong>LPREGZ</strong></td>
+<td>Revolving account processing</td>
+<td>Revolving accounts</td>
+<td>As needed</td>
+</tr>
+<tr>
+<td><strong>LPREGZW</strong></td>
+<td>Revolving account processing</td>
+<td>Revolving accounts</td>
+<td>As needed</td>
+</tr>
+<tr>
+<td><strong>CHREPO</strong></td>
+<td>Repo processing</td>
+<td>SS transactions</td>
+<td>When configured</td>
+</tr>
+</tbody>
+</table>
+<h3>Specialized Processing Modules</h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Purpose</th>
+<th>Integration Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ESAPPL</strong></td>
+<td>Escrow application processing</td>
+<td>Escrow collection</td>
+</tr>
+<tr>
+<td><strong>PAID-THRU</strong></td>
+<td>Paid through date calculations</td>
+<td>Date management</td>
+</tr>
+<tr>
+<td><strong>ACTUARIAL-METHOD</strong></td>
+<td>Actuarial calculations</td>
+<td>Complex interest scenarios</td>
+</tr>
+<tr>
+<td><strong>SETUP-PRIN-PAYMNTD</strong></td>
+<td>Principal payment setup</td>
+<td>Balance calculations</td>
+</tr>
+</tbody>
+</table>
+<h3>Copy Members (Include Files)</h3>
+<table>
+<thead>
+<tr>
+<th>Copy Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP01LP.CPY</strong></td>
+<td>Loan payment record structure</td>
+</tr>
+<tr>
+<td><strong>LP01LN.CPY</strong></td>
+<td>Loan master record structure</td>
+</tr>
+<tr>
+<td><strong>LP01LX.CPY</strong></td>
+<td>Loan extension record structure</td>
+</tr>
+<tr>
+<td><strong>LP01LXE.CPY</strong></td>
+<td>Loan extension earnings structure</td>
+</tr>
+<tr>
+<td><strong>LP01SP.CPY</strong></td>
+<td>State parameter record structure</td>
+</tr>
+<tr>
+<td><strong>LP01BR.CPY</strong></td>
+<td>Branch parameter record structure</td>
+</tr>
+<tr>
+<td><strong>LP01ES.CPY</strong></td>
+<td>Escrow record structure</td>
+</tr>
+<tr>
+<td><strong>LP01CA.CPY</strong></td>
+<td>Cash drawer record structure</td>
+</tr>
+<tr>
+<td><strong>LONPF_SCN.CPY</strong></td>
+<td>Screen layout definitions</td>
+</tr>
+<tr>
+<td><strong>ESAPPL_SCN.CPY</strong></td>
+<td>Escrow application screen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Error Handling and Validation</h2>
+<h3>Error Code Management</h3>
+<table>
+<thead>
+<tr>
+<th>Error Code</th>
+<th>Description</th>
+<th>Action Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>X</strong></td>
+<td>Fatal system error</td>
+<td>Program termination</td>
+</tr>
+<tr>
+<td><strong>E</strong></td>
+<td>Business rule violation</td>
+<td>Transaction rejected</td>
+</tr>
+<tr>
+<td><strong>P</strong></td>
+<td>Processing warning</td>
+<td>Continue with caution</td>
+</tr>
+<tr>
+<td><strong>M</strong></td>
+<td>Manual intervention required</td>
+<td>User decision needed</td>
+</tr>
+<tr>
+<td><strong>Space</strong></td>
+<td>Successful processing</td>
+<td>Normal completion</td>
+</tr>
+</tbody>
+</table>
+<h3>Common Error Conditions</h3>
+<h4>1. Payment Validation Errors</h4>
+<p><strong>Insufficient Payment Amount</strong>
+- <strong>Condition:</strong> Payment amount less than minimum required
+- <strong>Validation:</strong> Checks against late charges and minimum payment rules
+- <strong>Resolution:</strong> User must enter adequate payment amount</p>
+<p><strong>Excessive Payment Amount</strong><br />
+- <strong>Condition:</strong> Payment exceeds net payoff amount
+- <strong>Validation:</strong> Prevents overpayment beyond payoff
+- <strong>Resolution:</strong> User confirmation or amount adjustment required</p>
+<p><strong>Balance Consistency Errors</strong>
+- <strong>Condition:</strong> Applied amounts don't equal transaction amount
+- <strong>Validation:</strong> Mathematical consistency checks
+- <strong>Resolution:</strong> System recalculation or user correction</p>
+<h4>2. Deferment Validation Errors</h4>
+<p><strong>Invalid Deferment Amount</strong>
+- <strong>Condition:</strong> Deferment amount exceeds calculated maximum
+- <strong>Validation:</strong> Checks against calculated deferment limits
+- <strong>Resolution:</strong> Amount adjustment or password override</p>
+<p><strong>Deferment Formula Conflicts</strong>
+- <strong>Condition:</strong> State formula doesn't support requested deferment type
+- <strong>Validation:</strong> Cross-references SP-LCFRMLA settings
+- <strong>Resolution:</strong> Transaction type change or configuration update</p>
+<h4>3. Late Charge Processing Errors</h4>
+<p><strong>Late Charge Calculation Errors</strong>
+- <strong>Condition:</strong> Late charge formulas produce inconsistent results
+- <strong>Validation:</strong> Validates against LPLCAP calculations
+- <strong>Resolution:</strong> Formula review and correction</p>
+<p><strong>Late Charge Application Conflicts</strong>
+- <strong>Condition:</strong> Late charges conflict with payment distribution
+- <strong>Validation:</strong> Ensures late charges don't exceed payment capacity
+- <strong>Resolution:</strong> Payment redistribution or late charge adjustment</p>
+<h4>4. Escrow Processing Errors</h4>
+<p><strong>Escrow Amount Exceeded</strong>
+- <strong>Condition:</strong> Calculated escrow exceeds payment amount minus other obligations
+- <strong>Validation:</strong> Validates escrow against available payment funds
+- <strong>Resolution:</strong> Escrow amount reduction or payment increase</p>
+<p><strong>Escrow Configuration Conflicts</strong>
+- <strong>Condition:</strong> Branch escrow settings conflict with account configuration
+- <strong>Validation:</strong> Cross-references BR and account-level escrow settings
+- <strong>Resolution:</strong> Configuration alignment or override authorization</p>
+<h3>Validation Routines</h3>
+<h4>CONDITIONAL-SEND-MESS</h4>
+<ul>
+<li>Validates route-based message display requirements</li>
+<li>Handles conditional error message presentation</li>
+<li>Manages user notification protocols</li>
+</ul>
+<h4>ACCEPT-F4-BYPASS</h4>
+<ul>
+<li>Handles bypass authorization for exceptional processing</li>
+<li>Validates user authority for override operations</li>
+<li>Manages bypass audit trail requirements</li>
+</ul>
+<h4>TEST-FOR-PE-AL</h4>
+<ul>
+<li>Validates payment exception processing eligibility</li>
+<li>Checks account status and transaction compatibility</li>
+<li>Ensures proper exception handling protocols</li>
+</ul>
+<hr />
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<h4>Working Storage Critical Variables</h4>
+<pre><code class="language-cobol">77  F4-FLAG              PIC 9(01)    - Function key bypass flag
+77  DF-TEST              PIC X(01)    - Deferment processing test
+77  INDU-INTEREST        PIC 9(07)V99 - Induced interest calculations
+77  LCAP-APP             PIC 9(07)V99 - Late charge applied amount
+77  LCAP-OWE             PIC 9(07)V99 - Late charge owed amount
+77  ESCROW-AMT           PIC 9(07)V99 - Calculated escrow amount
+77  MAX-ESCROW-ALLOWED   PIC 9(07)V99 - Maximum allowable escrow
+</code></pre>
+<h4>Processing Control Structures</h4>
+<pre><code class="language-cobol">01  PAYMENT-DISTRIBUTION-CONTROL.
+    05  APPLY-TO-INTEREST     PIC 9(07)V99.
+    05  APPLY-TO-PRINCIPAL    PIC 9(07)V99.
+    05  APPLY-TO-LATE-CHARGE  PIC 9(07)V99.
+    05  APPLY-TO-OTHER        PIC 9(07)V99.
+    05  APPLY-TO-ESCROW       PIC 9(07)V99.
+
+01  DEFERMENT-CONTROL.
+    05  DEF-TOTAL-INTDUE      PIC 9(07)V99.
+    05  DEF-NODEF             PIC 9(02).
+    05  DEF-PERIODS           PIC 9(02).
+    05  DEF-FORMULA-TYPE      PIC X(02).
+</code></pre>
+<h3>File Handling Architecture</h3>
+<h4>Primary File Access Patterns</h4>
+<p><strong>Read-Write Files:</strong>
+- <strong>LN1-FILE:</strong> High-frequency balance updates with optimistic locking
+- <strong>LX1-FILE:</strong> Extension data updates for earnings and accumulations
+- <strong>ES1-FILE:</strong> Escrow account management with transaction consistency</p>
+<p><strong>Write-Only Files:</strong>
+- <strong>LP1-FILE:</strong> Payment history with sequential record insertion
+- <strong>CA1-FILE:</strong> Cash drawer updates with till reconciliation
+- <strong>LXG1-FILE:</strong> GL distribution records with audit trail</p>
+<p><strong>Read-Only Files:</strong>
+- <strong>SP1-FILE:</strong> State parameter lookup with caching
+- <strong>BR-FILE:</strong> Branch configuration with session-level caching
+- <strong>CD1-FILE:</strong> Code table lookups with efficient indexing</p>
+<h3>Advanced Processing Algorithms</h3>
+<h4>1. Payment Distribution Algorithm</h4>
+<pre><code class="language-cobol">PAYMENT-DISTRIBUTION-LOGIC:
+    1. Calculate total obligations (INT + LC + OTH + OT2)
+    2. Apply payment in priority order:
+       a. Late charges (if applicable)
+       b. Interest due
+       c. Other charges
+       d. Other 2 charges  
+       e. Principal (remainder)
+    3. Validate balance consistency
+    4. Handle special cases (revolving, escrow)
+</code></pre>
+<h4>2. Late Charge Application Algorithm</h4>
+<pre><code class="language-cobol">LATE-CHARGE-PROCESSING:
+    1. Determine late charge formula from SP-LCFRMLA
+    2. Calculate late charge amount using LPLCAP
+    3. Apply late charge based on formula type:
+       - Type B/G/J/K: Principal-only formulas
+       - Type P: Percentage-based formulas
+       - Type F/I/L/M: Fixed amount formulas
+    4. Update late charge paid-through date
+    5. Integrate with payment distribution
+</code></pre>
+<h4>3. Deferment Calculation Algorithm</h4>
+<pre><code class="language-cobol">DEFERMENT-PROCESSING:
+    1. Validate deferment eligibility
+    2. Calculate maximum deferment based on formula:
+       - Formula 97: 1/3 of regular payment or interest due
+       - Formula 98/99: Interest-bearing deferment variations
+       - Standard: Based on payment amount and configuration
+    3. Apply deferment charges (if applicable)
+    4. Update paid-through dates and schedules
+    5. Maintain deferment history and accumulations
+</code></pre>
+<h4>4. Revolving Account Processing</h4>
+<pre><code class="language-cobol">REVOLVING-ACCOUNT-LOGIC:
+    1. Allow negative balances (controlled by REVOL_NEG_BAL)
+    2. Special payment distribution rules
+    3. Enhanced payment exception handling
+    4. Modified late charge application
+    5. Specialized earnings calculations
+</code></pre>
+<hr />
+<h2>Integration Points</h2>
+<h3>APIPAY Integration</h3>
+<p>LONPFC serves as the primary payment processor for APIPAY:
+- <strong>Transaction Routing:</strong> "PY", "PA", "PE", and all deferment codes route to LONPFC
+- <strong>Interface Protocol:</strong> Standard PROG-BUF/UPDATE-BUF calling convention
+- <strong>Error Handling:</strong> Comprehensive error code management with detailed messaging
+- <strong>Return Status:</strong> Rich status information for calling program decision-making</p>
+<h3>Real-time System Integration</h3>
+<h4>Database Integration</h4>
+<ul>
+<li><strong>SQL Connectivity:</strong> Embedded SQL for real-time database access</li>
+<li><strong>Transaction Management:</strong> Proper commit/rollback handling</li>
+<li><strong>Connection Pooling:</strong> Efficient database connection management</li>
+<li><strong>Performance Optimization:</strong> Strategic SQL statement preparation and execution</li>
+</ul>
+<h4>Earnings System Integration</h4>
+<ul>
+<li><strong>LPEARN Integration:</strong> Real-time earnings calculation and posting</li>
+<li><strong>Multiple Formula Support:</strong> Handles earnings formulas 6, 15, 16, 23</li>
+<li><strong>Accumulation Management:</strong> Maintains earnings accumulations and totals</li>
+<li><strong>Regulatory Compliance:</strong> Ensures earnings calculations meet regulatory requirements</li>
+</ul>
+<h4>General Ledger Integration</h4>
+<ul>
+<li><strong>ALLENT Integration:</strong> Automatic GL entry creation and distribution</li>
+<li><strong>Multi-branch Support:</strong> Handles inter-branch GL distribution</li>
+<li><strong>Account Validation:</strong> Validates GL account numbers and types</li>
+<li><strong>Audit Trail:</strong> Maintains comprehensive GL audit trails</li>
+</ul>
+<h3>Third-party System Integration</h3>
+<h4>Payment Processing Systems</h4>
+<ul>
+<li><strong>Allotment Processing:</strong> Handles payroll deduction payments (ALLOT)</li>
+<li><strong>Collection Agency Integration:</strong> Processes TCOLL payments</li>
+<li><strong>Western Union Integration:</strong> Manages WESTU payment processing</li>
+<li><strong>Lock Box Processing:</strong> Handles LBOX payment integration</li>
+</ul>
+<h4>Insurance System Integration</h4>
+<ul>
+<li><strong>Insurance Loss Processing:</strong> Handles IN transaction type</li>
+<li><strong>Insurance Rebate Processing:</strong> Manages insurance-related adjustments</li>
+<li><strong>Premium Processing:</strong> Handles insurance premium collections</li>
+</ul>
+<hr />
+<h2>File Dependencies</h2>
+<h3>Input Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Access Pattern</th>
+<th>Critical Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LN1-FILE</strong></td>
+<td>Loan master records</td>
+<td>Read/Write - High frequency</td>
+<td>Account balances, dates, status</td>
+</tr>
+<tr>
+<td><strong>SP1-FILE</strong></td>
+<td>State processing parameters</td>
+<td>Read Only - Cached</td>
+<td>Processing rules, formulas</td>
+</tr>
+<tr>
+<td><strong>BR-FILE</strong></td>
+<td>Branch configuration</td>
+<td>Read Only - Cached</td>
+<td>Branch-specific settings</td>
+</tr>
+<tr>
+<td><strong>DL1-FILE</strong></td>
+<td>Dealer information</td>
+<td>Read Only - As needed</td>
+<td>Dealer reserve information</td>
+</tr>
+<tr>
+<td><strong>CD1-FILE</strong></td>
+<td>Code table definitions</td>
+<td>Read Only - Cached</td>
+<td>Transaction codes, validation</td>
+</tr>
+<tr>
+<td><strong>LX1-FILE</strong></td>
+<td>Loan extensions</td>
+<td>Read/Write - Moderate</td>
+<td>Earnings, accumulations</td>
+</tr>
+<tr>
+<td><strong>ES1-FILE</strong></td>
+<td>Escrow accounts</td>
+<td>Read/Write - As needed</td>
+<td>Escrow balances, settings</td>
+</tr>
+</tbody>
+</table>
+<h3>Output Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Update Pattern</th>
+<th>Data Volume</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LP1-FILE</strong></td>
+<td>Payment transaction history</td>
+<td>Insert - Every transaction</td>
+<td>High volume - All payments</td>
+</tr>
+<tr>
+<td><strong>CA1-FILE</strong></td>
+<td>Cash drawer transactions</td>
+<td>Insert - Till transactions</td>
+<td>Moderate volume - By till</td>
+</tr>
+<tr>
+<td><strong>LXG1-FILE</strong></td>
+<td>GL distribution records</td>
+<td>Insert - When GL required</td>
+<td>Variable - By configuration</td>
+</tr>
+<tr>
+<td><strong>LXE1-FILE</strong></td>
+<td>Extension earnings</td>
+<td>Update - When applicable</td>
+<td>Low volume - Earnings updates</td>
+</tr>
+</tbody>
+</table>
+<h3>Temporary Files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Scope</th>
+<th>Usage Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WK-FILE</strong></td>
+<td>Working calculations</td>
+<td>Program execution</td>
+<td>High frequency - Calculations</td>
+</tr>
+</tbody>
+</table>
+<h3>Configuration Dependencies</h3>
+<h4>Environment Variables</h4>
+<ul>
+<li><strong>REVOL_NEG_BAL:</strong> Controls negative balance allowance for revolving accounts</li>
+<li><strong>RVLINES:</strong> Controls reversal balance display behavior</li>
+<li><strong>Various GP flags:</strong> Control global processing behavior</li>
+</ul>
+<h4>State-Level Configuration</h4>
+<ul>
+<li><strong>SP-ERNFRMLA:</strong> Determines earnings calculation method</li>
+<li><strong>SP-LCFRMLA:</strong> Controls late charge calculation and application</li>
+<li><strong>SP-ALT-PREPAY-MONTHS:</strong> Sets prepayment threshold for rebate processing</li>
+</ul>
+<hr />
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><a href="Diagrams/LONPFC_Call_Graph.mmd">LONPFC Call Graph</a></p>
+<h3>Primary Execution Flow</h3>
+<ol>
+<li><strong>MAIN-PROGRAM</strong> → <strong>SELECTION-MODULE</strong></li>
+<li><strong>SELECTION-MODULE</strong> → Transaction-specific processing routines</li>
+<li><strong>Payment Processing</strong> → Balance update and validation routines</li>
+<li><strong>Validation Routines</strong> → Error handling or success processing</li>
+<li><strong>Update Routines</strong> → File updates and audit trail maintenance</li>
+</ol>
+<h3>Critical Processing Dependencies</h3>
+<h4>Core Processing Chain</h4>
+<pre><code>MAIN-PROGRAM →
+  SETUP-ENVIRONMENT →
+    SELECTION-MODULE →
+      VALIDATE-TRANSACTION →
+        PROCESS-PAYMENT →
+          UPDATE-BALANCES →
+            WRITE-AUDIT-TRAIL →
+              END-ROUTINE
+</code></pre>
+<h4>Error Handling Chain</h4>
+<pre><code>Any Processing Routine →
+  DETECT-ERROR →
+    SET-ERROR-CODE →
+      CONDITIONAL-SEND-MESS →
+        UPDATE-RETURN-STATUS →
+          END-ROUTINE
+</code></pre>
+<h4>File Processing Chain</h4>
+<pre><code>File Operations →
+  OPEN-FILE →
+    READ/WRITE-RECORD →
+      VALIDATE-IO-STATUS →
+        HANDLE-ERROR (if needed) →
+          CLOSE-FILE
+</code></pre>
+<hr />
+<h2>Performance Considerations</h2>
+<h3>Optimization Strategies</h3>
+<h4>File Access Optimization</h4>
+<ul>
+<li><strong>Strategic File Opening:</strong> Files opened only when needed, closed immediately after use</li>
+<li><strong>Efficient Indexing:</strong> Uses optimized file access patterns for high-volume operations</li>
+<li><strong>Buffer Management:</strong> Proper buffer allocation for file I/O operations</li>
+<li><strong>Caching Strategy:</strong> Caches frequently accessed configuration data</li>
+</ul>
+<h4>Processing Optimization</h4>
+<ul>
+<li><strong>Calculation Efficiency:</strong> Optimized mathematical calculations and formula processing</li>
+<li><strong>Screen Refresh:</strong> Minimized screen updates and optimized display operations</li>
+<li><strong>Memory Management:</strong> Efficient working storage allocation and management</li>
+<li><strong>SQL Optimization:</strong> Strategic SQL statement preparation and execution</li>
+</ul>
+<h4>User Experience Optimization</h4>
+<ul>
+<li><strong>Response Time:</strong> Optimized user interaction response times</li>
+<li><strong>Validation Speed:</strong> Rapid input validation and error detection</li>
+<li><strong>Screen Flow:</strong> Efficient screen transition and navigation</li>
+<li><strong>Help System:</strong> Quick access to context-sensitive help</li>
+</ul>
+<h3>Resource Management</h3>
+<h4>Memory Usage</h4>
+<ul>
+<li><strong>Working Storage:</strong> Optimized allocation of working storage areas</li>
+<li><strong>Buffer Management:</strong> Efficient buffer allocation for file operations</li>
+<li><strong>Variable Scoping:</strong> Proper variable scoping and initialization</li>
+</ul>
+<h4>Database Resources</h4>
+<ul>
+<li><strong>Connection Management:</strong> Efficient SQL connection handling</li>
+<li><strong>Transaction Scope:</strong> Appropriate transaction boundaries for data integrity</li>
+<li><strong>Lock Management:</strong> Optimized record locking strategies</li>
+</ul>
+<hr />
+<h2>Security and Compliance</h2>
+<h3>Access Control Mechanisms</h3>
+<h4>Password Protection</h4>
+<ul>
+<li><strong>Sensitive Operations:</strong> Password required for override operations</li>
+<li><strong>Cash Drawer Access:</strong> Password protection for cash drawer operations</li>
+<li><strong>Inter-branch Transactions:</strong> Enhanced security for cross-branch operations</li>
+<li><strong>Administrative Functions:</strong> Password protection for system administration</li>
+</ul>
+<h4>Authorization Levels</h4>
+<ul>
+<li><strong>Branch Authorization:</strong> Branch-specific transaction limits and permissions</li>
+<li><strong>User Authorization:</strong> User-level access control and audit trail</li>
+<li><strong>Transaction Authorization:</strong> Transaction-specific authorization requirements</li>
+<li><strong>Override Authorization:</strong> Special authorization for exception processing</li>
+</ul>
+<h3>Compliance Features</h3>
+<h4>Regulatory Compliance</h4>
+<ul>
+<li><strong>State Regulations:</strong> Compliance with state-specific lending regulations</li>
+<li><strong>Federal Requirements:</strong> Compliance with federal lending and banking regulations</li>
+<li><strong>Audit Requirements:</strong> Comprehensive audit trail and documentation</li>
+<li><strong>Record Retention:</strong> Proper record retention and archival procedures</li>
+</ul>
+<h4>Data Integrity</h4>
+<ul>
+<li><strong>Transaction Consistency:</strong> Ensures all transaction updates are consistent</li>
+<li><strong>Balance Validation:</strong> Comprehensive balance validation and reconciliation</li>
+<li><strong>Audit Trail:</strong> Complete audit trail for all transactions and changes</li>
+<li><strong>Error Recovery:</strong> Proper error recovery and data restoration procedures</li>
+</ul>
+<h3>Risk Management</h3>
+<h4>Business Risk Controls</h4>
+<ul>
+<li><strong>Balance Protection:</strong> Prevents unauthorized negative balances</li>
+<li><strong>Amount Validation:</strong> Validates transaction amounts against business rules</li>
+<li><strong>Date Validation:</strong> Ensures transaction dates are reasonable and valid</li>
+<li><strong>Status Validation:</strong> Validates account status for transaction eligibility</li>
+</ul>
+<h4>Technical Risk Controls</h4>
+<ul>
+<li><strong>Error Handling:</strong> Comprehensive error detection and handling</li>
+<li><strong>Recovery Procedures:</strong> Proper error recovery and restart procedures</li>
+<li><strong>Data Validation:</strong> Extensive data validation and consistency checks</li>
+<li><strong>System Monitoring:</strong> Built-in monitoring and alerting capabilities</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

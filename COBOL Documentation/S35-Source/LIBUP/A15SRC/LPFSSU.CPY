@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSSU
+           SELECT SU-FILE ASSIGN TO SU-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY SU1-KEY
+                  FILE STATUS FILE-STAT.

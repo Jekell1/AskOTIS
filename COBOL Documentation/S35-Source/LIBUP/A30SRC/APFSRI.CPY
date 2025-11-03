@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBAP/APFSRI
+      *    INCLUDE IN AUTOCR
+           SELECT RI-FILE ASSIGN RI-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY RI1-KEY
+                  FILE STATUS FILE-STAT.

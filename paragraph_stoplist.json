@@ -1,0 +1,42 @@
+{
+  "min_occ": 100,
+  "selected_count": 9,
+  "canonicals": [
+    [
+      "ENDROUTINE",
+      565
+    ],
+    [
+      "ENDOFGROUP",
+      354
+    ],
+    [
+      "ENDENTRYMODULE",
+      272
+    ],
+    [
+      "ENDBRANCH",
+      266
+    ],
+    [
+      "CHANGEAGAIN",
+      246
+    ],
+    [
+      "CHECKBRANCHSECURITY",
+      234
+    ],
+    [
+      "CHECKBRSECURITY",
+      212
+    ],
+    [
+      "ALREADYCREATED",
+      209
+    ],
+    [
+      "ENTERALLACCTNO",
+      192
+    ]
+  ]
+}

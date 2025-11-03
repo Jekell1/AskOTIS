@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSMD
+           SELECT MD-FILE ASSIGN TO MD-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY MD1-KEY
+                  FILE STATUS FILE-STAT.

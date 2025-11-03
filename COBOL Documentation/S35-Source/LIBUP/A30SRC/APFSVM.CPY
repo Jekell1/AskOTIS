@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBAP/APFSVM
+           SELECT VM-FILE ASSIGN TO VM-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VM1-KEY
+                  FILE STATUS FILE-STAT.

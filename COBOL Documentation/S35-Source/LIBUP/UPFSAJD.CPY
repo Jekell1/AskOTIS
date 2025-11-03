@@ -1,0 +1,8 @@
+      * COPYMEMBER: LIBUP/UPFSAJD
+           SELECT AJD-FILE ASSIGN TO AJD-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY AJD-KEY
+                  FILE STATUS FILE-STAT.
+~

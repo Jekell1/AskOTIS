@@ -1,0 +1,31 @@
+      * COPYMEMBER: LIBGB/GRSSPW
+      ******************************************************************
+      * LIBGB/GRSSPW - WORKING STORAGE FOR ROUTINE USED IN GROUP BRANCH
+      * PROCESSING THAT HOLDS A GROUP/BRANCH BRANCHES IN WS TABLE.
+      * ORIGINALLY CREATED TO ALLOW ALL BRANCHES TO BE SENT TO STORED
+      * PROCEDURE ONE TIME.  
+      * SQL SERVER SP VARIABLE MAX LENGTH IS 7500 BYTES. 
+      * BRANCHLIST-PGM-PROC-MAX CAN BE CHANGED BY PROGRAM TO LIMIT THEN
+      * NUMBER OF BRANCHES TO PROCESS.  SOME PROGRAMS MAY NOT WANT STORED 
+      * PROCEDURE TO QUERY USING ALL BRANCHES.
+      *=================================================================
+      * REV:
+      * MB  2023-0821 *NEW*
+      ******************************************************************
+       EXEC SQL BEGIN DECLARE SECTION END-EXEC.
+       01  PASS-BRANCHLIST                PIC X(7500)    VALUE SPACES.
+       EXEC SQL END DECLARE SECTION END-EXEC.
+
+       78  BRANCHLIST-TABLE-MAX                        VALUE 1500.
+       01  BRANCHLIST-SUB              PIC 9(5)        VALUE 0.
+       01  BRANCHLIST-PGM-PROC-MAX     PIC 9(5)        VALUE 1500.
+       01  BRANCHLIST-PROC-BRANCH-CTR  PIC 9(5)        VALUE 0.
+
+       01  BRANCHLIST-TBL.
+           03 BRANCHLIST-DATA   OCCURS BRANCHLIST-TABLE-MAX TIMES.
+             05 BRANCHLIST-COMMA       PIC X.
+             05 BRANCHLIST-BRNO        PIC X(4).
+
+       01  BRANCHLIST-WORK-BRNO        PIC 9(4).
+       01  BRANCHLIST-WORK-BRNO-TEXT   REDEFINES BRANCHLIST-WORK-BRNO 
+                                       PIC X(4).

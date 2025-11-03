@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-CALL-NEWDATE COBOL Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-CALL-NEWDATE COBOL Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1 id="c-call-newdate-cobol-utility-documentation">C-CALL-NEWDATE COBOL Utility Documentation</h1>
+<p><strong>Location:</strong> ./APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> July 31, 2025<br />
+<strong>Program ID:</strong> C-CALL-NEWDATE<br />
+<strong>Date Written:</strong> See Revision History</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagram">Program Flow Diagram</a></li>
+<li><a href="#batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</a></li>
+<li><a href="#paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#common-error-conditions">Common Error Conditions</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#file-dependencies">File Dependencies</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+<li><a href="#revision-history">Revision History</a></li>
+</ol>
+<h2 id="program-overview">Program Overview</h2>
+<p><strong>C-CALL-NEWDATE</strong> is a COBOL utility routine in <code>APIPAY_Inlined.CBL</code> for advanced date calculations, including date addition, subtraction, and validation. It supports business logic requiring manipulation of dates for payment schedules, due dates, and period calculations.</p>
+<h2 id="input-parameters">Input Parameters</h2>
+<ul>
+<li><strong>NEWDATE-INPUT</strong>: Input date (CCYYMMDD) for calculation.</li>
+<li><strong>DAYS-TO-ADD</strong>: Number of days to add or subtract.</li>
+</ul>
+<h2 id="output-fields">Output Fields</h2>
+<ul>
+<li><strong>NEWDATE-RESULT</strong>: Resulting date (CCYYMMDD) after calculation.</li>
+<li><strong>ERROR-CODE</strong>: Error code if calculation fails.</li>
+</ul>
+<h2 id="program-flow-diagram">Program Flow Diagram</h2>
+<div class="mermaid">graph TD
+    A[Input NEWDATE-INPUT, DAYS-TO-ADD] --> B[Validate input]
+    B --> C[Perform date calculation]
+    C --> D[Return NEWDATE-RESULT or ERROR-CODE]
+</div>
+<h2 id="batch-or-sequential-process-timeline">Batch or Sequential Process Timeline</h2>
+<div class="mermaid">gantt
+    title C-CALL-NEWDATE Batch Timeline
+    section Initialization
+    Validate Input :a1, 2025-07-31, 1d
+    section Processing
+    Perform Date Calculation :a2, after a1, 1d
+    section Result
+    Return Result :a3, after a2, 1d
+</div>
+<h2 id="paragraph-level-flow-explanation">Paragraph-Level Flow Explanation</h2>
+<ul>
+<li><strong>C-CALL-NEWDATE</strong>: Validates input, performs date arithmetic, returns result or error.</li>
+</ul>
+<h2 id="data-flow-mapping">Data Flow Mapping</h2>
+<div class="mermaid">graph TD
+    NEWDATE_INPUT --> C_CALL_NEWDATE --> NEWDATE_RESULT
+</div>
+<h2 id="referenced-programs">Referenced Programs</h2>
+<ul>
+<li>None (internal logic)</li>
+</ul>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<ul>
+<li>Validates input date format and range</li>
+<li>Returns error code for invalid input or calculation overflow</li>
+</ul>
+<h2 id="common-error-conditions">Common Error Conditions</h2>
+<ul>
+<li>Invalid date input</li>
+<li>Date calculation out of range</li>
+</ul>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<ul>
+<li>Uses working-storage fields</li>
+<li>No external file I/O</li>
+</ul>
+<h2 id="integration-points">Integration Points</h2>
+<ul>
+<li>Used by payment and scheduling routines</li>
+</ul>
+<h2 id="file-dependencies">File Dependencies</h2>
+<ul>
+<li>No external files; uses internal paragraphs</li>
+</ul>
+<h2 id="call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</h2>
+<div class="mermaid">graph TD
+    C-CALL-NEWDATE --> Date-Validation
+    C-CALL-NEWDATE --> Date-Arithmetic
+</div>
+<h2 id="revision-history">Revision History</h2>
+<ul>
+<li>2025-07-31: Initial documentation generated.</li>
+</ul>
+        </main>
+        <footer>
+            <p>Generated on 2025-09-02 15:30:16</p>
+        </footer>
+    </div>
+</body>
+</html>

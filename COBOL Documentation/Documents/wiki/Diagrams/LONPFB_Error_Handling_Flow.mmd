@@ -1,0 +1,14 @@
+flowchart TD
+    A[Error Detected] --> B{Error Type}
+    B -->|Validation Error| C[Format Error Message]
+    B -->|Database Error| D[Log Database Issue]
+    B -->|Business Rule Error| E[Format Business Message]
+    B -->|System Error| F[Log System Error]
+    C --> G[Set Error Status]
+    D --> H[Set Database Error Status]
+    E --> G
+    F --> I[Set System Error Status]
+    G --> J[Return to Caller]
+    H --> J
+    I --> J
+    J --> K[Caller Handles Error]

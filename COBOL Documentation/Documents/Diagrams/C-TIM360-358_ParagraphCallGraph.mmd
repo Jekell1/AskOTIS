@@ -1,0 +1,6 @@
+graph TD
+    C-TIM360-358 --> C-TIMBEG
+    C-TIM360-358 --> MonthDayAdjust
+    MonthDayAdjust --> LeapYearCheck
+    LeapYearCheck --> ComputeElapsed
+    ComputeElapsed --> C-TIMEND

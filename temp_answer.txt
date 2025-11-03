@@ -1,0 +1,19 @@
+The exact text of user input choices for the main menu is NOT present in the retrieved context.
+
+- There are **no DISPLAY statements**, **MOVE statements**, **VALUE clauses**, or **screen copybook definitions** showing the literal menu option text for the main menu in the provided sources.
+- The retrieved context includes program flows and call chains for PGMENU and related menu programs, but does **not** include the actual screen text or prompts.
+
+**Supporting Evidence:**
+- The PGMENU program flow shows navigation to subsystems like Addon Maintenance, Dealer Maintenance, Loan Maintenance, but does not provide the literal menu text (Source: PGMENU, Index: flows).
+- No screen copybook (e.g., PGMENU_SCN.CPY) or DISPLAY/MOVE statements with menu text are present in the context.
+- The screen node records for possible menu screens show zero fields and zero action labels (Source: 78E2A89A11956F07F0F983C5B60026F239209C2F, Index: screen_nodes).
+
+**What would be needed:**
+- The actual menu text would typically be defined in:
+  - The screen copybook (e.g., PGMENU_SCN.CPY)
+  - DISPLAY or MOVE statements in PGMENU
+  - VALUE clauses in screen section definitions
+
+**Summary:**  
+The literal text of user input choices for the main menu is not available in the retrieved context. Only the program flow and called subsystems are shown, not the actual menu option wording.  
+(Source: PGMENU, Index: flows; 78E2A89A11956F07F0F983C5B60026F239209C2F, Index: screen_nodes)

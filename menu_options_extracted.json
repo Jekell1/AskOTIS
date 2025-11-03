@@ -1,0 +1,13 @@
+{
+  "PGMENU": {
+    "program_id": "PGMENU",
+    "menu_options": [
+      {
+        "number": "010",
+        "text": "020 030 040 050 060 070 080 090 100 110 120 130 140",
+        "source": "VALUE clause"
+      }
+    ],
+    "total_options": 1
+  }
+}

@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSST
+           SELECT ST-FILE ASSIGN TO ST-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY ST1-KEY
+                  FILE STATUS FILE-STAT.

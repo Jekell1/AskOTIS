@@ -1,0 +1,148 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                    OTIS RAG SYSTEM ARCHITECTURE                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────┐
+│                        USER INTERFACE                            │
+├──────────────────────────────────────────────────────────────────┤
+│  • Python API:    rag.ask("question")                            │
+│  • CLI Single:    python -m otis_rag.cli "question"              │
+│  • CLI Interactive: python -m otis_rag.cli                       │
+└──────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                    OTISRAG (Orchestrator)                        │
+├──────────────────────────────────────────────────────────────────┤
+│  Coordinates: Router → Retriever → Memory → Generator            │
+│  Simple API: ask(), clear_memory(), get_stats()                  │
+└──────────────────────────────────────────────────────────────────┘
+         │              │              │              │
+         ▼              ▼              ▼              ▼
+    ┌────────┐    ┌──────────┐   ┌─────────┐   ┌───────────┐
+    │ ROUTER │    │RETRIEVER │   │ MEMORY  │   │GENERATOR  │
+    └────────┘    └──────────┘   └─────────┘   └───────────┘
+         │              │              │              │
+         ▼              ▼              ▼              ▼
+  ┌──────────┐  ┌────────────┐  ┌─────────┐  ┌────────────┐
+  │is_otis?  │  │Hybrid      │  │Last 10  │  │Build       │
+  │type?     │  │Search      │  │turns    │  │prompts     │
+  │indexes?  │  │10 indexes  │  │Context  │  │Call LLM    │
+  └──────────┘  └────────────┘  └─────────┘  └────────────┘
+                      │                            │
+                      ▼                            ▼
+              ┌──────────────┐            ┌──────────────┐
+              │ Azure Search │            │Azure OpenAI  │
+              │  • code      │            │  gpt-4.1     │
+              │  • programs  │            │  embeddings  │
+              │  • data      │            └──────────────┘
+              │  • flows     │
+              │  • etc.      │
+              └──────────────┘
+
+═══════════════════════════════════════════════════════════════════
+                         COMPONENT DETAILS
+═══════════════════════════════════════════════════════════════════
+
+1. CONFIG (config.py)
+   ┌────────────────────────────────────────┐
+   │ • Load local.settings.json             │
+   │ • Validate credentials                 │
+   │ • Map 10 COBOL indexes                 │
+   │ • Set RAG parameters                   │
+   └────────────────────────────────────────┘
+
+2. ROUTER (router.py)
+   ┌────────────────────────────────────────┐
+   │ • Detect OTIS/OTOS keywords            │
+   │ • Classify question type               │
+   │ • Select optimal indexes               │
+   │ • Clean query                          │
+   └────────────────────────────────────────┘
+   
+3. RETRIEVER (retriever.py)
+   ┌────────────────────────────────────────┐
+   │ • Generate query embedding             │
+   │ • Hybrid search (semantic + lexical)   │
+   │ • Multi-index parallel search          │
+   │ • Deduplicate & rank results           │
+   └────────────────────────────────────────┘
+
+4. MEMORY (memory.py)
+   ┌────────────────────────────────────────┐
+   │ • Store conversation turns             │
+   │ • Maintain last N turns (10)           │
+   │ • Provide context for follow-ups       │
+   │ • Auto-prune old turns                 │
+   └────────────────────────────────────────┘
+
+5. GENERATOR (generator.py)
+   ┌────────────────────────────────────────┐
+   │ • Format retrieved documents           │
+   │ • Build complete prompt                │
+   │ • OTIS-aware system prompts            │
+   │ • Call Azure OpenAI                    │
+   └────────────────────────────────────────┘
+
+6. OTISRAG (rag.py)
+   ┌────────────────────────────────────────┐
+   │ • Initialize all components            │
+   │ • Coordinate request flow              │
+   │ • Simple API: rag.ask()                │
+   │ • Utilities: stats, clear memory       │
+   └────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════
+                           EXAMPLE FLOW
+═══════════════════════════════════════════════════════════════════
+
+USER: "What does the OTIS system handle?"
+  │
+  ▼
+ROUTER: Detects "OTIS" → is_otis=True, type=general
+  │      Selects: code, programs, paragraphs, data_items
+  │      Clean: "system handle"
+  ▼
+RETRIEVER: Generate embedding for "system handle"
+  │         Search 4 indexes with hybrid search
+  │         Return top 15 documents (5 per index)
+  ▼
+MEMORY: Get last 3 conversation turns (if any)
+  │
+  ▼
+GENERATOR: Build prompt:
+  │         • System: OTIS-specific mode
+  │         • Context: 15 retrieved documents
+  │         • History: recent conversation
+  │         • Question: user query
+  │         Call gpt-4.1 → Generate answer
+  ▼
+MEMORY: Store this turn for future context
+  │
+  ▼
+USER: Receives intelligent OTIS-specific answer
+
+═══════════════════════════════════════════════════════════════════
+                         USAGE EXAMPLES
+═══════════════════════════════════════════════════════════════════
+
+from otis_rag import OTISRAG
+
+rag = OTISRAG()
+
+# OTIS question
+rag.ask("What does OTIS do?")
+
+# Code question
+rag.ask("Find customer programs")
+
+# Data question  
+rag.ask("What fields are in SE-RECORD?")
+
+# Follow-up (uses memory)
+rag.ask("What does program GB01SE do?")
+rag.ask("What variables does it use?")  # Remembers GB01SE
+
+═══════════════════════════════════════════════════════════════════
+                      ✅ STATUS: COMPLETE
+═══════════════════════════════════════════════════════════════════

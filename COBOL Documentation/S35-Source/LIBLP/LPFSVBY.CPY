@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBSP/SPFSVBY
+           SELECT VBY-FILE ASSIGN TO VBY-PATH  
+                  ORGANIZATION INDEXED 
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY VBY1-KEY
+                  FILE STATUS FILE-STAT.

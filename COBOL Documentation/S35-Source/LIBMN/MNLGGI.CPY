@@ -1,0 +1,956 @@
+      * COPYMEMBER: LIBMN/MNLGGI
+      ******************************************************************
+      *
+      * IDENTIFICATION:  LIBMN/MNLGGI
+      *
+      * DESCRIPTION   :  MAINTENANCE LOG ROUTINES - CHANGES TO GI-REC
+      *
+      *=================================================================
+      * REV:
+      * KEC 2007.0309 {PR#00000} PARADATA <A15>
+      *               ***NEW***
+      * BLM 161201 FIX BUG, WAS COMPARING GIOR-PL(2-5) WITH GICH-PL(1),
+      *            SO EVERY TIME ANY GI ACCT CHANGED, IT LOGGED
+      *            CHANGES FOR PL2, PL3, PL4, & PL5 EVEN THOUGH
+      *            THE VALUES WERE EQUAL.  FOUND WHEN DOING
+      *            WORLD PR# 1204.
+      *
+      * KEC 2017.0213 {PR#00000} PARADATA <A30> [JAY CISZEWSKI]
+      *          ADDED 'GI' FILE PREFIX FOR WORKING STORAGE FIELDS.
+      *
+      ******************************************************************
+      *
+      *    M N L G G I - M O D U L E
+      *
+      ******************************************************************
+       MNLGGI-MODULE SECTION.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -{ BEGIN  }
+
+           MOVE ORIGINAL-GI-REC            TO GIOR-REC.
+           MOVE CHANGED-GI-REC             TO GICH-REC.
+
+           MOVE SPACES                     TO MNLGGI-LMC-DETAIL-LINE.
+           MOVE GI-BRANCH                  TO MNLGGI-LMC-BRNO.
+           MOVE GI-CLASS                   TO MNLGGI-LMC-CLASS.
+           MOVE " TO "                     TO MNLGGI-LMC-TO-X.
+
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+           IF ( GIOR-CASH NOT = GICH-CASH )
+             MOVE "CASH      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-CASH               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-CASH               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-BANK NOT = GICH-BANK )
+             MOVE "BANK      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-BANK               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-BANK               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-NSF NOT = GICH-NSF  )
+             MOVE "NSF       "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-NSF                TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-NSF                TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-AR NOT = GICH-AR   )
+             MOVE "AR        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-AR                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-AR                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PL(01) NOT = GICH-PL(1) )
+             MOVE "PL (01)   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PL(01)             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PL(01)             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PL(02) NOT = GICH-PL(2) )
+             MOVE "PL (02)   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PL(02)             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PL(02)             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PL(03) NOT = GICH-PL(3) )
+             MOVE "PL (03)   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PL(03)             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PL(03)             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PL(04) NOT = GICH-PL(4) )
+             MOVE "PL (04)   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PL(04)             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PL(04)             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PL(05) NOT = GICH-PL(5) )
+             MOVE "PL (05)   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PL(05)             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PL(05)             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLINSREB NOT = GICH-DLINSREB )
+             MOVE "DLINSREB  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLINSREB           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLINSREB           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ACR-INT-AR-AR NOT = GICH-ACR-INT-AR-AR )
+             MOVE "ACRINTARAR"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ACR-INT-AR-AR      TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ACR-INT-AR-AR      TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-OTHBR-REC NOT = GICH-OTHBR-REC )
+             MOVE "OTHBR REC "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-OTHBR-REC          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-OTHBR-REC          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-OTHBR-PAY NOT = GICH-OTHBR-PAY )
+             MOVE "OTHBR PAY "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-OTHBR-PAY          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-OTHBR-PAY          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNINTCHG NOT = GICH-UNINTCHG )
+             MOVE "UNINTCHG  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNINTCHG           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNINTCHG           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNADDON NOT = GICH-UNADDON )
+             MOVE "UNADDON   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNADDON            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNADDON            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNSERCHG NOT = GICH-UNSERCHG )
+             MOVE "UNSERCHG  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNSERCHG           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNSERCHG           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNMAINTFEE NOT = GICH-UNMAINTFEE )
+             MOVE "UNMAINTFEE"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNMAINTFEE         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNMAINTFEE         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNDLDISC NOT = GICH-UNDLDISC )
+             MOVE "UNDLDISC  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNDLDISC           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNDLDISC           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNOTHER NOT = GICH-UNOTHER )
+             MOVE "UNOTHER   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNOTHER            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNOTHER            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNCL1 NOT = GICH-UNCL1 )
+             MOVE "UNCL1     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNCL1              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNCL1              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNCL2 NOT = GICH-UNCL2 )
+             MOVE "UNCL2     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNCL2              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNCL2              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNAH NOT = GICH-UNAH )
+             MOVE "UNAH      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNAH               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNAH               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNPP NOT = GICH-UNPP )
+             MOVE "UNPP      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNPP               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNPP               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNO1 NOT = GICH-UNO1 )
+             MOVE "UNO1      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNO1               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNO1               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNO2 NOT = GICH-UNO2 )
+             MOVE "UNO2      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNO2               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNO2               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNO3 NOT = GICH-UNO3 )
+             MOVE "UNO3      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNO3               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNO3               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNO4 NOT = GICH-UNO4 )
+             MOVE "UNO4      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNO4               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNO4               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNO5 NOT = GICH-UNO5 )
+             MOVE "UNO5      "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNO5               TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNO5               TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNINTREPO NOT = GICH-UNINTREPO )
+             MOVE "UNINTREPO "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNINTREPO          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNINTREPO          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-UNADDONINTREPO NOT = GICH-UNADDONINTREPO )
+             MOVE "UNADDONINT"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-UNADDONINTREPO     TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-UNADDONINTREPO     TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLEXP(01) NOT = GICH-PLEXP(01) )
+             MOVE "PLEXP (01)"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLEXP(01)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLEXP(01)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLEXP(02) NOT = GICH-PLEXP(02) )
+             MOVE "PLEXP (02)"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLEXP(02)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLEXP(02)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLEXP(03) NOT = GICH-PLEXP(03) )
+             MOVE "PLEXP (03)"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLEXP(03)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLEXP(03)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLEXP(04) NOT = GICH-PLEXP(04) )
+             MOVE "PLEXP (04)"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLEXP(04)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLEXP(04)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLEXP(05) NOT = GICH-PLEXP(05) )
+             MOVE "PLEXP (05)"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLEXP(05)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLEXP(05)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLOFFSET(01) NOT = GICH-PLOFFSET(01) )
+             MOVE "PLOFFSET01"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLOFFSET(01)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLOFFSET(01)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLOFFSET(02) NOT = GICH-PLOFFSET(02) )
+             MOVE "PLOFFSET02"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLOFFSET(02)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLOFFSET(02)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLOFFSET(03) NOT = GICH-PLOFFSET(03) )
+             MOVE "PLOFFSET03"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLOFFSET(03)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLOFFSET(03)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLOFFSET(04) NOT = GICH-PLOFFSET(04) )
+             MOVE "PLOFFSET04"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLOFFSET(04)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLOFFSET(04)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLOFFSET(05) NOT = GICH-PLOFFSET(05) )
+             MOVE "PLOFFSET05"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLOFFSET(05)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLOFFSET(05)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLPARVEX NOT = GICH-DLPARVEX )
+             MOVE "DLPARVEX  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLPARVEX           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLPARVEX           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-SERVOFF NOT = GICH-SERVOFF )
+             MOVE "SERVOFF   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-SERVOFF            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-SERVOFF            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYCL1 NOT = GICH-PAYCL1 )
+             MOVE "PAYCL1    "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYCL1             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYCL1             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYCL2 NOT = GICH-PAYCL2 )
+             MOVE "PAYCL2    "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYCL2             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYCL2             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYAH NOT = GICH-PAYAH )
+             MOVE "PAYAH     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYAH              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYAH              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYPP NOT = GICH-PAYPP )
+             MOVE "PAYPP     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYPP              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYPP              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO1 NOT = GICH-PAYO1 )
+             MOVE "PAYO1     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO1              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO1              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO2 NOT = GICH-PAYO2 )
+             MOVE "PAYO2     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO2              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO2              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO3 NOT = GICH-PAYO3 )
+             MOVE "PAYO3     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO3              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO3              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO4 NOT = GICH-PAYO4 )
+             MOVE "PAYO4     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO4              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO4              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO5 NOT = GICH-PAYO5 )
+             MOVE "PAYO5     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO5              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO5              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO6 NOT = GICH-PAYO6 )
+             MOVE "PAYO6     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO6              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO6              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYO7 NOT = GICH-PAYO7 )
+             MOVE "PAYO7     "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYO7              TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYO7              TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLPAYABLE NOT = GICH-DLPAYABLE )
+             MOVE "DLPAYABLE "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLPAYABLE          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLPAYABLE          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVPRIN-1 NOT = GICH-DLRVPRIN-1 )
+             MOVE "DLRVPRIN 1"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVPRIN-1         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVPRIN-1         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVPRIN-2 NOT = GICH-DLRVPRIN-2 )
+             MOVE "DLRVPRIN 2"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVPRIN-2         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVPRIN-2         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVPRIN-3 NOT = GICH-DLRVPRIN-3 )
+             MOVE "DLRVPRIN 3"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVPRIN-3         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVPRIN-3         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVCHGS-1 NOT = GICH-DLRVCHGS-1 )
+             MOVE "DLRVCHGS 1"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVCHGS-1         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVCHGS-1         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVCHGS-2 NOT = GICH-DLRVCHGS-2 )
+             MOVE "DLRVCHGS 2"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVCHGS-2         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVCHGS-2         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLRVCHGS-3 NOT = GICH-DLRVCHGS-3 )
+             MOVE "DLRVCHGS 3"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLRVCHGS-3         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLRVCHGS-3         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DLPARV NOT = GICH-DLPARV )
+             MOVE "DLPARV    "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DLPARV             TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DLPARV             TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYALLOT NOT = GICH-PAYALLOT )
+             MOVE "PAYALLOT  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYALLOT           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYALLOT           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DIRECT-PAY NOT = GICH-DIRECT-PAY )
+             MOVE "DIRECT PAY"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DIRECT-PAY         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DIRECT-PAY         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ERINTCHG NOT = GICH-ERINTCHG )
+             MOVE "ERINTCHG  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ERINTCHG           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ERINTCHG           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ERADDON NOT = GICH-ERADDON )
+             MOVE "ERADDON   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ERADDON            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ERADDON            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ERSERCHG NOT = GICH-ERSERCHG )
+             MOVE "ERSERCHG  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ERSERCHG           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ERSERCHG           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ERMAINTFEE NOT = GICH-ERMAINTFEE )
+             MOVE "ERMAINTFEE"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ERMAINTFEE         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ERMAINTFEE         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ERDLDISC NOT = GICH-ERDLDISC )
+             MOVE "ERDLDISC  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ERDLDISC           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ERDLDISC           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-EROTHER NOT = GICH-EROTHER )
+             MOVE "EROTHER   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-EROTHER            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-EROTHER            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-LATECHG NOT = GICH-LATECHG )
+             MOVE "LATECHG   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-LATECHG            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-LATECHG            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-INTEREST NOT = GICH-INTEREST )
+             MOVE "INTEREST  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-INTEREST           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-INTEREST           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-DEFERMENTS NOT = GICH-DEFERMENTS )
+             MOVE "DEFERMENTS"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-DEFERMENTS         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-DEFERMENTS         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-SAPRINCIPAL NOT = GICH-SAPRINCIPAL )
+             MOVE "SAPRINCIPL"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-SAPRINCIPAL        TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-SAPRINCIPAL        TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLINT(01) NOT = GICH-PLINT(01) )
+             MOVE "PLINT 01  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLINT(01)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLINT(01)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLINT(02) NOT = GICH-PLINT(02) )
+             MOVE "PLINT 02  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLINT(02)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLINT(02)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLINT(03) NOT = GICH-PLINT(03) )
+             MOVE "PLINT 03  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLINT(03)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLINT(03)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLINT(04) NOT = GICH-PLINT(04) )
+             MOVE "PLINT 04  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLINT(04)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLINT(04)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLINT(05) NOT = GICH-PLINT(05) )
+             MOVE "PLINT 05  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLINT(05)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLINT(05)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLREC(01) NOT = GICH-PLREC(01) )
+             MOVE "PLREC 01  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLREC(01)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLREC(01)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLREC(02) NOT = GICH-PLREC(02) )
+             MOVE "PLREC 02  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLREC(02)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLREC(02)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLREC(03) NOT = GICH-PLREC(03) )
+             MOVE "PLREC 03  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLREC(03)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLREC(03)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLREC(04) NOT = GICH-PLREC(04) )
+             MOVE "PLREC 04  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLREC(04)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLREC(04)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLREC(05) NOT = GICH-PLREC(05) )
+             MOVE "PLREC 05  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLREC(05)          TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLREC(05)          TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-CL1 NOT = GICH-CL1 )
+             MOVE "CL1       "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-CL1                TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-CL1                TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-CL2 NOT = GICH-CL2 )
+             MOVE "CL2       "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-CL2                TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-CL2                TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-AH NOT = GICH-AH )
+             MOVE "AH        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-AH                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-AH                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PP NOT = GICH-PP )
+             MOVE "PP        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PP                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PP                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O1 NOT = GICH-O1 )
+             MOVE "O1        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O1                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O1                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O2 NOT = GICH-O2 )
+             MOVE "O2        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O2                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O2                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O3 NOT = GICH-O3 )
+             MOVE "O3        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O3                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O3                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O4 NOT = GICH-O4 )
+             MOVE "O4        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O4                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O4                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O5 NOT = GICH-O5 )
+             MOVE "O5        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O5                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O5                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O6 NOT = GICH-O6 )
+             MOVE "O6        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O6                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O6                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-O7 NOT = GICH-O7 )
+             MOVE "O7        "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-O7                 TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-O7                 TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLNEW-AR(01) NOT = GICH-PLNEW-AR(01) )
+             MOVE "PLNEWAR 01"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLNEW-AR(01)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLNEW-AR(01)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLNEW-AR(02) NOT = GICH-PLNEW-AR(02) )
+             MOVE "PLNEWAR 02"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLNEW-AR(02)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLNEW-AR(02)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLNEW-AR(03) NOT = GICH-PLNEW-AR(03) )
+             MOVE "PLNEWAR 03"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLNEW-AR(03)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLNEW-AR(03)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLNEW-AR(04) NOT = GICH-PLNEW-AR(04) )
+             MOVE "PLNEWAR 04"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLNEW-AR(04)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLNEW-AR(04)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PLNEW-AR(05) NOT = GICH-PLNEW-AR(05) )
+             MOVE "PLNEWAR 05"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PLNEW-AR(05)       TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PLNEW-AR(05)       TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-REPO-AR NOT = GICH-REPO-AR )
+             MOVE "REPO AR   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-REPO-AR            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-REPO-AR            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-REPO-INT NOT = GICH-REPO-INT )
+             MOVE "REPO INT   "           TO MNLGGI-LMC-DESC
+             MOVE GIOR-REPO-INT           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-REPO-INT           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ACR-INT-AR NOT = GICH-ACR-INT-AR )
+             MOVE "ACR INT AR"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ACR-INT-AR         TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ACR-INT-AR         TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-CONV-OFFSET NOT = GICH-CONV-OFFSET )
+             MOVE "CONVOFFSET"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-CONV-OFFSET        TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-CONV-OFFSET        TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PARTIAL-PLEXP NOT = GICH-PARTIAL-PLEXP )
+             MOVE "PARTIALPLE"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PARTIAL-PLEXP      TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PARTIAL-PLEXP      TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+
+           IF ( GIOR-PAYLBOX NOT = GICH-PAYLBOX )
+             MOVE "PAYLBOX   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYLBOX            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYLBOX            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PENALTY-INT NOT = GICH-PENALTY-INT )
+             MOVE "PENALTYINT"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PENALTY-INT        TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PENALTY-INT        TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYTPAY NOT = GICH-PAYTPAY )
+             MOVE "PAYTPAY   "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYTPAY            TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYTPAY            TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYTCOLL NOT = GICH-PAYTCOLL )
+             MOVE "PAYTCOLL  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYTCOLL           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYTCOLL           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-PAYMGRAM NOT = GICH-PAYMGRAM )
+             MOVE "PAYMGRAM  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-PAYMGRAM           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-PAYMGRAM           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-REPO-ADDON-EXP NOT = GICH-REPO-ADDON-EXP )
+             MOVE "REPOADONEX"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-REPO-ADDON-EXP     TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-REPO-ADDON-EXP     TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-ACH-BANK NOT = GICH-ACH-BANK )
+             MOVE "ACH BANK  "            TO MNLGGI-LMC-DESC
+             MOVE GIOR-ACH-BANK           TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-ACH-BANK           TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+           IF ( GIOR-LN-APPROVAL-LIMIT NOT = GICH-LN-APPROVAL-LIMIT )
+             MOVE "LNAPPROVAL"            TO MNLGGI-LMC-DESC
+             MOVE GIOR-LN-APPROVAL-LIMIT  TO MNLGGI-LMC-ORG-GLNO
+             INSPECT MNLGGI-LMC-ORG-GLNO REPLACING ALL "/" BY "-"
+             MOVE GICH-LN-APPROVAL-LIMIT  TO MNLGGI-LMC-CHG-GLNO
+             INSPECT MNLGGI-LMC-CHG-GLNO REPLACING ALL "/" BY "-"
+             PERFORM MNLGGI-UPDATE-MODULE.
+
+      *=================================================================
+       MNLGGI-MODULE-EXIT.
+           EXIT.
+      ******************************************************************
+      *
+      *    M N L G G I - U P D A T E - M O D U L E
+      *
+      ******************************************************************
+       MNLGGI-UPDATE-MODULE SECTION.
+      *- - - - - - - - - - - - - - - - - - - - - - - - - - - -{ BEGIN  }
+
+           MOVE "F"                        TO ERRLOGW-ACTION.
+           MOVE MNLGGI-LMC-DETAIL-LINE     TO ERRLOGW-DETAIL.
+           MOVE FORM-PATHNAME              TO ERRLOGW-PROGX.
+
+           MOVE "CL/ERRLOG"                TO FORM-NAM.
+           CALL FORM-PROGX USING FORM-PATH ERRLOGW-AREA.
+           CANCEL FORM-PROGX.
+
+      *=================================================================
+       MNLGGI-UPDATE-MODULE-EXIT.
+           EXIT.

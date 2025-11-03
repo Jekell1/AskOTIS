@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIPAY Program Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #667eea;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .toc {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .diagram-placeholder {
+            background: #e8f4f8;
+            border: 2px dashed #17a2b8;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > APIPAY Program Documentation
+    </div>
+
+    <div class="header">
+        <h1>APIPAY Program Documentation</h1>
+        <div class="meta">
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Program ID:</strong> APIPAY<br>
+            <strong>Date Written:</strong> 08/16/2023<br>
+            <strong>Language:</strong> COBOL
+        </div>
+    </div>
+
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ol>
+            <li><a href="#program-overview">Program Overview</a></li>
+            <li><a href="#program-purpose">Program Purpose</a></li>
+            <li><a href="#input-parameters">Input Parameters</a></li>
+            <li><a href="#program-flow">Program Flow</a></li>
+            <li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+            <li><a href="#referenced-programs">Referenced Programs</a></li>
+            <li><a href="#file-processing">File Processing</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+            <li><a href="#return-status-codes">Return Status Codes</a></li>
+            <li><a href="#logging">Logging</a></li>
+        </ol>
+    </div>
+
+    <h2 id="program-overview">Program Overview</h2>
+
+    <p><strong>APIPAY</strong> is a single payment reference codes processing program designed for batch payment processing. It's a command-line program that runs without screens ($ sign run) and processes individual loan payment transactions based on reference codes.</p>
+
+    <h3>Key Characteristics</h3>
+    <ul>
+        <li><strong>Batch Processing</strong>: Processes single payment transactions</li>
+        <li><strong>No User Interface</strong>: Command-line execution only</li>
+        <li><strong>Reference Code Driven</strong>: Transaction processing based on reference codes</li>
+        <li><strong>Comprehensive Validation</strong>: Multiple validation checks before processing</li>
+        <li><strong>Audit Trail</strong>: Creates detailed log entries for all transactions</li>
+    </ul>
+
+    <h2 id="program-purpose">Program Purpose</h2>
+
+    <p>APIPAY serves as a centralized payment processing engine that:</p>
+
+    <ol>
+        <li><strong>Validates Transaction Parameters</strong>: Ensures all input data is valid before processing</li>
+        <li><strong>Routes to Appropriate Processors</strong>: Directs transactions to specialized payment programs based on reference codes</li>
+        <li><strong>Maintains Data Integrity</strong>: Performs extensive validation to prevent invalid transactions</li>
+        <li><strong>Provides Audit Trail</strong>: Creates comprehensive logs for all transaction attempts</li>
+        <li><strong>Handles Multiple Payment Types</strong>: Supports various loan payment scenarios</li>
+    </ol>
+
+    <h3>Business Context</h3>
+    <p>The program was created by consolidating logic from existing programs:</p>
+    <ul>
+        <li><strong>REFUPD</strong> and <strong>LONPW9</strong> (base logic)</li>
+        <li><strong>OTHUPD</strong> and <strong>LONPWA</strong> (OT transaction logic)</li>
+    </ul>
+
+    <h2 id="input-parameters">Input Parameters</h2>
+
+    <p>The program accepts two input parameters via COBOL CHAINING:</p>
+
+    <h3>Parameter 1: INPUT-STRING (BT-REC Format)</h3>
+    <p>A concatenated string containing:</p>
+    <ul>
+        <li><strong>BT-BRANCH</strong> (4 digits): Branch number</li>
+        <li><strong>BT-ACCTNO</strong> (6 digits): Account number</li>
+        <li><strong>BT-AMT</strong> (10 digits): Transaction amount (implied decimal)</li>
+        <li><strong>BT-REFCD</strong> (2 chars): Reference code</li>
+        <li><strong>BT-PAYDATE</strong> (6 digits): Payment date (MMDDYY)</li>
+        <li><strong>BT-TRCD</strong> (2 chars): Transaction code</li>
+    </ul>
+
+    <p><strong>Example</strong>: <code>00100786740000001000CUACH090123OT</code></p>
+
+    <h3>Parameter 2: REPAY-TRANS-ID</h3>
+    <p>A transaction identifier for tracking purposes.</p>
+
+    <h2 id="program-flow">Program Flow</h2>
+
+    <div class="diagram-placeholder">
+        <h4>📊 APIPAY Program Flow Diagram</h4>
+        <p>Visual representation of the complete program execution flow</p>
+        <a href="diagrams.html#program-flow" style="color: #17a2b8;">View Interactive Diagram</a>
+    </div>
+
+    <div class="diagram-placeholder">
+        <h4>🔄 Transaction Processing Flow</h4>
+        <p>How different transaction types are routed and processed</p>
+        <a href="diagrams.html#transaction-flow" style="color: #17a2b8;">View Interactive Diagram</a>
+    </div>
+
+    <div class="diagram-placeholder">
+        <h4>💾 Data Flow Architecture</h4>
+        <p>File interactions and data movement through the system</p>
+        <a href="diagrams.html#data-flow" style="color: #17a2b8;">View Interactive Diagram</a>
+    </div>
+
+    <h3>High-Level Processing Steps</h3>
+
+    <ol>
+        <li><strong>Initialization Phase</strong>
+            <ul>
+                <li>Parse input parameters</li>
+                <li>Set up environment variables</li>
+                <li>Connect to database (SQL-CONNECT)</li>
+                <li>Initialize working variables</li>
+            </ul>
+        </li>
+        <li><strong>Validation Phase</strong>
+            <ul>
+                <li>Validate branch record exists and is accessible</li>
+                <li>Validate reference code in CD1 file</li>
+                <li>Check machine assignment compatibility</li>
+                <li>Verify day is open for transactions</li>
+                <li>Validate loan account exists and is accessible</li>
+            </ul>
+        </li>
+        <li><strong>Transaction-Specific Validation</strong>
+            <ul>
+                <li>Perform validation specific to transaction type</li>
+                <li>Check account status and restrictions</li>
+                <li>Validate business rules for the specific transaction</li>
+            </ul>
+        </li>
+        <li><strong>Payment Processing</strong>
+            <ul>
+                <li>Route to appropriate payment processor based on transaction code</li>
+                <li>Setup LONPF buffer for payment programs</li>
+                <li>Execute payment logic</li>
+                <li>Handle payoff processing if required</li>
+            </ul>
+        </li>
+        <li><strong>Completion</strong>
+            <ul>
+                <li>Log transaction results</li>
+                <li>Set return status</li>
+                <li>Clean up resources</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2 id="transaction-types-supported">Transaction Types Supported</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Description</th>
+                <th>Processor Program</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>PY</strong></td><td>Payment</td><td><a href="LONPFC_Documentation.html">LONPFC</a></td><td>Standard loan payment</td></tr>
+            <tr><td><strong>PA</strong></td><td>Payment Alternative</td><td><a href="LONPFC_Documentation.html">LONPFC</a></td><td>Alternative payment method</td></tr>
+            <tr><td><strong>RP</strong></td><td>Rebate Payment</td><td><a href="LONPFB_Documentation.html">LONPFB</a></td><td>Interest rebate processing</td></tr>
+            <tr><td><strong>PL</strong></td><td>Profit & Loss</td><td><a href="LONPF9_Documentation.html">LONPF9</a></td><td>Charge-off to P&L</td></tr>
+            <tr><td><strong>P2</strong></td><td>Profit & Loss Type 2</td><td><a href="LONPF9_Documentation.html">LONPF9</a></td><td>Alternative P&L processing</td></tr>
+            <tr><td><strong>P3</strong></td><td>Profit & Loss Type 3</td><td><a href="LONPF9_Documentation.html">LONPF9</a></td><td>Third P&L option</td></tr>
+            <tr><td><strong>RE</strong></td><td>Repossession</td><td><a href="LONPF7_Documentation.html">LONPF7</a></td><td>Repossession processing</td></tr>
+            <tr><td><strong>O2</strong></td><td>Other Type 2</td><td><a href="LONPF7_Documentation.html">LONPF7</a></td><td>Secondary other processing</td></tr>
+            <tr><td><strong>RV</strong></td><td>Reversal</td><td><a href="LONPF2_Documentation.html">LONPF2</a></td><td>Transaction reversal</td></tr>
+            <tr><td><strong>BK</strong></td><td>Bankruptcy</td><td><a href="LONPF2_Documentation.html">LONPF2</a></td><td>Bankruptcy status change</td></tr>
+            <tr><td><strong>BD</strong></td><td>Bankruptcy Dismissal</td><td><a href="LONPF2_Documentation.html">LONPF2</a></td><td>Bankruptcy dismissal</td></tr>
+            <tr><td><strong>OT</strong></td><td>Other</td><td><a href="LONPF7_Documentation.html">LONPF7</a></td><td>Other transaction types</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="referenced-programs">Referenced Programs</h2>
+
+    <p>The APIPAY program calls several specialized payment processing programs:</p>
+
+    <ol>
+        <li><strong><a href="LONPFC_Documentation.html">LONPFC</a></strong> - Payment Processing</li>
+        <li><strong><a href="LONPFB_Documentation.html">LONPFB</a></strong> - Rebate Processing</li>
+        <li><strong><a href="LONPF9_Documentation.html">LONPF9</a></strong> - Profit & Loss Processing</li>
+        <li><strong><a href="LONPF7_Documentation.html">LONPF7</a></strong> - Repository/Other Processing</li>
+        <li><strong><a href="LONPF2_Documentation.html">LONPF2</a></strong> - Reversal/Bankruptcy Processing</li>
+        <li><strong><a href="LONPFA_Documentation.html">LONPFA</a></strong> - Payoff Processing</li>
+    </ol>
+
+    <p>Each of these programs handles specific aspects of loan payment processing and maintains the loan file integrity.</p>
+
+    <h2 id="file-processing">File Processing</h2>
+
+    <h3>Primary Files Used</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>File</th>
+                <th>Purpose</th>
+                <th>Access Mode</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LN1-FILE</strong></td><td>Loan master file</td><td>Read/Write</td></tr>
+            <tr><td><strong>BR-FILE</strong></td><td>Branch master file</td><td>Read</td></tr>
+            <tr><td><strong>CD1-FILE</strong></td><td>Code definition file</td><td>Read</td></tr>
+            <tr><td><strong>GB-FILE</strong></td><td>Global parameters</td><td>Read</td></tr>
+            <tr><td><strong>WK-FILE</strong></td><td>Work file</td><td>Read/Write</td></tr>
+            <tr><td><strong>OP-FILE</strong></td><td>Operation log file</td><td>Write</td></tr>
+            <tr><td><strong>LOG-FILE</strong></td><td>Transaction log</td><td>Write</td></tr>
+            <tr><td><strong>RC2-FILE</strong></td><td>Daily control file</td><td>Read</td></tr>
+            <tr><td><strong>BW1-FILE</strong></td><td>Batch work file</td><td>Read/Write</td></tr>
+        </tbody>
+    </table>
+
+    <h3>File Processing Sequence</h3>
+
+    <ol>
+        <li><strong>Setup Phase</strong>: Open branch and global files for configuration</li>
+        <li><strong>Validation Phase</strong>: Read branch, code, and loan files</li>
+        <li><strong>Processing Phase</strong>: Update loan and work files through called programs</li>
+        <li><strong>Logging Phase</strong>: Write to operation and log files</li>
+    </ol>
+
+    <h2 id="error-handling">Error Handling</h2>
+
+    <p>The program implements comprehensive error handling with specific return codes for different error conditions:</p>
+
+    <h3>Validation Errors</h3>
+    <ul>
+        <li><strong>Branch Validation</strong>: Ensures branch exists and is on correct machine</li>
+        <li><strong>Reference Code Validation</strong>: Validates reference codes in CD1 file</li>
+        <li><strong>Account Validation</strong>: Checks loan account existence and status</li>
+        <li><strong>Date Validation</strong>: Ensures payment dates are valid</li>
+        <li><strong>Business Rule Validation</strong>: Enforces business-specific rules</li>
+    </ul>
+
+    <h3>Error Recovery</h3>
+    <ul>
+        <li><strong>File Errors</strong>: Handled through declaratives section</li>
+        <li><strong>Program Errors</strong>: Logged and returned with specific status codes</li>
+        <li><strong>Database Errors</strong>: SQL error handling implemented</li>
+    </ul>
+
+    <h2 id="return-status-codes">Return Status Codes</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>0</strong></td><td>Successful update</td></tr>
+            <tr><td><strong>2</strong></td><td>Branch not on file</td></tr>
+            <tr><td><strong>3</strong></td><td>Reference code not on file</td></tr>
+            <tr><td><strong>4</strong></td><td>Branch not on this machine</td></tr>
+            <tr><td><strong>5</strong></td><td>Global record missing</td></tr>
+            <tr><td><strong>6</strong></td><td>Day not open</td></tr>
+            <tr><td><strong>7</strong></td><td>Could not open day</td></tr>
+            <tr><td><strong>8</strong></td><td>Auto accelerate flag reject</td></tr>
+            <tr><td><strong>9</strong></td><td>Back date in prior month</td></tr>
+            <tr><td><strong>10</strong></td><td>Account not on file</td></tr>
+            <tr><td><strong>11</strong></td><td>Account has escrow</td></tr>
+            <tr><td><strong>12</strong></td><td>Account already bankrupt</td></tr>
+            <tr><td><strong>13</strong></td><td>Account not bankrupt status</td></tr>
+            <tr><td><strong>14</strong></td><td>Account already active P&L</td></tr>
+            <tr><td><strong>15</strong></td><td>Must have repo options turned on</td></tr>
+            <tr><td><strong>16</strong></td><td>Account not repo status</td></tr>
+            <tr><td><strong>17</strong></td><td>Account not interest bearing</td></tr>
+            <tr><td><strong>99</strong></td><td>Default error status</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="logging">Logging</h2>
+
+    <h3>Log File Format</h3>
+    <p>The program creates a log file with the naming convention: <code>SC9990/EO/APIMMDDYY/0000LOG</code></p>
+
+    <h3>Log Entry Format</h3>
+    <pre><code>[PASS/FAIL] [Return Code] [Date] [Time] [Branch] [Account] [Message]</code></pre>
+
+    <h3>Sample Log Entries</h3>
+    <pre><code>     2023/08/18 01:04 PM 0010 078674 BEGIN SINGLE BATCH PAYMENT POSTING
+PASS 2023/08/18 01:04 PM 0010 078674 SUCCESSFUL UPDATE
+     2023/08/18 01:04 PM 0010 033333 BEGIN SINGLE BATCH PAYMENT POSTING
+FAIL 2023/08/18 01:04 PM 0010 033333 ACCOUNT NOT ON FILE, ABORTED</code></pre>
+
+    <h3>Logging Features</h3>
+    <ul>
+        <li><strong>Transaction Start</strong>: Logs beginning of each transaction</li>
+        <li><strong>Success/Failure</strong>: Clear indication of transaction outcome</li>
+        <li><strong>Error Details</strong>: Specific error messages for failed transactions</li>
+        <li><strong>Audit Trail</strong>: Complete transaction history for compliance</li>
+    </ul>
+
+    <h2>Technical Notes</h2>
+
+    <h3>Performance Considerations</h3>
+    <ul>
+        <li><strong>File Locking</strong>: Uses automatic record locking for data integrity</li>
+        <li><strong>Memory Management</strong>: Efficient use of working storage</li>
+        <li><strong>Resource Cleanup</strong>: Proper file closure and resource deallocation</li>
+    </ul>
+
+    <h3>Maintenance History</h3>
+    <ul>
+        <li><strong>2024.0206 BAH #1641</strong>: Bug fixes</li>
+        <li><strong>2025.0228 BAH</strong>: LXE-EARN field clearing fix (S35Q-168)</li>
+    </ul>
+
+    <h3>Dependencies</h3>
+    <ul>
+        <li><strong>Database Connection</strong>: Requires SQL connectivity</li>
+        <li><strong>File System</strong>: Access to loan processing file system</li>
+        <li><strong>Environment Variables</strong>: Proper system environment setup</li>
+    </ul>
+
+    <h2>Usage Example</h2>
+
+    <h3>Command Line Execution</h3>
+    <pre><code>SH ./APIPAY.SH 00100786740000001000CUACH090123OT 1234567890</code></pre>
+
+    <h3>Parameters Breakdown</h3>
+    <ul>
+        <li><strong>Branch</strong>: 0010</li>
+        <li><strong>Account</strong>: 078674</li>
+        <li><strong>Amount</strong>: $10.00 (0000001000)</li>
+        <li><strong>Reference Code</strong>: CU</li>
+        <li><strong>Payment Date</strong>: 09/01/23 (090123)</li>
+        <li><strong>Transaction Code</strong>: OT</li>
+        <li><strong>Transaction ID</strong>: 1234567890</li>
+    </ul>
+
+    <div class="note">
+        <p><em>This documentation provides a comprehensive overview of the APIPAY program for users unfamiliar with the system. For detailed information about specific payment processors, refer to the linked documentation for each LONPF program.</em></p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

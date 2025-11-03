@@ -1,0 +1,109 @@
+graph TD
+    A[MAIN-PROGRAM] --> B[INITIALIZATION]
+    A --> C[SQL-CONNECT]
+    A --> D[GET-GPENV]
+    A --> E[Input Processing]
+    A --> F[Validation Chain]
+    A --> G[PAYMENT-POSTING]
+    A --> H[CREATE-LOG]
+    A --> I[END-PROGRAM]
+    
+    B --> B1[Environment Setup]
+    B --> B2[File Path Configuration]
+    B --> B3[Buffer Initialization]
+    
+    E --> E1[Parse INPUT-STRING]
+    E --> E2[Convert BT-REC]
+    E --> E3[Date Conversion]
+    
+    F --> F1[READ-BR-FILE]
+    F --> F2[OPEN-CD1-FILE]
+    F --> F3[READ-CD1-FILE]
+    F --> F4[Machine Validation]
+    F --> F5[Day Open Check]
+    
+    G --> G1[SETUP-LP-RECORD]
+    G --> G2[SETUP-LONPF-BUFFER]
+    G --> G3[Transaction Routing]
+    G --> G4[Specialized Processing]
+    G --> G5[Database Updates]
+    
+    G3 --> G31{Transaction Type}
+    G31 -->|RP| G32[CALL LONPFB]
+    G31 -->|PL/P2/P3| G33[CALL LONPF9]
+    G31 -->|RE/O2/OT| G34[CALL LONPF7]
+    G31 -->|PY/PA| G35[CALL LONPFC]
+    G31 -->|RV/BK/BD| G36[CALL LONPF2 Direct]
+    
+    G32 --> G4
+    G33 --> G4
+    G34 --> G4
+    G35 --> G4
+    G36 --> G4
+    
+    G4 --> G41[Process Results]
+    G41 --> G42{Success?}
+    G42 -->|No| G43[Error Handling]
+    G42 -->|Yes| G5
+    
+    G5 --> G51[CALL LONPF2]
+    G51 --> G52[Database Commit]
+    
+    H --> H1[Format Log Entry]
+    H --> H2[Write LOG-FILE]
+    
+    I --> I1[CLOSE-FILES]
+    I --> I2[Set Return Code]
+    I --> I3[EXIT-PROG]
+    
+    subgraph "File Operations"
+        J[File Handling Procedures]
+        J --> J1[OPEN-xxx-FILE]
+        J --> J2[READ-xxx-FILE]
+        J --> J3[CLOSE-xxx-FILE]
+        J --> J4[CLEAR-xxx-FILE]
+    end
+    
+    subgraph "Date/Time Processing"
+        K[Date Utilities]
+        K --> K1[C-TIMALL]
+        K --> K2[C-DATER-MAIN]
+        K --> K3[CONVERT-MMDDYY-TO-YYYYMMDD]
+        K --> K4[Date Validation]
+    end
+    
+    subgraph "Business Logic"
+        L[Calculation Procedures]
+        L --> L1[Interest Calculations]
+        L --> L2[Payment Allocations]
+        L --> L3[Balance Updates]
+        L --> L4[Rebate Processing]
+    end
+    
+    subgraph "Error Handling"
+        M[Error Procedures]
+        M --> M1[FILE-IO-ERROR]
+        M --> M2[DECLARE-ERROR]
+        M --> M3[Error Logging]
+        M --> M4[Recovery Procedures]
+    end
+    
+    F1 --> J
+    F2 --> J
+    F3 --> J
+    E3 --> K
+    G1 --> L
+    G2 --> L
+    G43 --> M
+    
+    classDef mainFlow fill:#e1f3ff
+    classDef fileOps fill:#fff3e0
+    classDef dateTime fill:#f0f8e8
+    classDef business fill:#f8e8f8
+    classDef errorHandle fill:#ffe8e8
+    
+    class A,B,C,D,E,F,G,H,I mainFlow
+    class J,J1,J2,J3,J4 fileOps
+    class K,K1,K2,K3,K4 dateTime
+    class L,L1,L2,L3,L4 business
+    class M,M1,M2,M3,M4 errorHandle

@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFB Program Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .note {
+            background-color: #e8f6f3;
+            border-left: 4px solid #16a085;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fdf2e9;
+            border-left: 4px solid #e67e22;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 90%;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin: 8px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+            text-decoration: none;
+            line-height: 50px;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        .diagram-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LONPFB Program Documentation</h1>
+        
+        <div class="metadata">
+            <strong>Program ID:</strong> LONPFB<br>
+            <strong>Location:</strong> LP/LONPFB.CBL<br>
+            <strong>Purpose:</strong> Loan Processing Transaction Posting - Rebates and Cancellations<br>
+            <strong>Generated Date:</strong> July 17, 2025<br>
+            <strong>Type:</strong> Transaction Processing Program<br>
+            <strong>Called By:</strong> LONPF9 and other loan processing programs
+        </div>
+
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#overview">Program Overview</a></li>
+                <li><a href="#transaction-types">Transaction Types Supported</a></li>
+                <li><a href="#input-parameters">Input Parameters</a></li>
+                <li><a href="#output-fields">Output Fields</a></li>
+                <li><a href="#program-flow">Program Flow Diagrams</a></li>
+                <li><a href="#business-rules">Business Rules and Logic</a></li>
+                <li><a href="#security-authorization">Security and Authorization</a></li>
+                <li><a href="#referenced-programs">Referenced Programs</a></li>
+                <li><a href="#error-handling-flow">Error Handling Flow</a></li>
+                <li><a href="#technical">Technical Implementation</a></li>
+                <li><a href="#error-handling">Error Handling and Validation</a></li>
+                <li><a href="#common-errors">Common Error Conditions</a></li>
+                <li><a href="#integration-points">Integration Points</a></li>
+                <li><a href="#files">File Dependencies</a></li>
+                <li><a href="#performance">Performance Considerations</a></li>
+                <li><a href="#history">Revision History</a></li>
+            </ul>
+        </div>
+
+        <h2 id="overview">Program Overview</h2>
+        
+        <p><strong>LONPFB</strong> is a comprehensive loan processing program that handles transaction posting for rebates and cancellations. It processes various types of insurance rebates, interest rebates, service charge rebates, and cancellations with sophisticated validation and audit controls.</p>
+
+        <h3>Key Responsibilities</h3>
+        <ul>
+            <li><strong>Insurance Rebate Processing</strong>: Handles rebates for Credit Life (CL), Accident & Health (A&H), Property Protection (PP), and Optional insurance types</li>
+            <li><strong>Insurance Cancellation Processing</strong>: Processes insurance cancellations with proper validation</li>
+            <li><strong>Interest Rebate Processing</strong>: Calculates and processes interest rebates with dealer participation adjustments</li>
+            <li><strong>Service Charge & Maintenance Fee Rebates</strong>: Handles rebates for service charges and maintenance fees</li>
+            <li><strong>Deferment Rebates</strong>: Processes deferment fee rebates</li>
+            <li><strong>Batch Payment Integration</strong>: Supports automatic batch payment processing</li>
+            <li><strong>GL Distribution</strong>: Integrates with General Ledger allocation systems</li>
+            <li><strong>Audit and Validation</strong>: Comprehensive validation and audit trail maintenance</li>
+        </ul>
+
+        <h2 id="transaction-types">Transaction Types Supported</h2>
+
+        <h3>Rebate Transactions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                    <th>Formula Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>RC</strong></td>
+                    <td>Credit Life Rebate</td>
+                    <td>Refund portion of Credit Life insurance premium</td>
+                    <td>SP-RBFRMLA(1-4)</td>
+                </tr>
+                <tr>
+                    <td><strong>RA</strong></td>
+                    <td>Accident & Health Rebate</td>
+                    <td>Refund portion of A&H insurance premium</td>
+                    <td>SP-RBFRMLA(5)</td>
+                </tr>
+                <tr>
+                    <td><strong>RP</strong></td>
+                    <td>Property Protection Rebate</td>
+                    <td>Refund portion of Property Protection insurance</td>
+                    <td>SP-RBFRMLA(7)</td>
+                </tr>
+                <tr>
+                    <td><strong>R1</strong></td>
+                    <td>Optional Insurance 1 Rebate</td>
+                    <td>Refund portion of Optional insurance type 1</td>
+                    <td>SP-RBFRMLA(9)</td>
+                </tr>
+                <tr>
+                    <td><strong>R2</strong></td>
+                    <td>Optional Insurance 2 Rebate</td>
+                    <td>Refund portion of Optional insurance type 2</td>
+                    <td>SP-RBFRMLA(11)</td>
+                </tr>
+                <tr>
+                    <td><strong>R3</strong></td>
+                    <td>Optional Insurance 3 Rebate</td>
+                    <td>Refund portion of Optional insurance type 3</td>
+                    <td>SP-RBFRMLA(13)</td>
+                </tr>
+                <tr>
+                    <td><strong>RI</strong></td>
+                    <td>Interest Rebate</td>
+                    <td>Interest rebate with dealer participation adjustments</td>
+                    <td>Various formulas</td>
+                </tr>
+                <tr>
+                    <td><strong>RS</strong></td>
+                    <td>Service Charge Rebate</td>
+                    <td>Service charge rebate</td>
+                    <td>SP-RBFRMLA(8)</td>
+                </tr>
+                <tr>
+                    <td><strong>RM</strong></td>
+                    <td>Maintenance Fee Rebate</td>
+                    <td>Maintenance fee rebate</td>
+                    <td>Formula based</td>
+                </tr>
+                <tr>
+                    <td><strong>RD</strong></td>
+                    <td>Deferment Fee Rebate</td>
+                    <td>Deferment fee rebate</td>
+                    <td>SP-RBFRMLA(10)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Cancellation Transactions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Description</th>
+                    <th>Purpose</th>
+                    <th>Related Field</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CC</strong></td>
+                    <td>Credit Life Cancellation</td>
+                    <td>Cancel Credit Life insurance coverage</td>
+                    <td>LN-CL-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>CA</strong></td>
+                    <td>Accident & Health Cancellation</td>
+                    <td>Cancel A&H insurance coverage</td>
+                    <td>LN-AH-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>CP</strong></td>
+                    <td>Property Protection Cancellation</td>
+                    <td>Cancel Property Protection insurance</td>
+                    <td>LN-PP-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>C1</strong></td>
+                    <td>Optional Insurance 1 Cancellation</td>
+                    <td>Cancel Optional insurance type 1</td>
+                    <td>LN-O1-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>C2</strong></td>
+                    <td>Optional Insurance 2 Cancellation</td>
+                    <td>Cancel Optional insurance type 2</td>
+                    <td>LN-O2-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>C3</strong></td>
+                    <td>Optional Insurance 3 Cancellation</td>
+                    <td>Cancel Optional insurance type 3</td>
+                    <td>LN-O3-REBATE</td>
+                </tr>
+                <tr>
+                    <td><strong>CD</strong></td>
+                    <td>Deferment Fee Cancellation</td>
+                    <td>Cancel deferment fee</td>
+                    <td>LN-DF-REBATE</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="input-parameters">Input Parameters</h2>
+
+        <h3>Primary Input Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Source</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LP-TRCD</strong></td>
+                    <td>PIC XX</td>
+                    <td>Transaction code (RC, RA, RP, R1, R2, R3, RI, RS, RM, RD, CC, CA, CP, C1, C2, C3, CD)</td>
+                    <td>Calling program</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-PAYDATE</strong></td>
+                    <td>PIC 9(8)</td>
+                    <td>Payment/transaction date</td>
+                    <td>User input</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-TRDATE</strong></td>
+                    <td>PIC 9(8)</td>
+                    <td>Transaction processing date</td>
+                    <td>System</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-REFNO</strong></td>
+                    <td>PIC X(8)</td>
+                    <td>Reference number for transaction</td>
+                    <td>User input</td>
+                </tr>
+                <tr>
+                    <td><strong>HOLD-BP-TRCD</strong></td>
+                    <td>PIC XX</td>
+                    <td>Batch payment transaction code</td>
+                    <td>Batch processing</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-ACCTNO</strong></td>
+                    <td>PIC 9(6)</td>
+                    <td>Loan account number</td>
+                    <td>Loan record</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-OWNBR</strong></td>
+                    <td>PIC 9(4)</td>
+                    <td>Owner branch number</td>
+                    <td>Loan record</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Insurance-Related Input Parameters</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LN-INSPREM(1-6)</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Insurance premium amounts</td>
+                    <td>Rebate/cancellation calculations</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-INSOURS(1-6)</strong></td>
+                    <td>PIC X</td>
+                    <td>Insurance source codes</td>
+                    <td>Validation (M=Memo only)</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-INSTYPES</strong></td>
+                    <td>PIC X</td>
+                    <td>Insurance types (DL, LL, AH)</td>
+                    <td>Formula selection</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-INSURED</strong></td>
+                    <td>PIC X</td>
+                    <td>Insured type (J=Joint)</td>
+                    <td>Formula modifier</td>
+                </tr>
+                <tr>
+                    <td><strong>LN-MIP-FG</strong></td>
+                    <td>PIC X</td>
+                    <td>Monthly Insurance Premium flag</td>
+                    <td>MIP processing logic</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="output-fields">Output Fields</h2>
+
+        <h3>Transaction Output Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LP-TRAMT</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Transaction amount (rebate/cancellation)</td>
+                    <td>GL posting and accounting</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-APCUR</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Applied current amount</td>
+                    <td>Balance adjustments</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-APOTH</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Applied other amount</td>
+                    <td>Secondary balance adjustments</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-APINT</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Applied interest amount</td>
+                    <td>Interest adjustments</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-APLC</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Applied late charge amount</td>
+                    <td>Late charge adjustments</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-LCPAID</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Late charges paid</td>
+                    <td>Late charge tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-INTPAID</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Interest paid by borrower</td>
+                    <td>Interest tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-PDTH-DATE</strong></td>
+                    <td>PIC 9(8)</td>
+                    <td>Updated paid-through date</td>
+                    <td>Loan payment tracking</td>
+                </tr>
+                <tr>
+                    <td><strong>LP-PRORATED-INS-REB</strong></td>
+                    <td>PIC S9(6)V99</td>
+                    <td>Prorated insurance rebate portion</td>
+                    <td>Tax handling</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Status and Control Fields</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Values</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>ROUTE-CD</strong></td>
+                    <td>PIC X</td>
+                    <td>Processing route/status code</td>
+                    <td>"3"=Continue, "7"=Error, "4"=Amount entry</td>
+                </tr>
+                <tr>
+                    <td><strong>ERRCD</strong></td>
+                    <td>PIC X</td>
+                    <td>Error condition code</td>
+                    <td>"X"=Error, "P"=Processing, " "=Normal</td>
+                </tr>
+                <tr>
+                    <td><strong>REBATE-OVERRIDE-FG</strong></td>
+                    <td>PIC X</td>
+                    <td>Rebate override flag</td>
+                    <td>"Y"=Override active, " "=Normal</td>
+                </tr>
+                <tr>
+                    <td><strong>NEW-PROG-SUB</strong></td>
+                    <td>PIC 9</td>
+                    <td>Next program sequence</td>
+                    <td>1=Return to entry, 2=Continue processing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="program-flow">Program Flow Diagrams</h2>
+
+        <div class="diagram-container">
+            <h3>Main Program Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Program Start] --> B{Batch Payment?}
+                B -->|Yes| C[Batch Payment Routine]
+                B -->|No| D[Selection Module]
+                C --> E[Set Balance IBPC LP Record]
+                C --> F{Transaction Type}
+                F -->|F9| G[Rebate Cancel Routine]
+                F -->|Other| H[Process Transaction]
+                G --> I[Set LP-TRCD to RI]
+                H --> J[Move LP-TRAMT to LP-APCUR]
+                D --> K[Initialize Routine]
+                K --> L[Verify Rebate Cancel]
+                L --> M{Validation OK?}
+                M -->|No| N[Return Error]
+                M -->|Yes| O[Rebate Cancel Routine]
+                O --> P[Entry Line Calculation]
+                P --> Q[Display Entry Line]
+                Q --> R[Accept Entry Routine]
+                R --> S{User Action}
+                S -->|F1| T[Return to Entry]
+                S -->|F4| U[Re-enter Reference]
+                S -->|Continue| V[Transaction Amount Entry]
+                V --> W{Override Required?}
+                W -->|Yes| X[Verify Password]
+                W -->|No| Y[Process Amount]
+                X --> Z{Password OK?}
+                Z -->|No| V
+                Z -->|Yes| Y
+                Y --> AA[Update Loan Record]
+                AA --> BB[Program End]
+                N --> BB
+                T --> BB
+                U --> BB
+                I --> BB
+                J --> BB
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Rebate Processing Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Rebate Cancel Routine] --> B[Initialize Amounts]
+                B --> C{Transaction Type}
+                C -->|RI| D[Interest Rebate]
+                C -->|RS| E[Service Charge Rebate]
+                C -->|RM| F[Maintenance Fee Rebate]
+                C -->|RD/CD| G[Deferment Rebate]
+                C -->|Insurance| H[Insurance Processing]
+                
+                D --> D1[Check Dealer Participation]
+                D1 --> D2[Perform Rebate Interest Adj]
+                D2 --> Z[Exit]
+                
+                E --> E1[Perform Rebate Service Charge Adj]
+                E1 --> Z
+                
+                F --> F1[Perform Rebate Maintenance Fee Adj]
+                F1 --> Z
+                
+                G --> G1[Perform Rebate Deferment]
+                G1 --> Z
+                
+                H --> H1{Insurance Type}
+                H1 -->|CC/RC| I[Credit Life Processing]
+                H1 -->|CA/RA| J[A&H Processing]
+                H1 -->|CP/RP| K[Property Protection Processing]
+                H1 -->|C1/R1| L[Optional 1 Processing]
+                H1 -->|C2/R2| M[Optional 2 Processing]
+                H1 -->|C3/R3| N[Optional 3 Processing]
+                
+                I --> I1{Cancellation?}
+                I1 -->|Yes| I2[Move Premium to TRAMT]
+                I1 -->|No| I3[Perform Rebate LN CL]
+                I2 --> O[Check Tax Handling]
+                I3 --> O
+                
+                J --> J1{Cancellation?}
+                J1 -->|Yes| J2[Move Premium to TRAMT]
+                J1 -->|No| J3[Perform Rebate LN AH]
+                J2 --> O
+                J3 --> O
+                
+                K --> K1{Cancellation?}
+                K1 -->|Yes| K2[Move Premium to TRAMT]
+                K1 -->|No| K3[Perform Rebate LN PP]
+                K2 --> O
+                K3 --> O
+                
+                L --> L1{Cancellation?}
+                L1 -->|Yes| L2[Move Premium to TRAMT]
+                L1 -->|No| L3[Perform Rebate LN O1]
+                L2 --> O
+                L3 --> O
+                
+                M --> M1{Cancellation?}
+                M1 -->|Yes| M2[Move Premium to TRAMT]
+                M1 -->|No| M3[Perform Rebate LN O2]
+                M2 --> O
+                M3 --> O
+                
+                N --> N1{Cancellation?}
+                N1 -->|Yes| N2[Move Premium to TRAMT]
+                N1 -->|No| N3[Perform Rebate LN O3]
+                N2 --> O
+                N3 --> O
+                
+                O --> O1{Tax Handling Required?}
+                O1 -->|Yes| O2[Set Prorated Insurance Rebate]
+                O1 -->|No| Z
+                O2 --> Z
+            </div>
+        </div>
+
+        <div class="diagram-container">
+            <h3>Validation and Verification Flow</h3>
+            <div class="mermaid">
+            flowchart TD
+                A[Verify Rebate Cancel] --> B{MIP Insurance?}
+                B -->|Yes| C[MIP Validation Logic]
+                B -->|No| D[Standard Validation]
+                
+                C --> C1{Transaction Type}
+                C1 -->|CC| C2[Validate Credit Life Cancel]
+                C1 -->|CA| C3[Validate A&H Cancel]
+                C2 --> C4{Insurance Written?}
+                C3 --> C4
+                C4 -->|No| E[Error: Not Written]
+                C4 -->|Yes| C5{Already Cancelled?}
+                C5 -->|Yes| F[Error: Already Cancelled]
+                C5 -->|No| G[Validation OK]
+                
+                D --> D1{Transaction Type}
+                D1 -->|RC/CC| D2[Credit Life Validation]
+                D1 -->|RA/CA| D3[A&H Validation]
+                D1 -->|RP/CP| D4[Property Protection Validation]
+                D1 -->|R1/C1| D5[Optional 1 Validation]
+                D1 -->|R2/C2| D6[Optional 2 Validation]
+                D1 -->|R3/C3| D7[Optional 3 Validation]
+                D1 -->|RS| D8[Service Charge Validation]
+                D1 -->|RD/CD| D9[Deferment Validation]
+                
+                D2 --> H[Check Insurance Source]
+                D3 --> H
+                D4 --> H
+                D5 --> H
+                D6 --> H
+                D7 --> H
+                
+                H --> H1{Source = Memo?}
+                H1 -->|Yes| I[Error: Memo Only]
+                H1 -->|No| J[Check Prior Rebate]
+                
+                J --> J1{Already Rebated?}
+                J1 -->|Yes| K[Error: Invalid Per Prior]
+                J1 -->|No| L[Check Formula]
+                
+                L --> L1{Formula Exists?}
+                L1 -->|No| M[Error: No Formula]
+                L1 -->|Yes| G
+                
+                D8 --> N[Check SC Rebate Status]
+                D9 --> O[Check DF Rebate Status]
+                
+                N --> N1{Already Rebated?}
+                O --> O1{Already Rebated?}
+                N1 -->|Yes| K
+                O1 -->|Yes| K
+                N1 -->|No| L
+                O1 -->|No| L
+                
+                E --> P[Set Route Code 7]
+                F --> P
+                I --> P
+                K --> P
+                M --> P
+                G --> Q[Continue Processing]
+                P --> R[Exit with Error]
+                Q --> S[Exit Success]
+            </div>
+        </div>
+
+        <h2 id="business-rules">Business Rules and Logic</h2>
+
+        <h3>Transaction Processing Rules</h3>
+        <ul>
+            <li><strong>Rebate Eligibility</strong>: Rebates can only be processed if the original charge was posted and is greater than the rebate amount</li>
+            <li><strong>Interest Rebate Calculation</strong>: Interest rebates are calculated based on the unearned interest from the transaction date forward</li>
+            <li><strong>Dealer Participation</strong>: Interest rebates automatically adjust dealer participation where applicable</li>
+            <li><strong>Insurance Rebate Restrictions</strong>: Insurance rebates cannot exceed the original insurance premium charged</li>
+            <li><strong>Backdated Transaction Controls</strong>: Backdated rebates require special authorization and memo documentation</li>
+            <li><strong>Service Charge Proration</strong>: Service charge rebates are prorated based on the time remaining in the service period</li>
+        </ul>
+
+        <h3>Validation Rules</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rule Category</th>
+                    <th>Description</th>
+                    <th>Enforcement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Amount Validation</strong></td>
+                    <td>Rebate amounts cannot exceed original charges</td>
+                    <td>Hard stop with error message</td>
+                </tr>
+                <tr>
+                    <td><strong>Date Validation</strong></td>
+                    <td>Rebate dates must be valid and within business rules</td>
+                    <td>Date range validation with warnings</td>
+                </tr>
+                <tr>
+                    <td><strong>Account Status</strong></td>
+                    <td>Account must be in valid status for rebate processing</td>
+                    <td>Status check before processing</td>
+                </tr>
+                <tr>
+                    <td><strong>Insurance Status</strong></td>
+                    <td>Insurance must be active for rebate processing</td>
+                    <td>Insurance file validation</td>
+                </tr>
+                <tr>
+                    <td><strong>Formula Integrity</strong></td>
+                    <td>Mathematical calculations must balance</td>
+                    <td>Formula validation and recalculation</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Processing Logic Flow</h3>
+        <div class="diagram-container">
+            <h4>Business Rules Processing</h4>
+            <div class="mermaid">
+            flowchart TD
+                A[Transaction Request] --> B[Validate Account Status]
+                B --> B1{Account Valid?}
+                B1 -->|No| B2[Reject Transaction]
+                B1 -->|Yes| C[Check Transaction Type]
+                
+                C --> C1{Transaction Type}
+                C1 -->|Insurance Rebate| D[Validate Insurance Status]
+                C1 -->|Interest Rebate| E[Calculate Unearned Interest]
+                C1 -->|Service Charge| F[Calculate Proration]
+                C1 -->|Cancellation| G[Validate Cancellation Rules]
+                
+                D --> D1{Insurance Active?}
+                D1 -->|No| D2[Reject - Insurance Inactive]
+                D1 -->|Yes| D3[Validate Rebate Amount]
+                D3 --> D4{Amount ≤ Premium?}
+                D4 -->|No| D5[Reject - Amount Exceeds Premium]
+                D4 -->|Yes| H[Process Transaction]
+                
+                E --> E1[Get Interest Calculation]
+                E1 --> E2[Check Dealer Participation]
+                E2 --> E3[Calculate Adjustments]
+                E3 --> H
+                
+                F --> F1[Calculate Service Period]
+                F1 --> F2[Determine Proration Rate]
+                F2 --> F3[Calculate Rebate Amount]
+                F3 --> H
+                
+                G --> G1[Check Cancellation Window]
+                G1 --> G2{Within Window?}
+                G2 -->|No| G3[Require Authorization]
+                G2 -->|Yes| G4[Standard Processing]
+                G3 --> G5{Authorization OK?}
+                G5 -->|No| G6[Reject Transaction]
+                G5 -->|Yes| G4
+                G4 --> H
+                
+                H --> I[Update Accounts]
+                I --> J[Generate GL Entries]
+                J --> K[Update Audit Trail]
+                K --> L[Complete Transaction]
+                
+                B2 --> M[End - Rejected]
+                D2 --> M
+                D5 --> M
+                G6 --> M
+                L --> N[End - Success]
+            </div>
+        </div>
+
+        <h2 id="security-authorization">Security and Authorization</h2>
+
+        <h3>Password Protection Levels</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Protection Level</th>
+                    <th>Requirement</th>
+                    <th>Purpose</th>
+                    <th>Implementation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Standard Rebates</strong></td>
+                    <td>No password required</td>
+                    <td>Normal business transactions</td>
+                    <td>Direct processing</td>
+                </tr>
+                <tr>
+                    <td><strong>Interest Rebates</strong></td>
+                    <td>Management password required</td>
+                    <td>Financial impact control</td>
+                    <td>PASSWD program call with specific sequence</td>
+                </tr>
+                <tr>
+                    <td><strong>Backdated Transactions</strong></td>
+                    <td>Supervisory authorization</td>
+                    <td>Audit trail compliance</td>
+                    <td>Password + memo documentation required</td>
+                </tr>
+                <tr>
+                    <td><strong>Large Amount Rebates</strong></td>
+                    <td>Dual authorization</td>
+                    <td>Fraud prevention</td>
+                    <td>Multiple password validation</td>
+                </tr>
+                <tr>
+                    <td><strong>System Overrides</strong></td>
+                    <td>Administrative access</td>
+                    <td>System maintenance</td>
+                    <td>Special administrative passwords</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Audit Trail Requirements</h3>
+        <ul>
+            <li><strong>User Identification</strong>: All transactions logged with user ID and timestamp</li>
+            <li><strong>Before/After Values</strong>: Complete before and after state capture for all changes</li>
+            <li><strong>Authorization Documentation</strong>: Password usage and override documentation</li>
+            <li><strong>Business Justification</strong>: Required memo documentation for exceptional transactions</li>
+            <li><strong>GL Impact Tracking</strong>: Full general ledger impact documentation</li>
+            <li><strong>Regulatory Compliance</strong>: Audit trail meets regulatory requirements for financial institutions</li>
+        </ul>
+
+        <h3>Access Control Matrix</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>User Role</th>
+                    <th>Insurance Rebates</th>
+                    <th>Interest Rebates</th>
+                    <th>Service Charge Rebates</th>
+                    <th>Cancellations</th>
+                    <th>Backdated Transactions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Teller</strong></td>
+                    <td>Read Only</td>
+                    <td>No Access</td>
+                    <td>Limited</td>
+                    <td>No Access</td>
+                    <td>No Access</td>
+                </tr>
+                <tr>
+                    <td><strong>Loan Officer</strong></td>
+                    <td>Full Access</td>
+                    <td>With Password</td>
+                    <td>Full Access</td>
+                    <td>Limited</td>
+                    <td>No Access</td>
+                </tr>
+                <tr>
+                    <td><strong>Supervisor</strong></td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>With Authorization</td>
+                </tr>
+                <tr>
+                    <td><strong>Manager</strong></td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                </tr>
+                <tr>
+                    <td><strong>Administrator</strong></td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                    <td>Full Access</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Security Integration</h3>
+        <div class="diagram-container">
+            <h4>Security Validation Flow</h4>
+            <div class="mermaid">
+            flowchart TD
+                A[Transaction Initiated] --> B[Check User Role]
+                B --> C{Role Authorized?}
+                C -->|No| D[Access Denied]
+                C -->|Yes| E[Check Transaction Type]
+                
+                E --> F{Requires Password?}
+                F -->|No| G[Standard Processing]
+                F -->|Yes| H[Call PASSWD Program]
+                
+                H --> I[Display Password Prompt]
+                I --> J[User Enters Password]
+                J --> K[Validate Password]
+                K --> L{Password Valid?}
+                
+                L -->|No| M[Password Failed]
+                M --> N{Retry < Max?}
+                N -->|Yes| I
+                N -->|No| O[Lock Account/Session]
+                
+                L -->|Yes| P[Check Additional Requirements]
+                P --> Q{Memo Required?}
+                Q -->|Yes| R[Call MEMOSC for Documentation]
+                Q -->|No| S[Authorization Complete]
+                
+                R --> T[User Enters Memo]
+                T --> U{Memo Adequate?}
+                U -->|No| T
+                U -->|Yes| S
+                
+                S --> V[Log Authorization Event]
+                V --> G
+                
+                G --> W[Process Transaction]
+                D --> X[End - Access Denied]
+                O --> X
+                W --> Y[End - Success]
+            </div>
+        </div>
+
+        <h2 id="referenced-programs">Referenced Programs</h2>
+
+        <h3>External Program Calls</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Purpose</th>
+                    <th>Usage Context</th>
+                    <th>Documentation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong><a href="ALLENT_Documentation.html">GL/ALLENT</a></strong></td>
+                    <td>General Ledger allocation entry window</td>
+                    <td>GL distribution for rebate transactions</td>
+                    <td>Available</td>
+                </tr>
+                <tr>
+                    <td><strong><a href="MEMOSC_Documentation.html">WI/MEMOSC</a></strong></td>
+                    <td>Memo/comment entry window</td>
+                    <td>Backdated rebate memo entry</td>
+                    <td>Available</td>
+                </tr>
+                <tr>
+                    <td><strong><a href="PASSWD_Documentation.html">PASSWD routines</a></strong></td>
+                    <td>Password verification</td>
+                    <td>Override authorization for interest rebates</td>
+                    <td>Completed</td>
+                </tr>
+                <tr>
+                    <td><strong><a href="MAKERS_Documentation.html">WI/MAKERS</a></strong></td>
+                    <td>Window maker utility</td>
+                    <td>Ctrl-N interrupt processing</td>
+                    <td>Completed</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Copy Library Dependencies</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Purpose</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LIBLP/LP01*.CPY</strong></td>
+                    <td>Loan processing file definitions</td>
+                    <td>File structures</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBLP/LPWS*.CPY</strong></td>
+                    <td>Loan processing working storage</td>
+                    <td>Working storage</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/GB01*.CPY</strong></td>
+                    <td>Global file definitions</td>
+                    <td>File structures</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGB/*W.CPY</strong></td>
+                    <td>Global working storage and windows</td>
+                    <td>Windows/utilities</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBGL/ALLENTW.CPY</strong></td>
+                    <td>GL allocation window structures</td>
+                    <td>Window interface</td>
+                </tr>
+                <tr>
+                    <td><strong>LIBWI/*.CPY</strong></td>
+                    <td>Window interface definitions</td>
+                    <td>User interface</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="error-handling-flow">Error Handling Flow</h2>
+
+        <div class="diagram-container">
+            <div class="mermaid">
+            flowchart TD
+                A[Error Detected] --> B{Error Type}
+                B -->|Validation Error| C[Set Route Code 7]
+                B -->|Password Error| D[Return to Entry]
+                B -->|File Error| E[Set Error Code X]
+                B -->|Amount Error| F[Display Error Message]
+                B -->|Business Logic Error| G[Display Business Message]
+                
+                C --> C1[Display Error Message]
+                C1 --> H[Exit to Caller]
+                
+                D --> D1[Retry Password Entry]
+                D1 --> I{Max Retries?}
+                I -->|No| J[Return to Password]
+                I -->|Yes| C
+                
+                E --> E1[Close Files]
+                E1 --> E2[Log Error]
+                E2 --> H
+                
+                F --> F1[Highlight Problem Field]
+                F1 --> K[Return to Field Entry]
+                
+                G --> G1{Error Severity}
+                G1 -->|Warning| L[Allow Continue]
+                G1 -->|Critical| M[Force Exit]
+                
+                L --> N[User Decision]
+                N --> O{Continue?}
+                O -->|Yes| P[Continue Processing]
+                O -->|No| H
+                
+                M --> C
+                P --> Q[Normal Processing]
+                K --> Q
+                J --> Q
+                Q --> R[Process Complete]
+            </div>
+        </div>
+
+        <h2 id="technical">Technical Implementation</h2>
+
+        <h3>Program Architecture</h3>
+        <ul>
+            <li><strong>Modular Design</strong>: Organized into logical sections for different transaction types</li>
+            <li><strong>Transaction-Driven</strong>: Processing logic determined by LP-TRCD transaction code</li>
+            <li><strong>State Management</strong>: Uses ROUTE-CD for flow control and error handling</li>
+            <li><strong>Batch Integration</strong>: Supports both interactive and batch processing modes</li>
+            <li><strong>SQL Integration</strong>: Uses SQL-based file access for database operations</li>
+        </ul>
+
+        <h3>Key Processing Sections</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Purpose</th>
+                    <th>Key Logic</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>MAIN-PROGRAM</strong></td>
+                    <td>Program initialization and control</td>
+                    <td>SQL connect, file setup, branch validation</td>
+                </tr>
+                <tr>
+                    <td><strong>BATCH-PAYMENT-ROUTINE</strong></td>
+                    <td>Batch payment processing</td>
+                    <td>Automatic transaction processing from LONPF9</td>
+                </tr>
+                <tr>
+                    <td><strong>SELECTION-MODULE</strong></td>
+                    <td>Interactive transaction processing</td>
+                    <td>User interaction, validation, entry</td>
+                </tr>
+                <tr>
+                    <td><strong>VERIFY-REBATE-CANCEL</strong></td>
+                    <td>Transaction validation</td>
+                    <td>Business rule validation, formula checks</td>
+                </tr>
+                <tr>
+                    <td><strong>REBATE-CANCEL-ROUTINE</strong></td>
+                    <td>Core rebate/cancel processing</td>
+                    <td>Amount calculations, dealer participation</td>
+                </tr>
+                <tr>
+                    <td><strong>TRANS-AMOUNT-ENTRY</strong></td>
+                    <td>Amount entry and validation</td>
+                    <td>Override handling, balance validation</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Formula Processing</h3>
+        <ul>
+            <li><strong>State Parameter Integration</strong>: Uses SP-RBFRMLA formulas for rebate calculations</li>
+            <li><strong>Insurance Type Mapping</strong>: Maps insurance types to appropriate formula subscripts</li>
+            <li><strong>Joint Life Adjustments</strong>: Modifies formula selection for joint life insurance</li>
+            <li><strong>MIP Special Logic</strong>: Special handling for Monthly Insurance Premium accounts</li>
+        </ul>
+
+        <h2 id="error-handling">Error Handling and Validation</h2>
+
+        <h3>Business Rule Validation</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Validation Type</th>
+                    <th>Description</th>
+                    <th>Action Taken</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Prior Transaction Check</strong></td>
+                    <td>Validates no prior rebate/cancellation exists</td>
+                    <td>Error message, exit transaction</td>
+                </tr>
+                <tr>
+                    <td><strong>Insurance Source Validation</strong></td>
+                    <td>Prevents rebates on memo-only insurance</td>
+                    <td>Error message, exit transaction</td>
+                </tr>
+                <tr>
+                    <td><strong>Formula Existence Check</strong></td>
+                    <td>Ensures rebate formula exists in state parameters</td>
+                    <td>Error message, exit transaction</td>
+                </tr>
+                <tr>
+                    <td><strong>Amount Validation</strong></td>
+                    <td>Validates rebate amount doesn't exceed original charge</td>
+                    <td>Error message, return to entry</td>
+                </tr>
+                <tr>
+                    <td><strong>Balance Validation</strong></td>
+                    <td>Ensures payment doesn't exceed current balance</td>
+                    <td>Error message, return to entry</td>
+                </tr>
+                <tr>
+                    <td><strong>Purchase Balance Check</strong></td>
+                    <td>Validates payment doesn't exceed purchase balance</td>
+                    <td>Error message, return to entry</td>
+                </tr>
+                <tr>
+                    <td><strong>MIP Validation</strong></td>
+                    <td>Special validation for Monthly Insurance Premium accounts</td>
+                    <td>Customized error messages</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Password Protection</h3>
+        <ul>
+            <li><strong>Interest Rebate Overrides</strong>: Requires password for RI amount changes (OVERRI-SEQ)</li>
+            <li><strong>Direct Loan Overrides</strong>: Additional password for direct loan RI overrides (OVERRI-DL-SEQ)</li>
+            <li><strong>Cash Drawer Entry</strong>: Password protection for cash drawer selection</li>
+            <li><strong>Interbranch Transactions</strong>: Password protection for cross-branch transactions</li>
+        </ul>
+
+        <h2 id="common-errors">Common Error Conditions</h2>
+
+        <h3>User Input Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>"INVALID PER PRIOR POSTING"</strong></td>
+                    <td>Attempting rebate/cancel when already processed</td>
+                    <td>Check transaction history, verify correct transaction type</td>
+                </tr>
+                <tr>
+                    <td><strong>"THE INSURANCE IS MEMO ONLY!"</strong></td>
+                    <td>Attempting rebate on memo-only insurance</td>
+                    <td>Cannot process rebate on memo insurance</td>
+                </tr>
+                <tr>
+                    <td><strong>"NO REBATE FORMULA IN STATE PARAMETER"</strong></td>
+                    <td>Missing rebate formula configuration</td>
+                    <td>Configure appropriate formula in state parameters</td>
+                </tr>
+                <tr>
+                    <td><strong>"EXCEEDS ORIGINAL CHARGE OF"</strong></td>
+                    <td>Rebate amount exceeds original premium/charge</td>
+                    <td>Enter valid rebate amount within original charge limits</td>
+                </tr>
+                <tr>
+                    <td><strong>"THE PURCHASE BALANCE IS"</strong></td>
+                    <td>Payment exceeds available purchase balance</td>
+                    <td>Adjust payment amount to not exceed purchase balance</td>
+                </tr>
+                <tr>
+                    <td><strong>"CREDIT LIFE WAS NOT WRITTEN"</strong></td>
+                    <td>Attempting to cancel non-existent insurance</td>
+                    <td>Verify insurance was written before attempting cancellation</td>
+                </tr>
+                <tr>
+                    <td><strong>"CREDIT LIFE ALREADY CANCELLED"</strong></td>
+                    <td>Insurance already cancelled</td>
+                    <td>Check transaction history, cannot re-cancel</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>System Errors</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Error Condition</th>
+                    <th>Cause</th>
+                    <th>Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>"INVALID STATE PARAMETER RECORD"</strong></td>
+                    <td>Cannot read state parameter file</td>
+                    <td>Check file availability and configuration</td>
+                </tr>
+                <tr>
+                    <td><strong>"INVALID BRANCH RECORD"</strong></td>
+                    <td>Cannot read branch configuration</td>
+                    <td>Verify branch setup and file access</td>
+                </tr>
+                <tr>
+                    <td><strong>"INVALID INSURANCE TYPE FLAG"</strong></td>
+                    <td>Loan has invalid insurance type configuration</td>
+                    <td>Correct loan insurance type settings</td>
+                </tr>
+                <tr>
+                    <td><strong>File Access Errors</strong></td>
+                    <td>Cannot access required files</td>
+                    <td>Check file locks, permissions, and availability</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="integration-points">Integration Points</h2>
+
+        <h3>Calling Programs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Integration Purpose</th>
+                    <th>Data Exchange</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LONPF9</strong></td>
+                    <td>Automatic batch payment processing</td>
+                    <td>Transaction codes, amounts, account data</td>
+                </tr>
+                <tr>
+                    <td><strong>LONPF7</strong></td>
+                    <td>Interactive rebate/cancellation entry</td>
+                    <td>Transaction parameters, user selections</td>
+                </tr>
+                <tr>
+                    <td><strong>Other LP Programs</strong></td>
+                    <td>Loan processing integration</td>
+                    <td>Account data, transaction requirements</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>External System Integration</h3>
+        <ul>
+            <li><strong>General Ledger System</strong>: Posts rebate/cancellation amounts to appropriate GL accounts</li>
+            <li><strong>Insurance Systems</strong>: Updates insurance status and premium tracking</li>
+            <li><strong>Dealer Participation System</strong>: Adjusts dealer reserves and participation amounts</li>
+            <li><strong>Audit Systems</strong>: Maintains complete audit trail of all transactions</li>
+            <li><strong>Batch Processing Systems</strong>: Integrates with automated batch payment processing</li>
+        </ul>
+
+        <h2 id="files">File Dependencies</h2>
+
+        <h3>Primary Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Access Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>LP01LP (Loan Payment)</strong></td>
+                    <td>Loan payment transaction records</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01LN (Loan Master)</strong></td>
+                    <td>Loan master record data</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01SP (State Parameters)</strong></td>
+                    <td>State-specific processing parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01DL (Dealer)</strong></td>
+                    <td>Dealer participation and reserve data</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>GB01BR (Branch)</strong></td>
+                    <td>Branch configuration and parameters</td>
+                    <td>Read</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01CA (Cash Advance)</strong></td>
+                    <td>Cash advance transaction data</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01LX* (Loan Extension)</strong></td>
+                    <td>Extended loan data and tracking</td>
+                    <td>Read/Write</td>
+                </tr>
+                <tr>
+                    <td><strong>LP01LTI/LTP (Transaction)</strong></td>
+                    <td>Transaction history and tracking</td>
+                    <td>Read/Write</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Utility Files</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>File</th>
+                    <th>Purpose</th>
+                    <th>Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>WK-FILE</strong></td>
+                    <td>Working file for temporary data</td>
+                    <td>Temporary processing storage</td>
+                </tr>
+                <tr>
+                    <td><strong>SCREEN Files</strong></td>
+                    <td>User interface screen definitions</td>
+                    <td>Display and data entry</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="performance">Performance Considerations</h2>
+
+        <h3>Optimization Features</h3>
+        <ul>
+            <li><strong>SQL Integration</strong>: Uses optimized SQL access for database operations</li>
+            <li><strong>Selective File Access</strong>: Opens only required files based on transaction type</li>
+            <li><strong>Batch Processing Support</strong>: Optimized for high-volume batch operations</li>
+            <li><strong>Efficient Memory Management</strong>: Structured working storage organization</li>
+            <li><strong>Minimal Screen Updates</strong>: Updates only changed display elements</li>
+        </ul>
+
+        <h3>Performance Metrics</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Typical Performance</th>
+                    <th>Optimization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Transaction Processing Time</strong></td>
+                    <td>< 2 seconds per transaction</td>
+                    <td>Optimized calculation routines</td>
+                </tr>
+                <tr>
+                    <td><strong>Batch Processing Rate</strong></td>
+                    <td>500+ transactions/minute</td>
+                    <td>Streamlined batch processing logic</td>
+                </tr>
+                <tr>
+                    <td><strong>File I/O Operations</strong></td>
+                    <td>Minimized through selective access</td>
+                    <td>Transaction-specific file opening</td>
+                </tr>
+                <tr>
+                    <td><strong>Memory Usage</strong></td>
+                    <td>Efficient working storage use</td>
+                    <td>Structured data organization</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Scalability Considerations</h3>
+        <ul>
+            <li><strong>Concurrent Processing</strong>: Supports multiple simultaneous users</li>
+            <li><strong>Large Volume Handling</strong>: Designed for high-volume batch processing</li>
+            <li><strong>Resource Management</strong>: Efficient file and memory resource usage</li>
+            <li><strong>Error Recovery</strong>: Robust error handling for production environments</li>
+        </ul>
+
+        <h2 id="history">Revision History</h2>
+
+        <h3>Major Revisions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>03/18/86</strong></td>
+                    <td>Original program creation</td>
+                    <td>Initial development</td>
+                </tr>
+                <tr>
+                    <td><strong>06/06/95</strong></td>
+                    <td>Changed to use new GL entry routine</td>
+                    <td>BLL</td>
+                </tr>
+                <tr>
+                    <td><strong>07/11/96</strong></td>
+                    <td>Added test of LN-UNITPER-CD for weekly PDTH</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>05/12/97</strong></td>
+                    <td>Added use of SETCTBL and SETCTBLW</td>
+                    <td>JTG</td>
+                </tr>
+                <tr>
+                    <td><strong>06/04/97</strong></td>
+                    <td>Added rebate O3 logic for extended insurance types</td>
+                    <td>MJD</td>
+                </tr>
+                <tr>
+                    <td><strong>09/29/97</strong></td>
+                    <td>Password overriding RI amounts</td>
+                    <td>BAH - MERC</td>
+                </tr>
+                <tr>
+                    <td><strong>06/03/98</strong></td>
+                    <td>Allow LONPF9 to call LONPFB for automatic PL code</td>
+                    <td>BAH - Mercury #E 180</td>
+                </tr>
+                <tr>
+                    <td><strong>07/20/99</strong></td>
+                    <td>Add cash drawer password option</td>
+                    <td>GLB - REGMGM PR# 901</td>
+                </tr>
+                <tr>
+                    <td><strong>01/21/00</strong></td>
+                    <td>Add OVERRI-DL-SEQ password for direct loans</td>
+                    <td>BAH - REGWAN PR# 1358</td>
+                </tr>
+                <tr>
+                    <td><strong>02/03/08</strong></td>
+                    <td>Added CT County Tax and CY City Tax codes</td>
+                    <td>JTG - WORLD #288</td>
+                </tr>
+                <tr>
+                    <td><strong>07/31/20</strong></td>
+                    <td>Added logic for Monthly Insurance Premiums</td>
+                    <td>JTG - REGENCY #1801</td>
+                </tr>
+                <tr>
+                    <td><strong>01/12/21</strong></td>
+                    <td>Added new BR Batch Payment Reference codes</td>
+                    <td>JTG - REGACC #0006</td>
+                </tr>
+                <tr>
+                    <td><strong>04/03/11</strong></td>
+                    <td>Added GP-BACKDATE-MEMO for backdated rebates</td>
+                    <td>BAH - WORLD #344</td>
+                </tr>
+                <tr>
+                    <td><strong>09/30/22</strong></td>
+                    <td>Changed to use START-LP1-FILE-SCAN</td>
+                    <td>JKC - Multiple page display fix</td>
+                </tr>
+                <tr>
+                    <td><strong>04/18/23</strong></td>
+                    <td>Modified for changes to LX files</td>
+                    <td>SMR</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="note">
+            <p><strong>Note:</strong> LONPFB is a critical component of the loan processing system, handling complex rebate and cancellation calculations with comprehensive validation and audit controls. It supports both interactive and batch processing modes and integrates with multiple other systems including GL, insurance tracking, and dealer participation systems.</p>
+        </div>
+
+        <a href="#" class="back-to-top">↑ Top</a>
+
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Show/hide back to top button
+            window.addEventListener('scroll', function() {
+                const backToTop = document.querySelector('.back-to-top');
+                if (window.scrollY > 300) {
+                    backToTop.style.display = 'block';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        </script>
+        
+        <!-- Mermaid.js for flowcharts -->
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'default',
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

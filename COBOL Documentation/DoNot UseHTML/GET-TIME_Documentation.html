@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GET-TIME System Utility Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">GET-TIME System Utility Documentation</span>
+        </nav>
+        <main class="content">
+<h1>GET-TIME System Utility Documentation</h1>
+<p><strong>Program ID:</strong> GET-TIME<br />
+<strong>Program Type:</strong> System Time Processing Utility<br />
+<strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2025-07-22 14:30:00</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#business-context">Business Context</a></li>
+<li><a href="#technical-specifications">Technical Specifications</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#related-components">Related Components</a></li>
+</ul>
+<h2>Overview</h2>
+<p>GET-TIME is a system time processing utility within the APIPAY system that retrieves the current system time and formats it for display and logging purposes. The utility handles both 12-hour and 24-hour (military) time formats and provides properly formatted time strings for various system operations.</p>
+<h2>Purpose</h2>
+<p>The GET-TIME utility provides:
+- <strong>System Time Retrieval</strong>: Gets current system time using COBOL ACCEPT FROM TIME
+- <strong>Format Conversion</strong>: Converts between 12-hour and 24-hour time formats
+- <strong>Display Formatting</strong>: Formats time for user display with AM/PM indicators
+- <strong>Military Time Support</strong>: Handles 24-hour military time formatting
+- <strong>Consistent Time Display</strong>: Provides standardized time formatting across the system</p>
+<h2>Business Context</h2>
+<p>GET-TIME is essential for:
+- <strong>Transaction Logging</strong>: Timestamping all system transactions and operations
+- <strong>User Interface</strong>: Displaying current time to users in preferred format
+- <strong>Audit Trails</strong>: Recording precise timing of business operations
+- <strong>Report Generation</strong>: Including formatted timestamps in reports and documents</p>
+<p>The utility ensures consistent time representation throughout APIPAY:
+- User-friendly 12-hour format with AM/PM
+- Military 24-hour format for system operations
+- Proper midnight and noon handling
+- Cross-platform time consistency</p>
+<h2>Technical Specifications</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>TIME-MILITARY-FG</strong>: Flag to control time format ("Y" = 24-hour, " " = 12-hour)</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>T-HH</strong>: Formatted hours (01-12 for 12-hour, 00-23 for 24-hour)</li>
+<li><strong>T-MM</strong>: Minutes (00-59)</li>
+<li><strong>T-COL</strong>: Colon separator ":"</li>
+<li><strong>T-SPACE</strong>: Space character</li>
+<li><strong>T-AMPM</strong>: AM/PM indicator (blank for military time)</li>
+</ul>
+<h3>Working Storage</h3>
+<ul>
+<li><strong>TIME-NOW</strong>: System time value (HHMMSS format)</li>
+<li><strong>H-AND-M</strong>: Hours and minutes combined</li>
+<li><strong>CUR-HH</strong>: Current hour value</li>
+<li><strong>CUR-MM</strong>: Current minute value</li>
+</ul>
+<h3>Processing Logic</h3>
+<pre><code class="language-cobol">GET-TIME SECTION.
+    ACCEPT TIME-NOW FROM TIME.
+    IF TIME-MILITARY-FG = &quot;Y&quot;
+       MOVE &quot; &quot; TO T-AMPM
+    ELSE
+       IF H-AND-M NOT GREATER THAN 1159
+          MOVE &quot;AM&quot; TO T-AMPM
+       ELSE
+          MOVE &quot;PM&quot; TO T-AMPM.
+    IF TIME-MILITARY-FG = &quot; &quot;
+       IF H-AND-M IS NOT LESS THAN 1300
+          SUBTRACT 1200 FROM H-AND-M.
+    IF TIME-MILITARY-FG = &quot; &quot;
+       IF CUR-HH = 0
+          MOVE 12 TO CUR-HH.
+    MOVE CUR-HH TO T-HH.
+    MOVE CUR-MM TO T-MM.
+    MOVE &quot;:&quot; TO T-COL.
+    MOVE &quot; &quot; TO T-SPACE.
+</code></pre>
+<h2>Implementation Details</h2>
+<h3>Core Processing Steps</h3>
+<ol>
+<li><strong>System Time Retrieval</strong></li>
+<li>Uses COBOL ACCEPT FROM TIME to get current system time</li>
+<li>
+<p>Retrieves time in HHMMSS format</p>
+</li>
+<li>
+<p><strong>Format Determination</strong></p>
+</li>
+<li>Checks TIME-MILITARY-FG to determine output format</li>
+<li>
+<p>Sets appropriate AM/PM indicators</p>
+</li>
+<li>
+<p><strong>12-Hour Format Processing</strong></p>
+</li>
+<li>Converts 24-hour time to 12-hour format</li>
+<li>Handles PM hours by subtracting 1200</li>
+<li>
+<p>Converts midnight (00) to 12 AM</p>
+</li>
+<li>
+<p><strong>Output Formatting</strong></p>
+</li>
+<li>Moves formatted components to output fields</li>
+<li>Sets separator characters and spacing</li>
+</ol>
+<h3>Key Features</h3>
+<ul>
+<li><strong>Dual Format Support</strong>: Handles both 12-hour and 24-hour formats</li>
+<li><strong>Midnight Handling</strong>: Properly converts 00:xx to 12:xx AM</li>
+<li><strong>PM Conversion</strong>: Automatically converts 13:xx-23:xx to 1:xx-11:xx PM</li>
+<li><strong>Clean Interface</strong>: Simple flag-based format control</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Standard 12-Hour Time Display</h3>
+<pre><code class="language-cobol">* Get current time in 12-hour format
+MOVE &quot; &quot; TO TIME-MILITARY-FG
+PERFORM GET-TIME
+* Results: T-HH, T-MM, T-COL, T-SPACE, T-AMPM contain formatted time
+DISPLAY &quot;Current time: &quot; T-HH T-COL T-MM T-SPACE T-AMPM
+</code></pre>
+<h3>Military Time Format</h3>
+<pre><code class="language-cobol">* Get current time in 24-hour format
+MOVE &quot;Y&quot; TO TIME-MILITARY-FG
+PERFORM GET-TIME
+* Results: T-HH, T-MM contain 24-hour format, T-AMPM is blank
+DISPLAY &quot;Military time: &quot; T-HH T-COL T-MM
+</code></pre>
+<h3>Transaction Logging</h3>
+<pre><code class="language-cobol">* Log transaction with timestamp
+MOVE &quot; &quot; TO TIME-MILITARY-FG
+PERFORM GET-TIME
+MOVE T-HH TO LOG-TIME-HH
+MOVE T-MM TO LOG-TIME-MM
+MOVE T-AMPM TO LOG-TIME-AMPM
+PERFORM WRITE-LOG-RECORD
+</code></pre>
+<h2>Error Handling</h2>
+<h3>System Time Access</h3>
+<ul>
+<li>Uses standard COBOL ACCEPT FROM TIME</li>
+<li>No error checking required for time retrieval</li>
+<li>Always produces valid time values</li>
+</ul>
+<h3>Format Consistency</h3>
+<ul>
+<li>Automatically resets TIME-MILITARY-FG after processing</li>
+<li>Ensures consistent output format structure</li>
+<li>Handles edge cases like midnight properly</li>
+</ul>
+<h3>Common Scenarios</h3>
+<ul>
+<li><strong>Midnight Conversion</strong>: 00:30 becomes 12:30 AM</li>
+<li><strong>Noon Handling</strong>: 12:00 remains 12:00 PM</li>
+<li><strong>PM Hours</strong>: 15:45 becomes 3:45 PM</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Efficiency Features</h3>
+<ul>
+<li><strong>Direct System Call</strong>: Uses efficient COBOL ACCEPT statement</li>
+<li><strong>Minimal Processing</strong>: Simple arithmetic and data movement</li>
+<li><strong>No File I/O</strong>: Pure in-memory processing</li>
+</ul>
+<h3>Performance Guidelines</h3>
+<ul>
+<li>Very fast execution - suitable for frequent use</li>
+<li>No resource contention issues</li>
+<li>Minimal CPU overhead</li>
+</ul>
+<h2>Related Components</h2>
+<h3>Integration Points</h3>
+<ul>
+<li>Used throughout APIPAY for timestamping</li>
+<li>Integrated with logging and audit systems</li>
+<li>Supports user interface time displays</li>
+</ul>
+<h3>System Dependencies</h3>
+<ul>
+<li><strong>COBOL Runtime</strong>: Requires ACCEPT FROM TIME support</li>
+<li><strong>System Clock</strong>: Depends on accurate system time</li>
+</ul>
+<h3>Usage Locations</h3>
+<ul>
+<li>Transaction processing modules</li>
+<li>Report generation systems</li>
+<li>User interface components</li>
+<li>Audit and logging routines</li>
+</ul>
+<h2>Diagrams</h2>
+<h3>Main Flow Diagram</h3>
+<p><img alt="GET-TIME Main Flow" src="../Diagrams/GET-TIME_Main_Flow.svg" /></p>
+<h3>Call Graph</h3>
+<p><img alt="GET-TIME Call Graph" src="../Diagrams/GET-TIME_Call_Graph.svg" /></p>
+<hr />
+<p><em>This documentation is automatically generated from the COBOL source code and is intended for system maintenance and integration purposes.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

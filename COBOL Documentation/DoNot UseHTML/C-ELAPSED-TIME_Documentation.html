@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C-ELAPSED-TIME - Elapsed Time Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">C-ELAPSED-TIME - Elapsed Time Calculator</span>
+        </nav>
+        <main class="content">
+<h1>C-ELAPSED-TIME - Elapsed Time Calculator</h1>
+<p><strong>Location:</strong> <code>.\APIPAY_Inlined.CBL</code><br />
+<strong>Generated on:</strong> July 22, 2025<br />
+<strong>Program Type:</strong> Date/Time Processing Utility<br />
+<strong>Section:</strong> C-ELAPSED-TIME SECTION</p>
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#program-overview">Program Overview</a></li>
+<li><a href="#transaction-types-supported">Transaction Types Supported</a></li>
+<li><a href="#input-parameters">Input Parameters</a></li>
+<li><a href="#output-fields">Output Fields</a></li>
+<li><a href="#program-flow-diagrams">Program Flow Diagrams</a></li>
+<li><a href="#data-flow-mapping">Data Flow Mapping</a></li>
+<li><a href="#referenced-programs">Referenced Programs</a></li>
+<li><a href="#error-handling-and-validation">Error Handling and Validation</a></li>
+<li><a href="#technical-implementation">Technical Implementation</a></li>
+<li><a href="#integration-points">Integration Points</a></li>
+<li><a href="#call-graph-of-performed-paragraphs">Call Graph of PERFORMed Paragraphs</a></li>
+</ol>
+<hr />
+<h2>Program Overview</h2>
+<p><strong>C-ELAPSED-TIME</strong> is a comprehensive elapsed time calculation utility that computes the time difference between two dates using various calculation methods and unit periods. This utility supports multiple year types and provides results in different units (months, days, years, weeks, etc.) based on the specified unit period code and frequency.</p>
+<h3>Key Characteristics</h3>
+<ul>
+<li><strong>Function Type:</strong> Dual-phase elapsed time calculator</li>
+<li><strong>Processing Mode:</strong> Unit period and year type driven</li>
+<li><strong>Input Method:</strong> Uses NUM-DATE, SYS-DATE, and unit period parameters</li>
+<li><strong>Output Method:</strong> Returns elapsed time in multiple formats</li>
+<li><strong>Calculation Support:</strong> Handles all standard financial day-count conventions</li>
+</ul>
+<h3>Business Purpose</h3>
+<p>C-ELAPSED-TIME provides precise time calculations by:</p>
+<ol>
+<li><strong>Flexible Calculation:</strong> Supports multiple year types and unit periods</li>
+<li><strong>Dual Processing:</strong> Performs both standard and unit-specific calculations</li>
+<li><strong>Zero Date Handling:</strong> Provides safe processing for invalid dates</li>
+<li><strong>Multiple Outputs:</strong> Returns results in months, days, and unit periods</li>
+<li><strong>Business Logic:</strong> Supports various financial calculation requirements</li>
+</ol>
+<h2>Transaction Types Supported</h2>
+<p>The program supports various unit period codes and calculation methods:</p>
+<table>
+<thead>
+<tr>
+<th>Unit Code</th>
+<th>Description</th>
+<th>Frequency Support</th>
+<th>Calculation Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M</strong></td>
+<td>Months</td>
+<td>Any frequency</td>
+<td>998 year type for unit periods</td>
+</tr>
+<tr>
+<td><strong>Y</strong></td>
+<td>Years</td>
+<td>Any frequency</td>
+<td>998 year type for unit periods</td>
+</tr>
+<tr>
+<td><strong>S</strong></td>
+<td>Semi-months</td>
+<td>Any frequency</td>
+<td>360 year type calculation</td>
+</tr>
+<tr>
+<td><strong>D</strong></td>
+<td>Days</td>
+<td>Any frequency</td>
+<td>365 year type calculation</td>
+</tr>
+<tr>
+<td><strong>W</strong></td>
+<td>Weeks</td>
+<td>Any frequency</td>
+<td>365 year type calculation</td>
+</tr>
+<tr>
+<td><strong>B</strong></td>
+<td>Bi-weekly</td>
+<td>Any frequency</td>
+<td>365 year type calculation</td>
+</tr>
+</tbody>
+</table>
+<h2>Input Parameters</h2>
+<h3>Primary Date Fields</h3>
+<ul>
+<li><strong>NUM-DATE</strong> (PIC 9(8)): Starting date in YYYYMMDD format</li>
+<li><strong>SYS-DATE</strong> (PIC 9(8)): Ending date in YYYYMMDD format</li>
+</ul>
+<h3>Unit Period Configuration</h3>
+<ul>
+<li><strong>DATER-UNITPER-CD</strong> (PIC X): Unit period code (M/Y/S/D/W/B)</li>
+<li><strong>DATER-UNITPER-FREQ</strong> (PIC 9(3)): Frequency of unit periods</li>
+<li><strong>ELAPSED-YRTYPE</strong> (PIC 9(3)): Year type for primary calculation</li>
+</ul>
+<h3>Working Storage Fields</h3>
+<ul>
+<li><strong>WS-XUNITPER-FREQ</strong> (PIC 9(3)): Saved unit period frequency</li>
+<li><strong>WS-XUNITPER-CODE</strong> (PIC X): Saved unit period code</li>
+<li><strong>TA-YRTYPE</strong> (PIC 9(3)): Active year type for calculations</li>
+</ul>
+<h2>Output Fields</h2>
+<h3>Standard Elapsed Time Results</h3>
+<ul>
+<li><strong>ELAPSED-MONTHS</strong> (PIC S9(7) COMP-3): Months between dates</li>
+<li><strong>ELAPSED-DAYS</strong> (PIC S9(9) COMP-3): Days between dates</li>
+<li><strong>ELAPSED-REM</strong> (PIC S9(7) COMP-3): Remainder days</li>
+</ul>
+<h3>Unit Period Results</h3>
+<ul>
+<li><strong>ELAPSED-UNITPER</strong> (PIC S9(9) COMP-3): Elapsed unit periods</li>
+<li><strong>ELAPSED-UNITPER-REM</strong> (PIC S9(7) COMP-3): Remainder after unit calculation</li>
+</ul>
+<h3>Comparison Results</h3>
+<ul>
+<li><strong>ELAPSED_RESULTS</strong> (PIC X): Date comparison result</li>
+<li><strong>"L"</strong>: NUM-DATE &lt; SYS-DATE</li>
+<li><strong>"E"</strong>: NUM-DATE = SYS-DATE</li>
+<li><strong>"G"</strong>: NUM-DATE &gt; SYS-DATE</li>
+</ul>
+<h2>Program Flow Diagrams</h2>
+<h3>Main Flow</h3>
+<p><img alt="C-ELAPSED-TIME Main Flow" src="Diagrams/C-ELAPSED-TIME_Main_Flow.mmd" /></p>
+<h3>Unit Period Processing</h3>
+<p><img alt="C-ELAPSED-TIME Unit Period Processing" src="Diagrams/C-ELAPSED-TIME_Unit_Period_Processing.mmd" /></p>
+<h2>Data Flow Mapping</h2>
+<pre><code>Phase 1: Standard Time Calculation
+Input: NUM-DATE, SYS-DATE → Zero Date Check → C-TIMALL → C-TIM-RESULTS
+Output: ELAPSED-MONTHS, ELAPSED-DAYS, ELAPSED-REM, ELAPSED_RESULTS
+
+Phase 2: Unit Period Calculation  
+Input: Unit Period Code/Freq → Year Type Selection → C-TIMALL
+Processing: Unit-specific logic → Calculate periods and remainders
+Output: ELAPSED-UNITPER, ELAPSED-UNITPER-REM
+</code></pre>
+<h3>Year Type Selection Logic</h3>
+<pre><code>Unit Code M or Y → TA-YRTYPE = 998
+Unit Code S → TA-YRTYPE = 360
+Unit Code D, W, B → TA-YRTYPE = 365
+</code></pre>
+<h2>Referenced Programs</h2>
+<p>The following programs are called by C-ELAPSED-TIME:</p>
+<ul>
+<li><strong>C-TIMALL</strong> - <a href="C-TIMALL_Documentation.html">C-TIMALL Documentation</a></li>
+<li><strong>C-TIM-RESULTS</strong> - <a href="C-TIM-RESULTS_Documentation.html">C-TIM-RESULTS Documentation</a></li>
+</ul>
+<h3>Indirect Dependencies</h3>
+<p>Through C-TIMALL:
+- Year-specific calculation routines (C-TIM360-358, C-TIM365-367, etc.)
+- Date conversion and validation utilities</p>
+<h2>Error Handling and Validation</h2>
+<h3>Zero Date Protection</h3>
+<ul>
+<li><strong>Detection</strong>: Checks if either NUM-DATE or SYS-DATE equals zero</li>
+<li><strong>Handling</strong>: Sets both dates to 19000101 for safe processing</li>
+<li><strong>Result</strong>: Prevents calculation errors while maintaining processing flow</li>
+</ul>
+<h3>Unit Period Validation</h3>
+<ul>
+<li><strong>Code Validation</strong>: Validates unit period codes against supported values</li>
+<li><strong>Frequency Check</strong>: Ensures unit period frequency is properly set</li>
+<li><strong>Calculation Safety</strong>: Uses appropriate year types for each unit code</li>
+</ul>
+<h3>Data Integrity</h3>
+<ul>
+<li><strong>State Preservation</strong>: Saves original unit period parameters</li>
+<li><strong>Format Consistency</strong>: Maintains YYYYMMDD date format throughout</li>
+<li><strong>Result Validation</strong>: Ensures output fields are properly populated</li>
+</ul>
+<h2>Technical Implementation</h2>
+<h3>Data Structures</h3>
+<pre><code class="language-cobol">Working Storage Variables:
+WS-XUNITPER-FREQ        PIC 9(3)     - Saved unit frequency
+WS-XUNITPER-CODE        PIC X        - Saved unit code
+WS-DATE1, WS-DATE1W     PIC 9(8)     - Date 1 working fields
+WS-DATE2, WS-DATE2W     PIC 9(8)     - Date 2 working fields
+TA-YRTYPE               PIC 9(3)     - Active year type
+
+Output Fields:
+ELAPSED-MONTHS          PIC S9(7) COMP-3 - Month result
+ELAPSED-DAYS            PIC S9(9) COMP-3 - Day result
+ELAPSED-REM             PIC S9(7) COMP-3 - Remainder
+ELAPSED-UNITPER         PIC S9(9) COMP-3 - Unit periods
+ELAPSED-UNITPER-REM     PIC S9(7) COMP-3 - Unit remainder
+</code></pre>
+<h3>Key Algorithms</h3>
+<ol>
+<li>
+<p><strong>Zero Date Handling:</strong>
+   <code>cobol
+   IF WS-DATE1 = 0 OR WS-DATE2 = 0
+       MOVE 19000101 TO WS-DATE1 WS-DATE2 WS-DATE1W WS-DATE2W</code></p>
+</li>
+<li>
+<p><strong>Unit Period Year Type Selection:</strong>
+   <code>cobol
+   IF WS-XUNITPER-CODE = "Y" OR WS-XUNITPER-CODE = "M"
+       MOVE 998 TO TA-YRTYPE
+   ELSE IF WS-XUNITPER-CODE = "S"
+       MOVE 360 TO TA-YRTYPE
+   ELSE
+       MOVE 365 TO TA-YRTYPE</code></p>
+</li>
+<li>
+<p><strong>Dual Phase Processing:</strong></p>
+</li>
+<li>Phase 1: Standard calculation using original ELAPSED-YRTYPE</li>
+<li>Phase 2: Unit-specific calculation using selected TA-YRTYPE</li>
+</ol>
+<h2>Integration Points</h2>
+<h3>Calling Programs</h3>
+<ul>
+<li>APIPAY time calculation routines</li>
+<li>Loan servicing elapsed time functions</li>
+<li>Payment processing date calculations</li>
+<li>Financial reporting time calculations</li>
+</ul>
+<h3>Called Utilities</h3>
+<ul>
+<li>C-TIMALL for core time calculations</li>
+<li>C-TIM-RESULTS for result processing</li>
+<li>Various year-specific calculation routines</li>
+</ul>
+<h3>Global Dependencies</h3>
+<ul>
+<li>DATER-BUFFER structure</li>
+<li>Working storage date fields</li>
+<li>Unit period parameter structure</li>
+</ul>
+<h2>Call Graph of PERFORMed Paragraphs</h2>
+<p><img alt="C-ELAPSED-TIME Call Graph" src="Diagrams/C-ELAPSED-TIME_Call_Graph.mmd" /></p>
+<h3>Processing Sequence</h3>
+<pre><code>C-ELAPSED-TIME
+├── Parameter Setup
+│   ├── Save unit period parameters
+│   ├── Set working date fields
+│   └── Zero date protection
+├── Phase 1: Standard Calculation
+│   ├── Set TA-YRTYPE from ELAPSED-YRTYPE
+│   ├── PERFORM C-TIMALL
+│   ├── PERFORM C-TIM-RESULTS
+│   └── Move results to output fields
+├── Phase 2: Unit Period Calculation
+│   ├── Restore working date fields
+│   ├── Select year type by unit code
+│   ├── PERFORM C-TIMALL
+│   └── Process unit-specific results
+└── Return with all calculations complete
+</code></pre>
+<h3>Unit Period Processing Logic</h3>
+<pre><code>EVALUATE WS-XUNITPER-CODE
+WHEN &quot;M&quot; → Monthly processing with frequency support
+WHEN &quot;Y&quot; → Yearly processing with frequency support
+WHEN &quot;S&quot; → Semi-monthly processing
+WHEN &quot;D&quot; → Daily processing
+WHEN &quot;W&quot; → Weekly processing  
+WHEN &quot;B&quot; → Bi-weekly processing
+</code></pre>
+<hr />
+<p><strong>Note:</strong> This utility provides comprehensive elapsed time calculations supporting multiple business requirements. The dual-phase approach ensures both standard elapsed time and unit-specific period calculations are available for different use cases.</p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:00</p>
+        </footer>
+    </div>
+</body>
+</html>

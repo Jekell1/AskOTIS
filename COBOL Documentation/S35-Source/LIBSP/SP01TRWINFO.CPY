@@ -1,0 +1,60 @@
+      * COPYMEMBER: LIBSP/SP01TRWINFO
+      **************************************************
+      *    TRW INFORMATION FILE
+      *
+      *  TRW-INFO-KEY =  TRW-INFO-ID 
+      *
+      * 040428 BAH ADDED TRW-INFO-BRNO-ACCTNO FOR COMPANIES THAT
+      *            NEED BRNO PART OF THE ACCOUNT NUMBER BECAUSE
+      *            OF DUPLICATES IN MULITIPLE BRANCHES
+      * 040617 BAH ADDED TRW-INFO-IDENT-BRNO TO PUT BRNO IN FIELD
+      *            5 IDENTIFICATION NUMBER POSITIONS 21 - 40,
+      *            LENDMARK PR#2328
+      * 050427 BAH ADDED TRW-YEARS-STOP-REPORTING TO TEST DOFD AND STOP
+      *            REPORTING IF MORE YEARS THAN THIS, ACC PR# 2517
+      * 160106 BAH ADDED TRW-INVALID-SSNO "0" TO FORCE ALL 9'S FOR ALL
+      *            SSNO'S THAT START WITH 9 OR 000, WORLD PR# 1129
+      * 160112 BAH ADDED TRW-INVALID-SSNO "9" TO FORCE ALL 9'S FOR ALL
+      *            SSNO'S THAT START WITH 990-, REGMGM PR# 4931
+      * 160808 BAH ADDED TRW-INFO-SCHED-PAY FOR METRO2 TO ALWAYS
+      *            USE NO-SCHED-PAYMENT FOR ALL ACCOUNTS WHICH WILL
+      *            USE THE PAYMENT SCHEDULE IF IT EXIST. REGACC PR#383
+      * 2020.0610 BAH ADDED TRW-INFO-LTOUCH-DATE 
+      * BAH 20210427 REMOVED FUTURE FIELDS
+      * BAH 20230612 ADDED FILLER
+      * 2025.0304 BAH ADDED TRW-INFO-INNOVIS-ID #1702 S35Q-169
+      **************************************************
+       78  TRW-SIZE                       VALUE  400.
+       01  TRW-INFO-REC.
+           03  TRW-INFO-KEY.
+               05  TRW-INFO-ID             PIC 9(4).
+
+           03  TRW-INFO-EQUIFAX-ID         PIC X(10).
+           03  TRW-INFO-EXPERIAN-ID        PIC X(5).
+           03  TRW-INFO-TUC-ID             PIC X(10).
+
+           03  TRW-INFO-REPORTER-NAME      PIC X(40).
+           03  TRW-INFO-REPORTER-ADDRESS.
+               05  TRW-INFO-REPORTER-ADR1  PIC X(32).
+               05  TRW-INFO-REPORTER-ADR2  PIC X(32).
+               05  TRW-INFO-REPORTER-CSZ   PIC X(32).
+           03  TRW-INFO-REPORTER-PHONE     PIC 9(10)    COMP-3.
+
+           03  TRW-INFO-GRANTOR-CODE       PIC X(20).
+
+           03  TRW-INFO-CR-LF              PIC X.
+           03  TRW-INFO-BRNO-ACCTNO        PIC X.
+           03  TRW-INFO-IDENT-BRNO         PIC X.
+
+      * REMOVED THIS FROM MAINTENANCE #1440, BUT DIDNT WANT TO REMOVE
+           03  TRW-YEARS-STOP-REPORTING    PIC 99.
+           03  TRW-YEARS-STOP-X REDEFINES TRW-YEARS-STOP-REPORTING
+                                           PIC XX.
+           03  TRW-INVALID-SSNO            PIC X.
+               88  TRW-INVALID-SSNO-VALID  VALUE " " "0" "9".
+           03  TRW-INFO-SCHED-PAY          PIC X.
+           
+      $XFD DATE=YYYYMMDD
+           03  TRW-INFO-LTOUCH-DATE        PIC 9(8)     COMP-3.
+           03  TRW-INFO-INNOVIS-ID         PIC X(10).
+           03  FILLER                      PIC X(187).

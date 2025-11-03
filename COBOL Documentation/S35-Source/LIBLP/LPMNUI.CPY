@@ -1,0 +1,114 @@
+      * A30 CONVERSION STARTED
+      * COPYMEMBER: LIBLP/LPMNUI
+      **************************************************************************
+      *                 (LPMNUI)
+      *   MENU FOR CONVERSION ROUTINES
+      * REV:
+      *  JTG 082495 ADDED INTERRUPT FOR EARNINGS TEST
+      *  JTG 072297 ADDED INTERRUPT FOR EARNINGS TEST #2, TO ALLOW LONIZ
+      *             PROGRAMS TO RUN FROM TWO TERMINALS IN DBUG, VIA
+      *             USING LONIY PROGRAMS
+      *   CS 991011 ADDED TEST OF BULK-CONVERSION-FG
+      *   CS 991129 DISABLE DIRECT LOAN WHEN DOING A BULK PURCHASE (BULK-
+      *             CONVERSION-FG = "B"
+      *   CS 170606 ACTIVATE 8 DIGIT DATES
+      *  BAH 20191030 REMOVED 5. LEDGER CARD EXTRACTION PER KM. LONIW0
+      **************************************************************************
+       MENU-SELECTION SECTION.
+           MOVE 1 TO MENU-FG.
+           MOVE FORM-PATHNAME TO FORM-PATH.
+           MOVE "LP/LPCMNU" TO FORM-NAM.
+           MOVE "LPCMNU" TO VDU-FORM-NAME.
+           IF FORM-PROG = "  "
+              MOVE FORM-PROGX TO FORM-PROG.
+
+           MOVE LPLONI-CONAME TO LPCMNU-CONAME.
+           MOVE LPLONI-SYSDATE TO LPCMNU-SYSDATE.
+
+      * ADDED THIS 6/26/14 OR ELSE PRESSING F7 IN LONIF1 FROM;
+      * F1-LNNO,F3-MSG,F6-POST-F7-MENU
+      * WOULD MUCK UP THE MENU
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DISPLAY LPCMNU-SCREEN UPON TCLP-MAIN-WINDOW-HANDLE.
+           MOVE LPCMNU-FORM-FIELDS TO WR-BUF. 
+           MOVE LPCMNU-FORM-LIST TO WR-LIST. 
+           PERFORM CALL-WRFORM. 
+
+      *{CS}
+           MOVE "S  A220BUCVMENU." TO VDU.
+
+           IF BULK-CONVERSION-FG = "B"
+              MOVE "BULK PURCHASE SUB-MENU" TO VDUBUF
+           ELSE
+              MOVE "CONVERSION SUB-MENU" TO VDUBUF.
+
+           PERFORM SCREENIO.
+      *{CS}
+
+
+           MOVE "S  8000CURDATE." TO VDU.
+           MOVE TRANS-DATE TO VDU-DATE-YYYYMMDD.
+           PERFORM SCREENIO.
+
+           MOVE "CO" TO FORM-OBJ.
+           GO TO MENU-NEXT.
+
+       MENU-START.
+           MOVE 1 TO MENU-FG.
+
+       MENU-NEXT.
+           MOVE "S  A000MSEL." TO VDU.
+           MOVE SPACES TO VDUBUF.
+           PERFORM SCREENIO.
+           MOVE "E  A060SEL." TO VDU.
+           PERFORM SCREENIO.
+           IF VDUSTATUS = "16"
+              IF OLD-PROG NOT = "  "
+                 MOVE OLD-PROG-FORM TO NEW-PROG-FORM
+                 GO TO MENU-EXIT.
+           IF VDUSTATUS = "1>"
+              MOVE "X" TO ERRCD
+              GO TO MENU-EXIT.
+           IF VDUSTATUS NOT = "00"
+              GO TO MENU-NEXT.
+
+           MOVE VDUBUF TO MENU-FIELD.
+
+      * VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+      * INTERRUPT FOR EARNINGS TESTING: (JTG)
+           IF VDUBUF = "353508"
+              MOVE "Y0Y" TO NEW-PROG-FORM
+              GO TO MENU-EXIT.
+      * INTERRUPT FOR EARNINGS TESTING: (JTG)
+      * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      * VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+      * INTERRUPT FOR EARNINGS TESTING: (JTG)
+           IF VDUBUF = "353509"
+              MOVE "Z0Z" TO NEW-PROG-FORM
+              GO TO MENU-EXIT.
+      * INTERRUPT FOR EARNINGS TESTING: (JTG)
+      * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+           IF MENU-5 NOT NUMERIC
+              MOVE 0 TO MENU-5.
+           IF MENU-NO NOT NUMERIC
+              GO TO MENU-NEXT.
+           IF MENU-NO = 0
+                 OR MENU-NO > MENU-MAX
+              GO TO MENU-NEXT.
+
+      *{CS} TEMPORARY DISABLE OF DIRECT LOAN IF BULK PURCHASE
+           IF BULK-CONVERSION-FG = "B"
+              IF MENU-NO = 3
+                 MOVE "SELECTION INOPERATIVE" TO MESS
+                 PERFORM SEND-MESS
+                 GO TO MENU-NEXT.
+
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LPCMNU-SCREEN.
+
+           MOVE MENU-PROG-FORM(MENU-NO) TO NEW-PROG-FORM.
+
+       MENU-EXIT.
+           DISPLAY SPACES LINE 0 COL 0 ERASE SCREEN.
+           DESTROY LPCMNU-SCREEN.

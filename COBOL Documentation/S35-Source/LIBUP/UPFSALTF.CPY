@@ -1,0 +1,15 @@
+      * COPYMEMBER: LIBUP/UPFSALTF
+           SELECT ALTF-FILE ASSIGN TO ALTF-PATH
+                  ORGANIZATION RELATIVE
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RELATIVE KEY ALTF-KEY
+                  FILE STATUS FILE-STAT.
+           SELECT ALTF-DONE-FILE ASSIGN ALTF-DONE-PATH
+                  ORGANIZATION LINE SEQUENTIAL
+                  FILE STATUS FILE-STAT.
+~
+~
+~
+~
+~

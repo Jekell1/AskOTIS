@@ -1,0 +1,67 @@
+      * COPYMEMBER: LIBLP/LPZLCL
+      **************************************************************************
+      *                       (LPZLCL)
+      *    ROUTINE TO CLEAR CALCZL.C CALC WORKERS
+      *
+      *    N O T E:  REMEMBER TO CHANGE 'LPZ3CL'
+      *REV:
+      * JTG 082097 ADDED CLEAR CIP-PRIOR-CASHADV CIP-RESTRICT-SERCHG
+      *                        CIP-RESTRICT-HIGH-CASHADV
+      * JTG 020498 ADDED CLEAR OF CIP-GL-AMOUNT-TOTAL-FINCHG
+      * JTG 000112 ADDED CLEAR OF CIP-INS-REJECT-TERM AND CEP-INS-REJECT-TERM
+      *            RE: SP-INSREJECT-FG OPTION 'C', WHICH WILL CAUSE WRITTING
+      *            NO OF MONTHS INSURANCE NOT IN VIOLATION, WISCONSIN #1032
+      * JTG 020219 ADDED "CT" COUNTY TAX CODE KENTUCKY AND PERCENTS
+      *            ADDED "CY" CITY   TAX CODE KENTUCKY AND PERCENTS   WORLD #288
+      *            ADDED CLEAR OF COP-INS-TAX
+      * BAH 030619 ADDED CLEAR OF CIP-PRIOR-SUB-CLASS, LENDMARK PR# 2101
+      **************************************************************************
+       CLEAR-CALC-AREA-ZL SECTION.
+           MOVE SPACES TO
+                CIP-CALCULATION-INPUT-AREA
+                COP-CALCULATION-OUTPUT-AREA.
+           MOVE ZEROS TO
+                CIP-NO-OF-TIMES-CALLED CIP-LOOP-COUNT
+                CIP-LOOP-COUNT-MAX CIP-INT-CHARGEABLE CIP-TOTAL-NOTE
+                CIP-1ST-PMT-MTHS CIP-1ST-PMT-DAYS
+                CIP-1ST-PMT-EXTENSION CIP-PRIOR-LOAN-CLASS
+                CIP-PRBAL CIP-PRINTDUE CIP-PRFINCHGRB CIP-PRINSRB
+                CIP-PRIOR-LOAN-DATE CIP-PRPAID-AHEAD CIP-FINCHG
+                CIP-LN-DT CIP-IN-DT CIP-FL-DT CIP-PMT-DT CIP-TERM
+                CIP-PROCEEDS CIP-POINTS CIP-OVR-RATE CIP-EFF-RATE
+                CIP-SIM-RATE CIP-APR-RATE CIP-END-RATE
+                CIP-GL-AMOUNT-TOTAL CIP-GL-AMOUNT-TOTAL-FINCHG
+                CIP-RESTRICT-ADJ CIP-STATE-WORKER
+                CIP-DUAL-LOAN-ADJ CIP-PRIOR-CASHADV CIP-RESTRICT-SERCHG
+                CIP-RESTRICT-HIGH-CASHADV CIP-PRIOR-SUB-CLASS
+                CIP-MFEE-RESTRICT.
+
+           PERFORM VARYING COUNTER FROM 1 BY 1 UNTIL COUNTER > 8
+              MOVE ZERO TO
+                   CIP-INS-CO(COUNTER)
+                   CIP-INS-TERM(COUNTER)
+                   CEP-INS-TERM(COUNTER)
+                   CIP-INS-COVERAGE(COUNTER)
+                   CEP-INS-COVERAGE(COUNTER)
+                   CIP-INS-PREMIUM(COUNTER)
+                   CEP-INS-PREMIUM(COUNTER)
+                   CIP-INS-REJECT-TERM(COUNTER)
+                   CEP-INS-REJECT-TERM(COUNTER)
+                   CIP-INS-TAX(COUNTER)
+           END-PERFORM.
+
+           MOVE ZERO TO
+                CIP-SERVICE-CHG CIP-MAINT-FEES CIP-1ST-PY-EXT
+                CIP-INT-CHARGE  CIP-AMT-FINANCD
+                CIP-APR-FINANCD CIP-LOAN-AMOUNT
+                CIP-TOT-REPYBLE CIP-ANTIC-EARNS CIP-ODD-1ST-PMT
+                CIP-REG-PAYMENT CIP-ETBL.
+           MOVE ZERO TO
+                CEP-EFF-RATE CEP-APR-RATE CEP-SERVICE-CHG
+                CEP-MAINT-FEES CEP-1ST-PY-EXT CEP-REG-PAYMENT.
+
+           MOVE ZERO TO
+                COP-REG-PAYMENT.
+
+      *-----------------------------------------------------------------
+

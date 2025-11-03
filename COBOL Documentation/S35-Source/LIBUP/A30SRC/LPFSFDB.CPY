@@ -1,0 +1,7 @@
+      * COPYMEMBER: LIBLP/LPFSFDB
+           SELECT FDB-FILE ASSIGN FDB-PATH
+                  ORGANIZATION INDEXED
+                  ACCESS DYNAMIC
+                  LOCK MODE AUTOMATIC WITH LOCK ON RECORD
+                  RECORD KEY FDB1-KEY
+                  FILE STATUS FILE-STAT.

@@ -1,0 +1,4 @@
+       DELETE-IT.
+           MOVE "DELETE ERROR" TO E-MSG.
+           IF IO-FG NOT = 8 MOVE 0 TO LOCK-STATUS-99-RETRIES.
+           MOVE 0 TO IO-FG IO-STATUS.

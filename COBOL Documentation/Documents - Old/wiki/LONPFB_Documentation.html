@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LONPFB Interest Rebate Processor Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .header .meta {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .nav-breadcrumb {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        .nav-breadcrumb a {
+            color: #28a745;
+            text-decoration: none;
+        }
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 1em;
+        }
+        h1 {
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+        h2 {
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #28a745;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #28a745;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+        }
+        pre {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #24292e;
+        }
+        .note {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .back-to-top:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .toc-link {
+            color: #0066cc;
+            text-decoration: none;
+            padding: 2px 0;
+            display: block;
+        }
+        .toc-link:hover {
+            color: #004499;
+            text-decoration: underline;
+        }
+        .mermaid {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .parameter-table {
+            margin: 15px 0;
+        }
+        .parameter-table th {
+            background: #e9ecef;
+            font-weight: bold;
+            text-align: left;
+        }
+        .parameter-table td {
+            vertical-align: top;
+            padding: 8px 12px;
+        }
+        .section-anchor {
+            position: relative;
+            top: -60px;
+            visibility: hidden;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="nav-breadcrumb">
+        <a href="index.html">🏠 Wiki Home</a> > <a href="APIPAY_Documentation.html">APIPAY</a> > LONPFB Interest Rebate Processor
+    </div>
+
+    <div class="header">
+        <h1>LONPFB Interest Rebate Processor</h1>
+        <div class="meta">
+            <strong>Payment Type:</strong> RP (Rebate Payment)<br>
+            <strong>Purpose:</strong> Interest Rebate Processing and Application<br>
+            <strong>Date Written:</strong> Unknown | <strong>Called From:</strong> APIPAY Program
+        </div>
+    </div>
+
+    <h2>Table of Contents</h2>
+    <div class="note">
+        <ul style="columns: 2; -webkit-columns: 2; -moz-columns: 2;">
+            <li><a href="#overview">Program Overview</a></li>
+            <li><a href="#transaction-types">Transaction Types Supported</a></li>
+            <li><a href="#input-parameters">Input Parameters</a></li>
+            <li><a href="#program-flow">Program Flow Diagrams</a></li>
+            <li><a href="#technical-implementation">Technical Implementation</a></li>
+            <li><a href="#rebate-processing">Rebate-Specific Processing</a></li>
+            <li><a href="#error-handling">Error Handling and Validation</a></li>
+            <li><a href="#integration-points">Integration Points</a></li>
+            <li><a href="#referenced-programs">Referenced Programs</a></li>
+            <li><a href="#file-dependencies">File Dependencies</a></li>
+            <li><a href="#performance">Performance Considerations</a></li>
+        </ul>
+    </div>
+
+    <h2 id="overview">Program Overview</h2>
+    
+    <p><strong>LONPFB</strong> is a specialized interest rebate processor that handles the complex business logic for returning interest payments to loan customers. This program is called by APIPAY for "RP" (Rebate Payment) transaction types and manages the intricate calculations required for various rebate scenarios including early payoffs, promotional offers, and regulatory compliance requirements.</p>
+
+    <h3>Key Responsibilities</h3>
+    <ul>
+        <li><strong>Interest Rebate Calculation</strong>: Determines appropriate rebate amounts based on account history and business rules</li>
+        <li><strong>Eligibility Validation</strong>: Verifies account status and rebate qualification criteria</li>
+        <li><strong>Balance Adjustment</strong>: Updates interest and principal balances after rebate application</li>
+        <li><strong>GL Entry Creation</strong>: Generates proper accounting entries for rebate transactions</li>
+        <li><strong>Audit Trail Management</strong>: Creates comprehensive documentation for compliance and tracking</li>
+        <li><strong>Authorization Validation</strong>: Enforces approval requirements for large or sensitive rebates</li>
+        <li><strong>Business Rule Enforcement</strong>: Applies complex business logic for different rebate scenarios</li>
+        <li><strong>Error Recovery</strong>: Handles exceptional conditions and transaction rollback capabilities</li>
+    </ul>
+
+    <h2 id="transaction-types">Transaction Types Supported</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Description</th>
+                <th>Business Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>RP</strong></td>
+                <td>Rebate Payment</td>
+                <td>Primary transaction type for interest rebates to customer accounts</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Rebate Scenarios Handled</h3>
+    <ul>
+        <li><strong>Early Payoff Rebates</strong>: Returns unearned interest on loans paid before maturity</li>
+        <li><strong>Promotional Rebates</strong>: Customer retention and satisfaction programs</li>
+        <li><strong>Regulatory Rebates</strong>: Compliance with banking regulations and truth-in-lending requirements</li>
+        <li><strong>Error Correction Rebates</strong>: Correcting overcharged interest or calculation errors</li>
+        <li><strong>Goodwill Rebates</strong>: Customer service adjustments for service issues</li>
+    </ul>
+
+    <h2 id="input-parameters">Input Parameters</h2>
+
+    <p>LONPFB receives input through the LONPF-BUFFER data structure passed from the calling program (APIPAY). The following parameters control rebate processing:</p>
+
+    <h3>Required Input Fields</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Valid Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LONPF-BRANCH</strong></td>
+                <td>Numeric(3)</td>
+                <td>Branch number for the loan account</td>
+                <td>001-999</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-ACCOUNT</strong></td>
+                <td>Numeric(8)</td>
+                <td>Loan account number for rebate processing</td>
+                <td>Valid account number</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-TRAN-CODE</strong></td>
+                <td>Character(2)</td>
+                <td>Transaction type code</td>
+                <td>RP (Rebate Payment)</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-AMOUNT</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Requested rebate amount</td>
+                <td>Greater than 0.00</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-DATE</strong></td>
+                <td>Numeric(8)</td>
+                <td>Effective rebate date (YYYYMMDD)</td>
+                <td>Valid date format</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Optional Input Fields</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Field Name</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Usage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LONPF-AUTHORIZATION</strong></td>
+                <td>Character(10)</td>
+                <td>Authorization code for rebate approval</td>
+                <td>Required for rebates over $100</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-REFERENCE</strong></td>
+                <td>Character(12)</td>
+                <td>Reference number for rebate transaction</td>
+                <td>Check numbers, voucher numbers, etc.</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-REASON-CODE</strong></td>
+                <td>Character(2)</td>
+                <td>Business reason for rebate</td>
+                <td>EP=Early Payoff, PR=Promotional, etc.</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-FORCE-FLAG</strong></td>
+                <td>Character(1)</td>
+                <td>Force rebate despite warnings</td>
+                <td>Y/N - Requires supervisor authorization</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-CALCULATION-METHOD</strong></td>
+                <td>Character(1)</td>
+                <td>Rebate calculation method</td>
+                <td>A=Automatic, M=Manual calculation</td>
+            </tr>
+            <tr>
+                <td><strong>LONPF-MAX-REBATE</strong></td>
+                <td>Numeric(9,2)</td>
+                <td>Maximum allowable rebate amount</td>
+                <td>Business rule enforcement</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="program-flow">Program Flow Diagrams</h2>
+
+    <h3>Main Rebate Processing Flow</h3>
+    <div class="mermaid">
+        flowchart TD
+            A[LONPFB Start] --> B[Validate Input Parameters]
+            B --> C{Input Valid?}
+            C -->|No| D[Return Error]
+            C -->|Yes| E[Read Account Information]
+            E --> F{Account Found?}
+            F -->|No| G[Return Account Not Found]
+            F -->|Yes| H[Validate Account Status]
+            H --> I{Account Active?}
+            I -->|No| J[Return Account Inactive]
+            I -->|Yes| K[Check Interest Balance]
+            K --> L{Sufficient Interest?}
+            L -->|No| M[Adjust Rebate Amount]
+            L -->|Yes| N[Calculate Rebate Impact]
+            M --> N
+            N --> O[Update Account Balances]
+            O --> P[Create GL Entries]
+            P --> Q[Write Audit Trail]
+            Q --> R[Return Success]
+            D --> S[End]
+            G --> S
+            J --> S
+            R --> S
+    </div>
+
+    <h3>Validation and Business Rules Flow</h3>
+    <div class="mermaid">
+        flowchart TD
+            A[Start Validation] --> B[Check Payment Type]
+            B --> C{Type = RP?}
+            C -->|No| D[Invalid Payment Type]
+            C -->|Yes| E[Validate Account Number]
+            E --> F{Valid Format?}
+            F -->|No| G[Invalid Account Format]
+            F -->|Yes| H[Check Rebate Amount]
+            H --> I{Amount > 0?}
+            I -->|No| J[Invalid Amount]
+            I -->|Yes| K[Validate Date]
+            K --> L{Date Valid?}
+            L -->|No| M[Invalid Date]
+            L -->|Yes| N[Check Authorization]
+            N --> O{Auth Required?}
+            O -->|Yes| P{Auth Present?}
+            O -->|No| Q[Validation Complete]
+            P -->|No| R[Missing Authorization]
+            P -->|Yes| Q
+            D --> S[Return Error]
+            G --> S
+            J --> S
+            M --> S
+            R --> S
+            Q --> T[Return Success]
+    </div>
+
+    <h3>Error Handling and Recovery Flow</h3>
+    <div class="mermaid">
+        flowchart TD
+            A[Error Detected] --> B{Error Type}
+            B -->|Validation Error| C[Format Error Message]
+            B -->|Database Error| D[Log Database Issue]
+            B -->|Business Rule Error| E[Format Business Message]
+            B -->|System Error| F[Log System Error]
+            C --> G[Set Error Status]
+            D --> H[Set Database Error Status]
+            E --> G
+            F --> I[Set System Error Status]
+            G --> J[Return to Caller]
+            H --> J
+            I --> J
+            J --> K[Caller Handles Error]
+    </div>
+
+    <h2 id="technical-implementation">Technical Implementation</h2>
+
+    <h3>Program Structure</h3>
+    <p>LONPFB follows a modular design pattern with clearly separated functional areas:</p>
+
+    <ul>
+        <li><strong>Initialization Module</strong>: Parameter validation and setup</li>
+        <li><strong>Account Validation Module</strong>: Account status and eligibility checking</li>
+        <li><strong>Calculation Module</strong>: Rebate amount determination and business rule application</li>
+        <li><strong>Processing Module</strong>: Balance updates and transaction posting</li>
+        <li><strong>GL Module</strong>: General ledger entry creation and posting</li>
+        <li><strong>Audit Module</strong>: Transaction logging and compliance documentation</li>
+        <li><strong>Error Handling Module</strong>: Exception processing and recovery</li>
+    </ul>
+
+    <h3>Key Processing Steps</h3>
+    <ol>
+        <li><strong>Parameter Validation</strong>
+            <ul>
+                <li>Validate transaction type is "RP"</li>
+                <li>Check required fields are present and valid</li>
+                <li>Verify authorization codes when required</li>
+            </ul>
+        </li>
+        <li><strong>Account Verification</strong>
+            <ul>
+                <li>Read loan master record</li>
+                <li>Verify account is active and accessible</li>
+                <li>Check account restrictions and status</li>
+            </ul>
+        </li>
+        <li><strong>Eligibility Assessment</strong>
+            <ul>
+                <li>Verify sufficient interest balance exists</li>
+                <li>Apply business rules for rebate eligibility</li>
+                <li>Check authorization requirements</li>
+            </ul>
+        </li>
+        <li><strong>Rebate Calculation</strong>
+            <ul>
+                <li>Calculate available interest for rebate</li>
+                <li>Apply business rule limits and restrictions</li>
+                <li>Determine final rebate amount</li>
+            </ul>
+        </li>
+        <li><strong>Transaction Processing</strong>
+            <ul>
+                <li>Update loan master balances</li>
+                <li>Create transaction history records</li>
+                <li>Generate general ledger entries</li>
+                <li>Create audit trail documentation</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2 id="rebate-processing">Rebate-Specific Processing</h2>
+
+    <h3>Interest Balance Assessment</h3>
+    <p>The program performs comprehensive analysis of the account's interest position:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Assessment Type</th>
+                <th>Description</th>
+                <th>Business Impact</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Current Interest Balance</strong></td>
+                <td>Outstanding interest balance on the account</td>
+                <td>Primary source for rebate funds</td>
+            </tr>
+            <tr>
+                <td><strong>Accrued Interest</strong></td>
+                <td>Interest accrued but not yet posted</td>
+                <td>May affect available rebate amount</td>
+            </tr>
+            <tr>
+                <td><strong>Historical Interest Paid</strong></td>
+                <td>Total interest paid over loan life</td>
+                <td>Maximum rebate limit calculation</td>
+            </tr>
+            <tr>
+                <td><strong>Unearned Interest</strong></td>
+                <td>Future interest on remaining loan term</td>
+                <td>Early payoff rebate calculations</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Business Rule Application</h3>
+    <ul>
+        <li><strong>Minimum Rebate Amount</strong>: $1.00 minimum to process</li>
+        <li><strong>Maximum Rebate Limits</strong>: Cannot exceed total interest paid</li>
+        <li><strong>Account Status Requirements</strong>: Account must be current or paid-off</li>
+        <li><strong>Authorization Thresholds</strong>: Escalating approval requirements by amount</li>
+        <li><strong>Date Restrictions</strong>: Rebate date must be within acceptable range</li>
+        <li><strong>Reason Code Validation</strong>: Specific business reasons must be documented</li>
+    </ul>
+
+    <h3>Calculation Methods</h3>
+    <pre><code>IF CALCULATION-METHOD = 'A' (Automatic)
+    THEN REBATE-AMOUNT = LESSER OF (REQUESTED-AMOUNT, AVAILABLE-INTEREST)
+    ELSE REBATE-AMOUNT = REQUESTED-AMOUNT (Manual - requires authorization)</code></pre>
+
+    <h2 id="error-handling">Error Handling and Validation</h2>
+
+    <h3>Input Validation Errors</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Code</th>
+                <th>Description</th>
+                <th>Resolution</th>
+                <th>Severity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>01</strong></td>
+                <td>Invalid transaction type (not RP)</td>
+                <td>Verify transaction routing in APIPAY</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>02</strong></td>
+                <td>Missing or invalid account number</td>
+                <td>Check account number format and existence</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>03</strong></td>
+                <td>Invalid rebate amount (zero or negative)</td>
+                <td>Enter positive rebate amount</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>04</strong></td>
+                <td>Invalid or missing rebate date</td>
+                <td>Use valid date in YYYYMMDD format</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>05</strong></td>
+                <td>Missing required authorization code</td>
+                <td>Obtain proper authorization for rebate amount</td>
+                <td>Fatal</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Business Rule Violations</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Code</th>
+                <th>Description</th>
+                <th>Resolution</th>
+                <th>Severity</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>20</strong></td>
+                <td>Account not found in system</td>
+                <td>Verify account number and branch</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>21</strong></td>
+                <td>Account not active or accessible</td>
+                <td>Check account status and restrictions</td>
+                <td>Fatal</td>
+            </tr>
+            <tr>
+                <td><strong>22</strong></td>
+                <td>Insufficient interest balance for rebate</td>
+                <td>Reduce rebate amount or check calculations</td>
+                <td>Warning</td>
+            </tr>
+            <tr>
+                <td><strong>23</strong></td>
+                <td>Rebate exceeds maximum allowed</td>
+                <td>Apply business rule limits or get exception approval</td>
+                <td>Warning</td>
+            </tr>
+            <tr>
+                <td><strong>24</strong></td>
+                <td>Account has restrictions preventing rebate</td>
+                <td>Review account restrictions and resolve</td>
+                <td>Fatal</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="integration-points">Integration Points</h2>
+
+    <h3>APIPAY Integration</h3>
+    <p>LONPFB is called exclusively through the APIPAY payment processing framework:</p>
+    <ul>
+        <li><strong>Call Interface</strong>: Standard LONPF-BUFFER parameter structure</li>
+        <li><strong>Return Codes</strong>: Standard APIPAY return code conventions</li>
+        <li><strong>Error Handling</strong>: Follows APIPAY error reporting standards</li>
+        <li><strong>Logging</strong>: Integrates with APIPAY audit trail system</li>
+    </ul>
+
+    <h3>General Ledger Integration</h3>
+    <p>Rebate transactions generate specific GL entries:</p>
+    <ul>
+        <li><strong>Interest Income Account</strong>: Credit reduction for rebated interest</li>
+        <li><strong>Cash Account</strong>: Debit for rebate payment processing</li>
+        <li><strong>Customer Account</strong>: Credit to customer's loan account</li>
+        <li><strong>Audit Trail</strong>: Complete transaction documentation</li>
+    </ul>
+
+    <h2 id="referenced-programs">Referenced Programs</h2>
+
+    <h3>Direct Program Calls</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Program Name</th>
+                <th>Purpose</th>
+                <th>Usage Context</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LPLCAP</strong></td>
+                <td>Loan capitalization utilities</td>
+                <td>Interest calculations and balance adjustments</td>
+            </tr>
+            <tr>
+                <td><strong>GLPOST</strong></td>
+                <td>General ledger posting routine</td>
+                <td>Creating and posting GL entries for rebates</td>
+            </tr>
+            <tr>
+                <td><strong>AUDITLOG</strong></td>
+                <td>Audit trail logging</td>
+                <td>Compliance documentation and transaction tracking</td>
+            </tr>
+            <tr>
+                <td><strong>DATEUTIL</strong></td>
+                <td>Date calculation utilities</td>
+                <td>Date validation and business day calculations</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Copy Library Dependencies</h3>
+    <ul>
+        <li><strong>LIBLP/LP01LN.CPY</strong> - Loan master file record structure</li>
+        <li><strong>LIBLP/LP01INT.CPY</strong> - Interest calculation working fields</li>
+        <li><strong>LIBLP/LP01GL.CPY</strong> - General ledger interface structures</li>
+        <li><strong>LIBLP/LP01TXN.CPY</strong> - Transaction history record layout</li>
+        <li><strong>LIBGB/GLOBALW.CPY</strong> - Global working storage definitions</li>
+        <li><strong>LIBGB/ERRORW.CPY</strong> - Standard error handling structures</li>
+        <li><strong>LIBGB/AUDITW.CPY</strong> - Audit trail record structures</li>
+    </ul>
+
+    <h2 id="file-dependencies">File Dependencies</h2>
+
+    <h3>Files Read</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Purpose</th>
+                <th>Access Pattern</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LN1 (Loan Master)</strong></td>
+                <td>Primary loan account information and balances</td>
+                <td>Random read by account number</td>
+            </tr>
+            <tr>
+                <td><strong>LTI1 (Transaction History)</strong></td>
+                <td>Historical transaction data for validation</td>
+                <td>Sequential read by account</td>
+            </tr>
+            <tr>
+                <td><strong>CD1 (Code Table)</strong></td>
+                <td>Transaction code validation and parameters</td>
+                <td>Random read by transaction code</td>
+            </tr>
+            <tr>
+                <td><strong>BR (Branch File)</strong></td>
+                <td>Branch information and validation</td>
+                <td>Random read by branch number</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Files Updated</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Purpose</th>
+                <th>Update Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>LN1 (Loan Master)</strong></td>
+                <td>Update interest and principal balances</td>
+                <td>Balance field updates</td>
+            </tr>
+            <tr>
+                <td><strong>LXE1 (Transaction Extended)</strong></td>
+                <td>Detailed transaction logging</td>
+                <td>Add new transaction records</td>
+            </tr>
+            <tr>
+                <td><strong>LTI1 (Transaction History)</strong></td>
+                <td>Standard transaction history</td>
+                <td>Add new transaction records</td>
+            </tr>
+            <tr>
+                <td><strong>GL Distribution Files</strong></td>
+                <td>General ledger entry creation</td>
+                <td>Add GL transaction records</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="performance">Performance Considerations</h2>
+
+    <h3>Optimization Strategies</h3>
+    <ul>
+        <li><strong>File Access Patterns</strong>: Minimized I/O operations through efficient access</li>
+        <li><strong>Memory Management</strong>: Optimized working storage usage</li>
+        <li><strong>Database Connections</strong>: Efficient connection pooling and management</li>
+        <li><strong>Error Recovery</strong>: Fast rollback capabilities for failed transactions</li>
+        <li><strong>Audit Processing</strong>: Streamlined logging to minimize performance impact</li>
+    </ul>
+
+    <h3>Scalability Factors</h3>
+    <ul>
+        <li><strong>Transaction Volume</strong>: Designed for high-volume rebate processing</li>
+        <li><strong>Concurrent Access</strong>: Proper locking mechanisms for data integrity</li>
+        <li><strong>Resource Utilization</strong>: Efficient CPU and memory usage patterns</li>
+        <li><strong>Response Time</strong>: Optimized for real-time processing requirements</li>
+    </ul>
+
+    <h3>Monitoring and Maintenance</h3>
+    <ul>
+        <li><strong>Performance Metrics</strong>: Transaction timing and throughput monitoring</li>
+        <li><strong>Error Rates</strong>: Validation and business rule failure tracking</li>
+        <li><strong>Resource Usage</strong>: CPU, memory, and I/O utilization monitoring</li>
+        <li><strong>Audit Compliance</strong>: Complete transaction trail for regulatory review</li>
+    </ul>
+
+    <div class="note">
+        <p><em>This documentation provides comprehensive coverage of the LONPFB interest rebate processor. For specific implementation details or business rule changes, consult with the loan processing team and refer to the source code documentation in the program headers.</em></p>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'block';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

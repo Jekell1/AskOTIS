@@ -1,0 +1,20 @@
+      * COPYMEMBER: LIBWI/PAYSCHW
+      * REV:
+      *  2024.0418 BAH REMOVED PAYSCH-LOANDATE, PAYSCH-ORIG-1STPAY
+      *                PAYSCH-PASSWD, MADE LEVEL 01 AND CALL FORM, NOT WINDOW
+       01  PAYSCH-BUF.
+           03  PAYSCH-BRANCH      PIC 9(4).
+           03  PAYSCH-TRANS-DATE  PIC 9(8).
+           03  PAYSCH-ACCTNO      PIC 9(8).
+           03  PAYSCH-PLCD        PIC X.
+           03  PAYSCH-SALEFIN     PIC X.
+           03  PAYSCH-SERVACCT    PIC X.
+           03  PAYSCH-LOANTYPE    PIC X.
+           03  PAYSCH-NEW-FLAG    PIC 9.
+           03  PAYSCH-TEST-BAL    PIC 9.
+           03  PAYSCH-LOANDATE    PIC 9(8)    COMP-3.
+           03  PAYSCH-ORIG-1STPAY PIC 9(8)    COMP-3.
+           03  PAYSCH-1STPYAMT    PIC 9(6)V99 COMP-3.
+           03  PAYSCH-NOREGPY     PIC 9(3)    COMP-3.
+           03  PAYSCH-REGPYAMT    PIC 9(6)V99 COMP-3.
+           03  PAYSCH-LASTPYAMT   PIC 9(6)V99 COMP-3.

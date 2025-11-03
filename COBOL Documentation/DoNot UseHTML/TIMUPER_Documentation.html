@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMUPER Unit Period Engine Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#e1f5fe',
+                primaryTextColor: '#01579b',
+                primaryBorderColor: '#0277bd',
+                lineColor: '#0288d1',
+                secondaryColor: '#f3e5f5',
+                tertiaryColor: '#e8f5e8'
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="index.html">Home</a> &gt; <span class="current">TIMUPER Unit Period Engine Documentation</span>
+        </nav>
+        <main class="content">
+<h1>TIMUPER Unit Period Engine Documentation</h1>
+<p><strong>Program ID:</strong> TIMUPER<br />
+<strong>Program Type:</strong> Date/Time Processing Engine<br />
+<strong>Location:</strong> .\APIPAY_Inlined.CBL<br />
+<strong>Generated on:</strong> 2024-12-19 14:30:00</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#business-context">Business Context</a></li>
+<li><a href="#technical-specifications">Technical Specifications</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#related-components">Related Components</a></li>
+</ul>
+<h2>Overview</h2>
+<p>TIMUPER (Time in Unit Periods) is a specialized date calculation engine within the APIPAY system that computes elapsed time in unit periods between two dates. Unlike simple day calculations, TIMUPER calculates time in specific business-relevant periods such as months, days, years, semiannual, weekly, or biweekly periods, making it essential for financial and business processing.</p>
+<h2>Purpose</h2>
+<p>The TIMUPER engine provides:
+- <strong>Unit Period Calculations</strong>: Computes elapsed time in business-relevant periods
+- <strong>Flexible Period Types</strong>: Supports monthly (M), daily (D), yearly (Y), semiannual (S), weekly (W), and biweekly (B) periods
+- <strong>Frequency Support</strong>: Handles configurable frequency of unit periods
+- <strong>Remainder Calculations</strong>: Provides remaining days after unit period calculations
+- <strong>Data Preservation</strong>: Maintains system state integrity during calculations</p>
+<h2>Business Context</h2>
+<p>TIMUPER is critical for:
+- <strong>Payment Scheduling</strong>: Calculating payment due dates and frequencies
+- <strong>Interest Calculations</strong>: Determining interest accrual periods
+- <strong>Loan Processing</strong>: Computing payment periods and schedules
+- <strong>Financial Planning</strong>: Analyzing time-based financial instruments</p>
+<p>The engine supports various business scenarios:
+- Monthly payment calculations
+- Quarterly or semiannual reporting
+- Weekly or biweekly payroll processing
+- Annual interest computations</p>
+<h2>Technical Specifications</h2>
+<h3>Input Parameters</h3>
+<ul>
+<li><strong>NUM-DATE</strong>: Starting date (YYYYMMDD format)</li>
+<li><strong>SYS-DATE</strong>: Ending date (YYYYMMDD format)</li>
+<li><strong>DATER-UNITPER-CD</strong>: Unit period code (M, D, Y, S, W, B)</li>
+<li><strong>DATER-UNITPER-FREQ</strong>: Frequency of unit periods</li>
+<li><strong>NDTE-DATE</strong>: Preserved during calculations</li>
+</ul>
+<h3>Output Parameters</h3>
+<ul>
+<li><strong>ELAPSED-UNITPER</strong>: Elapsed unit periods</li>
+<li><strong>ELAPSED-UNITPER-REM</strong>: Remaining days after unit period calculation</li>
+<li><strong>ELAPSED-RESULT</strong>: Comparison results (SYS-IS-LT, GT, GR, EQ, LE, GE)</li>
+<li><strong>ELAPSED-DAYS</strong>: Total elapsed days</li>
+<li><strong>ELAPSED-MONTHS</strong>: Elapsed months</li>
+<li><strong>ELAPSED-REM</strong>: Remaining days</li>
+</ul>
+<h3>Unit Period Codes</h3>
+<ul>
+<li><strong>M</strong>: Monthly periods</li>
+<li><strong>D</strong>: Daily periods  </li>
+<li><strong>Y</strong>: Yearly periods</li>
+<li><strong>S</strong>: Semiannual periods</li>
+<li><strong>W</strong>: Weekly periods</li>
+<li><strong>B</strong>: Biweekly periods</li>
+</ul>
+<h3>Processing Logic</h3>
+<pre><code class="language-cobol">TIMUPER SECTION.
+    MOVE NDTE-DATE TO DATER-HOLD-NDTE-DATE.
+    MOVE 999       TO ELAPSED-YRTYPE.
+    MOVE &quot;E&quot;       TO DATER-ACTION-CODE.
+    PERFORM DATER-ROUTINE.
+    MOVE DATER-HOLD-NDTE-DATE TO NDTE-DATE.
+</code></pre>
+<h2>Implementation Details</h2>
+<h3>Core Processing Steps</h3>
+<ol>
+<li><strong>Data Preservation</strong></li>
+<li>Saves NDTE-DATE to prevent unwanted modifications</li>
+<li>
+<p>Preserves system state during calculations</p>
+</li>
+<li>
+<p><strong>Calculation Configuration</strong></p>
+</li>
+<li>Sets ELAPSED-YRTYPE to 999 (actual days)</li>
+<li>
+<p>Sets DATER-ACTION-CODE to "E" (elapsed time)</p>
+</li>
+<li>
+<p><strong>Unit Period Calculation</strong></p>
+</li>
+<li>Calls DATER-ROUTINE with configured parameters</li>
+<li>
+<p>Uses actual day calculations for accuracy</p>
+</li>
+<li>
+<p><strong>Data Restoration</strong></p>
+</li>
+<li>Restores original NDTE-DATE value</li>
+<li>Maintains system integrity</li>
+</ol>
+<h3>Key Features</h3>
+<ul>
+<li><strong>Business Period Support</strong>: Handles various business-relevant time periods</li>
+<li><strong>Flexible Configuration</strong>: Supports different frequencies and period types</li>
+<li><strong>Data Safety</strong>: Preserves input parameters during processing</li>
+<li><strong>Accurate Calculations</strong>: Uses actual day calculations for precision</li>
+</ul>
+<h2>Usage Examples</h2>
+<h3>Monthly Payment Calculation</h3>
+<pre><code class="language-cobol">* Calculate monthly periods for loan payments
+MOVE LOAN-START-DATE TO NUM-DATE
+MOVE CURRENT-DATE TO SYS-DATE
+MOVE &quot;M&quot; TO DATER-UNITPER-CD
+MOVE 1 TO DATER-UNITPER-FREQ
+PERFORM TIMUPER
+* ELAPSED-UNITPER contains number of monthly periods
+</code></pre>
+<h3>Quarterly Period Calculation</h3>
+<pre><code class="language-cobol">* Calculate quarterly periods
+MOVE PERIOD-START-DATE TO NUM-DATE
+MOVE PERIOD-END-DATE TO SYS-DATE
+MOVE &quot;M&quot; TO DATER-UNITPER-CD
+MOVE 3 TO DATER-UNITPER-FREQ
+PERFORM TIMUPER
+* ELAPSED-UNITPER contains number of quarters
+</code></pre>
+<h3>Weekly Payroll Processing</h3>
+<pre><code class="language-cobol">* Calculate weekly pay periods
+MOVE PAY-PERIOD-START TO NUM-DATE
+MOVE PAY-PERIOD-END TO SYS-DATE
+MOVE &quot;W&quot; TO DATER-UNITPER-CD
+MOVE 1 TO DATER-UNITPER-FREQ
+PERFORM TIMUPER
+* ELAPSED-UNITPER contains number of weekly periods
+</code></pre>
+<h2>Error Handling</h2>
+<h3>Data Protection</h3>
+<ul>
+<li>Saves and restores NDTE-DATE to prevent side effects</li>
+<li>Maintains system state integrity</li>
+<li>Prevents calculation interference</li>
+</ul>
+<h3>Calculation Accuracy</h3>
+<ul>
+<li>Uses ELAPSED-YRTYPE = 999 for actual day calculations</li>
+<li>Ensures accurate unit period computations</li>
+<li>Handles various date ranges correctly</li>
+</ul>
+<h3>Common Error Scenarios</h3>
+<ul>
+<li><strong>Invalid Dates</strong>: Handled by underlying DATER-ROUTINE</li>
+<li><strong>Invalid Period Codes</strong>: Managed by DATER-ROUTINE validation</li>
+<li><strong>Calculation Errors</strong>: Protected by data validation</li>
+</ul>
+<h2>Performance Considerations</h2>
+<h3>Efficiency Features</h3>
+<ul>
+<li><strong>Direct Processing</strong>: Minimal overhead for calculation setup</li>
+<li><strong>Optimized Data Handling</strong>: Efficient save/restore operations</li>
+<li><strong>Delegate Processing</strong>: Leverages optimized DATER-ROUTINE</li>
+</ul>
+<h3>Performance Guidelines</h3>
+<ul>
+<li>Data preservation adds minimal overhead</li>
+<li>Calculation delegation provides maximum efficiency</li>
+<li>Suitable for high-volume period calculations</li>
+</ul>
+<h2>Related Components</h2>
+<h3>Direct Dependencies</h3>
+<ul>
+<li><strong><a href="DATER-ROUTINE_Documentation.html">DATER-ROUTINE</a></strong>: Core date processing engine</li>
+<li><strong><a href="NEWDATE_Documentation.html">NEWDATE</a></strong>: Date formatting and conversion</li>
+</ul>
+<h3>Related Utilities</h3>
+<ul>
+<li><strong><a href="TIMALL_Documentation.html">TIMALL</a></strong>: General elapsed time calculations</li>
+<li><strong><a href="TIM360_Documentation.html">TIM360</a></strong>: 360-day financial calculations</li>
+<li><strong><a href="TIM365_Documentation.html">TIM365</a></strong>: Standard calendar calculations</li>
+</ul>
+<h3>Integration Points</h3>
+<ul>
+<li>Used for payment scheduling throughout APIPAY</li>
+<li>Integrated with loan processing modules</li>
+<li>Supports financial planning and reporting systems</li>
+</ul>
+<h2>Diagrams</h2>
+<h3>Main Flow Diagram</h3>
+<p><img alt="TIMUPER Main Flow" src="../Diagrams/TIMUPER_Main_Flow.svg" /></p>
+<h3>Call Graph</h3>
+<p><img alt="TIMUPER Call Graph" src="../Diagrams/TIMUPER_Call_Graph.svg" /></p>
+<hr />
+<p><em>This documentation is automatically generated from the COBOL source code and is intended for system maintenance and integration purposes.</em></p>
+        </main>
+        <footer>
+            <p>Generated on 2025-07-22 16:03:01</p>
+        </footer>
+    </div>
+</body>
+</html>

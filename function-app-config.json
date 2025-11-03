@@ -1,0 +1,7 @@
+﻿{
+    "resourceGroup":  "Azure_AI_RG",
+    "storageAccount":  "waazuse1aistorage",
+    "functionAppName":  "cobol-parser-func-1474",
+    "location":  "eastus",
+    "functionAppUrl":  "https://cobol-parser-func-1474.azurewebsites.net"
+}
