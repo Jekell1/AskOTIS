@@ -96,3 +96,4 @@ _quick*.py
 check_*.py
 test_*.py
 
+cobol-function/deployment.zip
