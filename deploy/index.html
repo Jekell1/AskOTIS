@@ -8,7 +8,6 @@
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.min.js"></script>
     
     <!-- KaTeX for Math Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -1190,9 +1189,6 @@
                     <button class="example-btn" onclick="exportToExcel()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600; margin-bottom: 8px;">
                         📊 Export to Excel
                     </button>
-                    <button class="example-btn" onclick="exportToWord()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600; margin-bottom: 8px;">
-                        📄 Export to Word
-                    </button>
                     <button class="example-btn" onclick="exportToHTML()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600;">
                         🌐 Export to HTML
                     </button>
@@ -1358,106 +1354,7 @@
             }
         }
 
-        // Export conversation to Word
-        async function exportToWord() {
-            if (conversationHistory.length === 0) {
-                alert('No conversation to export. Start chatting first!');
-                return;
-            }
-
-            // Check if docx library is loaded
-            if (typeof docx === 'undefined' || !docx.Document) {
-                console.error('docx library is not available. Checking window.docx:', window.docx);
-                alert('Word export library not loaded. Please refresh the page and try again.\n\nIf the problem persists, try using "Export to Excel" instead.');
-                return;
-            }
-
-            try {
-                const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = docx;
-
-                // Build document sections
-                const sections = [];
-
-                // Title
-                sections.push(
-                    new Paragraph({
-                        text: "OTIS RAG Conversation Export",
-                        heading: HeadingLevel.TITLE,
-                        alignment: AlignmentType.CENTER,
-                        spacing: { after: 400 }
-                    })
-                );
-
-                // Metadata
-                sections.push(
-                    new Paragraph({
-                        children: [
-                            new TextRun({
-                                text: `Export Date: ${new Date().toLocaleString()}`,
-                                break: 1
-                            }),
-                            new TextRun({
-                                text: `Total Turns: ${conversationHistory.length}`,
-                                break: 1
-                            }),
-                            new TextRun({
-                                text: `Session ID: ${sessionId || 'N/A'}`,
-                                break: 1
-                            })
-                        ],
-                        spacing: { after: 400 }
-                    })
-                );
-
-                // Add each conversation turn
-                conversationHistory.forEach((turn, index) => {
-                    const question = turn.question || turn.user || '';
-                    const answer = turn.answer || turn.assistant || '';
-                    
-                    // Question
-                    sections.push(
-                        new Paragraph({
-                            text: `Q${index + 1}: ${question}`,
-                            heading: HeadingLevel.HEADING_2,
-                            spacing: { before: 200, after: 100 }
-                        })
-                    );
-
-                    // Answer (split into paragraphs for better formatting)
-                    const answerParagraphs = answer.split('\n\n');
-                    answerParagraphs.forEach(para => {
-                        sections.push(
-                            new Paragraph({
-                                text: para,
-                                spacing: { after: 200 }
-                            })
-                        );
-                    });
-                });
-
-                // Create document
-                const doc = new Document({
-                    sections: [{
-                        properties: {},
-                        children: sections
-                    }]
-                });
-
-                // Generate and download
-                const blob = await Packer.toBlob(doc);
-                const filename = `otis-conversation-${new Date().toISOString().split('T')[0]}.docx`;
-                saveAs(blob, filename);
-
-                print(`✅ Exported ${conversationHistory.length} conversation turns to ${filename}`, 'success');
-            } catch (error) {
-                console.error('Export to Word failed:', error);
-                alert('Failed to export to Word: ' + error.message + '\n\nTrying HTML export instead...');
-                // Fallback to HTML export
-                exportToHTML();
-            }
-        }
-
-        // Simple HTML export as fallback (opens in new tab, can be saved as Word doc)
+        // Simple HTML export (opens in new tab, can be saved)
         function exportToHTML() {
             if (conversationHistory.length === 0) {
                 alert('No conversation to export. Start chatting first!');
