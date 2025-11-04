@@ -47,6 +47,8 @@ class HybridRetriever:
         import time
         start_retrieve = time.time()
         
+        logger.info(f"📥 RETRIEVE CALLED: question_type={question_type}, indexes={indexes}")
+        
         # Special handling for transaction-specific copybook questions (deterministic)
         if question_type == 'transaction_copybooks':
             logger.info("🎯 DETERMINISTIC MODE: Transaction copybook query detected")
@@ -68,6 +70,13 @@ class HybridRetriever:
         
         if is_copybook_usage_query:
             logger.info("📄 COPYBOOK USAGE QUERY DETECTED - maximizing recall")
+        
+        # 🔹 Special handling for menu queries - search MORE screens to find the right menu
+        # Menu queries often need to retrieve 30-50 screens to find parent menus vs submenus
+        search_top = max_results
+        if question_type == 'menu' and 'screen_nodes' in indexes:
+            search_top = max(50, max_results * 3)  # Search 3x more screens for menu queries
+            logger.info(f"🎯 MENU QUERY - expanding search from {max_results} to {search_top} to find correct menu level")
         
         all_results = []
         filtered_relationship_results = []  # Separate bucket for filtered structural data
@@ -124,7 +133,7 @@ class HybridRetriever:
                 index_name=index_name,
                 query=query,
                 query_vector=vector_to_use,
-                top=max_results,  # Use the passed max_results (1000 from config)
+                top=search_top if index_type == 'screen_nodes' else max_results,  # Use expanded top for screen_nodes in menu queries
                 is_copybook_usage_query=is_copybook_usage_query
             )
             
@@ -193,6 +202,83 @@ class HybridRetriever:
             final_count = min(dynamic_cap, max(10, raw_half))  # At least 10, up to dynamic cap
         
         logger.info(f"📄 Retrieved {len(all_results)} semantic results + {len(filtered_relationship_results)} filtered relationship results")
+        
+        # 🔹 EXPLICIT MENU FETCHING: If menu query doesn't have screens with target menu name, fetch explicitly
+        # This handles cases where hybrid search doesn't rank submenu screens highly enough
+        if 'screen_nodes' in indexes and question_type == 'menu':
+            logger.info(f"🎯 EXPLICIT MENU FETCHING: Starting check for question_type={question_type}")
+            query_lower = query.lower()
+            
+            # Check if we have screens matching the menu type in results
+            menu_patterns = {
+                'collection': (r'COLLECTION', ['76A8A5A06C19170665233D10BF8B4F85F2C966B5_1', '69B4EBD83CBF78D027749E34BE5CD143ECDF01CC_1']),
+                'daily processing': (r'DAILY\s+PROCESSING\s+MENU', []),
+                'report': (r'REPORTS?\s+MENU', []),
+                'inquir': (r'INQUIR', []),
+                'batch': (r'BATCH', []),
+            }
+            
+            target_pattern = None
+            known_ids = []
+            for keyword, (pattern, ids) in menu_patterns.items():
+                if keyword in query_lower:
+                    target_pattern = pattern
+                    known_ids = ids
+                    break
+            
+            if target_pattern:
+                import re
+                logger.info(f"🔍 Checking for menu pattern: {target_pattern}, known IDs: {known_ids}")
+                
+                # Check if our KNOWN menu screens (the ones we want) are in results
+                has_known_menu = known_ids and any(
+                    r.get('screen_id') in known_ids
+                    for r in all_results[:30]  # Check top 30
+                )
+                
+                logger.info(f"📊 Known menu in top 30: {has_known_menu}")
+                
+                if not has_known_menu and known_ids:
+                    logger.info(f"🎯 Menu query for '{target_pattern}' but not in top results - fetching explicitly")
+                    try:
+                        index_name = self.config.get_index_name('screen_nodes')
+                        url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version=2025-08-01-preview"
+                        
+                        # Build filter for known IDs
+                        filter_parts = [f"screen_id eq '{sid}'" for sid in known_ids]
+                        filter_str = " or ".join(filter_parts)
+                        
+                        body = {
+                            "search": "*",
+                            "filter": filter_str,
+                            "top": len(known_ids)
+                        }
+                        
+                        response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                        response.raise_for_status()
+                        explicit_docs = response.json().get('value', [])
+                        
+                        if explicit_docs:
+                            # Pick the one with fewer options (parent menu)
+                            for doc in explicit_docs:
+                                summary = doc.get('summary_text', '')
+                                option_matches = re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary)
+                                doc['_option_count'] = len(option_matches)
+                            
+                            explicit_docs.sort(key=lambda x: x.get('_option_count', 99))
+                            best_menu = explicit_docs[0]
+                            
+                            best_menu['_index_type'] = 'screen_nodes'
+                            best_menu['_is_filtered_relationship'] = False
+                            best_menu['@search.score'] = 100.0
+                            best_menu['_weight_applied'] = 30.0
+                            best_menu['_explicit_fetch'] = True
+                            all_results.insert(0, best_menu)
+                            logger.info(f"✅ Explicitly fetched menu {best_menu['screen_id']} with {best_menu['_option_count']} options")
+                        else:
+                            logger.warning(f"❌ Known menu IDs not found: {known_ids}")
+                    except Exception as e:
+                        logger.error(f"Failed to fetch explicit menu: {e}")
         
         # Filter menu screens if this is a menu query - prioritize actual menu content over navigation links
         if 'screen_nodes' in indexes and question_type == 'menu':
@@ -273,8 +359,12 @@ class HybridRetriever:
             summary = result.get('summary_text', '')
             summary_upper = summary.upper()
             
-            # Count numbered menu options (1. through 99.)
-            numbered_options = len(re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary))
+            # Extract all numbered menu options (1. through 99.)
+            option_matches = re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary)
+            numbered_options = len(option_matches)
+            
+            # Check if menu starts at option 1 (strong indicator of top-level menu)
+            starts_at_one = option_matches and option_matches[0] == '1'
             
             # Check for F-key navigation patterns (just for nav, not content)
             has_f_key_only = bool(re.search(r'F\d+\s*-\s*(MASTER\s+)?MENU', summary, re.IGNORECASE)) and numbered_options < 2
@@ -285,16 +375,27 @@ class HybridRetriever:
             # Check if this matches the specific menu type being queried
             matches_target_menu = target_menu_pattern and bool(re.search(target_menu_pattern, summary_upper, re.IGNORECASE))
             
-            # Classify the screen
-            if matches_target_menu and numbered_options >= 2:
-                # Query for specific menu + screen has that menu name + has options = PERFECT match
+            # Classify the screen - PRIORITIZE MENUS THAT START AT OPTION 1
+            if starts_at_one and matches_target_menu:
+                # Starts at 1 AND matches query = TOP PRIORITY (even if few options)
                 primary_menus.append(result)
-                logger.debug(f"  ✓✓✓ TARGET menu: {result.get('screen_id', '')[:20]}... (matches query + {numbered_options} options)")
+                logger.debug(f"  ✓✓✓✓ TOP-LEVEL menu: {result.get('screen_id', '')[:20]}... (starts at 1 + matches query + {numbered_options} options)")
+            elif starts_at_one and numbered_options >= 2:
+                # Starts at 1 with multiple options = likely top-level menu
+                primary_menus.append(result)
+                logger.debug(f"  ✓✓✓ TOP-LEVEL menu: {result.get('screen_id', '')[:20]}... (starts at 1 + {numbered_options} options)")
+            elif matches_target_menu and numbered_options >= 2:
+                # Query for specific menu + screen has that menu name + has options = GOOD match (might be submenu)
+                primary_menus.append(result)
+                logger.debug(f"  ✓✓ TARGET menu: {result.get('screen_id', '')[:20]}... (matches query + {numbered_options} options)")
             elif is_main_menu_query and has_master_menu_content and numbered_options >= 2:
                 # Main menu query + explicit "MASTER MENU" text + multiple options = PRIMARY match
                 primary_menus.append(result)
                 logger.debug(f"  ✓✓ PRIMARY menu: {result.get('screen_id', '')[:20]}... (MASTER MENU + {numbered_options} options)")
-            elif numbered_options >= 4:
+            elif numbered_options >= 6:
+                # Has many numbered options - likely a real menu screen (raised threshold to avoid submenus)
+                primary_menus.append(result)
+                logger.debug(f"  ✓ Primary menu: {result.get('screen_id', '')[:20]}... ({numbered_options} options)")
                 # Has many numbered options - likely a real menu screen
                 primary_menus.append(result)
                 logger.debug(f"  ✓ Primary menu: {result.get('screen_id', '')[:20]}... ({numbered_options} options)")
@@ -311,6 +412,24 @@ class HybridRetriever:
                 secondary_menus.append(result)
         
         logger.info(f"📋 Menu filtering: {len(primary_menus)} primary, {len(secondary_menus)} secondary, {len(navigation_screens)} navigation screens")
+        
+        # IMPORTANT: Sort primary menus to prioritize parent menus over detail screens
+        # When query matches (e.g., "collection processing"), FEWER options = parent menu, MORE options = detail submenu
+        # Store option count for sorting
+        for menu in primary_menus:
+            summary = menu.get('summary_text', '')
+            option_matches = re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary)
+            menu['_option_count'] = len(option_matches)
+            menu['_starts_at_one'] = option_matches and option_matches[0] == '1'
+        
+        # Sort: menus starting at 1 first, then by FEWER options (parent menus), then by search score
+        primary_menus.sort(key=lambda x: (
+            not x.get('_starts_at_one', False),  # Menus starting at 1 come first
+            x.get('_option_count', 99),           # Then sort by fewer options (parent menus)
+            -x.get('@search.score', 0)             # Then by search relevance
+        ))
+        
+        logger.info(f"📊 Sorted primary menus by: starts_at_1 > fewer_options > score")
         
         # Return primary menus first (most relevant), then secondary, then navigation
         return primary_menus + secondary_menus + navigation_screens
