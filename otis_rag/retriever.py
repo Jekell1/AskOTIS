@@ -252,8 +252,26 @@ class HybridRetriever:
         query_lower = query.lower()
         is_main_menu_query = 'main' in query_lower and 'menu' in query_lower
         
+        # Extract specific menu type from query for targeted matching
+        menu_type_keywords = {
+            'daily processing': r'DAILY\s+PROCESSING\s+MENU',
+            'report': r'REPORTS?\s+MENU',
+            'inquir': r'INQUIR(Y|IES)\s+MENU',
+            'collection': r'COLLECTION\s+(PROCESSING\s+)?MENU',
+            'batch': r'BATCH\s+(PROCESSING\s+)?MENU',
+            'optional': r'OPTIONAL\s+MODULES',
+            'addon': r'ADD.?ON|INSURANCE|DEALER'
+        }
+        
+        target_menu_pattern = None
+        for keyword, pattern in menu_type_keywords.items():
+            if keyword in query_lower:
+                target_menu_pattern = pattern
+                break
+        
         for result in results:
             summary = result.get('summary_text', '')
+            summary_upper = summary.upper()
             
             # Count numbered menu options (1. through 99.)
             numbered_options = len(re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary))
@@ -264,8 +282,15 @@ class HybridRetriever:
             # Check if this mentions "MASTER MENU" or similar as content (not just F-key)
             has_master_menu_content = bool(re.search(r'M\s*A\s*S\s*T\s*E\s*R\s+(M|ME|MEN|MENU)', summary, re.IGNORECASE))
             
+            # Check if this matches the specific menu type being queried
+            matches_target_menu = target_menu_pattern and bool(re.search(target_menu_pattern, summary_upper, re.IGNORECASE))
+            
             # Classify the screen
-            if is_main_menu_query and has_master_menu_content and numbered_options >= 2:
+            if matches_target_menu and numbered_options >= 2:
+                # Query for specific menu + screen has that menu name + has options = PERFECT match
+                primary_menus.append(result)
+                logger.debug(f"  ✓✓✓ TARGET menu: {result.get('screen_id', '')[:20]}... (matches query + {numbered_options} options)")
+            elif is_main_menu_query and has_master_menu_content and numbered_options >= 2:
                 # Main menu query + explicit "MASTER MENU" text + multiple options = PRIMARY match
                 primary_menus.append(result)
                 logger.debug(f"  ✓✓ PRIMARY menu: {result.get('screen_id', '')[:20]}... (MASTER MENU + {numbered_options} options)")
@@ -495,15 +520,68 @@ class HybridRetriever:
         When users ask about modifications/actions, they want to know business constraints
         (e.g., MAX=3 means only 3 fields modifiable), not all screen field definitions.
         
+        For menu queries, boosts specific menu name terms to improve keyword search accuracy.
+        
         This method boosts constraint and logic keywords to surface business rules first.
         """
+        import re
+        query_lower = query.lower()
+        
+        # 🔹 MENU QUERY ENHANCEMENT: Add exact menu name terms to improve keyword search
+        # This ensures hybrid search finds the right menu even if semantic similarity is low
+        if index_name == 'new_cobol_screen_nodes' and 'menu' in query_lower:
+            # Extract menu name from query and add exact terms from screen content
+            menu_boost_terms = []
+            
+            # Main/Master/Login menu
+            if any(term in query_lower for term in ['main menu', 'master menu', 'login', 'lpmenu']):
+                menu_boost_terms.extend(['MASTER MENU', 'LPMENU', 'DAILY PROCESSING', 'REPORTS', 
+                                        'INQUIRIES', 'COLLECTION PROCESSING', 'BATCH PROCESSING',
+                                        'END OF DAY', 'END OF MONTH', 'END OF YEAR'])
+            
+            # Daily Processing menu
+            elif 'daily processing' in query_lower:
+                menu_boost_terms.extend(['DAILY PROCESSING MENU', 'INQUIRIES AND ENTRY', 
+                                        'PAYMENT INQUIRY', 'CONTRACT INQUIRY'])
+            
+            # Reports menu
+            elif 'report' in query_lower and 'menu' in query_lower:
+                menu_boost_terms.extend(['REPORTS MENU', 'GENERAL REPORTS', 'PORTFOLIO REPORTS',
+                                        'FINANCIAL REPORTS', 'DAILY REPORTS'])
+            
+            # Inquiries menu
+            elif 'inquir' in query_lower:
+                menu_boost_terms.extend(['INQUIRIES MENU', 'INQUIRY', 'PAYMENT INQUIRY',
+                                        'CONTRACT INQUIRY', 'CUSTOMER INQUIRY'])
+            
+            # Collection Processing menu
+            elif 'collection' in query_lower:
+                menu_boost_terms.extend(['COLLECTION PROCESSING', 'COLLECTION MENU',
+                                        'DELINQUENCY', 'COLLECTION ENTRY'])
+            
+            # Batch Processing menu
+            elif 'batch' in query_lower:
+                menu_boost_terms.extend(['BATCH PROCESSING', 'BATCH MENU', 'BATCH JOBS',
+                                        'BATCH RUN'])
+            
+            # Optional Modules menu
+            elif 'optional' in query_lower or 'module' in query_lower:
+                menu_boost_terms.extend(['OPTIONAL MODULES', 'ADDON', 'INSURANCE',
+                                        'DEALER TRACKING'])
+            
+            # Add menu-specific boost terms to query
+            if menu_boost_terms:
+                enhanced_query = f"{query} {' '.join(menu_boost_terms)}"
+                logger.info(f"🎯 Enhanced menu query with {len(menu_boost_terms)} boost terms")
+                return enhanced_query
+        
         # Detect if query is asking about user actions/modifications
         action_keywords = [
             'modify', 'modifi', 'change', 'update', 'edit', 
             'user can', 'user options', 'options', 'choices',
             'what fields', 'which fields', 'enter', 'input'
         ]
-        is_action_query = any(keyword in query.lower() for keyword in action_keywords)
+        is_action_query = any(keyword in query_lower for keyword in action_keywords)
         
         if not is_action_query:
             return query
