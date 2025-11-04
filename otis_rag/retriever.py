@@ -844,6 +844,28 @@ class HybridRetriever:
                 index_counts[idx_type] = index_counts.get(idx_type, 0) + 1
             logger.info(f"📊 Top 20 results distribution: {index_counts}")
         
+        # Normalize content field for all results before returning
+        # Different indexes use different field names (summary_text, text, content, etc.)
+        for result in sorted_results[:max_results]:
+            if 'content' not in result or not result['content']:
+                # Add content field based on index type
+                index_type = result.get('_index_type', '')
+                
+                if index_type in ('screen_nodes', 'screens'):
+                    # Screen nodes use summary_text as primary content
+                    result['content'] = result.get('summary_text') or result.get('enhanced_summary') or result.get('text') or ''
+                elif index_type == 'code':
+                    # Code chunks use 'text' field
+                    result['content'] = result.get('text') or result.get('code') or ''
+                elif index_type in ('programs', 'program_meta'):
+                    # Program metadata uses summary fields
+                    result['content'] = result.get('summary_text') or result.get('summary') or result.get('description') or ''
+                else:
+                    # Generic fallback for other indexes
+                    result['content'] = (result.get('text') or result.get('summary_text') or 
+                                       result.get('summary') or result.get('description') or 
+                                       result.get('content') or '')
+        
         return sorted_results[:max_results]
     
     def _handle_transaction_copybooks(self, query: str, max_results: int) -> List[Dict[str, Any]]:
