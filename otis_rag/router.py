@@ -284,12 +284,14 @@ class QueryRouter:
         
         # Boost screens index for menu/UI queries
         elif has_menu_intent or question_type == 'menu':
+            if 'screen_nodes' in weights:
+                weights['screen_nodes'] = 30.0  # VERY strong boost - contains actual menu option text
             if 'screens' in weights:
                 weights['screens'] = 25.0  # Very strong boost for unified screens index
             if 'ui_paths' in weights:
-                weights['ui_paths'] = 3.0
+                weights['ui_paths'] = 5.0
             if 'menu_trees' in weights:
-                weights['menu_trees'] = 3.0
+                weights['menu_trees'] = 5.0
             if 'help_fields' in weights:
                 weights['help_fields'] = 2.0  # Moderate boost for menu help
             # Suppress non-UI indexes
@@ -299,7 +301,7 @@ class QueryRouter:
                 weights['code_new'] = 0.5
             if 'transactions' in weights:
                 weights['transactions'] = 0.05  # Heavily suppress
-            logger.info(f"⚡ Applied menu boosting - screens: 25.0x, ui_paths/menu_trees: 3.0x")
+            logger.info(f"⚡ Applied menu boosting - screen_nodes: 30.0x, screens: 25.0x, ui_paths/menu_trees: 5.0x")
         
         # Boost complexity index for complexity questions
         elif question_type == 'complexity':
