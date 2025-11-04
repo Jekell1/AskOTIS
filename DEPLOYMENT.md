@@ -1,312 +1,242 @@
-# OTIS RAG System - Deployment Guide
+# AskOTIS Deployment Guide
 
-## Overview
+## Repository Overview
 
-This guide covers deploying the OTIS RAG (Retrieval-Augmented Generation) system to Azure Functions.
+The **AskOTIS** repository now contains only the essential files needed to build and run the application. All test scripts, analysis tools, and temporary files have been removed.
 
-## Prerequisites
+## What's Included
 
-- Azure CLI installed and configured
-- Azure Functions Core Tools installed
-- Python 3.10+ installed locally
-- Azure subscription with appropriate permissions
-- Git repository with latest changes committed
+### 📁 Core Components
 
-## Important: Repository Structure
+1. **`/deploy`** - Static Web App Frontend
+   - `index.html` - Main chat interface
+   - `maintenance.html` - Maintenance page
+   - `staticwebapp.config.json` - Authentication and routing configuration
 
-The repository contains **two separate Azure Functions projects**:
+2. **`/cobol-function`** - Azure Functions Backend
+   - `function_app.py` - Main HTTP trigger function
+   - `requirements.txt` - Python dependencies
+   - `host.json` - Function host configuration
 
-1. **Repository Root** (`/`) - **MAIN RAG SYSTEM** ✅
-   - Contains: `function_app.py` with RAG endpoints
-   - Endpoints: `/api/query`, `/api/health`, `/api/stats`
-   - **This is what you want to deploy for RAG functionality**
+3. **`/otis_rag`** - RAG System
+   - `rag.py` - Main RAG orchestrator
+   - `retriever.py` - Search and retrieval logic
+   - `router.py` - Query classification and routing
+   - `generator.py` - Response generation with GPT-4
+   - `config.py` - Configuration management
+   - `memory.py` - Conversation memory
+   - `prompts.py` - System prompts
 
-2. **cobol-function/** - Separate COBOL parsing utility ❌
-   - Contains: `function_app.py` with only `/api/cobol-parse`
-   - **Do NOT deploy from this directory for RAG**
+4. **Configuration Files**
+   - `.env.template` - Environment variables template
+   - `.gitignore` - Git ignore rules
+   - `README.md` - Main documentation
 
-## Deployment Steps
+## Quick Deployment
 
-### Step 1: Verify Your Location
+### Prerequisites
 
-**CRITICAL**: Always deploy from the **repository root**, not from subdirectories.
+```bash
+# Install Azure CLI
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-```powershell
-# Navigate to repository root
-cd c:\Users\jeff.childers\Documents\OTISCodeResearcher
+# Install Azure Functions Core Tools
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-# Verify you're in the correct location (should show host.json)
-ls host.json
+# Install Azure Static Web Apps CLI
+npm install -g @azure/static-web-apps-cli
 ```
 
-### Step 2: Verify Configuration Changes
+### Step 1: Configure Environment
 
-Before deploying, ensure your configuration changes are committed:
+```bash
+# Copy template and edit with your values
+cp .env.template .env
 
-```powershell
-# Check for uncommitted changes
-git status
-
-# If you have changes to otis_rag/config.py or other files, commit them:
-git add otis_rag/config.py
-git commit -m "Update RAG configuration"
-git push origin main
+# Required variables:
+# - AZURE_OPENAI_ENDPOINT
+# - AZURE_OPENAI_KEY
+# - AZURE_SEARCH_ENDPOINT
+# - AZURE_SEARCH_ADMIN_KEY
 ```
 
-### Step 3: Deploy to Azure Functions
+### Step 2: Deploy Azure Function
 
-```powershell
-# Deploy from repository root
-func azure functionapp publish func-otis-rag --python
+```bash
+cd cobol-function
+
+# Login to Azure
+az login
+
+# Create function app (if not exists)
+az functionapp create \
+  --name <your-function-app-name> \
+  --storage-account <your-storage-account> \
+  --resource-group <your-resource-group> \
+  --consumption-plan-location eastus2 \
+  --runtime python \
+  --runtime-version 3.11 \
+  --functions-version 4
+
+# Deploy function
+func azure functionapp publish <your-function-app-name>
 ```
 
-**Expected Output:**
-```
-Getting site publishing info...
-Creating archive for current directory...
-Upload completed successfully.
-Deployment completed successfully.
-Syncing triggers...
-Functions in func-otis-rag:
-    health - [httpTrigger] https://func-otis-rag.azurewebsites.net/api/health
-    query - [httpTrigger] https://func-otis-rag.azurewebsites.net/api/query
-    stats - [httpTrigger] https://func-otis-rag.azurewebsites.net/api/stats
-```
+### Step 3: Deploy Static Web App
 
-**⚠️ If you only see `cobol-parse` function**, you deployed from the wrong directory!
+```bash
+# Get deployment token
+az staticwebapp secrets list \
+  --name AskOTIS \
+  --query "properties.apiKey" \
+  --output tsv
 
-### Step 4: Verify Deployment
-
-Wait 15-30 seconds for the function app to warm up, then test:
-
-```powershell
-# Test health endpoint
-Invoke-RestMethod -Uri "https://func-otis-rag.azurewebsites.net/api/health"
-
-# Expected response:
-# status          : healthy
-# rag_initialized : True
-# message         : OTIS RAG system is operational
+# Deploy
+npx @azure/static-web-apps-cli deploy ./deploy \
+  --deployment-token <your-token>
 ```
 
-```powershell
-# Test stats endpoint
-Invoke-RestMethod -Uri "https://func-otis-rag.azurewebsites.net/api/stats"
+### Step 4: Configure Authentication
 
-# Expected response includes:
-# - indexes_configured: 21
-# - chat_model: gpt-4.1
-# - embedding_model: text-embedding-3-large
-# - status: operational
+1. Create Azure AD App Registration (see `IT-Request-AskOTIS-AppRegistration.txt` in old repo)
+2. Add application settings to Static Web App:
+
+```bash
+az staticwebapp appsettings set \
+  --name AskOTIS \
+  --setting-names \
+    AZURE_CLIENT_ID=<client-id> \
+    AZURE_CLIENT_SECRET=<client-secret>
 ```
 
-### Step 5: Test the Chat Interface
+## Environment Variables Reference
 
-Open `otis-rag-chat.html` in your browser and verify:
+### Required for Function
 
-1. Status shows: "✅ Connected - System Operational"
-2. System Info panel displays index count, models
-3. Try an example question to test the `/api/query` endpoint
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint | `https://xxx.openai.azure.com/` |
+| `AZURE_OPENAI_KEY` | Azure OpenAI API key | `abc123...` |
+| `AZURE_OPENAI_DEPLOYMENT` | GPT model deployment name | `gpt-4` |
+| `AZURE_SEARCH_ENDPOINT` | Azure AI Search endpoint | `https://xxx.search.windows.net` |
+| `AZURE_SEARCH_ADMIN_KEY` | Search admin key | `xyz789...` |
 
-## Common Configuration Changes
+### Optional
 
-### Increasing Retrieval Limits
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `OPENAI_EMBEDDING_DEPLOYMENT` | Embedding model | `text-embedding-3-large` |
+| `OPENAI_EMBEDDING_DIMENSIONS` | Embedding dimensions | `3072` |
+| `LOG_LEVEL` | Logging level | `INFO` |
 
-If you need to retrieve more results from Azure AI Search:
+## Testing Locally
 
-**File 1**: `otis_rag/config.py`
+### Test RAG System
 
-**Line 63**:
-```python
-self.max_results_per_index = 10000  # Increased to 10k to retrieve all 9,678 programs when needed
+```bash
+cd otis_rag
+pip install -r requirements.txt
+python cli.py
 ```
 
-**Why**: The default was 1000, which limited how many programs could be retrieved.
+### Test Azure Function
 
-**File 2**: `otis_rag/retriever.py`
-
-**Lines 58-69** (in the `retrieve` method):
-```python
-# Deduplicate and rank by relevance
-# For queries requesting "all" items, return everything (up to max_results)
-# For targeted queries, keep half for focused results
-query_lower = query.lower()
-wants_all = any(word in query_lower for word in ['all', 'list', 'every', 'complete'])
-
-if wants_all:
-    # Return all unique results, up to max_results limit
-    final_count = max_results
-else:
-    # Keep more results to ensure business logic chunks surface
-    final_count = max(max_results, len(all_results) // 2)
+```bash
+cd cobol-function
+pip install -r requirements.txt
+func start
 ```
 
-**Why**: The retriever was limiting final results to half of what was retrieved, even for "list all" queries. This logic detects when users want comprehensive results and returns all retrieved items.
+Test with curl:
 
-**After changing**: Commit, push, and redeploy (Steps 2-3 above).
-
-## Troubleshooting
-
-### Issue: Only `cobol-parse` function appears
-
-**Problem**: You deployed from `cobol-function/` directory instead of repository root.
-
-**Solution**:
-```powershell
-# Navigate to repository root
-cd c:\Users\jeff.childers\Documents\OTISCodeResearcher
-
-# Verify correct location
-ls host.json  # Should exist
-
-# Redeploy
-func azure functionapp publish func-otis-rag --python
+```bash
+curl -X POST http://localhost:7071/api/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What does LONPF2 do?"}'
 ```
 
-### Issue: Health endpoint returns 404
+### Test Frontend Locally
 
-**Problem**: Functions haven't finished deploying or starting up.
-
-**Solution**: Wait 15-30 seconds and try again. Azure Functions can take time to warm up after deployment.
-
-### Issue: Deployment fails with Python version mismatch
-
-**Problem**: Local Python version doesn't match Azure Functions requirement.
-
-**Solution**: 
-- Local development: Python 3.10+
-- Azure Functions will use Python 3.11 (automatically handled during remote build)
-- No action needed - remote build handles version differences
-
-### Issue: Configuration changes not reflected
-
-**Problem**: Code wasn't committed before deployment.
-
-**Solution**:
-```powershell
-# Verify your changes are committed
-git status
-
-# If uncommitted, commit them
-git add otis_rag/config.py
-git commit -m "Update configuration"
-
-# Redeploy
-func azure functionapp publish func-otis-rag --python
+```bash
+cd deploy
+python -m http.server 8000
+# Open http://localhost:8000
 ```
 
-### Issue: "List all" queries still return limited results
+## Production Checklist
 
-**Problem**: Even after increasing `max_results_per_index`, queries like "list all programs" still return a limited set (e.g., 127 programs instead of 9,678).
+- [ ] All environment variables configured
+- [ ] Azure Function deployed and running
+- [ ] Static Web App deployed
+- [ ] Azure AD authentication configured
+- [ ] Search indexes populated
+- [ ] Application Insights enabled
+- [ ] Secrets rotated (after initial setup)
+- [ ] Monitoring dashboards configured
 
-**Root Cause**: The retriever has ranking logic that filters results down to half of what was retrieved, even for comprehensive queries.
+## Security Notes
 
-**Solution**: The fix is in `otis_rag/retriever.py` (see "Increasing Retrieval Limits" section above). The code now detects queries with words like "all", "list", "every", or "complete" and returns the full result set instead of filtering down.
-
-**Verification**:
-```powershell
-# After deployment, test with a comprehensive query
-# Open otis-rag-chat.html and ask: "List all COBOL programs"
-# Should return thousands of programs, not just 127
-```
-
-### Issue: ImportError or module not found
-
-**Problem**: Dependencies missing from `requirements.txt`.
-
-**Solution**: Ensure all required packages are listed in `requirements.txt` at repository root:
-```
-azure-functions
-azure-search-documents
-azure-ai-inference
-openai
-tiktoken
-requests
-werkzeug
-# ... other dependencies
-```
-
-## Deployment Checklist
-
-Before each deployment:
-
-- [ ] Navigate to repository root (not `cobol-function/`)
-- [ ] Verify `host.json` exists in current directory
-- [ ] Commit all configuration changes
-- [ ] Push changes to GitHub (optional but recommended)
-- [ ] Run deployment command: `func azure functionapp publish func-otis-rag --python`
-- [ ] Wait for deployment to complete (~1-2 minutes)
-- [ ] Verify all three endpoints appear in output: health, query, stats
-- [ ] Test health endpoint after 15-30 second warm-up
-- [ ] Test stats endpoint
-- [ ] Test query endpoint via chat interface
-
-## File Structure Reference
-
-```
-OTISCodeResearcher/                    # ← DEPLOY FROM HERE
-├── function_app.py                    # Main RAG endpoints
-├── host.json                          # Azure Functions config
-├── requirements.txt                   # Python dependencies
-├── otis_rag/
-│   ├── config.py                      # RAG configuration
-│   ├── retriever.py                   # Search logic
-│   └── ...
-├── otis-rag-chat.html                 # Chat interface
-└── cobol-function/                    # ← DO NOT DEPLOY FROM HERE
-    ├── function_app.py                # Separate COBOL parser
-    └── requirements.txt
-```
-
-## Environment Variables
-
-The function app requires these environment variables in Azure:
-
-- `AZURE_SEARCH_ENDPOINT` - Azure AI Search service URL
-- `AZURE_SEARCH_KEY` - Azure AI Search admin key
-- `AZURE_OPENAI_ENDPOINT` - Azure OpenAI service URL (or GitHub Models endpoint)
-- `AZURE_OPENAI_KEY` - Azure OpenAI API key (or GitHub token)
-
-These are configured in the Azure Portal under Function App → Configuration → Application settings.
+⚠️ **IMPORTANT**: 
+- Never commit `.env` file
+- Never hardcode secrets in code
+- Rotate keys regularly
+- Use Azure Key Vault for production secrets
+- Enable Azure AD authentication before going live
 
 ## Monitoring
 
-After deployment, monitor your function app:
+### View Function Logs
 
-1. **Azure Portal**: Function App → Monitor → Logs
-2. **Application Insights**: If enabled, provides detailed telemetry
-3. **Debug Console**: The chat interface has a built-in debug console (📋 button)
-
-## Rollback
-
-If deployment causes issues:
-
-```powershell
-# Revert code changes
-git revert HEAD
-
-# Redeploy
-func azure functionapp publish func-otis-rag --python
+```bash
+az functionapp logs tail \
+  --name <your-function-app> \
+  --resource-group <your-resource-group>
 ```
 
-## Production Considerations
+### View Static Web App Logs
 
-1. **Scaling**: Azure Functions automatically scales based on load
-2. **Performance**: First request after idle may be slow (cold start)
-3. **Costs**: Monitor usage in Azure Portal - Consumption plan charges per execution
-4. **Security**: Use Azure Key Vault for sensitive credentials instead of app settings
-5. **CI/CD**: Consider setting up GitHub Actions for automated deployments
+```bash
+az staticwebapp logs \
+  --name AskOTIS \
+  --resource-group <your-resource-group>
+```
+
+## Troubleshooting
+
+### Function Not Responding
+
+1. Check function logs in Azure Portal
+2. Verify environment variables are set
+3. Check Application Insights for errors
+
+### Search Not Working
+
+1. Verify search endpoint and key
+2. Check indexes exist: `az search index list`
+3. Verify documents in index
+
+### Authentication Issues
+
+1. Check Azure AD app registration
+2. Verify redirect URIs match
+3. Ensure client secret hasn't expired
 
 ## Support
 
 For issues or questions:
-- Check Azure Functions logs in Azure Portal
-- Review debug console output in chat interface
-- Verify all environment variables are configured correctly
-- Ensure Azure AI Search and OpenAI services are operational
+- Email: jeff.childers@worldacceptance.com
+- Teams: Jeff Childers
+
+## Next Steps After Deployment
+
+1. Test the application thoroughly
+2. Monitor Application Insights for errors
+3. Set up alerts for failures
+4. Configure backup and disaster recovery
+5. Document any customizations
 
 ---
 
-**Last Updated**: October 21, 2025  
-**Function App**: func-otis-rag.azurewebsites.net  
-**Python Version**: 3.10 (local) / 3.11 (Azure)
+**Last Updated**: November 3, 2025
+**Version**: 1.0
+**Status**: Production Ready ✅

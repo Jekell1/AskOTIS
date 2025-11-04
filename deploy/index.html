@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Maintenance - AskOTIS</title>
+            <title>Ask OTIS</title>
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,39 +28,2677 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0;
             padding: 20px;
         }
+
         .container {
             background: white;
             border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 1400px;
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
         }
-        h1 {
-            color: #667eea;
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Chat Area */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Feedback Bar at Top */
+        .feedback-bar {
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .feedback-bar-text {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 0;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 13px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+        }
+
+        .message {
             margin-bottom: 20px;
-            font-size: 2.5em;
+            display: flex;
+            gap: 15px;
+            animation: slideIn 0.3s ease-out;
         }
-        p {
-            color: #666;
-            font-size: 1.2em;
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message.user .avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.assistant .avatar {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 15px;
             line-height: 1.6;
         }
-        .icon {
-            font-size: 4em;
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 15px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px 15px 15px 0;
+        }
+
+        .message-content pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .message-content code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .message-content pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        /* File hyperlink styles */
+        .message-content .file-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #667eea;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            padding: 1px 0;
+        }
+
+        .message-content .file-link:hover {
+            color: #764ba2;
+            border-bottom-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 3px;
+            padding: 1px 4px;
+        }
+
+        .message-content .file-link::before {
+            content: "📄 ";
+            font-size: 0.9em;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 15px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        /* Help Modal Styles */
+        .help-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .help-modal.active {
+            display: flex;
+        }
+
+        .help-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .help-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .help-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .help-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .help-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .help-body {
+            padding: 32px;
+        }
+
+        .help-section {
+            margin-bottom: 32px;
+        }
+
+        .help-section h3 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-section p {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .help-section ul {
+            color: #4b5563;
+            line-height: 1.8;
+            margin-left: 20px;
+        }
+
+        .help-section li {
+            margin-bottom: 8px;
+        }
+
+        .help-example {
+            background: #f3f4f6;
+            border-left: 4px solid #667eea;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .help-tip {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+
+        .help-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .examples {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 0;
+        }
+
+        .example-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            text-align: left;
+            color: #4b5563;
+            width: 100%;
+        }
+
+        .example-btn:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+
+        .input-container {
+            padding: 20px 30px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            border-top: 1px solid #c7d2fe;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .feedback-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ef4444;
+            background: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feedback-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        .feedback-btn:active {
+            transform: scale(0.95);
+        }
+
+        .feedback-btn.sent {
+            background: #10b981;
+            border-color: #10b981;
+            cursor: default;
+        }
+
+        .feedback-btn.sent:hover {
+            transform: none;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #c7d2fe;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            background: white;
+        }
+
+        #userInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #sendBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #sendBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .welcome-message h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+
+        .welcome-message p {
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 20px;
+            border-radius: 10px;
             margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .stats-panel {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .stats-panel strong {
+            color: #374151;
+        }
+
+        /* Scrolling Print Output */
+        .print-output {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 400px;
+            max-height: 300px;
+            background: rgba(30, 41, 59, 0.95);
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .print-output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .print-output-title {
+            font-weight: bold;
+            color: #a78bfa;
+            font-size: 13px;
+        }
+
+        .print-output-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+        }
+
+        .print-output-close:hover {
+            color: #f87171;
+        }
+
+        .print-line {
+            margin: 4px 0;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .print-line.info {
+            color: #60a5fa;
+        }
+
+        .print-line.success {
+            color: #4ade80;
+        }
+
+        .print-line.warning {
+            color: #fbbf24;
+        }
+
+        .print-line.error {
+            color: #f87171;
+        }
+
+        .print-line.timestamp {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* Toggle button */
+        .print-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: all 0.3s;
+        }
+
+        .print-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+
+        .print-toggle.active {
+            display: none;
+        }
+
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar,
+        .print-output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-track,
+        .print-output::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .print-output::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-container::-webkit-scrollbar-thumb,
+        .print-output::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .print-output::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover,
+        .print-output::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .print-output::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Professional Table Styling */
+        .message table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .message thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .message td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .message tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .message tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .message tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Alternating row colors */
+        .message tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .message tbody tr:nth-child(even):hover {
+            background-color: #f1f3f5;
+        }
+
+        /* Responsive table wrapper */
+        .message table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                border-radius: 0;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .message table {
+                font-size: 0.8rem;
+            }
+            
+            .message th,
+            .message td {
+                padding: 10px 12px;
+            }
+        }
+
+        /* SVG Container Styling */
+        .svg-container {
+            margin: 1.5rem 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Prevent text overflow in SVG diagrams */
+        .svg-container svg text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Make foreignObject text wrappable if present */
+        .svg-container svg foreignObject {
+            overflow: hidden;
+        }
+
+        .svg-container svg foreignObject div {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-size: 12px;
+            line-height: 1.3;
+            padding: 2px;
+        }
+
+        .svg-container.dark-mode {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        /* KaTeX Math Expression Styling */
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 10px 0;
+            margin: 1rem 0;
+        }
+
+        .katex {
+            font-size: 1.1em;
+        }
+
+        /* Wrap long math expressions */
+        .katex-display > .katex {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: inline-block;
+        }
+
+        /* Make inline math not break layout */
+        .katex-html {
+            white-space: normal;
+        }
+
+        /* Add scrollbar styling for math overflow */
+        .katex-display::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .katex-display::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .katex-display::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .katex-display::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* SVG responsive sizing */
+        @media (max-width: 768px) {
+            .svg-container {
+                padding: 15px;
+                min-height: 150px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">🔧</div>
-        <h1>Under Maintenance</h1>
-        <p>AskOTIS is currently undergoing maintenance and configuration updates.</p>
-        <p>Please check back soon.</p>
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-content">
+            <div class="help-header">
+                <h2>📚 How to Use OTIS RAG System</h2>
+                <button class="help-close" onclick="closeHelp()">×</button>
+            </div>
+            <div class="help-body">
+                <div class="help-section">
+                    <h3>🎯 What Can I Ask?</h3>
+                    <p>This system has deep knowledge of your OTIS COBOL codebase. You can ask about:</p>
+                    <ul>
+                        <li><strong>Programs:</strong> "What does LPSMNU do?" or "Show me programs that handle daily processing"</li>
+                        <li><strong>Copybooks:</strong> "What data structures are in CUSTREC?" or "Find copybooks used by BILLING"</li>
+                        <li><strong>Dependencies:</strong> "What programs call VALIDATE?" or "Show all dependencies for LPSMNU"</li>
+                        <li><strong>Data Flow:</strong> "How does customer data flow through the system?"</li>
+                        <li><strong>Menu Navigation:</strong> "What options are in LPMENU?" or "How do I reach the billing screen?"</li>
+                        <li><strong>Code Patterns:</strong> "Find programs that perform file I/O" or "Which programs use CICS commands?"</li>
+                        <li><strong>Screens & UI:</strong> "What screens are available?" or "Show me UI paths for customer lookup"</li>
+                        <li><strong>Screen Fields & Help:</strong> "What does the FB field do?" or "How do I fill out the AULNRG screen?"</li>
+                        <li><strong>Function Keys:</strong> "What function keys are available?" or "What does F7 do on loan screens?"</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>✅ Tips for Effective Questions</h3>
+                    <div class="help-tip">
+                        <strong>💡 Be Specific:</strong> Instead of "Tell me about programs", ask "What programs handle invoice processing?"
+                    </div>
+                    <div class="help-example">
+                        ❌ Vague: "Show me some code"<br>
+                        ✅ Specific: "Show me the code in VALIDATE that checks account numbers"
+                    </div>
+                    <ul>
+                        <li><strong>Use program names:</strong> Reference specific programs when you know them (e.g., "LPSMNU", "CUSTMAST")</li>
+                        <li><strong>Ask about relationships:</strong> "What does X call?" or "What calls X?"</li>
+                        <li><strong>Request context:</strong> "Explain how BILLING interacts with PAYMENT"</li>
+                        <li><strong>Follow up:</strong> Build on previous answers with "Tell me more about that" or "What else uses that copybook?"</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🎓 Question Difficulty Levels</h3>
+                    <p>The suggested questions are categorized by difficulty:</p>
+                    <ul>
+                        <li><strong>🟢 Easy:</strong> Direct lookups (e.g., "What programs exist?", "Show copybooks")</li>
+                        <li><strong>🟡 Medium:</strong> Single-hop relationships (e.g., "What does LPSMNU call?", "Find dependencies")</li>
+                        <li><strong>🟠 Hard:</strong> Multi-hop analysis (e.g., "Trace data flow through 3 programs", "Find circular dependencies")</li>
+                        <li><strong>🔴 Expert:</strong> Complex reasoning (e.g., "Compare architectural patterns", "Identify refactoring opportunities")</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>🔍 What Data is Indexed?</h3>
+                    <p>The system searches across 22 specialized indexes including:</p>
+                    <ul>
+                        <li><strong>Program Metadata:</strong> Names, descriptions, purposes, line counts</li>
+                        <li><strong>Program Dependencies:</strong> Which programs call which, copybook usage</li>
+                        <li><strong>Program Flows:</strong> Execution paths and call sequences</li>
+                        <li><strong>Code Chunks:</strong> Actual source code segments with context</li>
+                        <li><strong>Data Items:</strong> Variables, data structures, field definitions</li>
+                        <li><strong>Copybooks:</strong> Reusable code libraries and data definitions</li>
+                        <li><strong>Screen Nodes:</strong> UI screens and their properties</li>
+                        <li><strong>UI Paths:</strong> Navigation routes through the application</li>
+                        <li><strong>Menu Trees:</strong> Menu hierarchies and option mappings</li>
+                        <li><strong>Help Fields (24K+ fields):</strong> Field-level usage instructions, valid values, and function key references for all screens</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>💡 Screen & Field Help (NEW)</h3>
+                    <p><strong>24,229 field-level help instructions</strong> are now available! Ask about:</p>
+                    
+                    <div class="help-example">
+                        <strong>Field-Specific Questions (Best Results):</strong><br>
+                        • "What does the FB field do?"<br>
+                        • "What do I enter in the PROCEEDS1 field?"<br>
+                        • "Explain the ENDDATE field"<br>
+                        • "What are valid values for CONFID?"<br>
+                        • "Is the PRU field required?"
+                    </div>
+
+                    <div class="help-example">
+                        <strong>Screen Usage Questions:</strong><br>
+                        • "How do I fill out the AULNRG screen?"<br>
+                        • "What fields are on the AULNRG screen?"<br>
+                        • "What do I enter on the AULNRG screen?"<br>
+                        • "Show me AULNRG field instructions"
+                    </div>
+
+                    <div class="help-example">
+                        <strong>Function Key Questions:</strong><br>
+                        • "What function keys are available on loan screens?"<br>
+                        • "What does F7 do?"<br>
+                        • "What keyboard shortcuts can I use?"<br>
+                        • "How do I exit using function keys?"
+                    </div>
+
+                    <p><strong>Coverage by Module:</strong></p>
+                    <ul>
+                        <li>LP (Loan Processing): 6,214 fields</li>
+                        <li>SP (Savings Processing): 5,924 fields</li>
+                        <li>MN (Member/Account): 4,112 fields</li>
+                        <li>GB (General Banking): 2,815 fields</li>
+                        <li>Other modules: ~7,000 fields</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>⚡ Advanced Features</h3>
+                    <ul>
+                        <li><strong>Recursive Search:</strong> The system can trace dependencies multiple levels deep</li>
+                        <li><strong>Context Awareness:</strong> Follow-up questions remember previous conversation context</li>
+                        <li><strong>Semantic Understanding:</strong> Ask in natural language - no need for exact syntax</li>
+                        <li><strong>Export Results:</strong> Save conversations to Excel, Word, or HTML for documentation</li>
+                        <li><strong>Suggested Questions:</strong> Click any suggested question to try it instantly</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>💬 Report Incorrect Answers</h3>
+                    <p><strong>Help us improve!</strong> If you receive an incorrect or inaccurate answer, click the ☹️ button (located to the left of the chat box) to report it.</p>
+                    <ul>
+                        <li><strong>When to use:</strong> Only when the answer is wrong or inaccurate</li>
+                        <li><strong>What gets captured:</strong> Your question, the answer provided, and the context used</li>
+                        <li><strong>Purpose:</strong> Helps us identify and fix issues with answer quality</li>
+                    </ul>
+                    <p>Your feedback is invaluable for improving the system!</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>📊 Export Options</h3>
+                    <ul>
+                        <li><strong>� Excel Export:</strong> Structured spreadsheet with conversation turns and metadata</li>
+                        <li><strong>🌐 HTML Export:</strong> Browser-viewable format that can be printed to PDF</li>
+                    </ul>
+                    <p>All exports include timestamps, turn numbers, and full conversation history.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>🚀 Example Workflows</h3>
+                    
+                    <div class="help-example">
+                        <strong>Understanding a Program:</strong><br>
+                        1. "What does LPSMNU do?"<br>
+                        2. "What copybooks does it use?"<br>
+                        3. "Show me the code that handles menu options"<br>
+                        4. "What programs can LPSMNU call?"
+                    </div>
+
+                    <div class="help-example">
+                        <strong>Tracing Data Flow:</strong><br>
+                        1. "Which programs work with customer records?"<br>
+                        2. "Show me the CUSTREC copybook structure"<br>
+                        3. "How does customer data get validated?"<br>
+                        4. "What programs update customer information?"
+                    </div>
+
+                    <div class="help-example">
+                        <strong>Impact Analysis:</strong><br>
+                        1. "What programs call VALIDATE?"<br>
+                        2. "If I change VALIDATE, what's affected?"<br>
+                        3. "Show me all dependencies recursively"<br>
+                        4. "Which screens would be impacted?"
+                    </div>
+
+                    <div class="help-example">
+                        <strong>Screen & Field Help (NEW):</strong><br>
+                        1. "How do I use the AULNRG screen?"<br>
+                        2. "What does the FB field do?"<br>
+                        3. "What valid values can I enter in CONFID?"<br>
+                        4. "What function keys are available on this screen?"
+                    </div>
+                </div>
+
+                <div class="help-section">
+                    <h3>⚠️ Limitations</h3>
+                    <div class="help-warning">
+                        <strong>⚠️ Note:</strong> This system provides information based on indexed COBOL code. It cannot execute code, modify files, or access runtime data. Some complex logic may require human interpretation.
+                    </div>
+                    <ul>
+                        <li>Cannot execute or test code</li>
+                        <li>Cannot modify source files</li>
+                        <li>May not capture all dynamic/computed calls</li>
+                        <li>Responses limited to indexed data (up to May 2025)</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>💡 Getting Started</h3>
+                    <p><strong>New to the system?</strong> Try these starter questions:</p>
+                    <ul>
+                        <li>"What programs are available in the system?"</li>
+                        <li>"Show me the most commonly used copybooks"</li>
+                        <li>"What does the LPMENU program do?"</li>
+                        <li>"How many programs are in the codebase?"</li>
+                    </ul>
+                    <p>Then explore the <strong>Suggested Questions</strong> in the sidebar for more ideas!</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <span>🤖</span>
+                    Ask OTIS
+                </h2>
+                <p>COBOL Codebase Assistant</p>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    <span id="statusText">Connecting...</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="sidebar-section">
+                    <h3>❓ Help</h3>
+                    <button class="example-btn" onclick="showHelp()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: white; font-weight: 600;">
+                        📚 How to Use This System
+                    </button>
+                    <div style="margin-top: 8px; font-size: 11px; color: #6b7280;">
+                        Learn how to ask effective questions
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>📚 Example Questions</h3>
+                    <div class="examples" id="examplesList">
+                        <button class="example-btn" onclick="askExample('What does the OTIS system do?')">
+                            📚 What does the OTIS system do?
+                        </button>
+                        <button class="example-btn" onclick="askExample('Find programs that handle customer payments')">
+                            🔍 Find payment processing programs
+                        </button>
+                        <button class="example-btn" onclick="askExample('Explain how program APIPAY works')">
+                            💡 Explain program APIPAY
+                        </button>
+                        <button class="example-btn" onclick="askExample('What copybooks are used by LONPW9?')">
+                            📄 What copybooks does LONPW9 use?
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>� Session</h3>
+                    <button class="example-btn" onclick="startNewChat()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-weight: 600;">
+                        ✨ New Chat
+                    </button>
+                    <div style="margin-top: 8px; font-size: 11px; color: #6b7280;">
+                        <span id="sessionInfo">Session: <span id="currentSessionId">-</span></span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>📥 Export</h3>
+                    <button class="example-btn" onclick="exportToExcel()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600; margin-bottom: 8px;">
+                        📊 Export to Excel
+                    </button>
+                    <button class="example-btn" onclick="exportToHTML()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600;">
+                        🌐 Export to HTML
+                    </button>
+                    <div style="margin-top: 8px; font-size: 11px; color: #6b7280;">
+                        Download conversation history
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-area">
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-message">
+                    <h2>Welcome! 👋</h2>
+                    <p>I can help you understand your OTIS COBOL codebase.<br>Choose an example from the sidebar or ask your own question below.</p>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="avatar">🤖</div>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <button 
+                    class="feedback-btn" 
+                    id="feedbackBtn" 
+                    onclick="reportBadAnswer()" 
+                    title="Report a bad answer"
+                    disabled
+                >
+                    ☹️
+                </button>
+                <input 
+                    type="text" 
+                    id="userInput" 
+                    placeholder="Ask me anything about your OTIS codebase..." 
+                    onkeypress="if(event.key === 'Enter') sendMessage()"
+                >
+                <button id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scrolling Print Output -->
+    <button class="print-toggle" id="printToggle" onclick="togglePrint()" title="Show Debug Console">
+        📋
+    </button>
+    <div class="print-output" id="printOutput" style="display: none;">
+        <div class="print-output-header">
+            <span class="print-output-title">🖥️ Debug Console</span>
+            <button class="print-output-close" onclick="togglePrint()">×</button>
+        </div>
+        <div id="printContent"></div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://func-otis-rag.azurewebsites.net';
+        const ENABLE_STREAMING = true;  // Re-enabled with proper fix (Azure Functions limitation)
+        const ENABLE_PERSISTENCE = true;  // Enable conversation memory persistence
+        
+        let conversationHistory = [];
+        let systemStats = null;
+        let sessionId = null;
+        let lastAnswer = null;  // Track last answer for feedback
+        let lastContext = null;  // Track context used for last answer
+        let lastQuestion = null;  // Track last question
+        
+        // Initialize or retrieve session ID
+        function getSessionId() {
+            if (!ENABLE_PERSISTENCE) return null;
+            
+            // Check if we already have a session ID in memory
+            if (sessionId) return sessionId;
+            
+            // Try to get from localStorage
+            let storedSessionId = localStorage.getItem('otis_session_id');
+            
+            if (!storedSessionId) {
+                // Generate new session ID (format: user_timestamp_random)
+                const timestamp = Date.now();
+                const random = Math.random().toString(36).substring(2, 9);
+                storedSessionId = `user_${timestamp}_${random}`;
+                localStorage.setItem('otis_session_id', storedSessionId);
+                print(`🆔 Generated new session ID: ${storedSessionId}`, 'success');
+            } else {
+                print(`🆔 Using existing session ID: ${storedSessionId}`, 'info');
+            }
+            
+            sessionId = storedSessionId;
+            return sessionId;
+        }
+        
+        // Function to clear session (for testing or user reset)
+        function clearSession() {
+            localStorage.removeItem('otis_session_id');
+            sessionId = null;
+            conversationHistory = [];
+            print('🔄 Session cleared', 'info');
+        }
+        
+        // Export conversation to Excel
+        function exportToExcel() {
+            if (conversationHistory.length === 0) {
+                alert('No conversation to export. Start chatting first!');
+                return;
+            }
+
+            try {
+                // Prepare data for Excel
+                const data = conversationHistory.map((turn, index) => {
+                    const question = turn.question || turn.user || '';
+                    const answer = turn.answer || turn.assistant || '';
+                    return {
+                        'Turn': index + 1,
+                        'Question': question,
+                        'Answer': answer.substring(0, 32000), // Excel cell limit
+                        'Timestamp': new Date().toISOString()
+                    };
+                });
+
+                // Create worksheet
+                const ws = XLSX.utils.json_to_sheet(data);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { wch: 6 },   // Turn
+                    { wch: 50 },  // Question
+                    { wch: 100 }, // Answer
+                    { wch: 20 }   // Timestamp
+                ];
+
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Conversation");
+
+                // Add metadata sheet
+                const metadata = [
+                    { Property: 'Export Date', Value: new Date().toLocaleString() },
+                    { Property: 'Total Turns', Value: conversationHistory.length },
+                    { Property: 'Session ID', Value: sessionId || 'N/A' },
+                    { Property: 'System', Value: 'OTIS RAG' }
+                ];
+                const wsMetadata = XLSX.utils.json_to_sheet(metadata);
+                XLSX.utils.book_append_sheet(wb, wsMetadata, "Metadata");
+
+                // Generate filename
+                const filename = `otis-conversation-${new Date().toISOString().split('T')[0]}.xlsx`;
+                
+                // Download
+                XLSX.writeFile(wb, filename);
+                
+                print(`✅ Exported ${conversationHistory.length} conversation turns to ${filename}`, 'success');
+            } catch (error) {
+                console.error('Export to Excel failed:', error);
+                alert('Failed to export to Excel: ' + error.message);
+            }
+        }
+
+        // Simple HTML export (opens in new tab, can be saved)
+        function exportToHTML() {
+            if (conversationHistory.length === 0) {
+                alert('No conversation to export. Start chatting first!');
+                return;
+            }
+
+            try {
+                // Build HTML document
+                let html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OTIS RAG Conversation Export</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px; }
+        h1 { color: #667eea; text-align: center; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .metadata { background: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0; }
+        .turn { margin: 30px 0; border-left: 4px solid #667eea; padding-left: 20px; }
+        .question { font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 10px; }
+        .answer { color: #4b5563; line-height: 1.6; white-space: pre-wrap; }
+        @media print { body { margin: 0; } }
+    </style>
+</head>
+<body>
+    <h1>OTIS RAG Conversation Export</h1>
+    <div class="metadata">
+        <strong>Export Date:</strong> ${new Date().toLocaleString()}<br>
+        <strong>Total Turns:</strong> ${conversationHistory.length}<br>
+        <strong>Session ID:</strong> ${sessionId || 'N/A'}
+    </div>
+`;
+
+                conversationHistory.forEach((turn, index) => {
+                    const question = turn.question || turn.user || '';
+                    const answer = turn.answer || turn.assistant || '';
+                    
+                    html += `
+    <div class="turn">
+        <div class="question">Q${index + 1}: ${escapeHtml(question)}</div>
+        <div class="answer">${escapeHtml(answer)}</div>
+    </div>
+`;
+                });
+
+                html += `
+</body>
+</html>`;
+
+                // Open in new window
+                const newWindow = window.open();
+                newWindow.document.write(html);
+                newWindow.document.close();
+                
+                print(`✅ Exported ${conversationHistory.length} turns to HTML (can be saved as Word doc)`, 'success');
+            } catch (error) {
+                console.error('HTML export failed:', error);
+                alert('Failed to export: ' + error.message);
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Show help modal
+        function showHelp() {
+            const modal = document.getElementById('helpModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        // Close help modal
+        function closeHelp() {
+            const modal = document.getElementById('helpModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('helpModal');
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeHelp();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeHelp();
+                }
+            });
+        });
+        
+        // Function to start a new chat (clears UI and deletes persistent history)
+        async function startNewChat() {
+            if (!confirm('Start a new chat? This will clear your current conversation history.')) {
+                return;
+            }
+            
+            const oldSessionId = sessionId || getSessionId();
+            print(`🗑️ Starting new chat, deleting session: ${oldSessionId}`, 'info');
+            
+            // Delete conversation history from backend (Table Storage)
+            if (ENABLE_PERSISTENCE && oldSessionId) {
+                try {
+                    print('📡 Requesting deletion of persistent history...', 'info');
+                    const response = await fetch(`${API_BASE_URL}/api/history?session_id=${oldSessionId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        print('✅ Persistent history deleted from server', 'success');
+                    } else {
+                        print('⚠️ Could not delete persistent history (may not exist yet)', 'warning');
+                    }
+                } catch (error) {
+                    print(`⚠️ Error deleting history: ${error.message}`, 'warning');
+                }
+            }
+            
+            // Clear localStorage and generate new session
+            clearSession();
+            
+            // Clear chat UI
+            const chatContainer = document.getElementById('chatContainer');
+            const messages = chatContainer.querySelectorAll('.message');
+            messages.forEach(msg => msg.remove());
+            
+            // Show welcome message again
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg) {
+                welcomeMsg.style.display = 'block';
+            } else {
+                // Recreate welcome message if it doesn't exist
+                const newWelcome = document.createElement('div');
+                newWelcome.className = 'welcome-message';
+                newWelcome.innerHTML = `
+                    <h2>Welcome! 👋</h2>
+                    <p>I can help you understand your OTIS COBOL codebase.<br>Choose an example from the sidebar or ask your own question below.</p>
+                `;
+                chatContainer.insertBefore(newWelcome, chatContainer.firstChild);
+            }
+            
+            // Generate new session ID
+            const newSessionId = getSessionId();
+            document.getElementById('currentSessionId').textContent = newSessionId.substring(0, 20) + '...';
+            
+            print(`✅ New chat started with session: ${newSessionId}`, 'success');
+        }
+        
+        // Function to load conversation history from backend
+        async function loadConversationHistory() {
+            const currentSessionId = getSessionId();
+            if (!currentSessionId || !ENABLE_PERSISTENCE) {
+                print('⚠️ No session ID or persistence disabled, skipping history load', 'info');
+                return;
+            }
+            
+            try {
+                print(`📥 Loading conversation history for session: ${currentSessionId}`, 'info');
+                
+                const response = await fetch(`${API_BASE_URL}/api/history?session_id=${currentSessionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    // If history endpoint doesn't exist or returns error, that's okay
+                    print('ℹ️ No previous history found or endpoint unavailable', 'info');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (data.turns && data.turns.length > 0) {
+                    print(`✅ Loaded ${data.turns.length} previous conversation turns`, 'success');
+                    
+                    // Hide welcome message
+                    const welcomeMsg = document.querySelector('.welcome-message');
+                    if (welcomeMsg) {
+                        welcomeMsg.style.display = 'none';
+                    }
+                    
+                    // Add each turn to the UI
+                    data.turns.forEach(turn => {
+                        if (turn.user) {
+                            addMessage('user', turn.user);
+                        }
+                        if (turn.assistant) {
+                            addMessage('assistant', turn.assistant);
+                        }
+                        
+                        // Also add to local history
+                        conversationHistory.push({
+                            question: turn.user,
+                            answer: turn.assistant
+                        });
+                    });
+                    
+                    scrollToBottom();
+                } else {
+                    print('ℹ️ No previous conversation history found', 'info');
+                }
+            } catch (error) {
+                print(`⚠️ Could not load history: ${error.message}`, 'warning');
+                // Don't throw - it's okay if history loading fails
+            }
+        }
+
+        // Print output functions
+        function print(message, type = 'info') {
+            const printContent = document.getElementById('printContent');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `print-line ${type}`;
+            line.textContent = `[${timestamp}] ${message}`;
+            printContent.appendChild(line);
+            printContent.scrollTop = printContent.scrollHeight;
+            
+            // Also log to browser console for easy debugging
+            const prefix = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            console.log(`${prefix} ${message}`);
+        }
+
+        async function reportBadAnswer() {
+            const feedbackBtn = document.getElementById('feedbackBtn');
+            
+            // Debug logging
+            console.log('🐛 reportBadAnswer called');
+            console.log('🐛 lastAnswer:', lastAnswer ? `${lastAnswer.substring(0, 50)}...` : 'null');
+            console.log('🐛 lastContext:', lastContext ? `${lastContext.length} items` : 'null');
+            console.log('🐛 lastQuestion:', lastQuestion ? lastQuestion.substring(0, 50) : 'null');
+            
+            // Check if we have answer and context to report
+            if (!lastAnswer || !lastContext) {
+                const msg = `⚠️ No answer available to report (answer: ${!!lastAnswer}, context: ${!!lastContext})`;
+                print(msg, 'warning');
+                alert(msg);
+                return;
+            }
+            
+            // Get the last user question from chat history
+            const questionToReport = conversationHistory.length > 0 
+                ? conversationHistory[conversationHistory.length - 1].question 
+                : (lastQuestion || 'Unknown question');
+            
+            // Prepare feedback data
+            const feedbackData = {
+                session_id: sessionId,
+                timestamp: new Date().toISOString(),
+                question: questionToReport,
+                answer: lastAnswer,
+                context_used: JSON.stringify(lastContext, null, 2)
+            };
+            
+            print('📤 Sending feedback report...', 'info');
+            console.log('📤 Feedback payload:', feedbackData);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(feedbackData)
+                });
+                
+                console.log('📥 Response status:', response.status);
+                console.log('📥 Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Error response body:', errorText);
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        console.error('❌ Error JSON:', errorJson);
+                        throw new Error(`HTTP ${response.status}: ${errorJson.message || errorText}`);
+                    } catch (parseError) {
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
+                    }
+                }
+                
+                const result = await response.json();
+                console.log('✅ Result:', result);
+                print('✅ Feedback recorded successfully', 'success');
+                
+                // Update button appearance
+                feedbackBtn.textContent = '✓';
+                feedbackBtn.classList.add('sent');
+                feedbackBtn.title = 'Feedback sent! Thank you.';
+                feedbackBtn.disabled = true;
+                
+                // Show success message to user
+                alert('Thank you for your feedback! This will help us improve the system.');
+                
+            } catch (error) {
+                print(`❌ Failed to send feedback: ${error.message}`, 'error');
+                alert('Failed to send feedback. Please try again.');
+            }
+        }
+
+        function togglePrint() {
+            const printOutput = document.getElementById('printOutput');
+            const printToggle = document.getElementById('printToggle');
+            if (printOutput.style.display === 'none') {
+                printOutput.style.display = 'block';
+                printToggle.classList.add('active');
+                print('Debug console opened', 'info');
+            } else {
+                printOutput.style.display = 'none';
+                printToggle.classList.remove('active');
+            }
+        }
+
+        // Track if user has manually scrolled up
+        let userHasScrolledUp = false;
+        let scrollTimeout = null;
+
+        // Sample questions pool - Dynamic generation
+        const questionTemplates = {
+            programs: [
+                'APIPAY', 'LONPW9', 'REGPAY', 'LONPF2', 'DAILY', 'LNQUOT', 'TIM360', 
+                'IRMAIN', 'ACUMEM', 'LONPF7', 'PGMENU', 'ADDEXT', 'AGEALP', 'AC2DAY'
+            ],
+            copybooks: [
+                'SCREEN.CPY', 'LPRATE.CPY', 'LPCERN.CPY', 'LPAERN.CPY', 'LPREGZ.CPY',
+                'LPBWIN.CPY', 'LPDEF.CPY', 'XCXREF.CPY', 'BTDATA.CPY', 'DSDATA.CPY'
+            ],
+            topics: [
+                'customer payments', 'interest calculation', 'loan processing', 'branch operations',
+                'transaction codes', 'credit card payments', 'date processing', 'security',
+                'penalty calculations', 'customer communications', 'business rules', 'external services',
+                'report generation', 'daily processing', 'payment posting', 'account management',
+                'refund processing', 'late fees', 'payment schedules', 'loan applications'
+            ],
+            actions: [
+                'What does', 'How does', 'Explain', 'Show me', 'Find', 'List', 'Describe',
+                'What are', 'Which programs', 'Where is', 'When does', 'Why does'
+            ]
+        };
+
+        // Updated question generation function with difficulty levels
+// Replace the generateRandomQuestions function in otis-rag-chat.html with this
+
+function generateRandomQuestions(count = 500) {
+    const questions = [];
+    
+    // Difficulty level indicators
+    const levels = {
+        easy: { emoji: '🟢', label: 'Easy' },
+        medium: { emoji: '🟡', label: 'Medium' },
+        hard: { emoji: '🟠', label: 'Hard' },
+        veryHard: { emoji: '🔴', label: 'Expert' }
+    };
+
+    // EASY questions - Simple lookups (40%)
+    const easyTemplates = [
+        (p) => ({ q: `What does program ${p} do?`, level: 'easy' }),
+        (c) => ({ q: `What programs use copybook ${c}?`, level: 'easy' }),
+        () => ({ q: `What are the main menu options in LPMENU?`, level: 'easy' }),
+        () => ({ q: `List all payment processing programs`, level: 'easy' }),
+        (p) => ({ q: `What copybooks does ${p} use?`, level: 'easy' }),
+        () => ({ q: `Show me programs that handle loans`, level: 'easy' }),
+        (c) => ({ q: `Show me fields defined in ${c}`, level: 'easy' }),
+        () => ({ q: `What screens are available in the system?`, level: 'easy' }),
+        (p) => ({ q: `What files does ${p} access?`, level: 'easy' }),
+        () => ({ q: `Find programs related to customer inquiries`, level: 'easy' }),
+        (p) => ({ q: `Explain like I'm 5: what does ${p} do?`, level: 'easy' }),
+        () => ({ q: `Explain like I'm 5: how does a customer make a payment?`, level: 'easy' }),
+        () => ({ q: `Pretend I'm brand new: what is COBOL and why do we use it?`, level: 'easy' }),
+        (t) => ({ q: `In simple terms, explain ${t}`, level: 'easy' })
+    ];
+
+    // MEDIUM questions - Relationships (35%)
+    const mediumTemplates = [
+        (p) => ({ q: `Explain how ${p} works and what it calls`, level: 'medium' }),
+        (t) => ({ q: `Show me the workflow for ${t}`, level: 'medium' }),
+        (p) => ({ q: `What programs call ${p} and why?`, level: 'medium' }),
+        (t) => ({ q: `How does the system process ${t}?`, level: 'medium' }),
+        () => ({ q: `Walk me through the daily processing cycle`, level: 'medium' }),
+        (c) => ({ q: `Explain the data structure in ${c} and how it's used`, level: 'medium' }),
+        () => ({ q: `Show me the screen flow for payment processing`, level: 'medium' }),
+        () => ({ q: `What are the business rules for interest calculation?`, level: 'medium' }),
+        (p) => ({ q: `Trace the execution flow when ${p} is called`, level: 'medium' }),
+        () => ({ q: `How are late fees calculated and applied?`, level: 'medium' }),
+        (p) => ({ q: `Explain like I'm 5: how does ${p} help customers?`, level: 'medium' }),
+        () => ({ q: `Use a pizza analogy to explain how batch processing works`, level: 'medium' }),
+        (t) => ({ q: `Pretend you're teaching a teenager: explain ${t}`, level: 'medium' }),
+        () => ({ q: `Explain the daily cycle like it's a story with a beginning, middle, and end`, level: 'medium' })
+    ];
+
+    // HARD questions - Cross-index analysis (20%)
+    const hardTemplates = [
+        (p) => ({ q: `Show all programs, copybooks, and data items in the ${p} call chain`, level: 'hard' }),
+        (c) => ({ q: `If I modify ${c}, what is the complete blast radius?`, level: 'hard' }),
+        () => ({ q: `Trace customer balance data lineage from file read to write`, level: 'hard' }),
+        () => ({ q: `Find all circular dependencies between programs`, level: 'hard' }),
+        (t) => ({ q: `Map complete end-to-end flow for ${t} with screens and files`, level: 'hard' }),
+        () => ({ q: `What are all navigation paths to Customer Inquiry screen?`, level: 'hard' }),
+        () => ({ q: `Show me programs never called by any other program`, level: 'hard' }),
+        (p) => ({ q: `Complete dependency tree for ${p} including transitive deps`, level: 'hard' }),
+        () => ({ q: `Identify programs using different SCREEN copybook versions`, level: 'hard' }),
+        () => ({ q: `Explain like I'm a rubber duck: walk me through payment reconciliation`, level: 'hard' }),
+        (p) => ({ q: `If ${p} was a factory, describe the assembly line process`, level: 'hard' })
+    ];
+
+    // VERY HARD questions - Complex analysis (5%)
+    const veryHardTemplates = [
+        () => ({ q: `Analyze top 5 complexity hotspots and recommend refactoring`, level: 'veryHard' }),
+        (t) => ({ q: `Where should I add a new ${t} feature? Provide implementation plan`, level: 'veryHard' }),
+        () => ({ q: `Find data consistency risks from copybook conflicts and suggest fixes`, level: 'veryHard' }),
+        () => ({ q: `Map transaction LPMT to complete technical implementation`, level: 'veryHard' }),
+        () => ({ q: `Design test strategy for payment subsystem based on code analysis`, level: 'veryHard' }),
+        () => ({ q: `Identify architectural anti-patterns and propose modernization`, level: 'veryHard' }),
+        () => ({ q: `Analyze error handling patterns and recommend improvements`, level: 'veryHard' }),
+        () => ({ q: `Explain like I'm Elon Musk: how would you modernize this codebase?`, level: 'veryHard' }),
+        () => ({ q: `Tell me a bedtime story about how a customer payment journeys through the system`, level: 'veryHard' }),
+        () => ({ q: `Give me a detailed explanation with math equations for the Actuarial Method (Method 7) with example`, level: 'veryHard' }),
+        () => ({ q: `Explain Rule of 78ths interest calculation with detailed math formulas and a real example`, level: 'veryHard' }),
+        () => ({ q: `Walk me through interest rebate calculations step-by-step with mathematical formulas`, level: 'veryHard' }),
+        () => ({ q: `Provide detailed mathematical breakdown of pro-rata interest calculation with examples`, level: 'veryHard' }),
+        () => ({ q: `Explain APR calculation algorithm with all mathematical equations and sample data`, level: 'veryHard' }),
+        () => ({ q: `Give comprehensive explanation of daily interest accrual with formulas and worked example`, level: 'veryHard' }),
+        () => ({ q: `Detailed mathematical analysis of payment allocation logic with step-by-step equations`, level: 'veryHard' })
+    ];
+
+    // Calculate counts per difficulty
+    const easyCount = Math.floor(count * 0.40);
+    const mediumCount = Math.floor(count * 0.35);
+    const hardCount = Math.floor(count * 0.20);
+    const veryHardCount = count - easyCount - mediumCount - hardCount;
+
+    // Helper to generate from templates
+    function generateFromTemplates(templates, targetCount) {
+        const generated = [];
+        while (generated.length < targetCount) {
+            const template = templates[Math.floor(Math.random() * templates.length)];
+            let result;
+
+            if (template.length === 1) {
+                const rand = Math.random();
+                if (rand < 0.4 && questionTemplates.programs.length > 0) {
+                    const prog = questionTemplates.programs[Math.floor(Math.random() * questionTemplates.programs.length)];
+                    result = template(prog);
+                } else if (rand < 0.7 && questionTemplates.copybooks.length > 0) {
+                    const copy = questionTemplates.copybooks[Math.floor(Math.random() * questionTemplates.copybooks.length)];
+                    result = template(copy);
+                } else if (questionTemplates.topics.length > 0) {
+                    const topic = questionTemplates.topics[Math.floor(Math.random() * questionTemplates.topics.length)];
+                    result = template(topic);
+                }
+            } else {
+                result = template();
+            }
+
+            if (result) {
+                const levelInfo = levels[result.level];
+                const fullQuestion = `${levelInfo.emoji} ${result.q}`;
+                if (!questions.some(q => q.text === fullQuestion)) {
+                    generated.push({ text: fullQuestion, level: result.level });
+                }
+            }
+        }
+        return generated;
+    }
+
+    // Generate for each difficulty level
+    questions.push(...generateFromTemplates(easyTemplates, easyCount));
+    questions.push(...generateFromTemplates(mediumTemplates, mediumCount));
+    questions.push(...generateFromTemplates(hardTemplates, hardCount));
+    questions.push(...generateFromTemplates(veryHardTemplates, veryHardCount));
+
+    return questions;
+}
+
+        // Generate the question pool once
+        const sampleQuestions = generateRandomQuestions(500);
+
+        function getRandomQuestions(count = 4) {
+            // Mix of difficulty levels: 2 easy/medium, 1 hard, 1 very hard
+            const easy = sampleQuestions.filter(q => q.level === 'easy');
+            const medium = sampleQuestions.filter(q => q.level === 'medium');
+            const hard = sampleQuestions.filter(q => q.level === 'hard');
+            const veryHard = sampleQuestions.filter(q => q.level === 'veryHard');
+            
+            const selected = [];
+            
+            // Get 1 easy
+            if (easy.length > 0) selected.push(easy[Math.floor(Math.random() * easy.length)]);
+            // Get 1 medium
+            if (medium.length > 0) selected.push(medium[Math.floor(Math.random() * medium.length)]);
+            // Get 1 hard
+            if (hard.length > 0) selected.push(hard[Math.floor(Math.random() * hard.length)]);
+            // Get 1 very hard
+            if (veryHard.length > 0) selected.push(veryHard[Math.floor(Math.random() * veryHard.length)]);
+            
+            // Shuffle the selected questions
+            return selected.sort(() => Math.random() - 0.5);
+        }
+
+        function loadRandomExamples() {
+            const examplesContainer = document.getElementById('examplesList');
+            if (!examplesContainer) return;
+
+            const randomQuestions = getRandomQuestions(4);
+            examplesContainer.innerHTML = randomQuestions.map(q => {
+                const text = q.text.substring(q.text.indexOf(' ') + 1); // Remove emoji
+                return `<button class="example-btn" onclick="askExample('${text.replace(/'/g, "\\'")}')">
+                    ${q.text}
+                </button>`;
+            }).join('');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            print('🚀 Initializing OTIS RAG...', 'info');
+            
+            // Initialize session ID
+            const currentSessionId = getSessionId();
+            if (currentSessionId && ENABLE_PERSISTENCE) {
+                print(`💾 Persistence enabled with session: ${currentSessionId}`, 'success');
+                
+                // Display session ID in sidebar (truncated)
+                document.getElementById('currentSessionId').textContent = currentSessionId.substring(0, 20) + '...';
+            } else {
+                print('⚠️ Persistence disabled - conversations will not be saved', 'warning');
+                document.getElementById('currentSessionId').textContent = 'None (disabled)';
+            }
+            
+            // Load random example questions
+            loadRandomExamples();
+            
+            await checkHealth();
+            await loadStats();
+            
+            // Load previous conversation history if available
+            await loadConversationHistory();
+
+            // Add scroll listener to detect when user scrolls up
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.addEventListener('scroll', () => {
+                // Clear any pending timeout
+                clearTimeout(scrollTimeout);
+                
+                // Check if user has scrolled up (more than 50px from bottom)
+                const scrollBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
+                const isAtBottom = scrollBottom < 50;
+                
+                if (!isAtBottom) {
+                    userHasScrolledUp = true;
+                    console.log('User scrolled up, auto-scroll disabled');
+                }
+                
+                // After being at bottom for a moment, reset flag
+                if (isAtBottom && userHasScrolledUp) {
+                    scrollTimeout = setTimeout(() => {
+                        userHasScrolledUp = false;
+                        console.log('User returned to bottom, auto-scroll enabled');
+                    }, 500);
+                }
+            });
+
+            // Also detect wheel/touch events for more immediate response
+            chatContainer.addEventListener('wheel', (e) => {
+                if (e.deltaY < 0) { // Scrolling up
+                    userHasScrolledUp = true;
+                    console.log('Wheel scroll up detected');
+                }
+            });
+
+            chatContainer.addEventListener('touchmove', () => {
+                const scrollBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
+                if (scrollBottom > 50) {
+                    userHasScrolledUp = true;
+                    console.log('Touch scroll up detected');
+                }
+            });
+
+            // Add event delegation for file link clicks
+            document.body.addEventListener('click', (e) => {
+                if (e.target.classList.contains('file-link')) {
+                    e.preventDefault();
+                    const filename = e.target.getAttribute('data-filename');
+                    print(`📎 File link detected: ${filename}`, 'info');
+                    handleFileLinkClick(filename);
+                } else if (e.target.tagName === 'A' && e.target.classList.length > 0) {
+                    print(`🔍 Clicked link but not file-link: ${e.target.className}`, 'debug');
+                }
+            });
+        });
+
+        function handleFileLinkClick(filename) {
+            print(`🔗 File link clicked: ${filename}`, 'info');
+            
+            // Create the question prompt
+            const question = `Tell me about ${filename}`;
+            
+            // Set the question in the input box
+            const userInput = document.getElementById('userInput');
+            if (!userInput) {
+                print('❌ Error: userInput element not found', 'error');
+                return;
+            }
+            
+            userInput.value = question;
+            
+            // Scroll the input box into view
+            userInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Focus the input box
+            userInput.focus();
+            
+            // Small delay to ensure the value is set and scrolling completes before submitting
+            setTimeout(() => {
+                sendMessage();
+            }, 300);
+        }
+
+        async function checkHealth() {
+            try {
+                print('📡 Checking backend health...', 'info');
+                const response = await fetch(`${API_BASE_URL}/api/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    document.getElementById('statusText').textContent = '✅ Connected - System Operational';
+                    print('✅ Backend is healthy and operational', 'success');
+                } else {
+                    document.getElementById('statusText').textContent = '⚠️ System Degraded';
+                    print('⚠️ Backend is degraded', 'warning');
+                }
+            } catch (error) {
+                console.error('Health check failed:', error);
+                print(`❌ Health check failed: ${error.message}`, 'error');
+                document.getElementById('statusText').textContent = '❌ Connection Failed';
+                showError('Unable to connect to OTIS RAG backend. Please check your connection.');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                print('📊 Loading system statistics...', 'info');
+                const response = await fetch(`${API_BASE_URL}/api/stats`);
+                systemStats = await response.json();
+                console.log('System Stats:', systemStats);
+                print(`📚 ${systemStats.indexes_configured} indexes configured`, 'success');
+                print(`🤖 Model: ${systemStats.chat_model}`, 'info');
+                print(`🔮 Embeddings: ${systemStats.embedding_model}`, 'info');
+                print(`✨ Phase 1: ${systemStats.phase1_enabled ? 'Enabled' : 'Disabled'}`, 'info');
+                print(`🎯 Phase 2: ${systemStats.phase2_enabled ? 'Enabled' : 'Disabled'}`, 'info');
+                
+                // Update sidebar stats panel
+                document.getElementById('indexCount').textContent = systemStats.indexes_configured;
+                document.getElementById('chatModel').textContent = systemStats.chat_model;
+                document.getElementById('embeddingModel').textContent = systemStats.embedding_model;
+                document.getElementById('statsPanel').style.display = 'block';
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+                print(`⚠️ Failed to load stats: ${error.message}`, 'warning');
+            }
+        }
+
+        function askExample(question) {
+            // Reset scroll flag to allow auto-scroll
+            userHasScrolledUp = false;
+            
+            document.getElementById('userInput').value = question;
+            sendMessage();
+            
+            // Scroll to bottom immediately
+            setTimeout(() => {
+                scrollToBottom();
+            }, 100);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            print(`❓ User question: ${question.substring(0, 50)}...`, 'info');
+            
+            // Scroll to bottom immediately when user sends message
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Clear input
+            input.value = '';
+            
+            // Reset feedback button for new question
+            const feedbackBtn = document.getElementById('feedbackBtn');
+            feedbackBtn.disabled = true;
+            feedbackBtn.textContent = '☹️';
+            feedbackBtn.classList.remove('sent');
+            feedbackBtn.title = 'Report a bad answer';
+            console.log('🔄 Feedback button reset for new question');
+            
+            // Hide welcome message
+            const welcomeMsg = document.querySelector('.welcome-message');
+            if (welcomeMsg) {
+                welcomeMsg.style.display = 'none';
+            }
+            
+            // Add user message
+            addMessage('user', question);
+            
+            // Scroll again after adding message
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 50);
+            
+            // Show typing indicator
+            showTyping(true);
+            
+            // Disable send button
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            
+            try {
+                if (ENABLE_STREAMING) {
+                    await sendStreamingMessage(question);
+                } else {
+                    await sendNonStreamingMessage(question);
+                }
+                
+            } catch (error) {
+                console.error('Query failed:', error);
+                print(`❌ Query failed: ${error.message}`, 'error');
+                showTyping(false);
+                addMessage('assistant', `❌ Sorry, I encountered an error: ${error.message}`);
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        async function sendStreamingMessage(question) {
+            print('🌊 Using streaming mode...', 'info');
+            const startTime = Date.now();
+
+            // Get session ID for persistence
+            const currentSessionId = getSessionId();
+            if (currentSessionId) {
+                print(`📌 Using session: ${currentSessionId}`, 'info');
+            }
+
+            // Create message element for streaming
+            const messageId = 'streaming-' + Date.now();
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+            messageDiv.id = messageId;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = '';
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+
+            // DON'T insert into DOM yet - wait until we have data
+            // const typingIndicator = document.getElementById('typingIndicator');
+            // chatContainer.insertBefore(messageDiv, typingIndicator);
+
+            let fullAnswer = '';
+
+            try {
+                const requestBody = {
+                    question: question,
+                    stream: true
+                };
+                
+                // Add persistence parameters if enabled
+                if (ENABLE_PERSISTENCE && currentSessionId) {
+                    requestBody.session_id = currentSessionId;
+                    requestBody.enable_persistence = true;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/api/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                // Get the JSON response directly (not as stream)
+                const data = await response.json();
+                
+                console.log('🐛 API Response data:', data);
+                console.log('🐛 data.sources:', data.sources);
+                console.log('🐛 data.context:', data.context);
+                console.log('🐛 data.retrieved_chunks:', data.retrieved_chunks);
+                
+                // Hide typing indicator NOW that we have the response
+                showTyping(false);
+                
+                // NOW insert the message div into the DOM
+                const chatContainer = document.getElementById('chatContainer');
+                const typingIndicator = document.getElementById('typingIndicator');
+                chatContainer.insertBefore(messageDiv, typingIndicator);
+                
+                print(`📦 Received data, answer length: ${data.answer ? data.answer.length : 0}`, 'info');                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Check if answer exists
+                if (!data.answer) {
+                    throw new Error('No answer in response');
+                }
+
+                // Simulate streaming by displaying words gradually
+                const words = data.answer.split(' ');
+                print(`🔤 Starting to stream ${words.length} words...`, 'info');
+                
+                // Process SVG ONCE at the beginning to avoid re-processing during streaming
+                let processedAnswer = processSVGContent(data.answer);
+                print(`✅ SVG pre-processed for streaming`, 'success');
+                
+                // Now stream word by word, but skip SVG processing
+                const processedWords = processedAnswer.split(' ');
+                for (let i = 0; i < processedWords.length; i++) {
+                    fullAnswer += (i > 0 ? ' ' : '') + processedWords[i];
+                    // Format but skip SVG processing (already done)
+                    const formatted = formatMessageWithoutSVG(fullAnswer);
+                    if (i === 0) {
+                        print(`🎨 First formatted chunk: "${formatted.substring(0, 50)}..."`, 'info');
+                    }
+                    messageContent.innerHTML = formatted;
+                    scrollToBottom();
+                    // Small delay for streaming effect (20ms per word)
+                    await new Promise(resolve => setTimeout(resolve, 20));
+                }
+                
+                print(`✅ Streaming complete, total: ${fullAnswer.length} chars`, 'success');const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                print(`⏱️ Streaming completed in ${responseTime}s`, 'success');
+                print(`✅ Answer generated (${fullAnswer.length} chars)`, 'success');
+                
+                // Render LaTeX math expressions with KaTeX after streaming completes
+                renderMath(messageContent);
+                
+                // Store in conversation history
+                conversationHistory.push({
+                    question: question,
+                    answer: fullAnswer
+                });
+                
+                // Track for feedback
+                lastQuestion = question;
+                lastAnswer = fullAnswer;
+                lastContext = data.sources || data.context || data.retrieved_chunks || [];  // Store retrieved context
+                
+                console.log('🐛 Feedback data stored:');
+                console.log('  - lastQuestion:', lastQuestion ? 'SET' : 'NULL');
+                console.log('  - lastAnswer:', lastAnswer ? `SET (${lastAnswer.length} chars)` : 'NULL');
+                console.log('  - lastContext:', lastContext ? `SET (${lastContext.length} items)` : 'NULL');
+                console.log('  - lastContext preview:', lastContext.length > 0 ? lastContext[0] : 'EMPTY ARRAY');
+                
+                // Enable feedback button
+                const feedbackBtn = document.getElementById('feedbackBtn');
+                console.log('🐛 Enabling feedback button...');
+                console.log('  - Button found:', !!feedbackBtn);
+                console.log('  - Button disabled before:', feedbackBtn ? feedbackBtn.disabled : 'N/A');
+                
+                feedbackBtn.disabled = false;
+                feedbackBtn.classList.remove('sent');
+                
+                console.log('  - Button disabled after:', feedbackBtn.disabled);
+                console.log('✅ Feedback button enabled!');
+                
+                print(`💬 Conversation history: ${conversationHistory.length} exchanges`, 'info');
+                
+            } catch (error) {
+                messageContent.innerHTML = `❌ Error: ${error.message}`;
+                throw error;
+            }
+        }
+
+        async function sendNonStreamingMessage(question) {
+            print('🔍 Sending query to backend...', 'info');
+            const startTime = Date.now();
+            
+            // Get session ID for persistence
+            const currentSessionId = getSessionId();
+            if (currentSessionId) {
+                print(`📌 Using session: ${currentSessionId}`, 'info');
+            }
+            
+            const requestBody = {
+                question: question,
+                stream: false
+            };
+            
+            // Add persistence parameters if enabled
+            if (ENABLE_PERSISTENCE && currentSessionId) {
+                requestBody.session_id = currentSessionId;
+                requestBody.enable_persistence = true;
+            }
+            
+            const response = await fetch(`${API_BASE_URL}/api/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            const responseTime = ((Date.now() - startTime) / 1000).toFixed(2);
+            print(`⏱️ Response received in ${responseTime}s`, 'success');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            print(`✅ Answer generated (${data.answer.length} chars)`, 'success');
+            
+            // Hide typing indicator
+            showTyping(false);
+            
+            // Add assistant response
+            addMessage('assistant', data.answer);
+            
+            // Store in conversation history
+            conversationHistory.push({
+                question: question,
+                answer: data.answer
+            });
+            
+            // Track for feedback
+            lastQuestion = question;
+            lastAnswer = data.answer;
+            lastContext = data.sources || data.context || [];  // Store retrieved context
+            
+            console.log('🐛 Feedback data stored (non-streaming):');
+            console.log('  - lastQuestion:', lastQuestion ? 'SET' : 'NULL');
+            console.log('  - lastAnswer:', lastAnswer ? `SET (${lastAnswer.length} chars)` : 'NULL');
+            console.log('  - lastContext:', lastContext ? `SET (${lastContext.length} items)` : 'NULL');
+            
+            // Enable feedback button
+            const feedbackBtn = document.getElementById('feedbackBtn');
+            console.log('🐛 Enabling feedback button...');
+            console.log('  - Button found:', !!feedbackBtn);
+            console.log('  - Button disabled before:', feedbackBtn ? feedbackBtn.disabled : 'N/A');
+            
+            feedbackBtn.disabled = false;
+            feedbackBtn.classList.remove('sent');
+            
+            console.log('  - Button disabled after:', feedbackBtn.disabled);
+            console.log('✅ Feedback button enabled!');
+            
+            print(`💬 Conversation history: ${conversationHistory.length} exchanges`, 'info');
+        }
+
+        function addMessage(role, content) {
+            print(`➕ Adding message: role=${role}, content length=${content ? content.length : 0}`, 'info');
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = role === 'user' ? '👤' : '🤖';
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+
+            // Format content (handle code blocks, etc.)
+            const formattedContent = formatMessage(content);
+            print(`🎨 Formatted content length: ${formattedContent ? formattedContent.length : 0}`, 'info');
+            messageContent.innerHTML = formattedContent;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+
+            // Insert before typing indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+
+            // Render LaTeX math expressions with KaTeX
+            renderMath(messageContent);
+
+            print(`✅ Message added to DOM`, 'success');
+
+            // Scroll to bottom
+            scrollToBottom();
+        }
+        
+        // Helper function to render math with KaTeX
+        function renderMath(element) {
+            // Wait for KaTeX to be available
+            const tryRender = () => {
+                if (typeof renderMathInElement !== 'undefined') {
+                    try {
+                        renderMathInElement(element, {
+                            delimiters: [
+                                {left: '\\[', right: '\\]', display: true},
+                                {left: '\\(', right: '\\)', display: false},
+                                {left: '$$', right: '$$', display: true},
+                                {left: '$', right: '$', display: false}
+                            ],
+                            throwOnError: false,
+                            trust: true
+                        });
+                        console.log('✅ KaTeX rendered successfully');
+                    } catch (e) {
+                        console.warn('⚠️ KaTeX render error:', e);
+                    }
+                } else {
+                    // Retry after a short delay
+                    console.log('⏳ Waiting for KaTeX to load...');
+                    setTimeout(tryRender, 100);
+                }
+            };
+            tryRender();
+        }
+        
+        function formatMessage(content) {
+            // Sanitize and render SVG content (inline, base64, or markdown blocks)
+            // This must happen FIRST to protect SVG from other transformations
+            content = processSVGContent(content);
+            
+            return formatMessageWithoutSVG(content);
+        }
+
+        function formatMessageWithoutSVG(content) {
+            // This version skips SVG processing (for use during streaming when SVG is already processed)
+            
+            // Convert file hyperlinks FIRST (before other markdown processing)
+            // BUT skip hyperlinks that are inside SVG placeholders to avoid breaking SVG XML
+            // Pattern: [[FILE:filename.ext|Display Text]]
+            
+            // First, find all SVG placeholder positions to avoid converting FILE patterns inside them
+            const placeholderPattern = /__SVG_PLACEHOLDER_\d+__/g;
+            const placeholders = [];
+            let placeholderMatch;
+            while ((placeholderMatch = placeholderPattern.exec(content)) !== null) {
+                placeholders.push({
+                    start: placeholderMatch.index,
+                    end: placeholderMatch.index + placeholderMatch[0].length
+                });
+            }
+            
+            content = content.replace(/\[\[FILE:([^\|]+)\|([^\]]+)\]\]/g, (match, filename, displayText, offset) => {
+                // Check if this FILE pattern is inside any SVG placeholder
+                const isInsidePlaceholder = placeholders.some(ph => offset >= ph.start && offset < ph.end);
+                
+                if (isInsidePlaceholder) {
+                    // Inside SVG placeholder - just return display text without markup
+                    return displayText;
+                }
+                
+                // Otherwise, create the hyperlink
+                const escapedFilename = escapeHtml(filename);
+                const escapedDisplay = escapeHtml(displayText);
+                return `<a href="#" class="file-link" data-filename="${escapedFilename}" title="Tell me about ${escapedFilename}">${escapedDisplay}</a>`;
+            });
+            
+            // Convert markdown tables to HTML
+            content = content.replace(/(\|.+\|[\r\n]+\|[-:\s|]+\|[\r\n]+(?:\|.+\|[\r\n]*)+)/g, (match) => {
+                const lines = match.trim().split(/[\r\n]+/);
+                if (lines.length < 3) return match;
+
+                const headers = lines[0].split('|').filter(h => h.trim()).map(h => h.trim());
+                const rows = lines.slice(2).map(line => 
+                    line.split('|').filter(cell => cell.trim()).map(cell => cell.trim())
+                );
+
+                let html = '<table><thead><tr>';
+                headers.forEach(header => {
+                    html += `<th>${header}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                rows.forEach(row => {
+                    if (row.length > 0) {
+                        html += '<tr>';
+                        row.forEach(cell => {
+                            html += `<td>${cell}</td>`;
+                        });
+                        html += '</tr>';
+                    }
+                });
+                
+                html += '</tbody></table>';
+                return html;
+            });
+
+            // Convert markdown-style code blocks to HTML (but skip SVG and already-processed content)
+            content = content.replace(/```(\w+)?\n([\s\S]+?)```/g, (match, lang, code) => {
+                // Skip if this is SVG or already has HTML
+                if (lang === 'svg' || match.includes('<svg') || match.includes('svg-container')) {
+                    return match;
+                }
+                return `<pre><code>${escapeHtml(code.trim())}</code></pre>`;
+            });
+
+            // Convert inline code (but not if it's part of HTML tags)
+            content = content.replace(/`([^`<>]+)`/g, '<code>$1</code>');
+
+            // CRITICAL: Protect SVG containers from newline-to-br conversion
+            // Extract all svg-container divs and replace with temporary markers
+            const svgContainers = [];
+            let svgContainerIndex = 0;
+            content = content.replace(/<div class="svg-container">[\s\S]*?<\/div>/g, (match) => {
+                const marker = `__PROTECTED_SVG_${svgContainerIndex}__`;
+                svgContainers.push({ marker, content: match });
+                svgContainerIndex++;
+                return marker;
+            });
+
+            // CRITICAL: Protect LaTeX math expressions from newline-to-br conversion
+            const mathExpressions = [];
+            let mathIndex = 0;
+            
+            // Protect display math \[...\]
+            content = content.replace(/\\\[([\s\S]*?)\\\]/g, (match) => {
+                const marker = `__PROTECTED_MATH_DISPLAY_${mathIndex}__`;
+                mathExpressions.push({ marker, content: match });
+                mathIndex++;
+                return marker;
+            });
+            
+            // Protect inline math \(...\)
+            content = content.replace(/\\\(([\s\S]*?)\\\)/g, (match) => {
+                const marker = `__PROTECTED_MATH_INLINE_${mathIndex}__`;
+                mathExpressions.push({ marker, content: match });
+                mathIndex++;
+                return marker;
+            });
+
+            // Convert line breaks to <br> (now safe because SVG containers and math are protected)
+            content = content.replace(/\n/g, '<br>');
+
+            // Restore math expressions
+            mathExpressions.forEach(({ marker, content: mathContent }) => {
+                content = content.replace(marker, mathContent);
+            });
+
+            // Restore SVG containers
+            svgContainers.forEach(({ marker, content: svgContent }) => {
+                content = content.replace(marker, svgContent);
+            });
+
+            // Bold (but not inside HTML tags)
+            content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            return content;
+        }
+
+        function processSVGContent(content) {
+            // Track SVG placeholders
+            const svgPlaceholders = [];
+            let placeholderIndex = 0;
+
+            print('🎨 Processing SVG content...', 'info');
+
+            // 1. Detect SVG in markdown code blocks (```svg ... ```)
+            const svgBlockRegex = /```svg\s*\n([\s\S]+?)```/gi;
+            content = content.replace(svgBlockRegex, (match, svgContent) => {
+                print('📊 Found SVG in markdown block', 'success');
+                const sanitized = sanitizeSVG(svgContent.trim());
+                if (sanitized) {
+                    const placeholder = `__SVG_PLACEHOLDER_${placeholderIndex}__`;
+                    svgPlaceholders.push({ placeholder, svg: wrapSVG(sanitized) });
+                    placeholderIndex++;
+                    print(`✓ SVG ${placeholderIndex} processed successfully`, 'success');
+                    return placeholder;
+                } else {
+                    print('⚠️ SVG sanitization failed', 'warning');
+                }
+                return match;
+            });
+
+            // 2. Detect inline SVG tags
+            const inlineSvgRegex = /<svg[\s\S]*?<\/svg>/gi;
+            content = content.replace(inlineSvgRegex, (match) => {
+                print('📊 Found inline SVG', 'success');
+                const sanitized = sanitizeSVG(match);
+                if (sanitized) {
+                    const placeholder = `__SVG_PLACEHOLDER_${placeholderIndex}__`;
+                    svgPlaceholders.push({ placeholder, svg: wrapSVG(sanitized) });
+                    placeholderIndex++;
+                    print(`✓ SVG ${placeholderIndex} processed successfully`, 'success');
+                    return placeholder;
+                } else {
+                    print('⚠️ Inline SVG sanitization failed', 'warning');
+                }
+                return escapeHtml(match);
+            });
+
+            // 3. Detect base64 encoded SVG
+            const base64SvgRegex = /data:image\/svg\+xml;base64,([A-Za-z0-9+/=]+)/g;
+            content = content.replace(base64SvgRegex, (match, base64) => {
+                try {
+                    print('📊 Found base64 SVG', 'info');
+                    const decoded = atob(base64);
+                    const sanitized = sanitizeSVG(decoded);
+                    if (sanitized) {
+                        const placeholder = `__SVG_PLACEHOLDER_${placeholderIndex}__`;
+                        svgPlaceholders.push({ placeholder, svg: wrapSVG(sanitized) });
+                        placeholderIndex++;
+                        print(`✓ Base64 SVG ${placeholderIndex} processed successfully`, 'success');
+                        return placeholder;
+                    }
+                } catch (e) {
+                    print(`⚠️ Failed to decode base64 SVG: ${e.message}`, 'warning');
+                }
+                return match;
+            });
+
+            // Replace placeholders with actual SVG containers
+            svgPlaceholders.forEach(({ placeholder, svg }) => {
+                content = content.replace(placeholder, svg);
+            });
+
+            if (svgPlaceholders.length > 0) {
+                print(`✅ Total SVGs processed: ${svgPlaceholders.length}`, 'success');
+            }
+
+            return content;
+        }
+
+        function sanitizeSVG(svgString) {
+            console.log('🔍 Sanitizing SVG, input length:', svgString.length);
+            console.log('🔍 SVG preview:', svgString.substring(0, 200));
+            
+            // Count FILE patterns before removal
+            const filePatternsBefore = (svgString.match(/\[\[FILE:[^\|]+\|[^\]]+\]\]/g) || []).length;
+            console.log(`🔍 Found ${filePatternsBefore} FILE patterns to remove`);
+            
+            // Remove file hyperlink markup FIRST (before other sanitization)
+            // Pattern: [[FILE:filename.ext|Display Text]] -> Display Text
+            svgString = svgString.replace(/\[\[FILE:[^\|]+\|([^\]]+)\]\]/g, '$1');
+            
+            // Verify removal
+            const filePatternsAfter = (svgString.match(/\[\[FILE:[^\|]+\|[^\]]+\]\]/g) || []).length;
+            console.log(`✅ Removed ${filePatternsBefore - filePatternsAfter} FILE patterns (${filePatternsAfter} remaining)`);
+            
+            // Remove potentially dangerous elements and attributes
+            const dangerous = [
+                /<script[\s\S]*?<\/script>/gi,
+                /on\w+\s*=\s*["'][^"']*["']/gi,  // Remove event handlers
+                /javascript:/gi,
+                /<iframe[\s\S]*?<\/iframe>/gi,
+                /<object[\s\S]*?<\/object>/gi,
+                /<embed[\s\S]*?>/gi
+            ];
+
+            let cleaned = svgString;
+            dangerous.forEach(pattern => {
+                cleaned = cleaned.replace(pattern, '');
+            });
+
+            // Validate it's actually SVG
+            if (!cleaned.trim().match(/<svg[\s\S]*?>/i)) {
+                console.warn('⚠️ No <svg> tag found in cleaned content');
+                return null;
+            }
+
+            // Ensure SVG has proper viewBox for responsiveness if it has width/height
+            if (cleaned.match(/<svg[^>]*width=/i) && cleaned.match(/<svg[^>]*height=/i) && !cleaned.match(/<svg[^>]*viewBox=/i)) {
+                const widthMatch = cleaned.match(/width=["']?(\d+)["']?/i);
+                const heightMatch = cleaned.match(/height=["']?(\d+)["']?/i);
+                if (widthMatch && heightMatch) {
+                    const width = widthMatch[1];
+                    const height = heightMatch[1];
+                    cleaned = cleaned.replace(/<svg/i, `<svg viewBox="0 0 ${width} ${height}"`);
+                }
+            }
+
+            console.log('✅ Sanitized SVG, output length:', cleaned.length);
+            return cleaned;
+        }
+
+        function wrapSVG(svgContent) {
+            console.log('📦 Wrapping SVG, content length:', svgContent.length);
+            console.log('📦 SVG content preview:', svgContent.substring(0, 300));
+            const wrapped = `<div class="svg-container">${svgContent}</div>`;
+            console.log('📦 Wrapped result length:', wrapped.length);
+            return wrapped;
+        }        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showTyping(show) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (show) {
+                typingIndicator.classList.add('active');
+                scrollToBottom();
+            } else {
+                typingIndicator.classList.remove('active');
+            }
+        }
+
+        function scrollToBottom() {
+            // Don't auto-scroll if user has manually scrolled up
+            if (userHasScrolledUp) {
+                return;
+            }
+
+            const chatContainer = document.getElementById('chatContainer');
+            // Use requestAnimationFrame for smoother, immediate scrolling
+            requestAnimationFrame(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            });
+        }
+
+        function showError(message) {
+            const chatContainer = document.getElementById('chatContainer');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            chatContainer.insertBefore(errorDiv, chatContainer.firstChild);
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            document.getElementById('userInput').focus();
+        });
+    </script>
 </body>
 </html>
