@@ -108,26 +108,22 @@ class OTISRAG:
             max_results_for_query = routing['max_results']
             logger.info(f"📄 Using router-specified max_results={max_results_for_query}")
             print(f"📄 Using router-specified max_results={max_results_for_query}")
-        # >>> TUNE: Raise per-index max_results for better recall
         # Determine max_results based on question complexity
-        elif question_type in ('menu', 'simple'):
-            # Menu/UI questions need moderate context
-            max_results_for_query = 120
-        elif question_type == 'list':
-            # List questions need comprehensive results
-            max_results_for_query = 300
+        elif question_type in ('menu', 'list', 'simple'):
+            # Specific questions need fewer documents
+            max_results_for_query = 20  # Top 20 per index
         elif question_type == 'trace_flow':
             # Flow tracing needs comprehensive context
-            max_results_for_query = 200
-        elif question_type in ('transaction', 'implementation', 'calculation'):
-            # Business transactions and implementation need deep context
-            max_results_for_query = 150
+            max_results_for_query = 100  # Top 100 per index
+        elif question_type == 'transaction':
+            # Business transactions need moderate context
+            max_results_for_query = 50  # Top 50 per index
         elif 'all' in routing['clean_query'].lower() or 'list' in routing['clean_query'].lower():
             # Explicit list requests need many results
-            max_results_for_query = 300
+            max_results_for_query = 200  # Top 200 per index
         else:
-            # >>> TUNE: General questions - increased from 50 to 150 for better coverage
-            max_results_for_query = 150
+            # General questions - balanced approach
+            max_results_for_query = 50  # Default: Top 50 per index
         
         logger.info(f"📊 Dynamic retrieval: question_type={question_type}, max_results={max_results_for_query}")
         print(f"📊 Dynamic retrieval: question_type={question_type}, max_results={max_results_for_query}")
@@ -234,11 +230,10 @@ class OTISRAG:
         try:
             from openai import AzureOpenAI
             
-            # >>> FIX: Use correct config fields (not azure_openai_key, api_version, azure_openai_endpoint)
             client = AzureOpenAI(
-                api_key=self.config.openai_key,
-                api_version=self.config.openai_api_version,
-                azure_endpoint=self.config.openai_endpoint
+                api_key=self.config.azure_openai_key,
+                api_version=self.config.api_version,
+                azure_endpoint=self.config.azure_openai_endpoint
             )
             
             prompt = f"""You are analyzing whether a user's question is a follow-up that references something from the previous conversation.
@@ -264,9 +259,8 @@ CRITICAL:
 
 OUTPUT (just the resolved question, nothing else):"""
             
-            # >>> FIX: Use chat_deployment (not chat_model)
             response = client.chat.completions.create(
-                model=self.config.chat_deployment,
+                model=self.config.chat_model,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,  # Deterministic
                 max_tokens=100

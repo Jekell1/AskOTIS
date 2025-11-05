@@ -236,10 +236,15 @@ class QueryRouter:
         # 6. Clean query (remove OTIS references if found)
         clean_query = self._clean_query(query, is_otis)
         
-        # >>> FIX: Removed hardcoded state keyword expansion (_expand_state_keywords) - violates corpus-driven principle
-        # The dual-probe corpus mining in retriever.py will discover state-specific terms generically
+        # 7. Expand query for state-specific implementation questions
+        if question_type == 'implementation':
+            # Detect state-specific queries and add relevant keywords
+            state_expansions = self._expand_state_keywords(query_lower)
+            if state_expansions:
+                clean_query = clean_query + " " + state_expansions
+                logger.info(f"🗺️  State-specific query detected - adding keywords: {state_expansions}")
         
-        # 7. Expand query for main menu queries to improve retrieval
+        # 8. Expand query for main menu queries to improve retrieval
         if question_type == 'menu' and 'main' in query.lower() and 'menu' in query.lower():
             # For main menu queries, add explicit search terms that appear in the LPMENU screen
             clean_query = clean_query + " MASTER MENU DAILY PROCESSING REPORTS"
@@ -329,6 +334,8 @@ class QueryRouter:
             # Suppress non-UI indexes
             if 'code' in weights:
                 weights['code'] = 0.5
+            if 'transactions' in weights:
+                weights['transactions'] = 0.05  # Heavily suppress
             logger.info(f"⚡ Applied menu boosting - screen_nodes: 30.0x, screens: 25.0x, ui_paths/menu_trees: 5.0x")
         
         # Boost complexity index for complexity questions
@@ -349,17 +356,17 @@ class QueryRouter:
                 weights['code'] = 0.3
             logger.info(f"⚡ Applied copybook boosting - copybook_usage: 10.0x, code: 0.3x")
         
-        # Boost flow and UI indexes for transaction questions
+        # Boost transaction and UI indexes for transaction questions
         elif question_type == 'transaction':
-            if 'flows' in weights:
-                weights['flows'] = 2.5  # Strong boost for transaction flows
+            if 'transactions' in weights:
+                weights['transactions'] = 3.0  # Strong boost
             if 'ui_paths' in weights:
                 weights['ui_paths'] = 2.0
             if 'menu_trees' in weights:
                 weights['menu_trees'] = 2.0
             if 'screens' in weights:
                 weights['screens'] = 2.5  # Boost screens index for transaction queries
-            logger.info(f"⚡ Applied transaction boosting - flows: 2.5x, UI: 2.0-2.5x")
+            logger.info(f"⚡ Applied transaction boosting - transactions: 3.0x, UI: 2.0x")
         
         # Boost flow indexes for trace_flow questions
         elif question_type == 'trace_flow':
@@ -500,7 +507,7 @@ class QueryRouter:
         
         elif question_type == 'transaction_copybooks':
             # Transaction-specific copybook questions (deterministic handling)
-            indexes = list(self.ROUTE_PROFILES["data"]) + list(self.ROUTE_PROFILES["flow"])
+            indexes = list(self.ROUTE_PROFILES["data"]) + ["transactions"]
         
         elif question_type == 'complexity':
             # Program complexity and performance

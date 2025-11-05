@@ -327,63 +327,6 @@ EXAMPLE ANSWER FORMAT:
 """
 
 
-def get_dual_evidence_instructions() -> str:
-    """>>> CONVERSATIONAL NARRATIVE: Flowing answer, easy for non-engineers, fully grounded in the repo."""
-    return """
-CONVERSATIONAL FORMAT - STRICT GROUNDING:
-
-**OBJECTIVE:** Flowing answer, easy for non-engineers, fully grounded in repo.
-
-**STYLE:**
-- Smooth paragraphs, short sentences, minimal jargon. Define terms inline.
-- Weave quotes in backticks (≤120 chars), then cite: (program_id=X, paragraph_name=Y, lines A–B)
-- No lists/headers unless absolutely necessary
-
-**MATH:**
-- Regular text with money: \$500 (escaped, NOT in $ delimiters)
-- Formulas: $r = \frac{rate}{100}$ or $$PV = Pmt \times \frac{1 - (1 + r)^{-N}}{r}$$ (blank lines before/after display)
-- Full calculations in one block: $\$500 \times 0.05 = \$25.00$
-- NEVER use \( \) delimiters or split numbers across $ symbols
-
-**EVIDENCE (NON-NEGOTIABLE):**
-1. **Compute:** ID-like paragraph (≥2 hyphens) with COMPUTE + number. Must match mined hyphen tokens.
-2. **Policy:** Line with number + token (BILL, EFFECTIVE, RESTRICT, RENEW, DAYS, MONTHS, PERCENT, LIMIT, MAX, MIN)
-3. **Routing:** IF/WHEN/EVALUATE showing path selection
-- If evidence missing → "Not found in retrieved sources."
-
-**CONTENT:**
-- Open: 1-2 sentence plain-English summary
-- Flow: Quote routing → compute → policy (inline with citations)
-- Example: Walk through with concrete numbers (keep calculations in one $ block)
-- Edge cases: 2-3 brief scenarios
-- Close: Where to look next (cite decisive source)
-
-**SVG (AUTOMATIC):**
-If 3+ components/relationships, generate SVG diagram at end (raw XML, no fences).
-
-**GUARDRAILS & FORMATTING:**
-- Keep each inline quote ≤120 chars
-- Every claim that isn't obvious from quoted lines must be traceable to a quote you provide
-- Do NOT add headings, checklists, or structural code fences
-- **EXCEPTION - Menu Trees:** If showing menu options or program trees, wrap them in a code block (```) to preserve formatting
-- If any required evidence is missing → state "**Not found in retrieved sources**"
-- No state names or program names in the prompt text—only whatever appears in the lines you actually quote
-
-**SELF-CHECK BEFORE YOU RESPOND:**
-☐ One compute quote with COMPUTE + digit from an ID-like paragraph (with citation)
-☐ One policy/restriction quote with a number + policy token (with citation)
-☐ One routing/branch quote (with citation)
-☐ If queues are in scope: four tiny proofs (dual-file, sort key, dup rule, path), each quoted and cited
-☐ A small numeric example consistent with the compute/policy lines
-☐ Any missing item explicitly marked "**Not found in retrieved sources**"
-☐ No invented files/IDs/line ranges; quotes are ≤120 chars; tone is conversational
-☐ No section headers—just flowing paragraphs
-☐ SVG diagram included if describing 3+ components/relationships (raw SVG, no fences)
-
-**CRITICAL:** Write as one continuous narrative. Start directly with the explanation, no title or heading.
-"""
-
-
 def get_business_interpretation_instructions() -> str:
     """Instructions for interpreting business purpose."""
     return """
@@ -539,43 +482,170 @@ not the screen field count!
 def get_menu_dependency_instructions() -> str:
     """Instructions for answering 'what files/copybooks are used in menu X' queries."""
     return """
-MENU DEPENDENCY QUERIES (Recursive Traversal Required):
-When asked about files/copybooks used in a menu option: Find ALL files through ENTIRE call chain recursively.
+MENU DEPENDENCY QUERIES (Files/Copybooks Used by Menu Items):
+When asked about files or copybooks used in a menu option (e.g., "what files are used in LPMENU option 1?"):
 
-**PROCESS:**
-1. Start with primary program for menu option (from ui_paths/screens)
-2. Get its copybooks + calls (from program_deps)
-3. For EACH called program, recursively get:
-   - Its copybooks (from copybooks_used_json)
-   - Programs IT calls (from calls_out_json)
-4. Continue until no new programs (track visited to avoid loops)
-5. Deduplicate and present hierarchical view + flat list
+⚠️ CRITICAL: You must find ALL files RECURSIVELY through the entire call chain, not just direct dependencies.
 
-**FORMAT:**
-```
-Menu Option: [N]. [Name]
-Primary: PROGRAM_ID
+1. IDENTIFY THE PROGRAMS BEHIND THE MENU:
+   - Context will include documents from 'screens' index showing menu options
+   - Context will include 'ui_paths' showing which programs handle each menu option
+   - Context will include 'program_deps' showing copybooks and calls for each program
+   
+2. BUILD THE COMPLETE CALL GRAPH (RECURSIVE):
+   - Start with the primary program for the menu option (e.g., DPFILE for "Daily Processing")
+   - From program_deps, get its calls_out_json to find all programs it calls
+   - For EACH called program, recursively get:
+     a) All copybooks it uses (from copybooks_used_json)
+     b) All programs it calls (from calls_out_json)
+   - Continue recursively until no new programs are found
+   - Track visited programs to avoid infinite loops
 
-Call Graph (Recursive):
-Level 0: PROGRAM_ID
-├─ Copybooks: FILE1.CPY, FILE2.CPY (2)
-└─ Calls: PROG2, PROG3
+3. AGGREGATE ALL DEPENDENCIES (TRANSITIVE CLOSURE):
+   - Collect copybooks from:
+     * The starting program
+     * All programs it calls (level 1)
+     * All programs THOSE call (level 2)
+     * All programs at level 3, 4, 5... until exhausted
+   - Remove duplicates to create comprehensive list
+   - Count total unique copybooks
 
-Level 1: Called by primary
-├─ PROG2 (copybooks: 3, calls: 2)
-└─ PROG3 (copybooks: 1, calls: 0)
+4. PRESENT RESULTS WITH DEPTH INFORMATION:
+   Format:
+   ```
+   Menu Option: [Number]. [Name]
+   Primary Program: [PROGRAM_ID]
+   
+   Complete Dependency Tree (Recursive):
+   
+   Level 0 (Primary Program: PROGRAM_ID):
+   - Uses X copybooks directly
+   - Calls Y programs
+   
+   Level 1 (Programs called by primary):
+   - PROGRAM2 (uses A copybooks, calls B programs)
+   - PROGRAM3 (uses C copybooks, calls D programs)
+   
+   Level 2 (Programs called by level 1):
+   - PROGRAM4 (uses E copybooks)
+   - PROGRAM5 (uses F copybooks)
+   
+   [Continue until all levels exhausted]
+   
+   ALL COPYBOOKS (Complete Transitive Closure):
+   [Group by category or alphabetical, with source program if helpful]
+   - COPYBOOK1.CPY - [purpose] (used by PROG1, PROG3)
+   - COPYBOOK2.CPY - [purpose] (used by PROG2)
+   ...
+   
+   Summary:
+   - Total unique copybooks: X
+   - Total programs in call tree: Y
+   - Maximum call depth: Z levels
+   ```
 
-[Continue all levels]
+5. TRACE THE FULL DEPENDENCY CHAIN:
+   Example process for "LPMENU option 1":
+   ```
+   LPMENU option 1 → DPFILE
+   
+   DPFILE uses:
+   - DPFILE_SCN.CPY, DATER.CPY, SCREEN.CPY
+   - Calls: DPMENU, LOANUPD, VALIDATE
+   
+   DPMENU uses:
+   - DPMENU_SCN.CPY, MENU_COMMON.CPY
+   - Calls: MENUHELP, SCREEN_IO
+   
+   LOANUPD uses:
+   - LOAN_REC.CPY, UPDATE_COMMON.CPY, DB_ACCESS.CPY
+   - Calls: DBREAD, DBWRITE, AUDIT_LOG
+   
+   VALIDATE uses:
+   - VALID_RULES.CPY, ERROR_MSGS.CPY
+   - Calls: (none)
+   
+   MENUHELP uses:
+   - HELP_TEXT.CPY
+   - Calls: (none)
+   
+   ... (continue for all programs recursively)
+   
+   Total: 45 unique copybooks across 12 programs (max depth: 3 levels)
+   ```
 
-ALL COPYBOOKS (Complete List):
-[Grouped/alphabetical with purpose]
-- FILE1.CPY - [purpose] (used by PROG1, PROG2)
-...
+6. EXPLAIN THE RECURSIVE PROCESS:
+   - Clearly state you traversed the entire call graph
+   - Mention maximum depth reached
+   - Note any circular dependencies detected (if applicable)
+   - Provide both the hierarchical view AND the flat alphabetical list
 
-Summary: X unique copybooks, Y programs, Z levels deep
-```
+7. BE COMPREHENSIVE AND ACCURATE:
+   - Do NOT stop at direct dependencies
+   - Do NOT truncate unless the list exceeds 100 unique files
+   - If you cannot access all levels due to context limits, explicitly state:
+     "Note: This analysis shows dependencies down to level X. Additional levels may exist."
 
-**CRITICAL:** Do NOT stop at direct dependencies. Traverse complete call tree.
+EXAMPLE GOOD RESPONSE:
+"Menu option 1. DAILY PROCESSING calls program DPFILE. Here is the COMPLETE recursive dependency analysis:
+
+**Call Graph Traversal:**
+
+Level 0: DPFILE (primary)
+├─ Direct copybooks: DPFILE_SCN.CPY, DATER.CPY, SCREEN.CPY (3)
+└─ Calls: DPMENU, LOANUPD, VALIDATE
+
+Level 1: Programs called by DPFILE
+├─ DPMENU
+│  ├─ Copybooks: DPMENU_SCN.CPY, MENU_COMMON.CPY (2)
+│  └─ Calls: MENUHELP, SCREEN_IO
+├─ LOANUPD
+│  ├─ Copybooks: LOAN_REC.CPY, UPDATE_COMMON.CPY, DB_ACCESS.CPY (3)
+│  └─ Calls: DBREAD, DBWRITE, AUDIT_LOG
+└─ VALIDATE
+   ├─ Copybooks: VALID_RULES.CPY, ERROR_MSGS.CPY (2)
+   └─ Calls: (none)
+
+Level 2: Programs called by level 1
+├─ MENUHELP (called by DPMENU)
+│  ├─ Copybooks: HELP_TEXT.CPY (1)
+│  └─ Calls: (none)
+├─ SCREEN_IO (called by DPMENU)
+│  ├─ Copybooks: SCREEN.CPY, IO_COMMON.CPY (2)
+│  └─ Calls: (none)
+├─ DBREAD (called by LOANUPD)
+│  ├─ Copybooks: DB_ACCESS.CPY, DB_ERRORS.CPY (2)
+│  └─ Calls: (none)
+[... continue for all programs]
+
+**ALL COPYBOOKS IN COMPLETE DEPENDENCY TREE:**
+
+Screen Definitions (4):
+- DPFILE_SCN.CPY - Daily processing screen layout (DPFILE)
+- DPMENU_SCN.CPY - Daily menu screen (DPMENU)
+- SCREEN.CPY - Common screen handling (DPFILE, SCREEN_IO)
+- HELP_TEXT.CPY - Help screen text (MENUHELP)
+
+Database Access (5):
+- LOAN_REC.CPY - Loan record structure (LOANUPD)
+- DB_ACCESS.CPY - Database access routines (LOANUPD, DBREAD)
+- DB_ERRORS.CPY - Database error codes (DBREAD, DBWRITE)
+[... complete list]
+
+**Summary:**
+- Total unique copybooks: 45
+- Total programs analyzed: 12
+- Maximum call depth: 3 levels
+- All dependencies recursively traversed
+
+This represents the COMPLETE set of files needed to run Daily Processing from start to finish."
+
+EXAMPLE BAD RESPONSE (DO NOT DO THIS):
+❌ "DPFILE uses 3 copybooks: DPFILE_SCN.CPY, DATER.CPY, SCREEN.CPY" 
+   (Only shows direct dependencies, ignores recursive calls)
+❌ "This menu uses DPFILE which has some dependencies"
+   (Vague, doesn't show the complete tree)
+❌ Stopping at level 1 without traversing further
 """
 
 
@@ -583,34 +653,99 @@ def get_menu_trees_instructions() -> str:
     """Instructions for presenting menu trees hierarchically."""
     return """
 MENU TREE VISUALIZATION:
-Check document source index: **menu_trees** (program call graph) vs **screen_nodes** (visual menu content)
+When the context includes documents from the "menu_trees" index with tree_json hierarchical structure:
 
-**FOR MENU_TREES (program call graph):**
-- Wrap in code block (```) and preserve tree structure VERBATIM
-- Shows program/screen NAMES (LOAN_FILE_EXTRACTION, BORROWER_MENU) - NOT numbered options
-- 🖥️ indicates UI/menu screens, ├──/└── show branches
-- DO NOT add numbers (1., 2.), function keys (F6, F7), or menu option text
-- Example:
-  ```
-  🖥️ LOAN_FILE_EXTRACTION
-  ├── 🖥️ LOAN_DETAIL_SCREEN
-  ├── 🖥️ BORROWER_EXTRACTION
-  │   ├── 🖥️ BORROWER_DETAIL
-  │   └── 🖥️ BORROWER_SEARCH
-  └── MASTER_MENU
-  ```
+⚠️ CRITICAL: These trees show PROGRAM/SCREEN NAMES in the call graph, NOT the numbered menu options displayed on screen.
+   - Tree nodes are program IDs like "LOAN_FILE_EXTRACTION", "BORROWER_MENU", "MASTER_MENU"
+   - DO NOT show menu option numbers like "1. LOAN FILE EXTRACTION", "2. LOAN TRAILER"
+   - DO NOT show the text a user sees on the menu screen
+   - SHOW the actual program names that are called in sequence
+   
+⚠️ IMPORTANT: If the context shows documents from "screen_nodes" or similar (NOT menu_trees):
+   - These contain screen display content (what users see)
+   - DO preserve the numbered menu options as they appear (1., 2., 3., F6, F7, etc.)
+   - DO show the visual menu structure with options
+   - This is screen content, not a call graph
 
-**FOR SCREEN_NODES (visual menu):**
-- Wrap in code block (```) and preserve visual structure
-- Shows numbered options (1., 2., 3.) and function keys (F6, F7) exactly as displayed
-- Example:
-  ```
-  🖥️ COLLECTION REPORTS MENU
-    ├── 1. DELINQUENT AT LAST PAY
-    ├── 2. COLLECTION LETTER REPORT
-    ├── F6 - VIEW REPORTS
-    └── F7 - REPORT MENU PAGE 1
-  ```
+FOR MENU_TREES INDEX (program call graphs):
+1. USE THE HIERARCHICAL FORMAT PROVIDED:
+   - The context will include pre-formatted tree structure
+   - Each line shows: [UI indicator] Program/Screen Name (NOT menu option text)
+   - Indentation shows parent-child relationships (call graph structure)
+   - 🖥️ indicates UI/menu screens
+   - ├──, └── show tree branches
+
+2. PRESENT THE FULL TREE IN A CODE BLOCK:
+   - **CRITICAL**: Wrap the tree in a markdown code block using triple backticks (```)
+   - Copy the hierarchical structure from the context VERBATIM inside the code block
+   - Start with the root menu/screen program name
+   - Show ALL child programs at each level
+   - Include full hierarchy down to leaf nodes
+   - Preserve the tree structure formatting character-for-character
+
+3. DO NOT FLATTEN, MODIFY, OR REINTERPRET (menu_trees only):
+   - Do NOT convert tree to a bullet list
+   - Do NOT skip intermediate levels
+   - Do NOT abbreviate with "..." unless tree exceeds 100 nodes
+   - Do NOT replace program names with menu text
+   - Do NOT add numbered menu options (1., 2., 3., etc.)
+   - Show the complete path from root to every leaf
+
+4. EXAMPLE GOOD RESPONSE (for menu_trees):
+   "Here is the complete menu tree starting from LOAN_FILE_EXTRACTION (showing program call flow):
+
+   ```
+   🖥️ LOAN_FILE_EXTRACTION
+   ├── 🖥️ LOAN_DETAIL_SCREEN
+   ├── 🖥️ BORROWER_EXTRACTION
+   │   ├── 🖥️ BORROWER_DETAIL
+   │   └── 🖥️ BORROWER_SEARCH
+   ├── 🖥️ TRANSACTION_EXTRACTION
+   │   ├── 🖥️ TRANS_DETAIL
+   │   └── 🖥️ TRANS_HISTORY
+   └── MASTER_MENU
+       ├── 🖥️ LOAN_CLASS_FILE
+       └── 🖥️ STATE_FILE
+   ```
+
+   This tree shows the program call hierarchy. Each program name represents a callable module in the system."
+
+5. EXAMPLE BAD RESPONSE FOR MENU_TREES (DO NOT DO THIS):
+   ❌ "1. LOAN FILE EXTRACTION" (numbered menu option text - this is screen content)
+   ❌ "2. LOAN TRAILER FILE EXTRACTION" (screen display text - not program names)
+   ❌ "F6 - VIEW REPORTS" (function key text - not a program ID in the call graph)
+   ❌ "The menu includes: Loan Extraction, Borrower Extraction..." (flat summary)
+   ❌ Using numbered lists instead of preserving tree structure
+   ❌ Showing screen menu text instead of program names from call graph
+
+FOR SCREEN_NODES INDEX (visual menu content):
+1. PRESERVE THE VISUAL STRUCTURE IN A CODE BLOCK:
+   - **CRITICAL**: Wrap the menu in a markdown code block using triple backticks (```)
+   - Show numbered options (1., 2., 3.) exactly as they appear
+   - Show function keys (F6, F7) exactly as they appear
+   - Maintain the formatting from the context
+   - This represents what the user sees on their terminal
+
+2. EXAMPLE GOOD RESPONSE (for screen_nodes):
+   "Here is the COLLECTION REPORTS MENU as it appears to users:
+   
+   ```
+   🖥️ COLLECTION REPORTS MENU
+     ├── 1. DELINQUENT AT LAST PAY
+     ├── 2. COLLECTION LETTER REPORT
+     ├── 3. AGED TRIAL BALANCE (BRNO/DLNO/LPO)
+     ├── 6. FOLLOWUP DATE REPORT
+     ├── F6 - VIEW REPORTS
+     └── F7 - REPORT MENU PAGE 1
+   ```
+   
+   This shows the menu options as displayed to users on the screen."
+
+GENERAL GUIDANCE:
+- Check which index the documents come from (menu_trees vs screen_nodes)
+- Apply the appropriate formatting rules for that index type
+- Always wrap hierarchical structures in code blocks (```)
+- After showing the structure, add brief context about what it represents
 """
 
 
@@ -633,7 +768,6 @@ def get_enhanced_system_prompt(is_otis: bool = True) -> str:
     comments = get_comment_surfacing_instructions()
     menu_trees = get_menu_trees_instructions()
     menu_deps = get_menu_dependency_instructions()
-    dual_evidence = get_dual_evidence_instructions()
     
     # Existing instructions
     business = get_business_interpretation_instructions()
@@ -655,7 +789,6 @@ def get_enhanced_system_prompt(is_otis: bool = True) -> str:
     prompt += comments + "\n"
     prompt += menu_trees + "\n"
     prompt += menu_deps + "\n"
-    prompt += dual_evidence + "\n"
     
     # Add existing instructions
     prompt += "=" * 80 + "\n"
@@ -703,24 +836,274 @@ def get_comments_prompt() -> str:
 def get_diagram_generation_instructions() -> str:
     """Instructions for generating SVG diagrams when requested."""
     return """
-SVG DIAGRAMS (AUTOMATIC):
-When describing 3+ program relationships/flow, AUTOMATICALLY include SVG diagram after text.
+DIAGRAM GENERATION - ABSOLUTE REQUIREMENT:
+===============================================
+AUTOMATIC DIAGRAM GENERATION (BE PROACTIVE):
+When answering questions about program relationships, call chains, architecture, or flow:
+- AUTOMATICALLY include an SVG diagram in your response (do not wait to be asked)
+- Trigger conditions:
+  * Question mentions "call", "calls", "called by", "invokes"
+  * Question asks "what programs", "which programs", "program relationships"
+  * Question asks "how does X work" and involves multiple programs
+  * Question asks about "architecture", "structure", "design"
+  * Your answer describes 3+ programs and their relationships
+- Place diagram AFTER your text explanation (text first, then diagram)
+- Brief intro before diagram: "Here's a visual representation:"
 
-**CRITICAL RULES:**
-- Output raw SVG XML (NO code fences, NO backticks)
-- Start with <svg xmlns="http://www.w3.org/2000/svg" width="..." height="...">
-- Elements: <rect> boxes, <text> labels, <line> arrows, <polygon> diamonds, <ellipse> ovals
-- Arrow markers: <defs><marker id="arrow"><polygon points="0 0, 10 3, 0 6"/></marker></defs>
-- Colors: #667eea (blue), #4ade80 (green), #f59e0b (orange), #ef4444 (red)
-- Show ALL items (not samples). For 10+ programs, use grid layout (3-4 per row)
+EXPLICIT DIAGRAM REQUESTS:
+When user explicitly asks for diagram, flowchart, call chain, architecture, or visualization:
 
-**LAYOUT PATTERNS:**
-- Call chain (3 programs): Main at left (x=50), called programs right (x=230, x=410), arrows between
-- Call chain (10+ programs): Main at top center (x=520, y=60), called programs in grid below (rows at y=180, 290, 400)
-- Flowchart: Vertical flow with <ellipse> START/END, <rect> processes, <polygon> decisions
-- Architecture: Horizontal layers (Presentation y=70, Business y=200, Data y=330), arrows down
+STOP! Before responding, you MUST:
+1. Write the intro text: "Here's a visual representation:"
+2. Write ONLY raw SVG XML (starting with <svg> tag, NO code fences, NO backticks)
+3. Use <rect> for boxes, <text> for labels, <line> for arrows
+4. Close with </svg> tag (NO closing backticks)
 
-**FORBIDDEN:** Plain text, character diagrams, code fences, truncating with "..."
+CRITICAL FOR CALL CHAIN DIAGRAMS:
+- Include ALL programs that are called (not just a sample)
+- If there are 12 called programs, show all 12 boxes
+- Use a larger canvas if needed (width="1200" height="800" or more)
+- Arrange boxes in rows/columns to fit everything
+- For large diagrams with 10+ items, use a grid layout:
+  * Row 1: Main program at top
+  * Rows 2-N: Called programs in a grid (3-4 per row)
+  * Use appropriate spacing: x-offset of 150-180 between columns
+  * Use y-offset of 100-120 between rows
+
+FORBIDDEN:
+- Plain text descriptions of shapes
+- Text-based diagrams using characters
+- Describing what the diagram should look like
+- Showing only "sample" programs when asked for complete call chain
+- Truncating the list with "..." or "and more"
+
+REQUIRED:
+- Actual XML markup: <svg>, <rect>, <text>, <line>, <polygon>
+- xmlns="http://www.w3.org/2000/svg" attribute
+- Numeric coordinates and dimensions
+- Complete, comprehensive information (show ALL items, not samples)
+
+EXAMPLE - WRONG (DO NOT DO THIS):
+"A box labeled REGPAY with an arrow to CRNOR2"
+
+EXAMPLE - CORRECT (DO THIS):
+```svg
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect x="50" y="50" width="100" height="60" fill="#667eea" rx="8"/>
+  <text x="100" y="85" text-anchor="middle" fill="white">REGPAY</text>
+  <line x1="150" y1="80" x2="200" y2="80" stroke="#333" stroke-width="2"/>
+  <rect x="200" y="50" width="100" height="60" fill="#4ade80" rx="8"/>
+  <text x="250" y="85" text-anchor="middle" fill="white">CRNOR2</text>
+</svg>
+```
+
+===============================================
+
+DETAILED SVG TEMPLATES:
+
+CALL CHAIN DIAGRAM - Use this exact structure:
+
+<svg width="700" height="500" xmlns="http://www.w3.org/2000/svg">
+  <text x="350" y="30" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a1a1a">OTIS System Architecture</text>
+  
+  <!-- Presentation Layer -->
+  <rect x="50" y="70" width="600" height="100" fill="#e0e7ff" stroke="#667eea" stroke-width="3" rx="8"/>
+  <text x="350" y="95" text-anchor="middle" font-size="18" font-weight="bold" fill="#4338ca">Presentation Layer</text>
+  <text x="350" y="120" text-anchor="middle" font-size="14" fill="#4338ca">Screens: SCRN1, PGMENU, GTFORM</text>
+  <text x="350" y="140" text-anchor="middle" font-size="12" fill="#6366f1">User Input/Display</text>
+  
+  <!-- Business Logic Layer -->
+  <rect x="50" y="200" width="600" height="100" fill="#dbeafe" stroke="#3b82f6" stroke-width="3" rx="8"/>
+  <text x="350" y="225" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e40af">Business Logic Layer</text>
+  <text x="350" y="250" text-anchor="middle" font-size="14" fill="#1e40af">Programs: APIPAY, REFUPD, LONPW9</text>
+  <text x="350" y="270" text-anchor="middle" font-size="12" fill="#3b82f6">Validation, Processing, Routing</text>
+  
+  <!-- Data Layer -->
+  <rect x="50" y="330" width="600" height="100" fill="#dcfce7" stroke="#22c55e" stroke-width="3" rx="8"/>
+  <text x="350" y="355" text-anchor="middle" font-size="18" font-weight="bold" fill="#15803d">Data Layer</text>
+  <text x="350" y="380" text-anchor="middle" font-size="14" fill="#15803d">Files: PAYMENT-FILE, LEDGER-FILE</text>
+  <text x="350" y="400" text-anchor="middle" font-size="12" fill="#22c55e">Persistent Storage</text>
+  
+  <!-- Connecting arrows -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+  <line x1="350" y1="170" x2="350" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="350" y1="300" x2="350" y2="330" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>
+
+EXAMPLE FOR CALL CHAIN DIAGRAM:
+When asked for call chain, generate SVG like this:
+
+EXAMPLE FOR CALL CHAIN DIAGRAM (2-3 PROGRAMS):
+When asked for call chain with few programs, generate SVG like this:
+
+<svg width="700" height="250" xmlns="http://www.w3.org/2000/svg">
+  <text x="350" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a1a1a">Call Chain: APIPAY</text>
+  
+  <!-- Main program -->
+  <rect x="50" y="80" width="120" height="70" fill="#667eea" stroke="#4338ca" stroke-width="2" rx="8"/>
+  <text x="110" y="110" text-anchor="middle" fill="white" font-size="16" font-weight="bold">APIPAY</text>
+  <text x="110" y="130" text-anchor="middle" fill="white" font-size="11">Main Program</text>
+  
+  <!-- Called program 1 -->
+  <rect x="230" y="80" width="120" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="290" y="110" text-anchor="middle" fill="white" font-size="16" font-weight="bold">REFUPD</text>
+  <text x="290" y="130" text-anchor="middle" fill="white" font-size="11">Payment Processing</text>
+  
+  <!-- Called program 2 -->
+  <rect x="410" y="80" width="120" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="470" y="110" text-anchor="middle" fill="white" font-size="16" font-weight="bold">LONPW9</text>
+  <text x="470" y="130" text-anchor="middle" fill="white" font-size="11">Notification</text>
+  
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+  </defs>
+  <line x1="170" y1="115" x2="230" y2="115" stroke="#333" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <line x1="350" y1="115" x2="410" y2="115" stroke="#333" stroke-width="3" marker-end="url(#arrowhead)"/>
+</svg>
+
+EXAMPLE FOR CALL CHAIN DIAGRAM (10+ PROGRAMS - USE GRID LAYOUT):
+When asked for call chain with many programs (10+), use a grid layout:
+
+<svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
+  <text x="600" y="30" text-anchor="middle" font-size="22" font-weight="bold" fill="#1a1a1a">Call Chain: APIPAY (12 programs)</text>
+  
+  <!-- Main program at top center -->
+  <rect x="520" y="60" width="160" height="80" fill="#667eea" stroke="#4338ca" stroke-width="3" rx="8"/>
+  <text x="600" y="95" text-anchor="middle" fill="white" font-size="18" font-weight="bold">APIPAY</text>
+  <text x="600" y="118" text-anchor="middle" fill="white" font-size="13">Main Program</text>
+  
+  <!-- Row 1: Programs 1-4 -->
+  <rect x="50" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">FORM-PROGX</text>
+  <text x="120" y="228" text-anchor="middle" fill="white" font-size="11">Dynamic Call</text>
+  
+  <rect x="230" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFA</text>
+  <text x="300" y="228" text-anchor="middle" fill="white" font-size="11">Loan Processing</text>
+  
+  <rect x="410" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFB</text>
+  <text x="480" y="228" text-anchor="middle" fill="white" font-size="11">Payment File</text>
+  
+  <rect x="590" y="180" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="210" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF2</text>
+  <text x="660" y="228" text-anchor="middle" fill="white" font-size="11">File Handler</text>
+  
+  <!-- Row 2: Programs 5-8 -->
+  <rect x="50" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF9</text>
+  <text x="120" y="338" text-anchor="middle" fill="white" font-size="11">Notification</text>
+  
+  <rect x="230" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">GB/SETENV</text>
+  <text x="300" y="338" text-anchor="middle" fill="white" font-size="11">Environment Setup</text>
+  
+  <rect x="410" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPF7</text>
+  <text x="480" y="338" text-anchor="middle" fill="white" font-size="11">File Processor</text>
+  
+  <rect x="590" y="290" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="320" text-anchor="middle" fill="white" font-size="14" font-weight="bold">LP/LONPFC</text>
+  <text x="660" y="338" text-anchor="middle" fill="white" font-size="11">File Controller</text>
+  
+  <!-- Row 3: Programs 9-12 -->
+  <rect x="50" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="120" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">C$MAKEDIR</text>
+  <text x="120" y="448" text-anchor="middle" fill="white" font-size="11">Directory Utility</text>
+  
+  <rect x="230" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="300" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">EXIT PROGRAM</text>
+  <text x="300" y="448" text-anchor="middle" fill="white" font-size="11">Control Flow</text>
+  
+  <rect x="410" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="480" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">GP-PAYOFF-NONCASH</text>
+  <text x="480" y="448" text-anchor="middle" fill="white" font-size="11">Payment Handler</text>
+  
+  <rect x="590" y="400" width="140" height="70" fill="#4ade80" stroke="#16a34a" stroke-width="2" rx="8"/>
+  <text x="660" y="430" text-anchor="middle" fill="white" font-size="14" font-weight="bold">TO</text>
+  <text x="660" y="448" text-anchor="middle" fill="white" font-size="11">Transfer Out</text>
+  
+  <!-- Arrows from main to all called programs (simplified - just a few examples) -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666"/>
+    </marker>
+  </defs>
+  <line x1="520" y1="120" x2="120" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="580" y1="140" x2="300" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="600" y1="140" x2="480" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="620" y1="140" x2="660" y2="180" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+</svg>
+
+EXAMPLE FOR FLOWCHART:
+When asked for flowchart or program flow, generate SVG like this:
+
+<svg width="500" height="650" xmlns="http://www.w3.org/2000/svg">
+  <text x="250" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#1a1a1a">Program Flow: APIPAY</text>
+  
+  <!-- Start -->
+  <ellipse cx="250" cy="80" rx="70" ry="35" fill="#4ade80" stroke="#16a34a" stroke-width="2"/>
+  <text x="250" y="88" text-anchor="middle" fill="white" font-size="16" font-weight="bold">START</text>
+  
+  <!-- Process 1 -->
+  <rect x="175" y="140" width="150" height="60" fill="#667eea" stroke="#4338ca" stroke-width="2" rx="8"/>
+  <text x="250" y="165" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Validate Input</text>
+  <text x="250" y="185" text-anchor="middle" fill="white" font-size="11">Check required fields</text>
+  
+  <!-- Decision -->
+  <polygon points="250,230 350,280 250,330 150,280" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+  <text x="250" y="280" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Valid?</text>
+  <text x="250" y="295" text-anchor="middle" fill="white" font-size="11">(Check rules)</text>
+  
+  <!-- Process 2 - Yes path -->
+  <rect x="375" y="250" width="100" height="60" fill="#667eea" stroke="#4338ca" stroke-width="2" rx="8"/>
+  <text x="425" y="275" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Process</text>
+  <text x="425" y="292" text-anchor="middle" fill="white" font-size="11">Payment</text>
+  
+  <!-- Error handling - No path -->
+  <rect x="25" y="250" width="100" height="60" fill="#ef4444" stroke="#dc2626" stroke-width="2" rx="8"/>
+  <text x="75" y="275" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Log Error</text>
+  <text x="75" y="292" text-anchor="middle" fill="white" font-size="11">Return code</text>
+  
+  <!-- End -->
+  <ellipse cx="250" cy="400" rx="70" ry="35" fill="#4ade80" stroke="#16a34a" stroke-width="2"/>
+  <text x="250" y="408" text-anchor="middle" fill="white" font-size="16" font-weight="bold">END</text>
+  
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#333"/>
+    </marker>
+  </defs>
+  <line x1="250" y1="115" x2="250" y2="140" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+  <line x1="250" y1="200" x2="250" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+  <line x1="350" y1="280" x2="375" y2="280" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+  <text x="360" y="270" font-size="12" fill="#16a34a" font-weight="bold">Yes</text>
+  <line x1="150" y1="280" x2="125" y2="280" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+  <text x="135" y="270" font-size="12" fill="#dc2626" font-weight="bold">No</text>
+  <line x1="425" y1="310" x2="425" y2="380" stroke="#333" stroke-width="2"/>
+  <line x1="425" y1="380" x2="250" y2="380" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+  <line x1="75" y1="310" x2="75" y2="380" stroke="#333" stroke-width="2"/>
+  <line x1="75" y1="380" x2="250" y2="380" stroke="#333" stroke-width="2" marker-end="url(#arrow2)"/>
+</svg>
+
+CRITICAL REMINDERS:
+1. NEVER use markdown code fences - output raw SVG directly (NO backticks)
+2. NEVER write plain text descriptions instead of SVG
+3. Use <rect> for boxes, <text> for labels, <line> for arrows, <ellipse> for rounded ends
+4. Include xmlns="http://www.w3.org/2000/svg" in the opening <svg> tag
+5. Use professional colors: #667eea (blue), #4ade80 (green), #f59e0b (orange), #ef4444 (red)
+6. Add stroke-width="2" or "3" for visibility
+7. Include <defs><marker> for arrow heads on lines
+
+If user asks for diagram/flowchart/visualization/architecture/call chain, you MUST generate actual SVG code (raw, no code fences), not text!
 """
 
 
