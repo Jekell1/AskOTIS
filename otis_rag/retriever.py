@@ -210,7 +210,15 @@ class HybridRetriever:
         
         logger.info(f"📄 Retrieved {len(all_results)} semantic results + {len(filtered_relationship_results)} filtered relationship results")
         
-        # 🔹 ENTITY EXTRACTION for implementation queries: Find mentioned copybooks/programs and fetch them
+        # � MULTI-HOP RETRIEVAL for implementation queries: Follow COPY statements and variable references
+        if question_type == 'implementation' and all_results:
+            logger.info("🔗 MULTI-HOP: Starting multi-hop relationship traversal")
+            multi_hop_results = self._multi_hop_implementation_search(all_results, query)
+            if multi_hop_results:
+                logger.info(f"✅ Multi-hop found {len(multi_hop_results)} additional chunks")
+                all_results.extend(multi_hop_results)
+        
+        # �🔹 ENTITY EXTRACTION for implementation queries: Find mentioned copybooks/programs and fetch them
         if question_type == 'implementation' and all_results:
             logger.info("🔍 ENTITY EXTRACTION: Looking for copybook/program references in results")
             additional_results = self._extract_and_fetch_entities(all_results, query)
@@ -1535,6 +1543,216 @@ class HybridRetriever:
         
         logger.info(f"✅ Entity extraction: {len(unique_additional)} unique new chunks (from {len(additional_chunks)} total)")
         return unique_additional
+    
+    def _extract_copy_statements(self, chunks: List[Dict[str, Any]]) -> List[str]:
+        """Extract copybook names from COPY statements in chunks.
+        
+        Parses COBOL COPY statements like:
+        - COPY LPLCHG
+        - COPY LPLCHG.
+        - COPY 'LPLCHG'
+        
+        Args:
+            chunks: List of code chunks
+            
+        Returns:
+            List of unique copybook names
+        """
+        import re
+        from collections import Counter
+        
+        # Pattern matches: COPY copybook-name (with optional quotes/period)
+        copy_pattern = re.compile(r'\bCOPY\s+["\']?([A-Z][A-Z0-9-]+)["\']?\.?', re.IGNORECASE)
+        
+        all_copybooks = []
+        for chunk in chunks:
+            content = chunk.get('text', chunk.get('content', ''))
+            matches = copy_pattern.findall(content)
+            all_copybooks.extend(matches)
+        
+        # Get frequency and return top copybooks
+        copybook_counts = Counter(all_copybooks)
+        
+        # Filter out common false positives
+        skip_patterns = ['REPLACING', 'SUPPRESS', 'EJECT']
+        copybooks = [
+            cb for cb, count in copybook_counts.most_common(10)
+            if cb not in skip_patterns
+        ]
+        
+        return copybooks
+    
+    def _extract_cobol_variables(self, chunks: List[Dict[str, Any]]) -> List[str]:
+        """Extract COBOL variable names from chunks.
+        
+        Looks for uppercase identifiers with hyphens (standard COBOL naming).
+        Filters out keywords and common noise.
+        
+        Args:
+            chunks: List of code chunks
+            
+        Returns:
+            List of unique variable names
+        """
+        import re
+        from collections import Counter
+        
+        # Pattern for COBOL identifiers: starts with letter, contains letters/numbers/hyphens
+        var_pattern = re.compile(r'\b([A-Z][A-Z0-9-]{2,})\b')
+        
+        # COBOL keywords to skip
+        keywords = {
+            'WORKING-STORAGE', 'PROCEDURE', 'DIVISION', 'SECTION', 'IDENTIFICATION',
+            'ENVIRONMENT', 'DATA', 'FILE-CONTROL', 'SELECT', 'ASSIGN',
+            'DISPLAY', 'ACCEPT', 'COMPUTE', 'PERFORM', 'MOVE', 'ADD', 'SUBTRACT',
+            'MULTIPLY', 'DIVIDE', 'IF', 'ELSE', 'END-IF', 'EVALUATE', 'WHEN',
+            'PICTURE', 'VALUE', 'REDEFINES', 'OCCURS', 'INDEXED', 'DEPENDING',
+            'COPY', 'REPLACING', 'CALL', 'USING', 'RETURNING', 'EXIT', 'STOP',
+            'OPEN', 'CLOSE', 'READ', 'WRITE', 'REWRITE', 'DELETE', 'START',
+            'AND', 'OR', 'NOT', 'THE', 'FOR', 'FROM', 'INTO', 'BY', 'TO', 'OF',
+            'ON', 'AT', 'IN', 'WITH', 'THEN', 'ELSE-IF', 'IS', 'ARE', 'WAS', 'WERE'
+        }
+        
+        all_vars = []
+        for chunk in chunks[:30]:  # Sample first 30 chunks
+            content = chunk.get('text', chunk.get('content', ''))
+            matches = var_pattern.findall(content)
+            all_vars.extend(matches)
+        
+        # Count frequency
+        var_counts = Counter(all_vars)
+        
+        # Filter keywords and return top variables
+        variables = [
+            var for var, count in var_counts.most_common(50)
+            if var not in keywords and count >= 2
+        ]
+        
+        return variables[:15]  # Top 15 variables
+    
+    def _multi_hop_implementation_search(
+        self, 
+        initial_results: List[Dict[str, Any]], 
+        query: str
+    ) -> List[Dict[str, Any]]:
+        """Perform multi-hop search for implementation questions.
+        
+        Follows relationships in the codebase:
+        1. Extract COPY statements → search copybook_usage
+        2. Extract variables → search data_items (definitions)
+        3. Extract variables → search variables (usage patterns)
+        
+        Args:
+            initial_results: Chunks from initial search
+            query: Original query (for context)
+            
+        Returns:
+            Additional chunks found via multi-hop exploration
+        """
+        additional_chunks = []
+        
+        logger.info("🔗 MULTI-HOP: Starting relationship traversal")
+        
+        # Round 1: Follow COPY statements
+        copybooks = self._extract_copy_statements(initial_results)
+        logger.info(f"📚 ROUND 1: Found {len(copybooks)} copybooks: {copybooks[:5]}")
+        
+        if copybooks:
+            copybook_usage_index = self.config.get_index_name('copybook_usage')
+            url = f"{self.config.search_endpoint}/indexes/{copybook_usage_index}/docs/search?api-version=2025-08-01-preview"
+            
+            for cb in copybooks[:5]:  # Top 5 copybooks
+                body = {
+                    "search": cb,
+                    "searchMode": "all",
+                    "queryType": "simple",
+                    "select": "*",
+                    "top": 10
+                }
+                
+                try:
+                    response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                    response.raise_for_status()
+                    results = response.json().get('value', [])
+                    
+                    for doc in results:
+                        doc['_index_type'] = 'copybook_usage'
+                        doc['_search_method'] = 'multi_hop_copy'
+                        doc['_extracted_copybook'] = cb
+                    
+                    additional_chunks.extend(results)
+                    logger.info(f"   ✅ {cb}: {len(results)} usage records")
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️ {cb}: search failed - {e}")
+        
+        # Round 2: Find variable definitions
+        variables = self._extract_cobol_variables(initial_results)
+        logger.info(f"🔤 ROUND 2: Found {len(variables)} variables: {variables[:10]}")
+        
+        if variables:
+            data_items_index = self.config.get_index_name('data_items')
+            url = f"{self.config.search_endpoint}/indexes/{data_items_index}/docs/search?api-version=2025-08-01-preview"
+            
+            for var in variables[:10]:  # Top 10 variables
+                body = {
+                    "search": var,
+                    "searchMode": "all",
+                    "queryType": "simple",
+                    "select": "*",
+                    "top": 5
+                }
+                
+                try:
+                    response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                    response.raise_for_status()
+                    results = response.json().get('value', [])
+                    
+                    for doc in results:
+                        doc['_index_type'] = 'data_items'
+                        doc['_search_method'] = 'multi_hop_definition'
+                        doc['_extracted_variable'] = var
+                    
+                    additional_chunks.extend(results)
+                    if results:
+                        logger.info(f"   ✅ {var}: {len(results)} definitions")
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️ {var}: definition search failed - {e}")
+        
+        # Round 3: Find variable usage patterns
+        if variables:
+            var_usage_index = self.config.get_index_name('variables')
+            url = f"{self.config.search_endpoint}/indexes/{var_usage_index}/docs/search?api-version=2025-08-01-preview"
+            
+            for var in variables[:5]:  # Top 5 variables for usage
+                body = {
+                    "search": var,
+                    "searchMode": "all",
+                    "queryType": "simple",
+                    "select": "*",
+                    "top": 5
+                }
+                
+                try:
+                    response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                    response.raise_for_status()
+                    results = response.json().get('value', [])
+                    
+                    for doc in results:
+                        doc['_index_type'] = 'variables'
+                        doc['_search_method'] = 'multi_hop_usage'
+                        doc['_extracted_variable'] = var
+                    
+                    additional_chunks.extend(results)
+                    if results:
+                        logger.info(f"   ✅ {var}: {len(results)} usage patterns")
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️ {var}: usage search failed - {e}")
+        
+        logger.info(f"🔗 MULTI-HOP: Retrieved {len(additional_chunks)} additional chunks across all rounds")
+        return additional_chunks
     
     def _get_all_program_copybooks(self, program_name: str, max_results: int) -> List[Dict[str, Any]]:
         """Fallback: Get all copybooks for a program.
