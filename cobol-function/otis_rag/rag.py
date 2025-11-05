@@ -108,22 +108,26 @@ class OTISRAG:
             max_results_for_query = routing['max_results']
             logger.info(f"📄 Using router-specified max_results={max_results_for_query}")
             print(f"📄 Using router-specified max_results={max_results_for_query}")
+        # >>> TUNE: Raise per-index max_results for better recall
         # Determine max_results based on question complexity
-        elif question_type in ('menu', 'list', 'simple'):
-            # Specific questions need fewer documents
-            max_results_for_query = 20  # Top 20 per index
+        elif question_type in ('menu', 'simple'):
+            # Menu/UI questions need moderate context
+            max_results_for_query = 120
+        elif question_type == 'list':
+            # List questions need comprehensive results
+            max_results_for_query = 300
         elif question_type == 'trace_flow':
             # Flow tracing needs comprehensive context
-            max_results_for_query = 100  # Top 100 per index
-        elif question_type == 'transaction':
-            # Business transactions need moderate context
-            max_results_for_query = 50  # Top 50 per index
+            max_results_for_query = 200
+        elif question_type in ('transaction', 'implementation', 'calculation'):
+            # Business transactions and implementation need deep context
+            max_results_for_query = 150
         elif 'all' in routing['clean_query'].lower() or 'list' in routing['clean_query'].lower():
             # Explicit list requests need many results
-            max_results_for_query = 200  # Top 200 per index
+            max_results_for_query = 300
         else:
-            # General questions - balanced approach
-            max_results_for_query = 50  # Default: Top 50 per index
+            # >>> TUNE: General questions - increased from 50 to 150 for better coverage
+            max_results_for_query = 150
         
         logger.info(f"📊 Dynamic retrieval: question_type={question_type}, max_results={max_results_for_query}")
         print(f"📊 Dynamic retrieval: question_type={question_type}, max_results={max_results_for_query}")

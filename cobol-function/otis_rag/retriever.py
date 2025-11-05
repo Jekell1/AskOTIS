@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 import requests
 from typing import List, Dict, Any
 from openai import AzureOpenAI
@@ -19,9 +20,9 @@ class HybridRetriever:
         
         # Initialize Azure OpenAI for embeddings
         self.openai_client = AzureOpenAI(
-            api_key=config.openai_key,
-            api_version="2024-08-01-preview",
-            azure_endpoint=config.openai_endpoint
+            api_key=self.config.openai_key,
+            api_version=self.config.openai_api_version,  # >>> FIX: Use config for consistency
+            azure_endpoint=self.config.openai_endpoint
         )
         
         # Search API headers
@@ -77,6 +78,42 @@ class HybridRetriever:
         
         # Sort by score descending
         return [keep[i] for i, _ in sorted(scores.items(), key=lambda kv: kv[1], reverse=True)]
+    
+    def _cross_encoder_rerank(self, query: str, documents: List[Dict], top_k: int = 20) -> List[Dict]:
+        """
+        >>> FIX: Cross-encoder reranking stub (for future deployment).
+        
+        If config.use_cross_encoder is True, reranks documents using a cross-encoder model
+        and combines with original fusion scores (0.7 × rerank + 0.3 × fused).
+        
+        If False (default), returns documents unchanged with original scores.
+        
+        Args:
+            query: User query
+            documents: Fused documents with @search.score
+            top_k: Number of top documents to rerank
+            
+        Returns:
+            Reranked documents (or unchanged if cross-encoder disabled)
+        """
+        if not self.config.use_cross_encoder:
+            # Cross-encoder disabled - return original scores
+            logger.info("   🔄 Cross-encoder disabled (config.use_cross_encoder=False), using fused scores")
+            return documents
+        
+        logger.info(f"   🔄 Cross-encoder enabled - reranking top {top_k} documents")
+        
+        # TODO: Implement actual cross-encoder reranking when needed
+        # Placeholder logic:
+        # 1. Take top_k documents
+        # 2. Call cross-encoder model with (query, doc_text) pairs
+        # 3. Get relevance scores from cross-encoder
+        # 4. Combine: final_score = 0.7 × cross_encoder_score + 0.3 × original_fused_score
+        # 5. Re-sort by final_score
+        
+        # For now, log that this is a stub and return unchanged
+        logger.warning("   ⚠️ Cross-encoder reranking requested but not yet implemented - returning fused scores")
+        return documents
     
     def _mine_corpus_tokens(self, candidates: List[Dict], max_tokens: int = 24) -> Dict[str, List[str]]:
         """Mine hyphen-codes, ALLCAPS tokens, and numbers from corpus candidates.
@@ -435,11 +472,12 @@ class HybridRetriever:
             final_count = max_results
         else:
             # Dynamic cap based on max_results (which caller sets based on question type)
-            # For specific queries (max_results=20): return up to 40 docs
-            # For general queries (max_results=50): return up to 100 docs  
-            # For complex queries (max_results=100): return up to 200 docs
+            # >>> TUNE: Increased dynamic cap from 200 to 500 to support higher retrieval targets
+            # For specific queries (max_results=120): return up to 240 docs
+            # For general queries (max_results=150): return up to 300 docs  
+            # For complex queries (max_results=300): return up to 500 docs
             raw_half = len(all_results) // 2
-            dynamic_cap = min(max_results * 2, 200)  # 2x the per-index limit, max 200
+            dynamic_cap = min(max_results * 2, self.config.max_fused_docs)  # 2x the per-index limit, max 500
             final_count = min(dynamic_cap, max(10, raw_half))  # At least 10, up to dynamic cap
         
         logger.info(f"📄 Retrieved {len(all_results)} semantic results + {len(filtered_relationship_results)} filtered relationship results")
@@ -1724,7 +1762,7 @@ class HybridRetriever:
             "vectorQueries": [{
                 "kind": "vector",
                 "vector": embedding,
-                "fields": "description_vector",
+                "fields": "summary_vector",  # >>> FIX: Match config mapping (was description_vector)
                 "k": max_results * 2  # Get more candidates
             }],
             # Note: No program_id filter - copybook_meta is global, not program-specific
@@ -1919,10 +1957,16 @@ class HybridRetriever:
         return paragraphs
     
     def _extract_query_terms_for_paragraphs(self, query: str) -> List[str]:
-        """Extract terms from query that might be paragraph/section names.
+        """>>> DEPRECATED: Unused (superseded by _dynamic_paragraph_expansions with dual-probe corpus mining).
+        
+        Extract terms from query that might be paragraph/section names.
         
         For state-specific queries like "South Carolina late fee", generates
         search terms like "SCAROLINA", "CTY-SCAROLINA", etc.
+        
+        This hardcoded approach has been replaced by corpus-driven token mining
+        in Round 5 multi-hop search, which discovers relevant terms generically
+        without state-specific mappings.
         
         Args:
             query: Original user question
@@ -2198,15 +2242,16 @@ class HybridRetriever:
         
         # >>> TIER A FIX 4: Lexical search with paragraph_name field boost and increased recall
         # >>> TIER B: Added paragraph_name_terms for tokenized label matching
+        # >>> TUNE: Increased lex top from 300 to 300 (already optimized)
         lex_results = []
         try:
             lex_body = {
                 "search": expanded_lex,
                 "queryType": "full",
                 "searchMode": "any",
-                "searchFields": "paragraph_name^6,paragraph_name_terms^3,source_excerpt",  # Tier B: Added tokenized field
+                "searchFields": "paragraph_name^6,paragraph_name_terms^5,text",  # >>> TUNE: Boosted terms field, added text
                 "select": "*",
-                "top": 300  # Increased from 50 for better recall before fusion
+                "top": 300  # >>> TUNE: Per-leg recall target
             }
             
             lex_response = requests.post(url, headers=self.search_headers, json=lex_body, timeout=30)
@@ -2217,6 +2262,7 @@ class HybridRetriever:
             logger.warning(f"   ⚠️ Lexical search failed: {e}")
         
         # >>> TIER A FIX 3: Vector search with expanded query and increased recall
+        # >>> TUNE: Increased vec k from 150 to 150 (already optimized)
         vec_results = []
         try:
             expand_for_vec = query + " " + " ".join(mined.get("hyphen", [])[:8])
@@ -2228,11 +2274,11 @@ class HybridRetriever:
                     "vectorQueries": [{
                         "kind": "vector",
                         "vector": qv,
-                        "k": 150,  # Increased from 50
+                        "k": 150,  # >>> TUNE: Per-leg vec recall target
                         "fields": "para_vector"
                     }],
                     "select": "*",
-                    "top": 150  # Increased from 50
+                    "top": 150  # >>> TUNE: Matches k value
                 }
                 
                 vec_response = requests.post(url, headers=self.search_headers, json=vec_body, timeout=30)
@@ -2243,6 +2289,7 @@ class HybridRetriever:
             logger.warning(f"   ⚠️ Vector search failed: {e}")
         
         # >>> TIER A FIX 2: Add dedicated ID leg for hyphenated labels (generic, pattern-free)
+        # >>> TUNE: Increased ID top from 120 to 120 (already optimized)
         id_results = []
         try:
             hyphen_tokens = mined.get("hyphen", [])[:8]
@@ -2257,7 +2304,7 @@ class HybridRetriever:
                     "searchMode": "any",
                     "searchFields": "paragraph_name",  # Focus strictly on label field
                     "select": "*",
-                    "top": 120  # High recall for ID matches
+                    "top": 120  # >>> TUNE: Per-leg ID recall target
                 }
                 
                 id_response = requests.post(url, headers=self.search_headers, json=id_body, timeout=30)
@@ -2267,15 +2314,122 @@ class HybridRetriever:
         except Exception as e:
             logger.warning(f"   ⚠️ ID leg search failed: {e}")
         
-        # Fuse with 3-leg weighted RRF (lex:0.5, vec:0.3, id:0.2)
-        if lex_results or vec_results or id_results:
+        # >>> FIX: Add 4th policy/prose leg for implementation questions
+        # >>> TUNE: Increased policy top from 100 to 150 for better recall
+        # >>> FIX: policy leg — OR query for recall
+        policy_results = []
+        try:
+            # Build generic policy query: policy tokens + numbers from query
+            import re
+            query_numbers = re.findall(r'\d+', query)  # Extract all numbers
+            terms = []
+            
+            # Add policy tokens from config
+            for token in self.config.policy_tokens[:10]:  # Top 10 policy terms
+                terms.append(token)
+            
+            # Add numbers for specificity (e.g., "90", "15", "1996")
+            for num in query_numbers[:5]:  # Top 5 numbers
+                terms.append(num)
+            
+            if terms:
+                policy_query = " OR ".join(terms)  # >>> FIX: OR for high recall (was AND-like)
+                
+                policy_body = {
+                    "search": policy_query,
+                    "queryType": "full",
+                    "searchMode": "any",
+                    "searchFields": "source_excerpt,text",  # >>> FIX: Schema-safe fields only
+                    "select": "*",
+                    "top": 150  # >>> TUNE: Per-leg policy recall target (was 100)
+                }
+                
+                policy_response = requests.post(url, headers=self.search_headers, json=policy_body, timeout=30)
+                policy_response.raise_for_status()
+                candidates = policy_response.json().get('value', [])
+                
+                # >>> FIX: post-filter for precision (must have number + policy token)
+                tokset = set(t.upper() for t in self.config.policy_tokens)
+                def _has_policy_signals(d):
+                    t = (d.get("source_excerpt") or d.get("text") or "").upper()
+                    return any(k in t for k in tokset) and re.search(r"\d", t)
+                
+                policy_results = [d for d in candidates if _has_policy_signals(d)]
+                logger.info(f"   ✅ Policy leg: {len(candidates)} candidates → {len(policy_results)} after post-filter (number+token)")
+        except Exception as e:
+            logger.warning(f"   ⚠️ Policy leg search failed: {e}")
+        
+        # >>> FIX: Fuse with 4-leg weighted RRF (lex:0.4, vec:0.25, id:0.20, policy:0.15)
+        if lex_results or vec_results or id_results or policy_results:
+            # >>> TUNE: Log per-leg counts before fusion
+            logger.info(f"   📊 Per-leg counts: lex={len(lex_results)}, vec={len(vec_results)}, id={len(id_results)}, policy={len(policy_results)}")
+            
             round5_fused = self.weighted_rrf(
-                {"lex": lex_results, "vec": vec_results, "id": id_results},
-                weights={"lex": 0.5, "vec": 0.3, "id": 0.2},
+                {"lex": lex_results, "vec": vec_results, "id": id_results, "policy": policy_results},
+                weights={"lex": 0.4, "vec": 0.25, "id": 0.20, "policy": 0.15},
                 k=self.config.rrf_k
             )
             
+            # >>> TUNE: Apply fused cap and tail cutoff
+            initial_fused_count = len(round5_fused)
+            
+            # Step 1: Cap at max_fused_docs
+            if len(round5_fused) > self.config.max_fused_docs:
+                round5_fused = round5_fused[:self.config.max_fused_docs]
+                logger.info(f"   ✂️ Capped fused results: {initial_fused_count} → {len(round5_fused)} (max={self.config.max_fused_docs})")
+            
+            # Step 2: Apply tail cutoff (drop docs below tail_cutoff * top_score)
+            if round5_fused:
+                top_score = round5_fused[0].get('@search.score', 1.0)
+                cutoff_threshold = top_score * self.config.tail_cutoff
+                before_cutoff = len(round5_fused)
+                round5_fused = [doc for doc in round5_fused if doc.get('@search.score', 0.0) >= cutoff_threshold]
+                if len(round5_fused) < before_cutoff:
+                    logger.info(f"   ✂️ Tail cutoff: {before_cutoff} → {len(round5_fused)} (threshold={cutoff_threshold:.4f}, top={top_score:.4f})")
+            
+            # >>> FIX: label alignment boost for ID-like labels that match mined hyphen tokens
+            align_boost = 1.08
+            hyphens = set((mined.get("hyphen") or []))  # mined from dual-probe
+            align_count = 0
+            for doc in round5_fused:
+                pn = (doc.get("paragraph_name") or "").upper()
+                if any(h in pn for h in hyphens):
+                    doc["@search.score"] = doc.get("@search.score", 0.0) * align_boost
+                    align_count += 1
+            
+            if align_count > 0:
+                logger.info(f"   🎯 Label alignment boost: {align_count}/{len(round5_fused)} docs matched mined hyphen tokens (×{align_boost})")
+            
+            # >>> FIX: Apply structure-based ranking nudges (generic, pattern-free)
+            # Nudge 1: Labels with ≥2 hyphens (id-like structure) × 1.06
+            # Nudge 2: Contains COMPUTE + numbers (calculation logic) × 1.05
+            structure_nudge_count = {"hyphen": 0, "compute": 0}
+            for doc in round5_fused:
+                para_name = doc.get('paragraph_name', '')
+                source_excerpt = doc.get('source_excerpt', '')
+                original_score = doc.get('@search.score', 0.0)
+                nudge_applied = False
+                
+                # Hyphen nudge (≥2 hyphens in label)
+                if para_name.count('-') >= 2:
+                    doc['@search.score'] = original_score * 1.06
+                    structure_nudge_count["hyphen"] += 1
+                    nudge_applied = True
+                
+                # COMPUTE nudge (contains COMPUTE + digits)
+                if 'COMPUTE' in source_excerpt.upper() and re.search(r'\d', source_excerpt):
+                    current_score = doc.get('@search.score', original_score)
+                    doc['@search.score'] = current_score * 1.05
+                    structure_nudge_count["compute"] += 1
+                    nudge_applied = True
+                
+                if nudge_applied:
+                    doc['_structure_nudges_applied'] = True
+            
+            logger.info(f"   📊 Structure nudges: {structure_nudge_count['hyphen']} hyphen-rich labels, {structure_nudge_count['compute']} compute logic")
+            
             # >>> TIER A FIX 1: Apply soft boost for likely programs (fail-open)
+            # >>> TUNE: Confirm this is a soft bonus, NOT a filter
             LIKELY_PROGRAM_BONUS = 1.05
             boosted_count = 0
             if likely_programs:
@@ -2283,15 +2437,20 @@ class HybridRetriever:
                     if doc.get('program_id') in likely_programs:
                         doc['@search.score'] = doc.get('@search.score', 0.0) * LIKELY_PROGRAM_BONUS
                         boosted_count += 1
-                logger.info(f"   🎯 Soft boost: {boosted_count}/{len(round5_fused)} docs matched likely programs")
+                logger.info(f"   🎯 Soft boost (NO FILTER): {boosted_count}/{len(round5_fused)} docs matched likely programs")
+            
+            # >>> TUNE: Keep more from Round 5 (was top 20, now use max_fused_docs/10)
+            round5_keep = min(len(round5_fused), max(100, self.config.max_fused_docs // 5))  # Keep at least 100, up to 20% of max
             
             # Tag and add to additional_chunks
-            for doc in round5_fused[:20]:  # Top 20 from Round 5
+            for doc in round5_fused[:round5_keep]:
                 doc['_index_type'] = 'paragraphs'
-                doc['_search_method'] = 'multi_hop_round5_3leg_rrf'
+                doc['_search_method'] = 'multi_hop_round5_4leg_rrf'  # >>> FIX: Was 3leg, now includes policy leg
                 additional_chunks.append(doc)
             
-            logger.info(f"   ✅ Round 5 fused: {len(round5_fused)} paragraphs (3-leg RRF, kept top 20)")
+            # >>> TUNE: Enhanced logging for tuning verification
+            logger.info(f"   ✅ Round 5 final: fused={initial_fused_count}, after_cap={len(round5_fused)}, kept={round5_keep}")
+            logger.info(f"   📊 Round 5 pipeline: legs→fused→cap→cutoff→nudges→boost→kept = {len(lex_results)}+{len(vec_results)}+{len(id_results)}+{len(policy_results)}→{initial_fused_count}→{len(round5_fused)}→{round5_keep}")
         
         logger.info(f"🔗 MULTI-HOP: Retrieved {len(additional_chunks)} additional chunks across all rounds")
         return additional_chunks

@@ -1,6 +1,7 @@
 """Response Generator - Creates answers using LLM with retrieved context."""
 
 import logging
+import re
 import tiktoken
 from typing import List, Dict
 from openai import AzureOpenAI
@@ -20,7 +21,7 @@ class ResponseGenerator:
         # Initialize Azure OpenAI for chat
         self.openai_client = AzureOpenAI(
             api_key=config.openai_key,
-            api_version="2024-08-01-preview",
+            api_version=config.openai_api_version,  # >>> FIX: Use config for consistency
             azure_endpoint=config.openai_endpoint
         )
     
@@ -57,18 +58,19 @@ class ResponseGenerator:
         try:
             import time
             
-            # Optimize max_tokens based on question type
-            # Menu/list questions: 2000 tokens (~1500 words) is plenty
-            # Trace/flow questions: need more for detailed analysis
-            # Copybook usage questions: need lots for complete lists
+            # >>> TUNE: Optimize max_tokens based on question type (increased for comprehensive answers)
+            # Menu/list questions: 4K tokens for complete navigation
+            # Trace/flow questions: 15K tokens for detailed analysis (unchanged)
+            # Copybook usage questions: 24K tokens for complete listings with diagrams
+            # General: 8K tokens for thorough explanations (doubled from 4K)
             if question_type in ('menu', 'list', 'simple'):
-                max_response_tokens = 2000
+                max_response_tokens = 4000  # >>> TUNE: Was 2000, increased for more complete answers
             elif question_type == 'trace_flow':
-                max_response_tokens = 15000
+                max_response_tokens = 15000  # >>> TUNE: Unchanged, already generous
             elif question_type == 'copybook_usage':
-                max_response_tokens = 20000  # Increased to allow more complete listings with diagrams
+                max_response_tokens = 24000  # >>> TUNE: Was 20000, increased for comprehensive coverage
             else:
-                max_response_tokens = 4000  # Default for most questions
+                max_response_tokens = 8000  # >>> TUNE: Was 4000, doubled for general questions
             
             # Adjust temperature for list/copybook questions to reduce repetition
             # Lower temperature = more focused, less prone to loops
@@ -94,6 +96,13 @@ class ResponseGenerator:
             result = response.choices[0].message.content
             tokens_used = response.usage.total_tokens if hasattr(response, 'usage') else 'unknown'
             logger.info(f"⏱️ TIMING: LLM call took {time_llm:.3f}s (tokens: {tokens_used})")
+            
+            # >>> FIX: citation sanity check
+            bad = re.search(r"lines\s+not\s+specified", result, re.IGNORECASE) or not re.search(r"\(program_id=.*lines\s+\d+\s*[\-–]\s*\d+\)", result)
+            if bad:
+                result = ("Note: Missing or invalid citations were detected. The answer should include exact program/paragraph "
+                          "and line ranges for each quote. Please regenerate with strict citations.\n\n" + result)
+                logger.warning("⚠️ Citation sanity check failed: missing or invalid line ranges detected")
             
             # Post-process to clean up hash-based screen IDs from LLM citations
             result = self._clean_screen_id_hashes(result)
@@ -142,8 +151,6 @@ class ResponseGenerator:
         Returns:
             Text with hash-based screen IDs removed or simplified
         """
-        import re
-        
         # Pattern 1: Remove complete "HASH_SCREEN_N" patterns (32-50 hex chars)
         # Example: "BF7CB9C3422AD6417A40FDC2DF52ECB97B8EAF47_SCREEN_1" → "Screen 1"
         text = re.sub(r'\b[A-F0-9]{32,50}_SCREEN_(\d+)\b', r'Screen \1', text, flags=re.IGNORECASE)
@@ -175,8 +182,6 @@ class ResponseGenerator:
         Returns:
             Text with file references marked for hyperlink conversion
         """
-        import re
-        
         # Pattern 1: Match COBOL files with extensions (.CBL, .CPY, .cbl, .cpy)
         # Matches: PROGRAM.CBL, COPY-BOOK.CPY, etc.
         pattern_with_ext = r'\b([A-Z][A-Z0-9_-]{0,30}\.(?:CBL|CPY|cbl|cpy))\b'
@@ -264,97 +269,266 @@ class ResponseGenerator:
         # Estimate total tokens (system prompt + user prompt)
         system_tokens = self._estimate_tokens(system_prompt)
         prompt_tokens = self._estimate_tokens(prompt_text)
-        total_tokens = system_tokens + prompt_tokens
         
-        # Get max context length from config (default 32000)
+        # Get max context length from config (default 64K after tuning)
         max_context_tokens = self.config.max_context_length
         
-        logger.info(f"📊 Token estimation: system={system_tokens}, prompt={prompt_tokens}, total={total_tokens}, max={max_context_tokens}")
+        # >>> TUNE: Apply token budget allocator proactively (before formatting)
+        # Always apply allocator to prioritize high-value evidence within budget
+        reserved_tokens = system_tokens + self._estimate_tokens(query) + 500
+        available_for_context = max_context_tokens - reserved_tokens
         
-        # If we exceed the limit, trim the context section intelligently
-        if total_tokens > max_context_tokens:
-            logger.warning(f"⚠️ Context exceeds {max_context_tokens} tokens ({total_tokens}), applying intelligent trimming")
-            
-            # Calculate how much to trim
-            # Reserve space for: system prompt + question + overhead (500 tokens)
-            reserved_tokens = system_tokens + self._estimate_tokens(query) + 500
-            available_for_context = max_context_tokens - reserved_tokens
-            
-            if available_for_context < 1000:
-                logger.error(f"❌ Not enough space for context after reserving {reserved_tokens} tokens")
-                # Still try with minimal context
-                available_for_context = 1000
-            
-            # Calculate trimming ratio
-            context_tokens = self._estimate_tokens(context_text)
-            trim_ratio = available_for_context / context_tokens if context_tokens > 0 else 1.0
-            
-            logger.info(f"📉 Trimming context: {context_tokens} → {available_for_context} tokens (ratio: {trim_ratio:.2%})")
-            
-            # Separate deterministic documents (copybook_usage, calls) from semantic docs
-            # Priority: Keep deterministic results intact, trim semantic results
-            deterministic_docs = [d for d in context_docs if d.get('_index_type') in ['copybook_usage', 'calls']]
-            semantic_docs = [d for d in context_docs if d.get('_index_type') not in ['copybook_usage', 'calls']]
-            
-            if deterministic_docs and trim_ratio < 1.0:
-                # Try to keep all deterministic docs, trim semantic docs more aggressively
-                deterministic_text = self._format_context_docs(deterministic_docs, question_type)
-                deterministic_tokens = self._estimate_tokens(deterministic_text)
-                
-                remaining_tokens = available_for_context - deterministic_tokens
-                
-                if remaining_tokens > 0 and semantic_docs:
-                    # Format semantic docs with remaining space
-                    semantic_text = self._format_context_docs(semantic_docs, question_type)
-                    semantic_tokens = self._estimate_tokens(semantic_text)
-                    semantic_trim_ratio = remaining_tokens / semantic_tokens if semantic_tokens > 0 else 1.0
-                    
-                    if semantic_trim_ratio < 1.0:
-                        # Trim semantic context
-                        char_trim_ratio = int(len(semantic_text) * semantic_trim_ratio)
-                        semantic_text = semantic_text[:char_trim_ratio] + "\n\n[... context trimmed to fit token limit ...]"
-                        logger.info(f"✂️ Trimmed semantic context: {semantic_tokens} → {remaining_tokens} tokens")
-                    
-                    context_text = deterministic_text + "\n\n" + semantic_text
-                else:
-                    # No room for semantic docs, use only deterministic
-                    context_text = deterministic_text
-                    if deterministic_tokens > available_for_context:
-                        # Even deterministic docs need trimming
-                        char_trim_ratio = int(len(deterministic_text) * trim_ratio)
-                        context_text = deterministic_text[:char_trim_ratio] + "\n\n[... context trimmed to fit token limit ...]"
-                        logger.warning(f"⚠️ Had to trim deterministic results: {deterministic_tokens} → {available_for_context} tokens")
-            else:
-                # No deterministic docs, or no trimming needed for them - trim proportionally
-                char_trim_ratio = int(len(context_text) * trim_ratio)
-                context_text = context_text[:char_trim_ratio] + "\n\n[... context trimmed to fit token limit ...]"
-            
-            # Rebuild prompt with trimmed context
-            parts = []
-            if conversation_context:
-                parts.append(conversation_context)
-                parts.append("\n---\n")
-            parts.append("## Retrieved Context:")
-            parts.append(context_text)
+        # Apply token budget allocator to select best documents within budget
+        context_docs = self._apply_token_budget_allocator(context_docs, available_for_context, question_type)
+        
+        # Re-format context after allocation
+        context_text = self._format_context_docs(context_docs, question_type)
+        
+        # Rebuild prompt with allocated documents
+        parts = []
+        if conversation_context:
+            parts.append(conversation_context)
             parts.append("\n---\n")
-            parts.append("## Question:")
-            parts.append(query)
-            if is_otis:
-                parts.append("\n*Note: This question is about the OTIS/OTOS application.*")
-            parts.append("\n## Answer:")
+        parts.append("## Retrieved Context:")
+        parts.append(context_text)
+        parts.append("\n---\n")
+        parts.append("## Question:")
+        parts.append(query)
+        if is_otis:
+            parts.append("\n*Note: This question is about the OTIS/OTOS application.*")
+        parts.append("\n## Answer:")
+        prompt_text = "\n".join(parts)
+        
+        # Re-calculate tokens after allocation
+        prompt_tokens = self._estimate_tokens(prompt_text)
+        total_tokens = system_tokens + prompt_tokens
+        
+        logger.info(f"📊 After token allocation: system={system_tokens}, prompt={prompt_tokens}, total={total_tokens}, max={max_context_tokens}")
+        
+        # >>> TUNE: Fallback trimming if allocator estimate was off
+        if total_tokens > max_context_tokens:
+            logger.warning(f"⚠️ Context still exceeds {max_context_tokens} tokens after allocation ({total_tokens}), applying fallback trim")
             
-            prompt_text = "\n".join(parts)
+            # Calculate target context size
+            context_tokens = self._estimate_tokens(context_text)
+            target_context_tokens = available_for_context
+            trim_ratio = target_context_tokens / context_tokens if context_tokens > 0 else 1.0
             
-            # Verify final size
-            final_tokens = self._estimate_tokens(system_prompt) + self._estimate_tokens(prompt_text)
-            logger.info(f"✅ Final token count after trimming: {final_tokens} (target: {max_context_tokens})")
+            if trim_ratio < 1.0:
+                # Character-based trim as fallback
+                char_trim_point = int(len(context_text) * trim_ratio)
+                context_text = context_text[:char_trim_point] + "\n\n[... context trimmed to fit token limit ...]"
+                logger.info(f"✂️ Fallback trim: {context_tokens} → {target_context_tokens} tokens (ratio: {trim_ratio:.2%})")
+                
+                # Rebuild prompt with trimmed context
+                parts = []
+                if conversation_context:
+                    parts.append(conversation_context)
+                    parts.append("\n---\n")
+                parts.append("## Retrieved Context:")
+                parts.append(context_text)
+                parts.append("\n---\n")
+                parts.append("## Question:")
+                parts.append(query)
+                if is_otis:
+                    parts.append("\n*Note: This question is about the OTIS/OTOS application.*")
+                parts.append("\n## Answer:")
+                prompt_text = "\n".join(parts)
+        
+        # Verify final size
+        final_tokens = self._estimate_tokens(system_prompt) + self._estimate_tokens(prompt_text)
+        logger.info(f"✅ Final token count: {final_tokens} (max: {max_context_tokens})")
         
         return prompt_text
+    
+    def _apply_token_budget_allocator(self, docs: List[Dict], available_tokens: int, question_type: str) -> List[Dict]:
+        """
+        >>> TUNE: Token budget allocator for context packing optimization.
+        
+        Allocates tokens across document categories:
+        - 45% primary evidence (routing→compute→policy ±8 lines each)
+        - 35% nearby windows (±50-120 lines from same files)
+        - 10% supporting refs (copybooks, definitions, constants)
+        - 10% diversity slack (remaining docs by score)
+        
+        Packing order:
+        1. Priority 1: routing→compute→policy (each ±8 lines with +context markers)
+        2. Priority 2: surrounding 50-120 line windows from same files
+        3. Priority 3: ID-like labels and definition blocks
+        4. Priority 4: remaining docs by fused score
+        
+        De-dup: If same (program_id, paragraph_name) or para_id root, keep one with more numeric content.
+        """
+        import re
+        
+        if not docs:
+            return docs
+        
+        logger.info(f"   📦 Token budget allocator: {len(docs)} docs, {available_tokens} tokens available")
+        
+        # >>> TUNE: Define budget percentages
+        primary_budget = int(available_tokens * 0.45)  # 45% for routing/compute/policy
+        window_budget = int(available_tokens * 0.35)   # 35% for nearby windows
+        supporting_budget = int(available_tokens * 0.10)  # 10% for supporting refs
+        diversity_budget = available_tokens - (primary_budget + window_budget + supporting_budget)  # 10% remaining
+        
+        logger.info(f"   📊 Budgets: primary={primary_budget}, window={window_budget}, support={supporting_budget}, diversity={diversity_budget}")
+        
+        # >>> TUNE: Categorize documents by type
+        primary_docs = []   # routing, compute, policy
+        window_docs = []    # surrounding context windows
+        supporting_docs = [] # copybooks, defs, constants
+        other_docs = []     # everything else
+        
+        for doc in docs:
+            text = (doc.get('source_excerpt', '') + doc.get('text', '')).upper()
+            para_name = doc.get('paragraph_name', '').upper()
+            index_type = doc.get('_index_type', '')
+            
+            # Categorize based on content signals
+            if any(signal in text or signal in para_name for signal in ['ROUTING', 'ROUTE', 'DECISION', 'BRANCH']):
+                primary_docs.append(('routing', doc))
+            elif 'COMPUTE' in text and re.search(r'\d', text):
+                primary_docs.append(('compute', doc))
+            elif any(signal in text for signal in ['BILL', 'EFFECTIVE', 'RESTRICT', 'RENEW', 'PERCENT', 'LIMIT', 'POLICY']):
+                primary_docs.append(('policy', doc))
+            elif index_type in ['copybook_usage', 'copybooks', 'fields']:
+                supporting_docs.append(doc)
+            elif doc.get('_search_method', '').startswith('context_window'):
+                window_docs.append(doc)
+            else:
+                other_docs.append(doc)
+        
+        logger.info(f"   📂 Categories: primary={len(primary_docs)}, window={len(window_docs)}, supporting={len(supporting_docs)}, other={len(other_docs)}")
+        
+        # >>> TUNE: De-dup heuristic - prefer docs with more numeric content
+        def dedup_docs(doc_list):
+            """Remove duplicate para_ids, preferring docs with more numbers."""
+            seen = {}
+            for doc in doc_list:
+                para_id = doc.get('para_id', doc.get('id', ''))
+                if not para_id:
+                    continue
+                
+                # Extract root para_id (before any suffix)
+                para_id_root = para_id.split('_')[0] if '_' in para_id else para_id
+                
+                # Count numeric content
+                text_content = doc.get('source_excerpt', '') + doc.get('text', '')
+                num_count = len(re.findall(r'\d+', text_content))
+                
+                if para_id_root not in seen or num_count > seen[para_id_root][1]:
+                    seen[para_id_root] = (doc, num_count)
+            
+            return [doc for doc, _ in seen.values()]
+        
+        # Apply de-dup to each category
+        primary_docs_dedup = [(cat, doc) for cat, doc in primary_docs]  # Keep category labels
+        window_docs = dedup_docs(window_docs)
+        supporting_docs = dedup_docs(supporting_docs)
+        other_docs = dedup_docs(other_docs)
+        
+        logger.info(f"   ✂️ After de-dup: primary={len(primary_docs_dedup)}, window={len(window_docs)}, supporting={len(supporting_docs)}, other={len(other_docs)}")
+        
+        # >>> TUNE: Pack documents in priority order
+        packed_docs = []
+        used_tokens = 0
+        
+        # Priority 1: Primary evidence (routing→compute→policy)
+        for category in ['routing', 'compute', 'policy']:
+            category_docs = [doc for cat, doc in primary_docs_dedup if cat == category]
+            for doc in category_docs[:3]:  # Top 3 per category
+                doc_tokens = self._estimate_tokens(str(doc.get('source_excerpt', '') + doc.get('text', '')))
+                if used_tokens + doc_tokens <= primary_budget:
+                    packed_docs.append(doc)
+                    used_tokens += doc_tokens
+                else:
+                    break
+            if used_tokens >= primary_budget:
+                break
+        
+        logger.info(f"   📦 Packed primary: {len([d for d in packed_docs])} docs, {used_tokens} tokens")
+        
+        # Priority 2: Nearby windows
+        window_tokens = 0
+        for doc in window_docs:
+            doc_tokens = self._estimate_tokens(str(doc.get('source_excerpt', '') + doc.get('text', '')))
+            if window_tokens + doc_tokens <= window_budget:
+                packed_docs.append(doc)
+                window_tokens += doc_tokens
+            else:
+                break
+        
+        logger.info(f"   📦 Packed windows: +{len(window_docs[:len([d for d in packed_docs]) - len([d for d in packed_docs[:len(packed_docs)]])])} docs, {window_tokens} tokens")
+        
+        # Priority 3: Supporting references
+        support_tokens = 0
+        for doc in supporting_docs:
+            doc_tokens = self._estimate_tokens(str(doc.get('source_excerpt', '') + doc.get('text', '')))
+            if support_tokens + doc_tokens <= supporting_budget:
+                packed_docs.append(doc)
+                support_tokens += doc_tokens
+            else:
+                break
+        
+        # Priority 4: Diversity (remaining docs by score)
+        other_docs_sorted = sorted(other_docs, key=lambda d: d.get('@search.score', 0.0), reverse=True)
+        diversity_tokens = 0
+        for doc in other_docs_sorted:
+            doc_tokens = self._estimate_tokens(str(doc.get('source_excerpt', '') + doc.get('text', '')))
+            if diversity_tokens + doc_tokens <= diversity_budget:
+                packed_docs.append(doc)
+                diversity_tokens += doc_tokens
+            else:
+                break
+        
+        total_tokens = used_tokens + window_tokens + support_tokens + diversity_tokens
+        logger.info(f"   ✅ Token budget allocator: packed {len(packed_docs)}/{len(docs)} docs, {total_tokens}/{available_tokens} tokens used")
+        
+        return packed_docs
     
     def _format_context_docs(self, docs: List[Dict], question_type: str) -> str:
         """Format retrieved documents into readable context."""
         if not docs:
             return "*No relevant context found.*"
+        
+        # >>> FIX: For implementation questions, prioritize docs with id-like labels and compute/policy snippets
+        if question_type == 'implementation':
+            # Define scoring function for prioritization
+            def implementation_priority_score(doc):
+                score = 0.0
+                para_name = doc.get('paragraph_name', '')
+                source_excerpt = doc.get('source_excerpt', '')
+                text = doc.get('text', '')
+                
+                # Priority 1: ID-like labels (≥2 hyphens) → highest priority
+                if para_name.count('-') >= 2:
+                    score += 10.0
+                
+                # Priority 2: Compute snippets (contains COMPUTE + numbers)
+                if 'COMPUTE' in (source_excerpt + text).upper():
+                    score += 5.0
+                    # Extra boost if has numbers
+                    if re.search(r'\d', source_excerpt + text):
+                        score += 2.0
+                
+                # Priority 3: Policy snippets (policy tokens + numbers)
+                policy_tokens = ["BILL", "EFFECTIVE", "RESTRICT", "RENEW", "RENEWAL", 
+                                "REFINANCE", "DAYS", "MONTHS", "PERCENT", "LIMIT"]
+                combined_text = (source_excerpt + text).upper()
+                has_policy_token = any(token in combined_text for token in policy_tokens)
+                has_number = bool(re.search(r'\d', combined_text))  # >>> FIX: Redundant conditional removed
+                
+                if has_policy_token and has_number:
+                    score += 3.0
+                
+                return score
+            
+            # Sort docs by priority (highest first), keeping original order as tiebreaker
+            docs = sorted(enumerate(docs), key=lambda x: (implementation_priority_score(x[1]), -x[0]), reverse=True)
+            docs = [doc for idx, doc in docs]  # Extract docs after sorting
+            
+            logger.info(f"📊 Implementation prioritization: reordered {len(docs)} docs by id-labels, compute, policy")
         
         formatted_parts = []
         
@@ -654,7 +828,6 @@ class ResponseGenerator:
                     
                     # Remove hash-based screen_id from content
                     # SHA-1 hashes are 40 hex characters, MD5 are 32
-                    import re
                     # Replace "Screen HASH_SCREEN_N" patterns
                     content = re.sub(r'Screen [A-F0-9]{32,50}_SCREEN_\d+', filename, raw_content, flags=re.IGNORECASE)
                     # Replace bare "HASH_SCREEN_N" patterns (without "Screen" prefix)

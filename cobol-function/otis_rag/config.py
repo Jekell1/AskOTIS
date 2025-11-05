@@ -76,11 +76,26 @@ class Config:
         
         # >>> FIX: Gate hardcoded menu IDs behind config flag (default OFF for corpus-driven)
         self.use_hardcoded_menu_ids = bool(self.settings.get("USE_HARDCODED_MENU_IDS", "false").lower() == "true")
+        
+        # >>> FIX: Cross-encoder reranking flag (default OFF for initial deployment)
+        self.use_cross_encoder = bool(self.settings.get("USE_CROSS_ENCODER", "false").lower() == "true")
+        
+        # >>> FIX: Policy tokens for policy/prose leg in Round 5 paragraph search
+        self.policy_tokens = [
+            "BILL", "EFFECTIVE", "RESTRICT", "RENEW", "RENEWAL", "REFINANCE", 
+            "DAYS", "MONTHS", "PERCENT", "LIMIT", "MAX", "MIN", "REGULATION",
+            "COMPLIANCE", "REQUIREMENT", "RULE", "POLICY", "CONFORM", "RESTRICTION"
+        ]
 
         # RAG Parameters
         self.max_results_per_index = 50  # Top 50 most relevant per index (was 10000 - too slow)
-        self.max_context_length = 32000  # Increased for comprehensive context
-        self.temperature = 0.1  # Low for factual responses        # Conversation Memory
+        # >>> TUNE: Larger context window if model supports it
+        self.max_context_length = 64000  # Increased from 32000 for comprehensive context
+        self.temperature = 0.1  # Low for factual responses
+        
+        # >>> TUNE: Fused document limits and tail cutoff
+        self.max_fused_docs = int(self.settings.get("MAX_FUSED_DOCS", "500"))  # Post-fusion cap (was 200)
+        self.tail_cutoff = float(self.settings.get("TAIL_CUTOFF", "0.12"))  # Drop docs below 12% of top score        # Conversation Memory
         self.max_conversation_turns = 30  # Keep last 30 exchanges
         
         self._validate()
