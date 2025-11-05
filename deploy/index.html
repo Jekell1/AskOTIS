@@ -8,6 +8,7 @@
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
     
     <!-- KaTeX for Math Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -1044,20 +1045,10 @@
                 </div>
 
                 <div class="help-section">
-                    <h3>💬 Report Incorrect Answers</h3>
-                    <p><strong>Help us improve!</strong> If you receive an incorrect or inaccurate answer, click the ☹️ button (located to the left of the chat box) to report it.</p>
-                    <ul>
-                        <li><strong>When to use:</strong> Only when the answer is wrong or inaccurate</li>
-                        <li><strong>What gets captured:</strong> Your question, the answer provided, and the context used</li>
-                        <li><strong>Purpose:</strong> Helps us identify and fix issues with answer quality</li>
-                    </ul>
-                    <p>Your feedback is invaluable for improving the system!</p>
-                </div>
-
-                <div class="help-section">
                     <h3>📊 Export Options</h3>
                     <ul>
-                        <li><strong>� Excel Export:</strong> Structured spreadsheet with conversation turns and metadata</li>
+                        <li><strong>📊 Excel Export:</strong> Structured spreadsheet with conversation turns and metadata</li>
+                        <li><strong>📄 Word Export:</strong> Formatted document with title page and Q&A sections</li>
                         <li><strong>🌐 HTML Export:</strong> Browser-viewable format that can be printed to PDF</li>
                     </ul>
                     <p>All exports include timestamps, turn numbers, and full conversation history.</p>
@@ -1172,6 +1163,19 @@
                 </div>
 
                 <div class="sidebar-section">
+                    <h3>ℹ️ System Info</h3>
+                    <div class="stats-panel" id="statsPanel" style="display: none;">
+                        <div style="margin-bottom: 8px;">
+                            <strong>Indexes:</strong> <span id="indexCount">-</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <strong>Chat Model:</strong><br>
+                            <span id="chatModel" style="font-size: 11px;">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
                     <h3>� Session</h3>
                     <button class="example-btn" onclick="startNewChat()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; font-weight: 600;">
                         ✨ New Chat
@@ -1185,6 +1189,9 @@
                     <h3>📥 Export</h3>
                     <button class="example-btn" onclick="exportToExcel()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600; margin-bottom: 8px;">
                         📊 Export to Excel
+                    </button>
+                    <button class="example-btn" onclick="exportToWord()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600; margin-bottom: 8px;">
+                        📄 Export to Word
                     </button>
                     <button class="example-btn" onclick="exportToHTML()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; color: white; font-weight: 600;">
                         🌐 Export to HTML
@@ -1249,7 +1256,7 @@
 
     <script>
         // Configuration
-        const API_BASE_URL = 'https://func-otis-rag.azurewebsites.net';
+        const API_BASE_URL = 'https://cobol-parser-func-1474.azurewebsites.net';
         const ENABLE_STREAMING = true;  // Re-enabled with proper fix (Azure Functions limitation)
         const ENABLE_PERSISTENCE = true;  // Enable conversation memory persistence
         
@@ -1351,7 +1358,106 @@
             }
         }
 
-        // Simple HTML export (opens in new tab, can be saved)
+        // Export conversation to Word
+        async function exportToWord() {
+            if (conversationHistory.length === 0) {
+                alert('No conversation to export. Start chatting first!');
+                return;
+            }
+
+            // Check if docx library is loaded
+            if (typeof docx === 'undefined') {
+                alert('Word export library not loaded. Please refresh the page and try again.');
+                console.error('docx library is not available');
+                return;
+            }
+
+            try {
+                const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = docx;
+
+                // Build document sections
+                const sections = [];
+
+                // Title
+                sections.push(
+                    new Paragraph({
+                        text: "OTIS RAG Conversation Export",
+                        heading: HeadingLevel.TITLE,
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    })
+                );
+
+                // Metadata
+                sections.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Export Date: ${new Date().toLocaleString()}`,
+                                break: 1
+                            }),
+                            new TextRun({
+                                text: `Total Turns: ${conversationHistory.length}`,
+                                break: 1
+                            }),
+                            new TextRun({
+                                text: `Session ID: ${sessionId || 'N/A'}`,
+                                break: 1
+                            })
+                        ],
+                        spacing: { after: 400 }
+                    })
+                );
+
+                // Add each conversation turn
+                conversationHistory.forEach((turn, index) => {
+                    const question = turn.question || turn.user || '';
+                    const answer = turn.answer || turn.assistant || '';
+                    
+                    // Question
+                    sections.push(
+                        new Paragraph({
+                            text: `Q${index + 1}: ${question}`,
+                            heading: HeadingLevel.HEADING_2,
+                            spacing: { before: 200, after: 100 }
+                        })
+                    );
+
+                    // Answer (split into paragraphs for better formatting)
+                    const answerParagraphs = answer.split('\n\n');
+                    answerParagraphs.forEach(para => {
+                        sections.push(
+                            new Paragraph({
+                                text: para,
+                                spacing: { after: 200 }
+                            })
+                        );
+                    });
+                });
+
+                // Create document
+                const doc = new Document({
+                    sections: [{
+                        properties: {},
+                        children: sections
+                    }]
+                });
+
+                // Generate and download
+                const blob = await Packer.toBlob(doc);
+                const filename = `otis-conversation-${new Date().toISOString().split('T')[0]}.docx`;
+                saveAs(blob, filename);
+
+                print(`✅ Exported ${conversationHistory.length} conversation turns to ${filename}`, 'success');
+            } catch (error) {
+                console.error('Export to Word failed:', error);
+                alert('Failed to export to Word: ' + error.message + '\n\nTrying HTML export instead...');
+                // Fallback to HTML export
+                exportToHTML();
+            }
+        }
+
+        // Simple HTML export as fallback (opens in new tab, can be saved as Word doc)
         function exportToHTML() {
             if (conversationHistory.length === 0) {
                 alert('No conversation to export. Start chatting first!');
