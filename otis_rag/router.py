@@ -334,8 +334,6 @@ class QueryRouter:
             # Suppress non-UI indexes
             if 'code' in weights:
                 weights['code'] = 0.5
-            if 'transactions' in weights:
-                weights['transactions'] = 0.05  # Heavily suppress
             logger.info(f"⚡ Applied menu boosting - screen_nodes: 30.0x, screens: 25.0x, ui_paths/menu_trees: 5.0x")
         
         # Boost complexity index for complexity questions
@@ -356,17 +354,17 @@ class QueryRouter:
                 weights['code'] = 0.3
             logger.info(f"⚡ Applied copybook boosting - copybook_usage: 10.0x, code: 0.3x")
         
-        # Boost transaction and UI indexes for transaction questions
+        # Boost flow and UI indexes for transaction questions
         elif question_type == 'transaction':
-            if 'transactions' in weights:
-                weights['transactions'] = 3.0  # Strong boost
+            if 'flows' in weights:
+                weights['flows'] = 2.5  # Strong boost for transaction flows
             if 'ui_paths' in weights:
                 weights['ui_paths'] = 2.0
             if 'menu_trees' in weights:
                 weights['menu_trees'] = 2.0
             if 'screens' in weights:
                 weights['screens'] = 2.5  # Boost screens index for transaction queries
-            logger.info(f"⚡ Applied transaction boosting - transactions: 3.0x, UI: 2.0x")
+            logger.info(f"⚡ Applied transaction boosting - flows: 2.5x, UI: 2.0-2.5x")
         
         # Boost flow indexes for trace_flow questions
         elif question_type == 'trace_flow':
@@ -507,7 +505,7 @@ class QueryRouter:
         
         elif question_type == 'transaction_copybooks':
             # Transaction-specific copybook questions (deterministic handling)
-            indexes = list(self.ROUTE_PROFILES["data"]) + ["transactions"]
+            indexes = list(self.ROUTE_PROFILES["data"]) + list(self.ROUTE_PROFILES["flow"])
         
         elif question_type == 'complexity':
             # Program complexity and performance

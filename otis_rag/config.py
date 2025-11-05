@@ -24,6 +24,7 @@ class Config:
         # Azure OpenAI Configuration
         self.openai_endpoint = self.settings.get("AZURE_OPENAI_ENDPOINT")
         self.openai_key = self.settings.get("AZURE_OPENAI_KEY") or self.settings.get("OPENAI_API_KEY")
+        self.openai_api_version = self.settings.get("AZURE_OPENAI_API_VERSION", "2024-08-01-preview")
         self.chat_deployment = self.settings.get("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
         
         # Embedding model configuration - support both large (3072-dim) and small (1536-dim)
@@ -36,10 +37,11 @@ class Config:
         # Azure Storage Configuration (for conversation persistence)
         self.storage_connection_string = self.settings.get("AZURE_STORAGE_CONNECTION_STRING") or self.settings.get("AzureWebJobsStorage")
         
-        # Indexes to search - 13 active indexes (9 redundant indexes removed for optimization)
+        # Indexes to search - 17 active indexes (9 redundant indexes removed for optimization)
         self.indexes = {
             # Code chunks (1 index)
             'code': 'new_code_chunks',          # Primary code chunks (152K docs, 100% coverage)
+            'code_new': 'new_code_chunks',      # Alias for code chunks
             
             # Core metadata (5 indexes)
             'files': 'new-cobol-files',         # File metadata with summaries (10K docs)
@@ -57,10 +59,23 @@ class Config:
             'flow_edges': 'new_cobol_flow_edges_v2',  # Flow edges: CALL, PERFORM, GOTO (385K docs)
             'ui_paths': 'new_cobol_ui_paths',      # UI navigation paths (2K docs)
             
-            # Screen & UI (2 indexes)
+            # Screen & UI (6 indexes) - >>> FIX: Add missing mappings
             'screen_nodes': 'new_cobol_screen_nodes',  # Screen definitions (2.3K docs)
-            'help_fields': 'help_fields',         # Field-level help documentation (26K docs)
+            'screens': 'new_cobol_screen_nodes',   # Alias for screen_nodes
+            'help_fields': 'help_fields',          # Field-level help documentation (26K docs)
+            'menu_trees': 'new_cobol_menu_trees',  # Menu tree structures
+            'program_deps': 'new_cobol_program_deps',  # Program dependencies
+            'calls': 'new_cobol_calls',            # Program call relationships
         }
+        
+        # >>> FIX: Centralize Azure Search API version
+        self.search_api_version = self.settings.get("AZURE_SEARCH_API_VERSION", "2024-07-01")
+        
+        # >>> FIX: Add RRF k constant for weighted fusion
+        self.rrf_k = int(self.settings.get("RRF_K", "60"))
+        
+        # >>> FIX: Gate hardcoded menu IDs behind config flag (default OFF for corpus-driven)
+        self.use_hardcoded_menu_ids = bool(self.settings.get("USE_HARDCODED_MENU_IDS", "false").lower() == "true")
 
         # RAG Parameters
         self.max_results_per_index = 50  # Top 50 most relevant per index (was 10000 - too slow)

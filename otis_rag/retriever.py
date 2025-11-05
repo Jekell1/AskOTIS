@@ -30,6 +30,220 @@ class HybridRetriever:
             'api-key': config.search_key
         }
     
+    def weighted_rrf(self, runs: Dict[str, List[Dict]], weights: Dict[str, float] = None, k: int = 60) -> List[Dict]:
+        """Weighted Reciprocal Rank Fusion for combining multiple result sets.
+        
+        Args:
+            runs: Dict of result lists by name (e.g., {"lex": [...], "vec": [...]})
+            weights: Dict of weights by run name (e.g., {"lex": 0.65, "vec": 0.35})
+            k: RRF constant (default 60)
+            
+        Returns:
+            Fused and sorted list of documents
+        """
+        if weights is None:
+            weights = {}
+        
+        scores = {}
+        keep = {}
+        
+        for name, items in runs.items():
+            w = float(weights.get(name, 1.0))
+            for rank1, it in enumerate(items, start=1):
+                # >>> FIX: robust doc_id extraction
+                doc_id = (
+                    it.get('id') or 
+                    it.get('key') or 
+                    it.get('chunk_id') or
+                    it.get('para_id') or 
+                    it.get('paragraph_id') or 
+                    it.get('program_id') or
+                    it.get('screen_id') or
+                    it.get('usage_id')
+                )
+                
+                # Fallback for paragraphs
+                if not doc_id and it.get('paragraph_name'):
+                    doc_id = f"{it.get('program_id','')}|{it.get('paragraph_name','')}|{it.get('line_start','?')}"
+                
+                # Last resort: hash of text
+                if not doc_id:
+                    txt = (it.get('text') or it.get('summary_text') or it.get('source_excerpt') or '')[:128]
+                    doc_id = f"anon::{hash(txt)}"
+                
+                # RRF scoring
+                scores[doc_id] = scores.get(doc_id, 0.0) + w * (1.0 / (k + rank1))
+                keep.setdefault(doc_id, it)
+        
+        # Sort by score descending
+        return [keep[i] for i, _ in sorted(scores.items(), key=lambda kv: kv[1], reverse=True)]
+    
+    def _mine_corpus_tokens(self, candidates: List[Dict], max_tokens: int = 24) -> Dict[str, List[str]]:
+        """Mine hyphen-codes, ALLCAPS tokens, and numbers from corpus candidates.
+        
+        >>> FIX: corpus-driven token mining (generic, no hardcoding)
+        
+        Args:
+            candidates: List of candidate documents (from probing)
+            max_tokens: Maximum tokens to return
+            
+        Returns:
+            Dict with keys: hyphen, caps, nums
+        """
+        import re
+        from collections import Counter
+        
+        _HYPHEN = re.compile(r'\b[A-Z0-9]+(?:-[A-Z0-9]+){1,}\b')  # CTY-SCAROLINA-18-42, INS-GAP-03
+        _ALLCAPS = re.compile(r'\b[A-Z]{3,}\b')                   # SCRATE, COMPUTE, APR
+        _NUM = re.compile(r'\b\d{1,4}\b')
+        
+        scores = Counter()
+        ranked_fields = []
+        
+        for r, c in enumerate(candidates, start=1):
+            pn = c.get('paragraph_name') or ''
+            tx = c.get('text') or c.get('source_excerpt') or ''
+            ranked_fields.append((pn, r))
+            ranked_fields.append((tx, r))
+        
+        for s, rank in ranked_fields:
+            if not s:
+                continue
+            inv = 1.0 / (10 + rank)
+            for t in _HYPHEN.findall(s):
+                scores[t] += 2.0 * inv
+            for t in _ALLCAPS.findall(s):
+                scores[t] += 1.0 * inv
+            for t in _NUM.findall(s):
+                scores[f'#{t}'] += 0.5 * inv
+        
+        # Deduplicate while preserving order
+        def dd(seq):
+            seen = set()
+            out = []
+            for x in seq:
+                if x not in seen:
+                    out.append(x)
+                    seen.add(x)
+            return out
+        
+        hy = dd([t for t, _ in scores.most_common() if '-' in t])[:12]
+        cp = dd([t for t, _ in scores.most_common() if '-' not in t and t.isupper() and not t.startswith('#')])[:12]
+        nm = dd([t[1:] for t, _ in scores.most_common() if t.startswith('#')])[:8]
+        
+        return {"hyphen": hy, "caps": cp, "nums": nm}
+    
+    def _probe_paragraphs(self, search_client_config: tuple, embedder, query_text: str, top: int = 120) -> List[Dict]:
+        """Probe paragraphs index to gather corpus candidates for token mining.
+        
+        Args:
+            search_client_config: (endpoint, headers, index_name) tuple
+            embedder: Embedding function
+            query_text: User query
+            top: Number of candidates
+            
+        Returns:
+            List of candidate paragraph docs
+        """
+        endpoint, headers, index_name = search_client_config
+        url = f"{endpoint}/indexes/{index_name}/docs/search?api-version={self.config.search_api_version}"
+        
+        ranked = []
+        r = 1
+        
+        # Vector probe
+        try:
+            qv = embedder(query_text)
+            if qv:
+                vec_body = {
+                    "search": None,
+                    "vectorQueries": [{
+                        "kind": "vector",
+                        "vector": qv,
+                        "k": top,
+                        "fields": "para_vector"
+                    }],
+                    "select": "paragraph_name,text,source_excerpt,program_id",
+                    "top": top
+                }
+                vec_response = requests.post(url, headers=headers, json=vec_body, timeout=30)
+                vec_response.raise_for_status()
+                for d in vec_response.json().get('value', []):
+                    ranked.append({
+                        "paragraph_name": d.get("paragraph_name"),
+                        "text": d.get("text") or d.get("source_excerpt"),
+                        "program_id": d.get("program_id"),
+                        "rank": r
+                    })
+                    r += 1
+        except Exception as e:
+            logger.warning(f"⚠️ Vector probe failed: {e}")
+        
+        # Optional small lexical probe
+        try:
+            lex_body = {
+                "search": query_text,
+                "queryType": "simple",
+                "searchMode": "any",
+                "select": "paragraph_name,text,source_excerpt,program_id",
+                "top": min(40, top // 3)
+            }
+            lex_response = requests.post(url, headers=headers, json=lex_body, timeout=30)
+            lex_response.raise_for_status()
+            for d in lex_response.json().get('value', []):
+                ranked.append({
+                    "paragraph_name": d.get("paragraph_name"),
+                    "text": d.get("text") or d.get("source_excerpt"),
+                    "program_id": d.get("program_id"),
+                    "rank": r
+                })
+                r += 1
+        except Exception:
+            pass
+        
+        return ranked
+    
+    def _dynamic_paragraph_expansions(self, query: str, initial_results: List[Dict]) -> tuple:
+        """Generate query expansions by mining the corpus dynamically.
+        
+        >>> FIX: No hardcoded lists - learn from index at query time
+        
+        Args:
+            query: User query
+            initial_results: Initial search results (for program_id context)
+            
+        Returns:
+            (expansions, mined) tuple
+        """
+        import re
+        
+        # Probe paragraphs index
+        paragraphs_index = self.config.get_index_name('paragraphs')
+        search_config = (self.config.search_endpoint, self.search_headers, paragraphs_index)
+        
+        cand = self._probe_paragraphs(search_config, lambda q: self._generate_embedding(q, use_small_model=False), query, top=120)
+        mined = self._mine_corpus_tokens(cand)
+        
+        # Extract numbers from query for combination
+        _NUM = re.compile(r'\b\d{1,4}\b')
+        nums_in_q = _NUM.findall(query or "")
+        
+        expansions = set()
+        
+        # Add top hyphen tokens with quotes (exact match)
+        for t in mined["hyphen"][:10]:
+            expansions.add(f'"{t}"')
+        
+        # Add ALLCAPS tokens, combine with query numbers
+        for c in mined["caps"][:10]:
+            expansions.add(c)
+            for n in nums_in_q[:3]:
+                expansions.add(f'"{c}-{n}"')
+        
+        logger.info(f"🔍 [dynamic_expansions] mined tokens: hyphen={mined['hyphen'][:5]}, caps={mined['caps'][:5]}, nums={mined['nums'][:3]}")
+        
+        return sorted(expansions)[:24], mined
+    
     def retrieve(self, query: str, indexes: List[str], max_results: int = 5, 
                  index_weights: Dict[str, float] = None, question_type: str = None) -> List[Dict[str, Any]]:
         """Retrieve relevant documents using hybrid search.
@@ -236,8 +450,9 @@ class HybridRetriever:
             query_type = self._classify_menu_query(query)
             
             # Check if we have screens matching the menu type in results
+            # >>> FIX: Only use hardcoded IDs if config flag enabled (default OFF for corpus-driven)
             menu_patterns = {
-                'collection': (r'COLLECTION', ['04C134294DA40F2A18EBA019EBA43F4F814D48FA_1', '69B4EBD83CBF78D027749E34BE5CD143ECDF01CC_1']),
+                'collection': (r'COLLECTION', ['04C134294DA40F2A18EBA019EBA43F4F814D48FA_1', '69B4EBD83CBF78D027749E34BE5CD143ECDF01CC_1'] if self.config.use_hardcoded_menu_ids else []),
                 'daily processing': (r'DAILY\s+PROCESSING\s+MENU', []),
                 'report': (r'REPORTS?\s+MENU', []),
                 'inquir': (r'INQUIR', []),
@@ -272,7 +487,7 @@ class HybridRetriever:
                     logger.info(f"🎯 Fetching menu screens explicitly for '{target_pattern}'")
                     try:
                         index_name = self.config.get_index_name('screen_nodes')
-                        url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version=2025-08-01-preview"
+                        url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version={self.config.search_api_version}"
                         
                         # Build filter for known IDs
                         filter_parts = [f"screen_id eq '{sid}'" for sid in known_ids]
@@ -335,9 +550,35 @@ class HybridRetriever:
             # Then apply traditional filtering to remove non-menu screens
             all_results = self._filter_menu_screens(all_results, query)
             logger.info(f"📋 After menu filtering: {len(all_results)} results")
+            
+            # >>> FIX: lexical sentinel for MASTER MENU promotion
+            promoted = False
+            for d in all_results[:5]:
+                fields = ' '.join([
+                    d.get('title_normalized', ''),
+                    d.get('summary_text', ''),
+                    d.get('options_bag', '')
+                ]).upper()
+                
+                # Canonical master menu indicators
+                canonical = [
+                    'MASTER MENU', 'DAILY PROCESSING', 'REPORTS', 'INQUIRIES',
+                    'COLLECTION PROCESSING', 'BATCH PROCESSING', 'END OF DAY',
+                    'END OF MONTH', 'END OF YEAR', 'SPECIAL PROCEDURES', 'OPTIONAL MODULES'
+                ]
+                hits = sum(1 for k in canonical if k in fields)
+                
+                if 'MASTER MENU' in fields or hits >= 3:
+                    d['@search.score'] = d.get('@search.score', 0.0) + 10.0
+                    promoted = True
+                    logger.info(f"📌 Promoted MASTER MENU screen: {d.get('screen_id', 'unknown')}")
+                    break
+            
+            if promoted:
+                all_results = sorted(all_results, key=lambda x: x.get('@search.score', 0), reverse=True)
         
         # Rank semantic search results normally
-        semantic_results = self._rank_results(all_results, final_count)
+        semantic_results = self._rank_results(all_results, final_count, question_type=question_type)
         
         # Combine: filtered relationships come FIRST (complete, unranked by semantic score)
         # Then add semantic results to provide additional context
@@ -572,10 +813,8 @@ class HybridRetriever:
                 primary_menus.append(result)
                 logger.debug(f"  ✓✓ PRIMARY menu: {result.get('screen_id', '')[:20]}... (MASTER MENU + {numbered_options} options)")
             elif numbered_options >= 6:
+                # >>> FIX: Remove duplicate append - was causing double entries
                 # Has many numbered options - likely a real menu screen (raised threshold to avoid submenus)
-                primary_menus.append(result)
-                logger.debug(f"  ✓ Primary menu: {result.get('screen_id', '')[:20]}... ({numbered_options} options)")
-                # Has many numbered options - likely a real menu screen
                 primary_menus.append(result)
                 logger.debug(f"  ✓ Primary menu: {result.get('screen_id', '')[:20]}... ({numbered_options} options)")
             elif numbered_options >= 2:
@@ -685,7 +924,7 @@ class HybridRetriever:
         index_name = self.config.get_index_name('screen_nodes')
         
         # Simple keyword search for the menu name
-        search_url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version=2024-07-01"
+        search_url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version={self.config.search_api_version}"
         
         payload = {
             "search": menu_name,
@@ -932,7 +1171,7 @@ class HybridRetriever:
             is_copybook_usage_query: Whether this is a copybook usage query (needs special handling)
         """
         # Use the same API version as other scripts in this workspace
-        url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version=2025-08-01-preview"
+        url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version={self.config.search_api_version}"
         
         # DEBUGGING: Log search request details
         logger.info(f"🔍 SEARCH REQUEST for index: {index_name}")
@@ -1153,8 +1392,14 @@ class HybridRetriever:
         }
         return vector_fields.get(index_name, '')
     
-    def _rank_results(self, results: List[Dict], max_results: int) -> List[Dict]:
-        """Rank and deduplicate results by relevance score."""
+    def _rank_results(self, results: List[Dict], max_results: int, question_type: str = None) -> List[Dict]:
+        """Rank and deduplicate results by relevance score.
+        
+        Args:
+            results: List of search results
+            max_results: Maximum results to return
+            question_type: Question type for special scoring adjustments
+        """
         # Remove duplicates based on document ID
         seen = set()
         unique_results = []
@@ -1173,11 +1418,12 @@ class HybridRetriever:
             else:
                 # Standard deduplication for other indexes
                 # Create unique key (index + document ID)
-                # Support different ID fields across different indexes
+                # >>> FIX: robust paragraph doc_id (para_id is primary for paragraphs)
                 doc_id = (
                     result.get('chunk_id') or 
+                    result.get('para_id') or          # primary for paragraphs
+                    result.get('paragraph_id') or     # legacy/alt
                     result.get('program_id') or 
-                    result.get('paragraph_id') or
                     result.get('call_id') or 
                     result.get('call_hash') or
                     result.get('edge_id') or
@@ -1187,6 +1433,11 @@ class HybridRetriever:
                     result.get('usage_id') or
                     result.get('symbol_id')
                 )
+                
+                # >>> FIX: fallback for paragraph docs if still missing
+                if not doc_id and result.get('_index_type') == 'paragraphs':
+                    doc_id = f"{result.get('program_id','')}|{result.get('paragraph_name','')}|{result.get('line_start','?')}"
+                
                 if not doc_id:
                     # If still no ID, use a hash of key fields
                     id_parts = [
@@ -1210,6 +1461,16 @@ class HybridRetriever:
         copybook_usage_unique_count = sum(1 for r in unique_results if r.get('_index_type') == 'copybook_usage')
         if copybook_usage_raw_count > 0:
             logger.info(f"📊 Copybook_usage raw={copybook_usage_raw_count} unique={copybook_usage_unique_count}")
+        
+        # >>> FIX: paragraph precision nudge for implementation queries
+        if question_type == 'implementation':
+            for result in unique_results:
+                if result.get('_index_type') == 'paragraphs':
+                    txt = (result.get('text') or result.get('source_excerpt') or '').upper()
+                    # Boost paragraphs with calculation keywords
+                    if any(tok in txt for tok in [' COMPUTE ', ' LATE-CHARGE', ' SERVICE-CHG', ' SCRATE ', ' FORMULA']):
+                        current_score = result.get('@search.score', 0)
+                        result['@search.score'] = current_score * 1.08
         
         # Sort by search score (higher is better)
         sorted_results = sorted(
@@ -1249,6 +1510,11 @@ class HybridRetriever:
                                        result.get('summary') or result.get('description') or 
                                        result.get('content') or '')
         
+        # >>> FIX: observability - log paragraphs kept
+        kept_para = sum(1 for r in sorted_results[:max_results] if r.get('_index_type') == 'paragraphs')
+        if kept_para > 0:
+            logger.info(f"📊 [rank] paragraphs kept={kept_para} of {max_results} total results")
+        
         return sorted_results[:max_results]
     
     def _handle_transaction_copybooks(self, query: str, max_results: int) -> List[Dict[str, Any]]:
@@ -1286,7 +1552,7 @@ class HybridRetriever:
         
         # Step 1: Get all code chunks for the program (sorted by line number)
         code_index = self.config.get_index_name('code_new')
-        code_url = f"{self.config.search_endpoint}/indexes/{code_index}/docs/search?api-version=2025-08-01-preview"
+        code_url = f"{self.config.search_endpoint}/indexes/{code_index}/docs/search?api-version={self.config.search_api_version}"
         
         # Note: new_code_chunks uses 'name' field for program filename (e.g., 'LONPF2.CBL')
         # Construct the expected filename
@@ -1343,7 +1609,7 @@ class HybridRetriever:
         
         # Step 4: Get copybook_usage records in those line ranges
         copybook_index = self.config.get_index_name('copybook_usage')
-        copybook_url = f"{self.config.search_endpoint}/indexes/{copybook_index}/docs/search?api-version=2025-08-01-preview"
+        copybook_url = f"{self.config.search_endpoint}/indexes/{copybook_index}/docs/search?api-version={self.config.search_api_version}"
         
         # Build filter for line ranges
         range_filters = [f"(line_number ge {start} and line_number le {end})" for start, end in tx_line_ranges]
@@ -1421,14 +1687,17 @@ class HybridRetriever:
         
         # Search copybook_meta with vector similarity
         copybook_meta_index = self.config.get_index_name('copybook_meta')
-        url = f"{self.config.search_endpoint}/indexes/{copybook_meta_index}/docs/search?api-version=2025-08-01-preview"
+        url = f"{self.config.search_endpoint}/indexes/{copybook_meta_index}/docs/search?api-version={self.config.search_api_version}"
         
+        # >>> FIX: Standardize to vectorQueries format (not legacy single vector)
         body = {
-            "vector": {
-                "value": embedding,
+            "search": None,
+            "vectorQueries": [{
+                "kind": "vector",
+                "vector": embedding,
                 "fields": "description_vector",
                 "k": max_results * 2  # Get more candidates
-            },
+            }],
             # Note: No program_id filter - copybook_meta is global, not program-specific
             # Copybooks are shared across programs, rely on semantic similarity
             "top": max_results * 2
@@ -1506,7 +1775,7 @@ class HybridRetriever:
         # Fetch additional chunks for top 5 entities
         additional_chunks = []
         code_index = self.config.get_index_name('code')
-        url = f"{self.config.search_endpoint}/indexes/{code_index}/docs/search?api-version=2025-08-01-preview"
+        url = f"{self.config.search_endpoint}/indexes/{code_index}/docs/search?api-version={self.config.search_api_version}"
         
         for entity in copybook_entities[:5]:
             # Simple keyword search for this entity
@@ -1581,6 +1850,91 @@ class HybridRetriever:
         ]
         
         return copybooks
+    
+    def _extract_paragraph_references(self, chunks: List[Dict[str, Any]]) -> List[str]:
+        """Extract paragraph references from PERFORM and GO TO statements.
+        
+        Parses COBOL control flow statements like:
+        - PERFORM CTY-SCAROLINA-18-42
+        - GO TO CTY-SCAROLINA-18-42
+        - PERFORM THRU CTY-SCAROLINA-18-42-EXIT
+        
+        Args:
+            chunks: List of code chunks
+            
+        Returns:
+            List of unique paragraph names
+        """
+        import re
+        from collections import Counter
+        
+        # Pattern matches: PERFORM/GO TO paragraph-name
+        perform_pattern = re.compile(r'\b(?:PERFORM|GO\s+TO)\s+([A-Z][A-Z0-9-]+)', re.IGNORECASE)
+        
+        all_paragraphs = []
+        for chunk in chunks:
+            content = chunk.get('text', chunk.get('content', chunk.get('source_excerpt', '')))
+            matches = perform_pattern.findall(content)
+            all_paragraphs.extend(matches)
+        
+        # Get frequency and return top paragraphs
+        paragraph_counts = Counter(all_paragraphs)
+        
+        # Filter out common keywords that aren't paragraphs
+        skip_patterns = ['VARYING', 'UNTIL', 'TIMES', 'THRU', 'THROUGH']
+        paragraphs = [
+            para for para, count in paragraph_counts.most_common(15)
+            if para not in skip_patterns and len(para) > 3
+        ]
+        
+        return paragraphs
+    
+    def _extract_query_terms_for_paragraphs(self, query: str) -> List[str]:
+        """Extract terms from query that might be paragraph/section names.
+        
+        For state-specific queries like "South Carolina late fee", generates
+        search terms like "SCAROLINA", "CTY-SCAROLINA", etc.
+        
+        Args:
+            query: Original user question
+            
+        Returns:
+            List of search terms for paragraph lookup
+        """
+        terms = []
+        query_lower = query.lower()
+        
+        # State mappings
+        state_mappings = {
+            'south carolina': ['SCAROLINA', 'CTY-SCAROLINA', 'CSA-SCAROLINA', 'SC-'],
+            'north carolina': ['NCAROLINA', 'CTY-NCAROLINA', 'NC-'],
+            'georgia': ['GEORGIA', 'CTY-GEORGIA', 'GA-'],
+            'florida': ['FLORIDA', 'CTY-FLORIDA', 'FL-'],
+            'alabama': ['ALABAMA', 'CTY-ALABAMA', 'AL-'],
+            'tennessee': ['TENNESSEE', 'CTY-TENNESSEE', 'TN-']
+        }
+        
+        # Check for state mentions
+        for state, patterns in state_mappings.items():
+            if state in query_lower:
+                terms.extend(patterns)
+                logger.info(f"   🗺️  Detected state: {state} → {patterns}")
+        
+        # Check for formula/fee type keywords
+        if 'late fee' in query_lower or 'late charge' in query_lower:
+            terms.extend(['LATE-CHARGE', 'LATE-FEE', 'LC-', 'LCHG'])
+        
+        if 'service charge' in query_lower:
+            terms.extend(['SERVICE-CHARGE', 'SERV-CHG', 'SC-'])
+        
+        # Extract formula numbers if mentioned
+        import re
+        formula_nums = re.findall(r'formula\s+(\d+)', query_lower)
+        for num in formula_nums:
+            terms.append(f'FORMULA-{num}')
+            terms.append(f'FRMLA-{num}')
+        
+        return list(set(terms))  # Remove duplicates
     
     def _extract_cobol_variables(self, chunks: List[Dict[str, Any]]) -> List[str]:
         """Extract COBOL variable names from chunks.
@@ -1659,7 +2013,7 @@ class HybridRetriever:
         
         if copybooks:
             copybook_usage_index = self.config.get_index_name('copybook_usage')
-            url = f"{self.config.search_endpoint}/indexes/{copybook_usage_index}/docs/search?api-version=2025-08-01-preview"
+            url = f"{self.config.search_endpoint}/indexes/{copybook_usage_index}/docs/search?api-version={self.config.search_api_version}"
             
             for cb in copybooks[:5]:  # Top 5 copybooks
                 body = {
@@ -1692,7 +2046,7 @@ class HybridRetriever:
         
         if variables:
             data_items_index = self.config.get_index_name('data_items')
-            url = f"{self.config.search_endpoint}/indexes/{data_items_index}/docs/search?api-version=2025-08-01-preview"
+            url = f"{self.config.search_endpoint}/indexes/{data_items_index}/docs/search?api-version={self.config.search_api_version}"
             
             for var in variables[:10]:  # Top 10 variables
                 body = {
@@ -1723,7 +2077,7 @@ class HybridRetriever:
         # Round 3: Find variable usage patterns
         if variables:
             var_usage_index = self.config.get_index_name('variables')
-            url = f"{self.config.search_endpoint}/indexes/{var_usage_index}/docs/search?api-version=2025-08-01-preview"
+            url = f"{self.config.search_endpoint}/indexes/{var_usage_index}/docs/search?api-version={self.config.search_api_version}"
             
             for var in variables[:5]:  # Top 5 variables for usage
                 body = {
@@ -1751,6 +2105,135 @@ class HybridRetriever:
                 except Exception as e:
                     logger.warning(f"   ⚠️ {var}: usage search failed - {e}")
         
+        # Round 4: Find referenced paragraphs (e.g., PERFORM, GO TO)
+        paragraphs = self._extract_paragraph_references(initial_results + additional_chunks)
+        logger.info(f"📍 ROUND 4: Found {len(paragraphs)} paragraph references: {paragraphs[:10]}")
+        
+        if paragraphs:
+            paragraphs_index = self.config.get_index_name('paragraphs')
+            url = f"{self.config.search_endpoint}/indexes/{paragraphs_index}/docs/search?api-version={self.config.search_api_version}"
+            
+            for para in paragraphs[:10]:  # Top 10 paragraphs
+                body = {
+                    "search": para,
+                    "searchMode": "all",
+                    "queryType": "simple",
+                    "select": "*",
+                    "top": 3
+                }
+                
+                try:
+                    response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                    response.raise_for_status()
+                    results = response.json().get('value', [])
+                    
+                    for doc in results:
+                        doc['_index_type'] = 'paragraphs'
+                        doc['_search_method'] = 'multi_hop_paragraph'
+                        doc['_extracted_paragraph'] = para
+                    
+                    additional_chunks.extend(results)
+                    if results:
+                        logger.info(f"   ✅ {para}: {len(results)} paragraph implementations")
+                    
+                except Exception as e:
+                    logger.warning(f"   ⚠️ {para}: paragraph search failed - {e}")
+        
+        # >>> FIX: Round 5 - Enhanced paragraph search with dynamic expansions and weighted RRF
+        logger.info(f"🎯 ROUND 5: Enhanced paragraph search (implementation focus)")
+        
+        # Collect likely program_ids from earlier hops
+        likely_programs = {d.get('program_id') for d in (initial_results + additional_chunks) if d.get('program_id')}
+        if likely_programs:
+            logger.info(f"   🔍 Likely programs from earlier hops: {list(likely_programs)[:5]}")
+        
+        # Generate dynamic expansions by mining the corpus
+        try:
+            expansions, mined = self._dynamic_paragraph_expansions(query, initial_results)
+            logger.info(f"   📈 Generated {len(expansions)} expansion terms from corpus")
+        except Exception as e:
+            logger.warning(f"   ⚠️ Dynamic expansion failed: {e}, falling back to basic search")
+            expansions, mined = [], {"hyphen": [], "caps": [], "nums": []}
+        
+        paragraphs_index = self.config.get_index_name('paragraphs')
+        url = f"{self.config.search_endpoint}/indexes/{paragraphs_index}/docs/search?api-version={self.config.search_api_version}"
+        
+        # Build expanded lexical query
+        expanded_lex = f'({query})'
+        if expansions:
+            expanded_lex += ' OR ' + ' OR '.join(expansions)
+        
+        # Apply program_id filter if we have likely programs
+        filter_clause = None
+        if likely_programs:
+            filter_clause = " or ".join([f"program_id eq '{p}'" for p in list(likely_programs)[:5]])
+            logger.info(f"   🎯 Applying program_id filter: {filter_clause[:100]}")
+        
+        # Lexical search with expansions
+        lex_results = []
+        try:
+            lex_body = {
+                "search": expanded_lex,
+                "queryType": "full",
+                "searchMode": "any",
+                "select": "*",
+                "top": 50
+            }
+            if filter_clause:
+                lex_body["filter"] = filter_clause
+            
+            lex_response = requests.post(url, headers=self.search_headers, json=lex_body, timeout=30)
+            lex_response.raise_for_status()
+            lex_results = lex_response.json().get('value', [])
+            logger.info(f"   ✅ Lexical: {len(lex_results)} paragraphs")
+        except Exception as e:
+            logger.warning(f"   ⚠️ Lexical search failed: {e}")
+        
+        # Vector search with expanded query (original + top hyphen tokens)
+        vec_results = []
+        try:
+            expand_for_vec = query + " " + " ".join(mined.get("hyphen", [])[:8])
+            qv = self._generate_embedding(expand_for_vec, use_small_model=False)
+            
+            if qv:
+                vec_body = {
+                    "search": None,
+                    "vectorQueries": [{
+                        "kind": "vector",
+                        "vector": qv,
+                        "k": 50,
+                        "fields": "para_vector"
+                    }],
+                    "select": "*",
+                    "top": 50
+                }
+                if filter_clause:
+                    vec_body["filter"] = filter_clause
+                
+                vec_response = requests.post(url, headers=self.search_headers, json=vec_body, timeout=30)
+                vec_response.raise_for_status()
+                vec_results = vec_response.json().get('value', [])
+                logger.info(f"   ✅ Vector: {len(vec_results)} paragraphs")
+        except Exception as e:
+            logger.warning(f"   ⚠️ Vector search failed: {e}")
+        
+        # Fuse with weighted RRF (lex:0.65, vec:0.35)
+        if lex_results or vec_results:
+            # >>> FIX: Use config.rrf_k instead of hardcoded value
+            round5_fused = self.weighted_rrf(
+                {"lex": lex_results, "vec": vec_results},
+                weights={"lex": 0.65, "vec": 0.35},
+                k=self.config.rrf_k
+            )
+            
+            # Tag and add to additional_chunks
+            for doc in round5_fused[:20]:  # Top 20 from Round 5
+                doc['_index_type'] = 'paragraphs'
+                doc['_search_method'] = 'multi_hop_round5_weighted_rrf'
+                additional_chunks.append(doc)
+            
+            logger.info(f"   ✅ Round 5 fused: {len(round5_fused)} paragraphs (kept top 20)")
+        
         logger.info(f"🔗 MULTI-HOP: Retrieved {len(additional_chunks)} additional chunks across all rounds")
         return additional_chunks
     
@@ -1765,7 +2248,7 @@ class HybridRetriever:
             return []
         
         copybook_index = self.config.get_index_name('copybook_usage')
-        url = f"{self.config.search_endpoint}/indexes/{copybook_index}/docs/search?api-version=2025-08-01-preview"
+        url = f"{self.config.search_endpoint}/indexes/{copybook_index}/docs/search?api-version={self.config.search_api_version}"
         
         body = {
             "search": "*",
