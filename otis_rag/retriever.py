@@ -206,7 +206,7 @@ class HybridRetriever:
     def _dynamic_paragraph_expansions(self, query: str, initial_results: List[Dict]) -> tuple:
         """Generate query expansions by mining the corpus dynamically.
         
-        >>> FIX: No hardcoded lists - learn from index at query time
+        >>> TIER A FIX 6: Dual probe strategy for more robust token mining (pattern-free)
         
         Args:
             query: User query
@@ -221,8 +221,28 @@ class HybridRetriever:
         paragraphs_index = self.config.get_index_name('paragraphs')
         search_config = (self.config.search_endpoint, self.search_headers, paragraphs_index)
         
-        cand = self._probe_paragraphs(search_config, lambda q: self._generate_embedding(q, use_small_model=False), query, top=120)
-        mined = self._mine_corpus_tokens(cand)
+        # Probe 1: Full query (original)
+        cand1 = self._probe_paragraphs(search_config, lambda q: self._generate_embedding(q, use_small_model=False), query, top=100)
+        
+        # Probe 2: Stripped query (keep alphanumerics ≥4 chars + all digits) - breadth-first, pattern-free
+        # This helps capture rare labels even when user query is verbose
+        stripped = ' '.join([w for w in re.findall(r'\w+', query) if (len(w) >= 4 or w.isdigit())])
+        cand2 = []
+        if stripped and stripped != query:
+            cand2 = self._probe_paragraphs(search_config, lambda q: self._generate_embedding(q, use_small_model=False), stripped, top=80)
+        
+        # Merge and deduplicate candidates
+        all_cand = cand1 + cand2
+        seen_para = set()
+        unique_cand = []
+        for c in all_cand:
+            pn = c.get('paragraph_name')
+            if pn and pn not in seen_para:
+                seen_para.add(pn)
+                unique_cand.append(c)
+        
+        # Mine tokens from combined corpus (cap to 24 total)
+        mined = self._mine_corpus_tokens(unique_cand, max_tokens=24)
         
         # Extract numbers from query for combination
         _NUM = re.compile(r'\b\d{1,4}\b')
@@ -1472,6 +1492,15 @@ class HybridRetriever:
                         current_score = result.get('@search.score', 0)
                         result['@search.score'] = current_score * 1.08
         
+        # >>> TIER A FIX 5: Generic structure-based nudge for multi-segment labels (pattern-free)
+        for result in unique_results:
+            if result.get('_index_type') == 'paragraphs':
+                pn = result.get('paragraph_name') or ''
+                # Generic boost for labels that look like structured IDs (≥2 hyphens)
+                if pn.count('-') >= 2:
+                    current_score = result.get('@search.score', 0)
+                    result['@search.score'] = current_score * 1.06
+        
         # Sort by search score (higher is better)
         sorted_results = sorted(
             unique_results,
@@ -2139,10 +2168,10 @@ class HybridRetriever:
                 except Exception as e:
                     logger.warning(f"   ⚠️ {para}: paragraph search failed - {e}")
         
-        # >>> FIX: Round 5 - Enhanced paragraph search with dynamic expansions and weighted RRF
+        # >>> FIX: Round 5 - Enhanced paragraph search with dynamic expansions and weighted 3-leg RRF
         logger.info(f"🎯 ROUND 5: Enhanced paragraph search (implementation focus)")
         
-        # Collect likely program_ids from earlier hops
+        # Collect likely program_ids from earlier hops (for soft boosting, not filtering)
         likely_programs = {d.get('program_id') for d in (initial_results + additional_chunks) if d.get('program_id')}
         if likely_programs:
             logger.info(f"   🔍 Likely programs from earlier hops: {list(likely_programs)[:5]}")
@@ -2151,6 +2180,7 @@ class HybridRetriever:
         try:
             expansions, mined = self._dynamic_paragraph_expansions(query, initial_results)
             logger.info(f"   📈 Generated {len(expansions)} expansion terms from corpus")
+            logger.info(f"   🔬 Mined tokens - hyphen: {mined.get('hyphen', [])[:8]}, caps: {mined.get('caps', [])[:5]}")
         except Exception as e:
             logger.warning(f"   ⚠️ Dynamic expansion failed: {e}, falling back to basic search")
             expansions, mined = [], {"hyphen": [], "caps": [], "nums": []}
@@ -2163,33 +2193,29 @@ class HybridRetriever:
         if expansions:
             expanded_lex += ' OR ' + ' OR '.join(expansions)
         
-        # Apply program_id filter if we have likely programs
-        filter_clause = None
-        if likely_programs:
-            filter_clause = " or ".join([f"program_id eq '{p}'" for p in list(likely_programs)[:5]])
-            logger.info(f"   🎯 Applying program_id filter: {filter_clause[:100]}")
+        # >>> TIER A FIX 1: Remove hard filter - will apply soft boost instead (fail-open design)
+        # NO filter_clause applied to searches - retrieve broadly first, then boost
         
-        # Lexical search with expansions
+        # >>> TIER A FIX 4: Lexical search with paragraph_name field boost and increased recall
         lex_results = []
         try:
             lex_body = {
                 "search": expanded_lex,
                 "queryType": "full",
                 "searchMode": "any",
+                "searchFields": "paragraph_name^5,source_excerpt",  # Generic field boost for labels
                 "select": "*",
-                "top": 50
+                "top": 300  # Increased from 50 for better recall before fusion
             }
-            if filter_clause:
-                lex_body["filter"] = filter_clause
             
             lex_response = requests.post(url, headers=self.search_headers, json=lex_body, timeout=30)
             lex_response.raise_for_status()
             lex_results = lex_response.json().get('value', [])
-            logger.info(f"   ✅ Lexical: {len(lex_results)} paragraphs")
+            logger.info(f"   ✅ Lexical: {len(lex_results)} paragraphs (top 300 recall)")
         except Exception as e:
             logger.warning(f"   ⚠️ Lexical search failed: {e}")
         
-        # Vector search with expanded query (original + top hyphen tokens)
+        # >>> TIER A FIX 3: Vector search with expanded query and increased recall
         vec_results = []
         try:
             expand_for_vec = query + " " + " ".join(mined.get("hyphen", [])[:8])
@@ -2201,38 +2227,70 @@ class HybridRetriever:
                     "vectorQueries": [{
                         "kind": "vector",
                         "vector": qv,
-                        "k": 50,
+                        "k": 150,  # Increased from 50
                         "fields": "para_vector"
                     }],
                     "select": "*",
-                    "top": 50
+                    "top": 150  # Increased from 50
                 }
-                if filter_clause:
-                    vec_body["filter"] = filter_clause
                 
                 vec_response = requests.post(url, headers=self.search_headers, json=vec_body, timeout=30)
                 vec_response.raise_for_status()
                 vec_results = vec_response.json().get('value', [])
-                logger.info(f"   ✅ Vector: {len(vec_results)} paragraphs")
+                logger.info(f"   ✅ Vector: {len(vec_results)} paragraphs (top 150 recall)")
         except Exception as e:
             logger.warning(f"   ⚠️ Vector search failed: {e}")
         
-        # Fuse with weighted RRF (lex:0.65, vec:0.35)
-        if lex_results or vec_results:
-            # >>> FIX: Use config.rrf_k instead of hardcoded value
+        # >>> TIER A FIX 2: Add dedicated ID leg for hyphenated labels (generic, pattern-free)
+        id_results = []
+        try:
+            hyphen_tokens = mined.get("hyphen", [])[:8]
+            if hyphen_tokens:
+                # Build quoted ID query for exact label matching (generic for any hyphen-style labels)
+                id_terms = [f'"{token}"' for token in hyphen_tokens]
+                id_query = " OR ".join(id_terms)
+                
+                id_body = {
+                    "search": id_query,
+                    "queryType": "full",
+                    "searchMode": "any",
+                    "searchFields": "paragraph_name",  # Focus strictly on label field
+                    "select": "*",
+                    "top": 120  # High recall for ID matches
+                }
+                
+                id_response = requests.post(url, headers=self.search_headers, json=id_body, timeout=30)
+                id_response.raise_for_status()
+                id_results = id_response.json().get('value', [])
+                logger.info(f"   ✅ ID leg: {len(id_results)} paragraphs matched hyphenated labels")
+        except Exception as e:
+            logger.warning(f"   ⚠️ ID leg search failed: {e}")
+        
+        # Fuse with 3-leg weighted RRF (lex:0.5, vec:0.3, id:0.2)
+        if lex_results or vec_results or id_results:
             round5_fused = self.weighted_rrf(
-                {"lex": lex_results, "vec": vec_results},
-                weights={"lex": 0.65, "vec": 0.35},
+                {"lex": lex_results, "vec": vec_results, "id": id_results},
+                weights={"lex": 0.5, "vec": 0.3, "id": 0.2},
                 k=self.config.rrf_k
             )
+            
+            # >>> TIER A FIX 1: Apply soft boost for likely programs (fail-open)
+            LIKELY_PROGRAM_BONUS = 1.05
+            boosted_count = 0
+            if likely_programs:
+                for doc in round5_fused:
+                    if doc.get('program_id') in likely_programs:
+                        doc['@search.score'] = doc.get('@search.score', 0.0) * LIKELY_PROGRAM_BONUS
+                        boosted_count += 1
+                logger.info(f"   🎯 Soft boost: {boosted_count}/{len(round5_fused)} docs matched likely programs")
             
             # Tag and add to additional_chunks
             for doc in round5_fused[:20]:  # Top 20 from Round 5
                 doc['_index_type'] = 'paragraphs'
-                doc['_search_method'] = 'multi_hop_round5_weighted_rrf'
+                doc['_search_method'] = 'multi_hop_round5_3leg_rrf'
                 additional_chunks.append(doc)
             
-            logger.info(f"   ✅ Round 5 fused: {len(round5_fused)} paragraphs (kept top 20)")
+            logger.info(f"   ✅ Round 5 fused: {len(round5_fused)} paragraphs (3-leg RRF, kept top 20)")
         
         logger.info(f"🔗 MULTI-HOP: Retrieved {len(additional_chunks)} additional chunks across all rounds")
         return additional_chunks
