@@ -49,6 +49,13 @@ class HybridRetriever:
         
         logger.info(f"📥 RETRIEVE CALLED: question_type={question_type}, indexes={indexes}")
         
+        # Special handling for implementation/calculation/formula questions (increase depth)
+        if question_type == 'implementation':
+            # Implementation questions need MORE results to find the right copybooks/formulas
+            if max_results < 30:
+                max_results = 30  # Minimum 30 results for implementation questions (120 total across 4 indexes)
+                logger.info(f"🔧 IMPLEMENTATION QUERY - increasing max_results to {max_results}")
+        
         # Special handling for transaction-specific copybook questions (deterministic)
         if question_type == 'transaction_copybooks':
             logger.info("🎯 DETERMINISTIC MODE: Transaction copybook query detected")
@@ -203,15 +210,26 @@ class HybridRetriever:
         
         logger.info(f"📄 Retrieved {len(all_results)} semantic results + {len(filtered_relationship_results)} filtered relationship results")
         
+        # 🔹 ENTITY EXTRACTION for implementation queries: Find mentioned copybooks/programs and fetch them
+        if question_type == 'implementation' and all_results:
+            logger.info("🔍 ENTITY EXTRACTION: Looking for copybook/program references in results")
+            additional_results = self._extract_and_fetch_entities(all_results, query)
+            if additional_results:
+                logger.info(f"✅ Found {len(additional_results)} additional chunks via entity extraction")
+                all_results.extend(additional_results)
+        
         # 🔹 EXPLICIT MENU FETCHING: If menu query doesn't have screens with target menu name, fetch explicitly
         # This handles cases where hybrid search doesn't rank submenu screens highly enough
         if 'screen_nodes' in indexes and question_type == 'menu':
             logger.info(f"🎯 EXPLICIT MENU FETCHING: Starting check for question_type={question_type}")
             query_lower = query.lower()
             
+            # Classify query to know if we want parent or submenu
+            query_type = self._classify_menu_query(query)
+            
             # Check if we have screens matching the menu type in results
             menu_patterns = {
-                'collection': (r'COLLECTION', ['76A8A5A06C19170665233D10BF8B4F85F2C966B5_1', '69B4EBD83CBF78D027749E34BE5CD143ECDF01CC_1']),
+                'collection': (r'COLLECTION', ['04C134294DA40F2A18EBA019EBA43F4F814D48FA_1', '69B4EBD83CBF78D027749E34BE5CD143ECDF01CC_1']),
                 'daily processing': (r'DAILY\s+PROCESSING\s+MENU', []),
                 'report': (r'REPORTS?\s+MENU', []),
                 'inquir': (r'INQUIR', []),
@@ -238,8 +256,12 @@ class HybridRetriever:
                 
                 logger.info(f"📊 Known menu in top 30: {has_known_menu}")
                 
-                if not has_known_menu and known_ids:
-                    logger.info(f"🎯 Menu query for '{target_pattern}' but not in top results - fetching explicitly")
+                # ALWAYS explicitly fetch for Collection menus since filtering is unreliable
+                # Even if they're in top 30, they may be filtered out or ranked poorly
+                should_fetch = not has_known_menu or 'collection' in query_lower
+                
+                if should_fetch and known_ids:
+                    logger.info(f"🎯 Fetching menu screens explicitly for '{target_pattern}'")
                     try:
                         index_name = self.config.get_index_name('screen_nodes')
                         url = f"{self.config.search_endpoint}/indexes/{index_name}/docs/search?api-version=2025-08-01-preview"
@@ -259,14 +281,27 @@ class HybridRetriever:
                         explicit_docs = response.json().get('value', [])
                         
                         if explicit_docs:
-                            # Pick the one with fewer options (parent menu)
+                            # Count options and classify screens
                             for doc in explicit_docs:
                                 summary = doc.get('summary_text', '')
                                 option_matches = re.findall(r'\b(\d{1,2})\.\s+[A-Z]', summary)
                                 doc['_option_count'] = len(option_matches)
+                                
+                                # Check for FILE MAINTENANCE indicators
+                                doc['_is_file_maint'] = bool(re.search(r'FILE.*MAINT', summary, re.IGNORECASE))
                             
-                            explicit_docs.sort(key=lambda x: x.get('_option_count', 99))
+                            # Pick screen based on query type
+                            if query_type == 'submenu':
+                                # For submenu queries, prefer screens with MORE options and FILE MAINT
+                                explicit_docs.sort(key=lambda x: (-x.get('_is_file_maint', False), -x.get('_option_count', 0)))
+                                logger.info(f"🗂️ SUBMENU query: picking screen with MORE options")
+                            else:
+                                # For parent queries, prefer screens with FEWER options
+                                explicit_docs.sort(key=lambda x: x.get('_option_count', 99))
+                                logger.info(f"📋 PARENT query: picking screen with FEWER options")
+                            
                             best_menu = explicit_docs[0]
+                            logger.info(f"✅ Explicitly fetched: {best_menu.get('screen_id', 'N/A')[:40]} (options={best_menu.get('_option_count')})")
                             
                             best_menu['_index_type'] = 'screen_nodes'
                             best_menu['_is_filtered_relationship'] = False
@@ -280,8 +315,16 @@ class HybridRetriever:
                     except Exception as e:
                         logger.error(f"Failed to fetch explicit menu: {e}")
         
-        # Filter menu screens if this is a menu query - prioritize actual menu content over navigation links
+        # ✨ NEW: Classify and rerank menu screens for better parent vs submenu distinction
         if 'screen_nodes' in indexes and question_type == 'menu':
+            # Classify query intent (parent vs submenu)
+            query_type = self._classify_menu_query(query)
+            
+            # Apply post-search reranking based on structural patterns
+            all_results = self._rerank_menu_screens(all_results, query_type, query)
+            logger.info(f"🎯 After reranking for {query_type}: {len(all_results)} results")
+            
+            # Then apply traditional filtering to remove non-menu screens
             all_results = self._filter_menu_screens(all_results, query)
             logger.info(f"📋 After menu filtering: {len(all_results)} results")
         
@@ -313,6 +356,134 @@ class HybridRetriever:
             final_results = self._expand_submenus(final_results, query)
         
         return final_results
+    
+    
+    def _classify_menu_query(self, query: str) -> str:
+        """Classify menu query to determine if user wants parent menu or submenu.
+        
+        Args:
+            query: User's menu query
+            
+        Returns:
+            'submenu' - User wants detailed submenu (file maintenance, setup, configuration)
+            'parent' - User wants parent/main menu (processing, main menu)
+            'generic' - Unclear, use neutral approach
+        """
+        q = query.lower()
+        
+        # Submenu indicators - user wants detailed/file-level operations
+        submenu_keywords = ['file', 'maintenance', 'setup', 'configuration', 
+                           'extraction', 'action code', 'activity code']
+        if any(kw in q for kw in submenu_keywords):
+            logger.info(f"📂 Classified as SUBMENU query (found: {[k for k in submenu_keywords if k in q]})")
+            return 'submenu'
+        
+        # Parent indicators - user wants top-level menu
+        parent_keywords = ['processing', 'main', 'master', 'menu options', 'what\'s in']
+        if any(kw in q for kw in parent_keywords):
+            logger.info(f"📋 Classified as PARENT query (found: {[k for k in parent_keywords if k in q]})")
+            return 'parent'
+        
+        logger.info("🔍 Classified as GENERIC menu query (no clear parent/submenu indicators)")
+        return 'generic'
+    
+    
+    def _rerank_menu_screens(self, results: List[Dict[str, Any]], query_type: str, query: str) -> List[Dict[str, Any]]:
+        """Rerank menu screens based on structural patterns and query intent.
+        
+        This addresses the root cause: hybrid search returns wrong screens because:
+        - Vector embeddings are weak for structured menu text
+        - Keyword search fragments across unrelated mentions
+        - Sorting by "fewer options" assumes parent menus have fewer options (often wrong!)
+        
+        Solution: Post-search reranking based on:
+        - Query type (parent vs submenu)
+        - Option count (more options for submenu, fewer for parent)
+        - Content match (presence of specific terms)
+        
+        Args:
+            results: List of screen documents from hybrid search
+            query_type: 'parent', 'submenu', or 'generic'
+            query: Original query for content matching
+            
+        Returns:
+            Reranked results with adjusted scores
+        """
+        if not results:
+            return results
+        
+        import re
+        query_lower = query.lower()
+        
+        def calculate_rerank_score(doc: Dict[str, Any]) -> float:
+            """Calculate reranking score for a screen document."""
+            base_score = doc.get('@search.score', 0.0)
+            summary = doc.get('summary_text', '').lower()
+            
+            # Count menu options
+            option_matches = re.findall(r'\b(\d{1,2})\.\s+[A-Z]', doc.get('summary_text', ''))
+            option_count = len(option_matches)
+            
+            # Start with base hybrid search score
+            score = base_score
+            
+            # 🔹 Structural heuristics based on query type
+            if query_type == 'parent':
+                # Parent menus typically have FEWER options
+                if option_count > 0:
+                    score += (1.0 / option_count) * 10.0  # Boost screens with fewer options
+                logger.debug(f"  Parent boost: +{(1.0 / max(option_count, 1)) * 10.0:.3f} (options={option_count})")
+                
+            elif query_type == 'submenu':
+                # Submenus typically have MORE options (detail screens)
+                score += (option_count / 20.0) * 10.0  # Boost screens with more options
+                logger.debug(f"  Submenu boost: +{(option_count / 20.0) * 10.0:.3f} (options={option_count})")
+            
+            # 🔹 Content-based boosting
+            # Submenu indicators
+            if 'file' in summary and 'maint' in summary:
+                if query_type == 'submenu':
+                    score += 15.0
+                    logger.debug(f"  Content boost: +15.0 (FILE MAINT match for submenu)")
+                else:
+                    score -= 5.0  # Penalize if looking for parent
+                    
+            # Parent menu indicators
+            if 'work screen' in summary or 'queue listing' in summary:
+                if query_type == 'parent':
+                    score += 15.0
+                    logger.debug(f"  Content boost: +15.0 (WORK SCREEN/QUEUE match for parent)")
+                elif query_type == 'submenu':
+                    score -= 5.0  # Penalize if looking for submenu
+            
+            # Check for specific query terms in summary
+            specific_terms = []
+            if 'collection' in query_lower:
+                specific_terms.append('collection')
+            if 'daily' in query_lower:
+                specific_terms.append('daily')
+            if 'report' in query_lower:
+                specific_terms.append('report')
+                
+            term_matches = sum(1 for term in specific_terms if term in summary)
+            if term_matches > 0:
+                score += term_matches * 5.0
+                logger.debug(f"  Term match boost: +{term_matches * 5.0:.3f}")
+            
+            return score
+        
+        # Calculate rerank scores
+        for doc in results:
+            doc['_rerank_score'] = calculate_rerank_score(doc)
+        
+        # Sort by rerank score
+        reranked = sorted(results, key=lambda x: x.get('_rerank_score', 0.0), reverse=True)
+        
+        logger.info(f"🎯 Reranked {len(reranked)} screens for {query_type} query")
+        if reranked:
+            logger.info(f"  Top result: {reranked[0].get('screen_id', 'N/A')[:40]} (rerank_score={reranked[0].get('_rerank_score', 0):.2f})")
+        
+        return reranked
     
     
     def _filter_menu_screens(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
@@ -673,10 +844,17 @@ class HybridRetriever:
                 menu_boost_terms.extend(['INQUIRIES MENU', 'INQUIRY', 'PAYMENT INQUIRY',
                                         'CONTRACT INQUIRY', 'CUSTOMER INQUIRY'])
             
-            # Collection Processing menu
+            # Collection FILE MAINTENANCE submenu (more specific - check first!)
+            elif 'collection' in query_lower and 'file' in query_lower and 'maintenance' in query_lower:
+                menu_boost_terms.extend(['EXTRACTION', 'ACTION CODE FILE', 'ACTIVITY CODE FILE',
+                                        'RESULT CODE FILE', 'COLLECTOR QUEUE FILE', 
+                                        'COLLECTOR POOL FILE', 'ACTION CODE 2 FILE'])
+            
+            # Collection Processing/Maintenance menu (parent level)
             elif 'collection' in query_lower:
-                menu_boost_terms.extend(['COLLECTION PROCESSING', 'COLLECTION MENU',
-                                        'DELINQUENCY', 'COLLECTION ENTRY'])
+                menu_boost_terms.extend(['COLLECTION WORK SCREEN', 'COLLECTOR QUEUE LISTING',
+                                        'COLLECTOR FILE MAINTENANCE', 'COLLECTOR POOL MAINTENANCE',
+                                        'GROUP MAINTENANCE', 'TIME ZONE FILE'])
             
             # Batch Processing menu
             elif 'batch' in query_lower:
@@ -1264,6 +1442,99 @@ class HybridRetriever:
         except Exception as e:
             logger.error(f"Semantic copybook search failed: {e}")
             return []
+    
+    
+    def _extract_and_fetch_entities(self, initial_results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+        """Extract copybook/program names from initial results and fetch additional chunks.
+        
+        For implementation questions, the initial search might mention key copybooks
+        (e.g., LPLCHG) but not retrieve all their chunks. This extracts those names
+        and does targeted follow-up searches.
+        
+        Args:
+            initial_results: Chunks from initial hybrid search
+            query: Original user query (for context)
+            
+        Returns:
+            Additional chunks found via entity extraction
+        """
+        import re
+        from collections import Counter
+        
+        # Extract all COBOL identifiers (uppercase names with hyphens, 4+ chars)
+        identifier_pattern = re.compile(r'\b[A-Z][A-Z0-9-]{3,}\b')
+        
+        all_identifiers = []
+        for doc in initial_results[:50]:  # Only scan top 50 to avoid noise
+            content = doc.get('text', doc.get('content', doc.get('description', '')))
+            # Look for common patterns: "COPYBOOK: XXX", "COPY XXX", standalone caps names
+            identifiers = identifier_pattern.findall(content)
+            all_identifiers.extend(identifiers)
+        
+        # Count frequency
+        entity_counts = Counter(all_identifiers)
+        
+        # Filter to likely copybook/program names (common patterns)
+        copybook_entities = []
+        for entity, count in entity_counts.most_common(20):
+            # Skip common COBOL keywords/noise
+            skip_patterns = [
+                'WORKING-STORAGE', 'PROCEDURE', 'DIVISION', 'SECTION',
+                'DISPLAY', 'ACCEPT', 'COMPUTE', 'PERFORM', 'MOVE',
+                'VALUE', 'PICTURE', 'REDEFINES', 'OCCURS', 'INDEXED'
+            ]
+            if any(skip in entity for skip in skip_patterns):
+                continue
+            
+            # Keep if it looks like a copybook (ends with common suffixes or appears frequently)
+            if count >= 2 or any(entity.endswith(suffix) for suffix in ['CPY', 'CHG', 'CAS', 'CAP', 'SP', 'PF', 'MENU']):
+                copybook_entities.append(entity)
+        
+        logger.info(f"🔍 Extracted {len(copybook_entities)} candidate entities: {copybook_entities[:10]}")
+        
+        if not copybook_entities:
+            return []
+        
+        # Fetch additional chunks for top 5 entities
+        additional_chunks = []
+        code_index = self.config.get_index_name('code')
+        url = f"{self.config.search_endpoint}/indexes/{code_index}/docs/search?api-version=2025-08-01-preview"
+        
+        for entity in copybook_entities[:5]:
+            # Simple keyword search for this entity
+            body = {
+                "search": entity,
+                "searchMode": "all",
+                "queryType": "simple",
+                "select": "*",
+                "top": 5
+            }
+            
+            try:
+                response = requests.post(url, headers=self.search_headers, json=body, timeout=30)
+                response.raise_for_status()
+                results = response.json().get('value', [])
+                
+                for doc in results:
+                    doc['_index_type'] = 'code'
+                    doc['_search_method'] = 'entity_extraction'
+                    doc['_extracted_entity'] = entity
+                
+                additional_chunks.extend(results)
+                logger.info(f"   ✅ {entity}: found {len(results)} chunks")
+                
+            except Exception as e:
+                logger.warning(f"   ⚠️ {entity}: search failed - {e}")
+        
+        # Deduplicate against initial results
+        initial_ids = {doc.get('chunk_id', doc.get('id', '')) for doc in initial_results}
+        unique_additional = [
+            doc for doc in additional_chunks
+            if doc.get('chunk_id', doc.get('id', '')) not in initial_ids
+        ]
+        
+        logger.info(f"✅ Entity extraction: {len(unique_additional)} unique new chunks (from {len(additional_chunks)} total)")
+        return unique_additional
     
     def _get_all_program_copybooks(self, program_name: str, max_results: int) -> List[Dict[str, Any]]:
         """Fallback: Get all copybooks for a program.
