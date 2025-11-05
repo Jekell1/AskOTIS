@@ -200,7 +200,7 @@ class HybridRetriever:
                         "k": top,
                         "fields": "para_vector"
                     }],
-                    "select": "paragraph_name,text,source_excerpt,program_id",
+                    "select": "paragraph_name,paragraph_name_terms,text,source_excerpt,program_id",
                     "top": top
                 }
                 vec_response = requests.post(url, headers=headers, json=vec_body, timeout=30)
@@ -222,7 +222,7 @@ class HybridRetriever:
                 "search": query_text,
                 "queryType": "simple",
                 "searchMode": "any",
-                "select": "paragraph_name,text,source_excerpt,program_id",
+                "select": "paragraph_name,paragraph_name_terms,text,source_excerpt,program_id",
                 "top": min(40, top // 3)
             }
             lex_response = requests.post(url, headers=headers, json=lex_body, timeout=30)
@@ -2302,7 +2302,7 @@ class HybridRetriever:
                     "search": id_query,
                     "queryType": "full",
                     "searchMode": "any",
-                    "searchFields": "paragraph_name",  # Focus strictly on label field
+                    "searchFields": "paragraph_name^6,paragraph_name_terms^5",  # Include terms field for state codes
                     "select": "*",
                     "top": 120  # >>> TUNE: Per-leg ID recall target
                 }
