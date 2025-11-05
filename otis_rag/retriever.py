@@ -2197,13 +2197,14 @@ class HybridRetriever:
         # NO filter_clause applied to searches - retrieve broadly first, then boost
         
         # >>> TIER A FIX 4: Lexical search with paragraph_name field boost and increased recall
+        # >>> TIER B: Added paragraph_name_terms for tokenized label matching
         lex_results = []
         try:
             lex_body = {
                 "search": expanded_lex,
                 "queryType": "full",
                 "searchMode": "any",
-                "searchFields": "paragraph_name^5,source_excerpt",  # Generic field boost for labels
+                "searchFields": "paragraph_name^6,paragraph_name_terms^3,source_excerpt",  # Tier B: Added tokenized field
                 "select": "*",
                 "top": 300  # Increased from 50 for better recall before fusion
             }
